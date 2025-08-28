@@ -1,1 +1,299 @@
-# colmena
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Colmena No. 8 — Logia Masónica</title>
+  <meta name="description" content="Logia Colmena No. 8 — fraternidad, trabajo y tradición.">
+  <style>
+    /* Paleta:
+       - Dorado/amarillo: #D4A017
+       - Beige claro:   #F5EFE6
+       - Marrón medio:  #7A4F35
+       - Marrón oscuro: #37271E
+       - Acento suave:  #E7D9C9
+    */
+    :root{
+      --gold:#D4A017;
+      --beige:#F5EFE6;
+      --brown:#7A4F35;
+      --dark:#37271E;
+      --accent:#E7D9C9;
+      --radius:14px;
+      --maxw:1100px;
+      --ff-sans: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --ff-serif: Georgia, "Times New Roman", serif;
+    }
+
+    /* Reset mínimo */
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:var(--ff-sans);
+      color:var(--dark);
+      background:linear-gradient(180deg,var(--beige) 0%, #fff 100%);
+      -webkit-font-smoothing:antialiased;
+      line-height:1.45;
+    }
+
+    .container{max-width:var(--maxw);margin:0 auto;padding:28px;}
+
+    /* Header */
+    header{
+      background:linear-gradient(90deg,var(--beige),var(--accent));
+      border-radius:var(--radius);
+      padding:18px 22px;
+      display:flex;
+      align-items:center;
+      gap:18px;
+      box-shadow:0 6px 18px rgba(55,39,30,0.08);
+      margin-bottom:20px;
+    }
+    .logo{
+      width:84px;height:84px;border-radius:12px;
+      display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(135deg,#fffefc,rgba(212,160,23,0.08));
+      border:2px solid rgba(55,39,30,0.06);
+      flex-shrink:0;
+    }
+    .logo svg{width:56px;height:56px;display:block}
+    .brand h1{margin:0;font-size:1.25rem;color:var(--dark)}
+    .brand p{margin:4px 0 0 0;color:var(--brown);font-size:0.95rem}
+
+    nav{margin-left:auto}
+    .nav-list{display:flex;gap:12px;flex-wrap:wrap}
+    .nav-list a{
+      text-decoration:none;padding:8px 12px;border-radius:10px;font-weight:600;
+      color:var(--dark);background:transparent;border:2px solid transparent;
+    }
+    .nav-list a.cta{
+      background:var(--gold);color:#ffffff;border-color:var(--gold);
+      box-shadow:0 6px 12px rgba(212,160,23,0.16)
+    }
+
+    /* Hero */
+    .hero{
+      display:grid;grid-template-columns:1fr 360px;gap:20px;align-items:stretch;
+      margin-bottom:22px;
+    }
+    .card{
+      background:#fff;border-radius:12px;padding:18px;box-shadow:0 8px 22px rgba(55,39,30,0.06);
+    }
+    .hero .intro h2{margin-top:0;color:var(--brown);font-family:var(--ff-serif)}
+    .hex-grid{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .hex{
+      width:60px;height:70px;background:linear-gradient(180deg,var(--gold),#f5c869);
+      clip-path: polygon(25% 6%,75% 6%,100% 50%,75% 94%,25% 94%,0% 50%);
+      display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;
+      box-shadow:0 4px 10px rgba(55,39,30,0.08)
+    }
+
+    /* Info columns */
+    .columns{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-bottom:22px}
+    .about h3{color:var(--brown);margin-top:0}
+    .about p{color:#3b2f2f}
+    .officers ul{list-style:none;padding:0;margin:0}
+    .officers li{padding:8px;border-radius:10px;background:linear-gradient(90deg,var(--beige),#fff);margin-bottom:10px;border:1px solid rgba(55,39,30,0.04)}
+
+    /* Gallery */
+    .gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+    .gallery img{width:100%;height:120px;object-fit:cover;border-radius:8px;cursor:pointer;display:block}
+
+    /* Lightbox simple */
+    .lightbox{
+      position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);z-index:60;
+    }
+    .lightbox.open{display:flex}
+    .lightbox img{max-width:90%;max-height:80%;border-radius:10px;box-shadow:0 18px 40px rgba(0,0,0,0.6)}
+
+    /* Contact footer */
+    footer{margin-top:18px;padding:18px;border-radius:12px;background:linear-gradient(90deg,#fff,#f9f5ef);display:flex;gap:18px;align-items:center}
+    .contact-form input,.contact-form textarea{
+      width:100%;padding:10px;border-radius:8px;border:1px solid rgba(55,39,30,0.08);font-size:0.95rem
+    }
+    .contact-form button{
+      background:var(--brown);color:#fff;padding:10px 14px;border-radius:10px;border:0;font-weight:700;cursor:pointer;
+    }
+
+    /* Responsivo */
+    @media (max-width:880px){
+      .hero{grid-template-columns:1fr}
+      .columns{grid-template-columns:1fr}
+      nav{order:3;width:100%;margin-top:10px}
+      .nav-list{justify-content:center}
+    }
+
+    /* Pequeños detalles tipográficos */
+    .muted{color:#6a4f3e;font-size:0.92rem}
+    .small{font-size:0.85rem}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header role="banner" aria-label="Encabezado principal">
+      <div class="logo" aria-hidden="true">
+        <!-- Emblema: hexágono/abeja simple SVG (puedes reemplazar por logo real) -->
+        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Emblema Colmena">
+          <defs>
+            <linearGradient id="g" x1="0" x2="1">
+              <stop offset="0" stop-color="#fff59d"/>
+              <stop offset="1" stop-color="#f0a82b"/>
+            </linearGradient>
+          </defs>
+          <polygon points="32,4 50,16 50,36 32,48 14,36 14,16" fill="url(#g)" stroke="#7A4F35" stroke-width="2"/>
+          <path d="M20 28c4-6 12-6 16 0" fill="none" stroke="#7A4F35" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <div class="brand" role="heading" aria-level="1">
+        <h1>Colmena No. 8</h1>
+        <p>Logia Masónica — Fraternidad, Trabajo, Tradición</p>
+      </div>
+
+      <nav aria-label="Navegación principal">
+        <div class="nav-list">
+          <a href="#about">Sobre</a>
+          <a href="#oficios">Oficiales</a>
+          <a href="#galeria">Galería</a>
+          <a href="#contacto" class="cta">Contacto</a>
+        </div>
+      </nav>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+      <article class="card intro" aria-labelledby="intro-title">
+        <h2 id="intro-title">Bienvenidos a Colmena No. 8</h2>
+        <p class="muted">Un espacio de encuentro y trabajo colectivo. Conservamos rituales, promovemos la mejora moral y practicamos la ayuda mutua.</p>
+
+        <div style="margin-top:14px">
+          <p><strong>Misión:</strong> Fomentar la fraternidad y el perfeccionamiento personal a través del trabajo y el estudio.</p>
+          <div class="hex-grid" aria-hidden="true">
+            <div class="hex">G</div>
+            <div class="hex">L</div>
+            <div class="hex">S</div>
+            <div class="hex">8</div>
+          </div>
+        </div>
+      </article>
+
+      <aside class="card" aria-labelledby="datos-title">
+        <h3 id="datos-title">Próxima Tenida</h3>
+        <p class="muted small">Viernes — 19:00 horas</p>
+        <p class="small">Lugar: Templo Colmena No.8 — Calle Ejemplo 123</p>
+
+        <hr style="margin:12px 0;border:none;border-top:1px solid rgba(55,39,30,0.06)">
+
+        <h4 style="margin-bottom:6px">Contacto rápido</h4>
+        <p class="small">Email: <a href="mailto:colmena8@example.com">colmena8@example.com</a></p>
+        <p class="small">Tel: +1 (555) 123-4567</p>
+      </aside>
+    </section>
+
+    <!-- INFO / OFICIALES -->
+    <section class="columns" id="about">
+      <div class="card about" aria-labelledby="about-title">
+        <h3 id="about-title">Nuestra historia</h3>
+        <p>La Logia Colmena No. 8 fue fundada con el propósito de reunir a hermanos interesados en el perfeccionamiento moral y social. Aquí se combinan estudio, ritual y servicios a la comunidad.</p>
+        <p class="small">Los símbolos que usamos —hexágono, abeja, la colmena— representan el trabajo colectivo, la disciplina y la sabiduría compartida.</p>
+      </div>
+
+      <aside class="card officers" id="oficios" aria-labelledby="oficios-title">
+        <h3 id="oficios-title">Oficiales</h3>
+        <ul>
+          <li><strong>Venerable Maestro:</strong> Juan Pérez</li>
+          <li><strong>Segundo Vigilante:</strong> María Gómez</li>
+          <li><strong>Primer Vigilante:</strong> Carlos Ruiz</li>
+          <li><strong>Secretario:</strong> Ana López</li>
+        </ul>
+      </aside>
+    </section>
+
+    <!-- GALLERY -->
+    <section class="card" id="galeria" aria-labelledby="galeria-title">
+      <h3 id="galeria-title">Galería</h3>
+      <p class="small muted">Haz clic sobre una imagen para verla ampliada.</p>
+      <div class="gallery" aria-live="polite">
+        <!-- Reemplaza los src por tus imágenes reales -->
+        <img src="https://via.placeholder.com/600x400?text=Templo+Colmena" alt="Templo de la Logia Colmena No. 8" data-full="https://via.placeholder.com/1200x800?text=Templo+Colmena">
+        <img src="https://via.placeholder.com/600x400?text=Tenida+Local" alt="Tenida local de la logia" data-full="https://via.placeholder.com/1600x1000?text=Tenida+Local">
+        <img src="https://via.placeholder.com/600x400?text=Rituales" alt="Rituales simbólicos" data-full="https://via.placeholder.com/1600x1000?text=Rituales">
+        <img src="https://via.placeholder.com/600x400?text=Miembros" alt="Miembros de la logia" data-full="https://via.placeholder.com/1600x1000?text=Miembros">
+      </div>
+    </section>
+
+    <!-- LIGHTBOX -->
+    <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-hidden="true">
+      <button id="lb-close" style="position:absolute;top:18px;right:22px;background:transparent;border:0;color:#fff;font-size:20px;cursor:pointer" aria-label="Cerrar galería">&times;</button>
+      <img id="lb-img" src="" alt="">
+    </div>
+
+    <!-- CONTACT / FOOTER -->
+    <footer id="contacto" aria-labelledby="contacto-title">
+      <div style="flex:1">
+        <h3 id="contacto-title">¿Interesado en saber más?</h3>
+        <p class="small muted">Escríbenos para consultas sobre admisión, eventos o colaboración.</p>
+      </div>
+
+      <form class="contact-form" style="width:420px" onsubmit="event.preventDefault(); alert('Formulario simulado — implementa backend para enviar.');">
+        <label class="small" for="nombre">Nombre</label>
+        <input id="nombre" name="nombre" type="text" required placeholder="Tu nombre">
+        <label class="small" for="email" style="margin-top:8px;display:block">Correo</label>
+        <input id="email" name="email" type="email" required placeholder="tu@correo">
+        <label class="small" for="mensaje" style="margin-top:8px;display:block">Mensaje</label>
+        <textarea id="mensaje" name="mensaje" rows="3" placeholder="Escribe tu mensaje..." required></textarea>
+        <div style="display:flex;justify-content:flex-end;margin-top:8px">
+          <button type="submit">Enviar</button>
+        </div>
+      </form>
+    </footer>
+
+    <p style="text-align:center;color:#6a4f3e;font-size:0.85rem;margin-top:12px" class="small">© Colmena No. 8 — Todos los derechos reservados</p>
+  </div>
+
+  <script>
+    // Navegación: scroll suave
+    document.querySelectorAll('a[href^="#"]').forEach(a=>{
+      a.addEventListener('click', e=>{
+        const href = a.getAttribute('href');
+        if(href.length>1){
+          e.preventDefault();
+          const el = document.querySelector(href);
+          if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+        }
+      });
+    });
+
+    // Galería -> lightbox
+    const galleryImgs = document.querySelectorAll('.gallery img');
+    const lightbox = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lb-img');
+    const lbClose = document.getElementById('lb-close');
+
+    galleryImgs.forEach(img=>{
+      img.addEventListener('click', ()=>{
+        const full = img.dataset.full || img.src;
+        lbImg.src = full;
+        lbImg.alt = img.alt || 'Imagen ampliada';
+        lightbox.classList.add('open');
+        lightbox.setAttribute('aria-hidden','false');
+      });
+    });
+
+    function closeLightbox(){
+      lightbox.classList.remove('open');
+      lightbox.setAttribute('aria-hidden','true');
+      lbImg.src = '';
+    }
+    lbClose.addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', (e)=>{
+      if(e.target === lightbox) closeLightbox();
+    });
+    document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeLightbox(); });
+
+    // Nota: el formulario es de demostración (sin backend).
+    // Para producción reemplazar con fetch() a tu endpoint, o usar Formspree/Netlify Forms.
+  </script>
+</body>
+</html>
