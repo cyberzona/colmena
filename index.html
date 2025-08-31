@@ -245,7 +245,7 @@
         <p class="small muted">Escríbenos para consultas sobre admisión, eventos o colaboración.</p>
       </div>
 
-      <form class="contact-form" style="width:420px" onsubmit="event.preventDefault(); alert('Formulario simulado — implementa backend para enviar.');">
+      <form class="contact-form" style="width:420px" action="send-form.php" method="POST">
         <label class="small" for="nombre">Nombre</label>
         <input id="nombre" name="nombre" type="text" required placeholder="Tu nombre">
         <label class="small" for="email" style="margin-top:8px;display:block">Correo</label>
@@ -253,7 +253,7 @@
         <label class="small" for="mensaje" style="margin-top:8px;display:block">Mensaje</label>
         <textarea id="mensaje" name="mensaje" rows="3" placeholder="Escribe tu mensaje..." required></textarea>
         <div style="display:flex;justify-content:flex-end;margin-top:8px">
-          <button type="submit">Enviar</button>
+        <button type="submit">Enviar</button>
         </div>
       </form>
     </footer>
