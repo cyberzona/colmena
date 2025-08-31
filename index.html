@@ -246,35 +246,25 @@
       </div>
 
       <!-- Formulario -->
-      <form class="contact-form" id="contact-form" style="width:420px" onsubmit="enviarFormulario(event)">
-        <label class="small" for="nombre">Nombre</label>
-        <input id="nombre" name="nombre" type="text" required placeholder="Tu nombre">    
-        <label class="small" for="email" style="margin-top:8px;display:block">Correo</label>
-        <input id="email" name="email" type="email" required placeholder="tu@correo">
-        <label class="small" for="mensaje" style="margin-top:8px;display:block">Mensaje</label>
-        <textarea id="mensaje" name="mensaje" rows="3" placeholder="Escribe tu mensaje..." required></textarea>
-        <div style="display:flex;justify-content:flex-end;margin-top:8px">
+      <form class="contact-form" style="width:420px" onsubmit="abrirGmail(event)">
+          <label class="small" for="nombre">Nombre</label>
+          <input id="nombre" name="nombre" type="text" required placeholder="Tu nombre">    
+          <label class="small" for="email" style="margin-top:8px;display:block">Correo</label>
+          <input id="email" name="email" type="email" required placeholder="tu@correo">
+          <label class="small" for="mensaje" style="margin-top:8px;display:block">Mensaje</label>
+          <textarea id="mensaje" name="mensaje" rows="3" placeholder="Escribe tu mensaje..." required></textarea>
+          <div style="display:flex;justify-content:flex-end;margin-top:8px">
             <button type="submit">Enviar</button>
-        </div>
+          </div>
       </form>
-
-      <!-- JS para EmailJS y redirección -->
-      <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
       <script>
-        // Inicializa EmailJS con tu User ID
-        (function(){ emailjs.init("TU_USER_ID"); })();
-        function enviarFormulario(event){
-          event.preventDefault(); // Evita recargar la página
-          const form = event.target;
-          emailjs.sendForm('TU_SERVICE_ID','TU_TEMPLATE_ID', form)
-          .then(() => {
-          form.reset(); // Limpia formulario
-          // Redirige a la página de "Gracias"
-          window.location.href = "gracias.html";
-        })
-        .catch(err => {
-          alert('❌ Error al enviar el mensaje: '+err);
-          });
+          function abrirGmail(e){
+            e.preventDefault();
+            const nombre = encodeURIComponent(document.getElementById('nombre').value);
+            const email = encodeURIComponent(document.getElementById('email').value);
+            const mensaje = encodeURIComponent(document.getElementById('mensaje').value);
+            // Abre Gmail con el mensaje listo
+            window.location.href = `mailto:isomero@gmail.com?subject=Mensaje de ${nombre}&body=De: ${email}%0A%0A${mensaje}`;
         }
       </script>
     </footer>
