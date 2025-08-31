@@ -256,6 +256,15 @@
         <button type="submit">Enviar</button>
         </div>
       </form>
+      <?php
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+          $name = $_POST['name'];
+          $email = $_POST['email'];
+          $message = $_POST['message'];
+          mail("isomero@gmail.com", "Nuevo mensaje", $message, "From: $email");
+          echo "Mensaje enviado.";
+        }
+      ?>
     </footer>
 
     <p style="text-align:center;color:#6a4f3e;font-size:0.85rem;margin-top:12px" class="small">© Colmena No. 8 — Todos los derechos reservados</p>
