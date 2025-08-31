@@ -245,41 +245,38 @@
         <p class="small muted">Escríbenos para consultas sobre admisión, eventos o colaboración.</p>
       </div>
 
-      <form class="contact-form" id="contact-form" style="width:420px"
-          action="https://formspree.io/f/TU-ENDPOINT" method="POST">
-          <label class="small" for="nombre">Nombre</label>
-          <input id="nombre" name="nombre" type="text" required placeholder="Tu nombre">    
-          <label class="small" for="email" style="margin-top:8px;display:block">Correo</label>
-          <input id="email" name="email" type="email" required placeholder="tu@correo">
-          <label class="small" for="mensaje" style="margin-top:8px;display:block">Mensaje</label>
-          <textarea id="mensaje" name="mensaje" rows="3" placeholder="Escribe tu mensaje..." required></textarea>
-          <div style="display:flex;justify-content:flex-end;margin-top:8px">
-              <button type="submit">Enviar</button>
-          </div>
+      <!-- Formulario -->
+      <form class="contact-form" id="contact-form" style="width:420px" onsubmit="enviarFormulario(event)">
+        <label class="small" for="nombre">Nombre</label>
+        <input id="nombre" name="nombre" type="text" required placeholder="Tu nombre">    
+        <label class="small" for="email" style="margin-top:8px;display:block">Correo</label>
+        <input id="email" name="email" type="email" required placeholder="tu@correo">
+        <label class="small" for="mensaje" style="margin-top:8px;display:block">Mensaje</label>
+        <textarea id="mensaje" name="mensaje" rows="3" placeholder="Escribe tu mensaje..." required></textarea>
+        <div style="display:flex;justify-content:flex-end;margin-top:8px">
+            <button type="submit">Enviar</button>
+        </div>
       </form>
 
+      <!-- JS para EmailJS y redirección -->
+      <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
       <script>
-          document.getElementById('contact-form').addEventListener('submit', async function(e) {
-          e.preventDefault(); // Evita que recargue la página
-          const form = e.target;
-          const data = new FormData(form);
-          try {
-              const response = await fetch(form.action, {
-              method: form.method,
-              body: data,
-              headers: { 'Accept': 'application/json' }
+        // Inicializa EmailJS con tu User ID
+        (function(){ emailjs.init("TU_USER_ID"); })();
+        function enviarFormulario(event){
+          event.preventDefault(); // Evita recargar la página
+          const form = event.target;
+          emailjs.sendForm('TU_SERVICE_ID','TU_TEMPLATE_ID', form)
+          .then(() => {
+          form.reset(); // Limpia formulario
+          // Redirige a la página de "Gracias"
+          window.location.href = "gracias.html";
+        })
+        .catch(err => {
+          alert('❌ Error al enviar el mensaje: '+err);
           });
-            if (response.ok) {
-              alert('✅ Mensaje enviado correctamente. ¡Gracias!');
-              form.reset(); // Limpia el formulario
-            } else {
-              alert('❌ Hubo un error al enviar el mensaje. Intenta de nuevo.');
-            }
-          } catch (error) {
-            alert('❌ Error de conexión. Intenta de nuevo.');
-          }});
+        }
       </script>
-
     </footer>
 
     <p style="text-align:center;color:#6a4f3e;font-size:0.85rem;margin-top:12px" class="small">© Colmena No. 8 — Todos los derechos reservados</p>
