@@ -3,7 +3,7 @@
 
   <!-- Página principal -->
   <url>
-    <loc>https://tudominio.com/</loc>
+    <loc>https://colmena8.org/</loc>
     <lastmod>2025-09-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
@@ -11,7 +11,7 @@
 
   <!-- Ejemplo: Página de historia -->
   <url>
-    <loc>https://tudominio.com/historia.html</loc>
+    <loc>https://colmena8.org/historia.html</loc>
     <lastmod>2025-09-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -19,7 +19,7 @@
 
   <!-- Ejemplo: Página de galería -->
   <url>
-    <loc>https://tudominio.com/galeria.html</loc>
+    <loc>https://colmena8.org/galeria.html</loc>
     <lastmod>2025-09-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
