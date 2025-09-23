@@ -311,7 +311,7 @@
     const lbClose = document.getElementById('lb-close');
 
     galleryImgs.forEach(img=>{
-      img.addEventListener('click', ()=>{
+      img.addEventListener('click', ()=>{ <div class="texto">Texto sobre la imagen</div>
         const full = img.dataset.full || img.src;
         lbImg.src = full;
         lbImg.alt = img.alt || "Imagen Ampliada";
