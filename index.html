@@ -314,7 +314,7 @@
       img.addEventListener('click', ()=>{
         const full = img.dataset.full || img.src;
         lbImg.src = full;
-        lbImg.alt = img.alt || img.alt;
+        lbImg.alt = img.alt || "Imagen Ampliada";
         lightbox.classList.add('open');
         lightbox.setAttribute('aria-hidden','false');
       });
