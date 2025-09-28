@@ -240,30 +240,19 @@
 
     <!-- GALLERY -->
     <section class="card" id="galeria" aria-labelledby="galeria-title">
-      <h3 id="galeria-title">Galería Completa</h3>
-      <p class="small muted">Haz clic sobre una imagen para verla ampliada.</p>
-      <div class="gallery" aria-live="polite">
-        <img src="images/carta-patente.png" 
-         alt="Carta Patente" 
-         data-fecha="2025-09-15" 
-         class="galeria-item">
-         
-        <img id="ultima-tenida-img" src="images/placeholder.png" alt="Cargando Última Tenida..."> 
-    
-        <img src="images/Cuadro-Logial.png" 
-         alt="Cuadro Logial" 
-         data-fecha="2025-09-28" 
-         class="galeria-item">
-    
+      <h3 id="galeria-title">Galería</h3>
+      <p class="small muted">Haz clic sobre una imagen para verla amplería.</p>
+      <div class="gallery" aria-live="polite">    
+        <img id="ultima-tenida-img" src="images/placeholder.png" alt="Cargando Última Tenida...">     
+        <img src="images/carta-patente.png" alt="Carta Patente">
+        <img src="images/tenida-0920.png" alt="Tenida anterior">
+        <img src="https://via.placeholder.com/600x400?text=Rituales" alt="Rituales simbólicos">
 
-        <img src="https://via.placeholder.com/600x400?text=Rituales" 
-         alt="Rituales simbólicos" 
-         data-fecha="2025-09-10" 
-         class="galeria-item" 
-         data-full="https://via.placeholder.com/1600x1000?text=Rituales">
-      </div>
-    </section>
-
+        <div id="tenidas-data" style="display: none;">
+            <div data-fecha="2025-09-15" data-tipo="otra"></div> <div data-fecha="2025-09-20" data-tipo="tenida"></div> 
+            <div data-fecha="2025-09-27" data-tipo="tenida"></div> <div data-fecha="2025-10-04" data-tipo="tenida"></div> </div>    
+  </div>
+</section>
 
     <!-- LIGHTBOX -->
     <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-hidden="true">
@@ -323,55 +312,54 @@
 
   <script>
 
-/* INICIO: CÓDIGO FINAL para actualizar la imagen destacada con la fecha (YYYY-MM-DD) */
+/* INICIO: CÓDIGO FINAL (Solo evalúa elementos con data-tipo="tenida") */
 document.addEventListener('DOMContentLoaded', () => {
-    // El elemento destino que se actualizará con la última imagen
+    // El elemento destino
     const ultimaTenidaDestacada = document.getElementById('ultima-tenida-img');
     
-    // Todas las imágenes de la galería a evaluar
-    const imagenesGaleria = document.querySelectorAll('.galeria-item');
+    // 1. Selector corregido: Solo busca elementos con data-fecha Y data-tipo="tenida"
+    const anclasFecha = document.querySelectorAll('#tenidas-data [data-fecha][data-tipo="tenida"]'); 
 
-    if (!ultimaTenidaDestacada || imagenesGaleria.length === 0) {
+    if (!ultimaTenidaDestacada || anclasFecha.length === 0) {
         return;
     }
 
-    let imagenMasReciente = null;
     let fechaMasReciente = null;
 
-    // 1. Iterar y encontrar la imagen más reciente por fecha
-    imagenesGaleria.forEach(img => {
-        const fechaStr = img.getAttribute('data-fecha');
+    // 2. Iterar sobre los ANCLAS DE DATOS de TIPO 'tenida'
+    anclasFecha.forEach(div => {
+        const fechaStr = div.getAttribute('data-fecha');
         
         if (fechaStr) {
-            const fechaActual = new Date(fechaStr);
+            const fechaActual = new Date(fechaStr); 
             
-            // Lógica de comparación de fechas: si es la primera o la más nueva, se guarda.
             if (!fechaMasReciente || fechaActual > fechaMasReciente) {
                 fechaMasReciente = fechaActual;
-                imagenMasReciente = img;
             }
         }
     });
 
-    // 2. Aplicar los datos de la imagen más reciente a la imagen destacada
-    if (imagenMasReciente) {
-        const srcReciente = imagenMasReciente.getAttribute('src');
-        
-        // Formatear la fecha a DD/MM/YYYY para el texto alternativo
+    // 3. Aplicar los datos de la fecha más reciente a la imagen destacada
+    if (fechaMasReciente) {
+        // Formatear la fecha para crear el nombre del archivo (MMDD) y el alt (DD/MM/YYYY)
         const dia = fechaMasReciente.getUTCDate().toString().padStart(2, '0');
         const mes = (fechaMasReciente.getUTCMonth() + 1).toString().padStart(2, '0');
         const anio = fechaMasReciente.getUTCFullYear();
-        const fechaFormateada = `${dia}/${mes}/${anio}`;
         
-        // Construir el texto alternativo, usando solo la FECHA
+        // CONSTRUCCIÓN DINÁMICA DE VARIABLES:
+        // El nombre de archivo siempre comenzará con 'tenida-'
+        const fechaArchivo = `${mes}${dia}`; 
+        const fechaFormateada = `${dia}/${mes}/${anio}`; 
+
+        // CONSTRUCCIÓN DINÁMICA DE LA RUTA:
+        const srcRecienteDinamico = `images/tenida-${fechaArchivo}.png`;
+        
+        // Construir el texto alternativo
         const altText = `Última Tenida - ${fechaFormateada}`;
 
-        // Actualizar la ÚNICA imagen con el nuevo src y alt
-        ultimaTenidaDestacada.setAttribute('src', srcReciente);
+        // 4. Actualizar la ÚNICA imagen con la ruta CONSTRUIDA DINÁMICAMENTE
+        ultimaTenidaDestacada.setAttribute('src', srcRecienteDinamico);
         ultimaTenidaDestacada.setAttribute('alt', altText);
-        
-        // Se remueve la clase 'galeria-item' del destacado, si la tuviera
-        ultimaTenidaDestacada.classList.remove('galeria-item');
     }
 });
 /* FIN: CÓDIGO FINAL */
