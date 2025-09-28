@@ -239,17 +239,35 @@
     </section>
 
     <!-- GALLERY -->
-    <section class="card" id="galeria" aria-labelledby="galeria-title">
-      <h3 id="galeria-title">Galería</h3>
-      <p class="small muted">Haz clic sobre una imagen para verla ampliada.</p>
-      <div class="gallery" aria-live="polite">
-        <!-- Reemplaza los src por tus imágenes reales -->
-        <img src="images/carta-patente.png" alt="Carta Patente">
-        <img src="images/tenida-0920.png" alt="Ultima Tenida del 09/20/2025">
-        <img src="https://via.placeholder.com/600x400?text=Rituales" alt="Rituales simbólicos" data-full="https://via.placeholder.com/1600x1000?text=Rituales">
-        <img src="https://via.placeholder.com/600x400?text=Miembros" alt="Miembros de la logia" data-full="https://via.placeholder.com/1600x1000?text=Miembros">
-      </div>
-    </section>
+    <div id="ultima-tenida-ancla"></div>
+
+<section class="card" id="galeria" aria-labelledby="galeria-title">
+  <h3 id="galeria-title">Galería Completa</h3>
+  <p class="small muted">Haz clic sobre una imagen para verla ampliada.</p>
+  <div class="gallery" aria-live="polite">
+    <img src="images/carta-patente.png" 
+         alt="Carta Patente" 
+         data-fecha="2025-09-15" 
+         class="galeria-item">
+         
+    <img src="images/tenida-0920.png" 
+         alt="Tenida del 20 de Septiembre" 
+         data-fecha="2025-09-20" 
+         class="galeria-item">
+         
+    <img src="images/tenida-0927.png" 
+         alt="Tenida del 27 de Septiembre" 
+         data-fecha="2025-09-27" 
+         class="galeria-item">
+
+    <img src="https://via.placeholder.com/600x400?text=Rituales" 
+         alt="Rituales simbólicos" 
+         data-fecha="2025-09-10" 
+         class="galeria-item" 
+         data-full="https://via.placeholder.com/1600x1000?text=Rituales">
+  </div>
+</section>
+
 
     <!-- LIGHTBOX -->
     <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-hidden="true">
@@ -308,6 +326,65 @@
   </div>
 
   <script>
+
+/* *************************************************************** */
+/* INICIO: CÓDIGO NUEVO (Lógica de Última Tenida) */
+/* *************************************************************** */
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Elementos de la galería a evaluar (tienen la clase 'galeria-item')
+    const imagenesGaleria = document.querySelectorAll('.galeria-item');
+    const ancla = document.getElementById('ultima-tenida-ancla');
+
+    if (imagenesGaleria.length === 0 || !ancla) {
+        return;
+    }
+
+    let imagenMasReciente = null;
+    let fechaMasReciente = null;
+
+    // 2. Iterar sobre las imágenes para encontrar la más reciente
+    imagenesGaleria.forEach(img => {
+        const fechaStr = img.getAttribute('data-fecha');
+        
+        if (fechaStr) {
+            const fechaActual = new Date(fechaStr);
+            
+            if (!fechaMasReciente || fechaActual > fechaMasReciente) {
+                fechaMasReciente = fechaActual;
+                imagenMasReciente = img;
+            }
+        }
+    });
+
+    // 3. Crear e inyectar la sección destacada
+    if (imagenMasReciente) {
+        const srcReciente = imagenMasReciente.getAttribute('src');
+        
+        // Formatear la fecha (DD/MM/YYYY) para mostrarla
+        const dia = fechaMasReciente.getUTCDate().toString().padStart(2, '0');
+        const mes = (fechaMasReciente.getUTCMonth() + 1).toString().padStart(2, '0');
+        const anio = fechaMasReciente.getUTCFullYear();
+        const fechaFormateada = `${dia}/${mes}/${anio}`;
+        
+        const altText = `Última Tenida - ${fechaFormateada}`;
+
+        // 4. Construir la estructura HTML dinámicamente
+        const htmlDinamico = `
+            <section class="card" aria-labelledby="ultima-tenida-title" style="margin-bottom: 22px;">
+                <h3 id="ultima-tenida-title">Última Tenida</h3>
+                <p class="small muted" id="ultima-tenida-caption">Fecha: ${fechaFormateada}</p>
+                
+                <img src="${srcReciente}" alt="${altText}" style="max-width: 100%; height: auto; border-radius: 8px;">
+            </section>
+        `;
+
+        // 5. Inyectar el HTML construido en el ancla
+        ancla.innerHTML = htmlDinamico;
+    }
+});
+/* *************************************************************** */
+/* FIN: CÓDIGO NUEVO */
+/* *************************************************************** */
     // Navegación: scroll suave
     document.querySelectorAll('a[href^="#"]').forEach(a=>{
       a.addEventListener('click', e=>{
