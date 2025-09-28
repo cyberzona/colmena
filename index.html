@@ -324,28 +324,29 @@
 
   <script>
 
-/* *************************************************************** */
-/* INICIO: CÓDIGO NUEVO (Lógica de Última Tenida) */
-/* *************************************************************** */
+/* INICIO: CÓDIGO FINAL para actualizar la imagen destacada con la fecha (YYYY-MM-DD) */
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Elementos de la galería a evaluar (tienen la clase 'galeria-item')
+    // El elemento destino que se actualizará con la última imagen
+    const ultimaTenidaDestacada = document.getElementById('ultima-tenida-img');
+    
+    // Todas las imágenes de la galería a evaluar
     const imagenesGaleria = document.querySelectorAll('.galeria-item');
-    const ancla = document.getElementById('ultima-tenida-ancla');
 
-    if (imagenesGaleria.length === 0 || !ancla) {
+    if (!ultimaTenidaDestacada || imagenesGaleria.length === 0) {
         return;
     }
 
     let imagenMasReciente = null;
     let fechaMasReciente = null;
 
-    // 2. Iterar sobre las imágenes para encontrar la más reciente
+    // 1. Iterar y encontrar la imagen más reciente por fecha
     imagenesGaleria.forEach(img => {
         const fechaStr = img.getAttribute('data-fecha');
         
         if (fechaStr) {
             const fechaActual = new Date(fechaStr);
             
+            // Lógica de comparación de fechas: si es la primera o la más nueva, se guarda.
             if (!fechaMasReciente || fechaActual > fechaMasReciente) {
                 fechaMasReciente = fechaActual;
                 imagenMasReciente = img;
@@ -353,35 +354,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 3. Crear e inyectar la sección destacada
+    // 2. Aplicar los datos de la imagen más reciente a la imagen destacada
     if (imagenMasReciente) {
         const srcReciente = imagenMasReciente.getAttribute('src');
         
-        // Formatear la fecha (DD/MM/YYYY) para mostrarla
+        // Formatear la fecha a DD/MM/YYYY para el texto alternativo
         const dia = fechaMasReciente.getUTCDate().toString().padStart(2, '0');
         const mes = (fechaMasReciente.getUTCMonth() + 1).toString().padStart(2, '0');
         const anio = fechaMasReciente.getUTCFullYear();
         const fechaFormateada = `${dia}/${mes}/${anio}`;
         
+        // Construir el texto alternativo, usando solo la FECHA
         const altText = `Última Tenida - ${fechaFormateada}`;
 
-        // 4. Construir la estructura HTML dinámicamente
-        const htmlDinamico = `
-            <section class="card" aria-labelledby="ultima-tenida-title" style="margin-bottom: 22px;">
-                <h3 id="ultima-tenida-title">Última Tenida</h3>
-                <p class="small muted" id="ultima-tenida-caption">Fecha: ${fechaFormateada}</p>
-                
-                <img src="${srcReciente}" alt="${altText}" style="max-width: 100%; height: auto; border-radius: 8px;">
-            </section>
-        `;
-
-        // 5. Inyectar el HTML construido en el ancla
-        ancla.innerHTML = htmlDinamico;
+        // Actualizar la ÚNICA imagen con el nuevo src y alt
+        ultimaTenidaDestacada.setAttribute('src', srcReciente);
+        ultimaTenidaDestacada.setAttribute('alt', altText);
+        
+        // Se remueve la clase 'galeria-item' del destacado, si la tuviera
+        ultimaTenidaDestacada.classList.remove('galeria-item');
     }
 });
-/* *************************************************************** */
-/* FIN: CÓDIGO NUEVO */
-/* *************************************************************** */
+/* FIN: CÓDIGO FINAL */
     // Navegación: scroll suave
     document.querySelectorAll('a[href^="#"]').forEach(a=>{
       a.addEventListener('click', e=>{
