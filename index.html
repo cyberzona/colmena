@@ -136,8 +136,8 @@
         .gallery img{width:100%;height:120px;object-fit:cover;border-radius:8px;cursor:pointer;display:block}
 
         /* Estilo para el indicador de carga */
-        .gallery.loading:empty::after {
-            content: "Cargando imágenes de tenidas...";
+        #ultima-tenida-img.loading::after {
+            content: "Cargando última tenida...";
             display: block;
             text-align: center;
             padding: 20px;
@@ -299,8 +299,12 @@
         <section class="card" id="galeria" aria-labelledby="galeria-title">
             <h3 id="galeria-title">Galería</h3>
             <p class="small muted">Haz clic sobre una imagen para verla ampliada.</p>
-            <div class="gallery loading" id="image-gallery" aria-live="polite">
-                </div>
+            <div class="gallery" id="image-gallery" aria-live="polite">
+                <img src="images/carta-patente.png" alt="Carta Patente">
+                <img id="ultima-tenida-img" src="images/placeholder.png" alt="Cargando Última Tenida..." class="loading">
+                <img src="images/Cuadro-Logial.png" alt="Cuadro Logial">
+                <img src="https://via.placeholder.com/600x400?text=Rituales" alt="Rituales simbólicos">
+            </div>
         </section>
 
         <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-hidden="true">
@@ -361,28 +365,22 @@
 
     <script>
         // --- CONFIGURACIÓN DE GITHUB API ---
-        const GITHUB_USER = 'cyberzona'; // << Reemplaza por tu usuario/organización
-        const GITHUB_REPO = 'colmena';   // << Reemplaza por el nombre de tu repositorio
-        const GITHUB_PATH = 'images';           // << Ruta a la carpeta de imágenes
+        const GITHUB_USER = 'YOUR_GITHUB_USER'; // << Reemplaza por tu usuario/organización
+        const GITHUB_REPO = 'YOUR_REPO_NAME';   // << Reemplaza por el nombre de tu repositorio
+        const GITHUB_PATH = 'images';           // << Ruta a la carpeta de imágenes en GitHub (donde estarán las tenidas)
         const GITHUB_BRANCH = 'main';           // << Ramificación principal
         const API_URL = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${GITHUB_PATH}?ref=${GITHUB_BRANCH}`;
-        const GALLERY_CONTAINER = document.getElementById('image-gallery');
+        const ULTIMA_TENIDA_IMG_ELEMENT = document.getElementById('ultima-tenida-img'); // El elemento <img> a actualizar
         const ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
         // Expresión regular para nombres de archivo "tenida-AAAAMMDD.ext"
-        const TENIDA_FILENAME_REGEX = /^tenida-(\d{2})(\d{2})\.(png|jpg|jpeg|gif|webp)$/i;
+        const TENIDA_FILENAME_REGEX = /^tenida-(\d{4})(\d{2})(\d{2})\.(png|jpg|jpeg|gif|webp)$/i;
 
-        // --- LÓGICA DE CARGA DINÁMICA DE IMÁGENES CON GITHUB API ---
+        // --- LÓGICA DE CARGA DINÁMICA DE LA ÚLTIMA IMAGEN DE TENIDA CON GITHUB API ---
 
-        // Función para crear un elemento de imagen
-        function createGalleryImage(src, alt) {
-            const img = document.createElement('img');
-            img.src = src;
-            img.alt = alt;
-            return img;
-        }
+        async function fetchLatestTenidaImage() {
+            if (!ULTIMA_TENIDA_IMG_ELEMENT) return;
 
-        async function fetchGitHubImages() {
-            if (!GALLERY_CONTAINER) return;
+            ULTIMA_TENIDA_IMG_ELEMENT.classList.add('loading'); // Añadir clase de carga
 
             try {
                 const response = await fetch(API_URL);
@@ -391,17 +389,12 @@
                 }
                 const files = await response.json();
 
-                GALLERY_CONTAINER.innerHTML = ''; // Limpiar indicador de carga
-                GALLERY_CONTAINER.classList.remove('loading');
-
                 if (!Array.isArray(files)) {
                     throw new Error("Respuesta inválida de GitHub.");
                 }
 
                 let latestTenidaImage = null;
                 let latestTenidaDate = null;
-                
-                const tenidaImages = [];
 
                 // Filtrar solo archivos de imagen con el formato "tenida-AAAAMMDD.ext"
                 files.forEach(file => {
@@ -413,54 +406,34 @@
                             const day = parseInt(match[3]);
                             const date = new Date(year, month - 1, day); // Month is 0-indexed
 
-                            // Construir alt text más legible
-                            const altText = `Tenida del ${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
-                            
-                            tenidaImages.push({
-                                src: file.download_url,
-                                alt: altText,
-                                date: date
-                            });
-
-                            // Verificar si esta es la tenida más reciente
                             if (!latestTenidaDate || date.getTime() > latestTenidaDate.getTime()) {
                                 latestTenidaDate = date;
                                 latestTenidaImage = {
                                     src: file.download_url,
-                                    alt: altText
+                                    alt: `Tenida del ${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`
                                 };
                             }
                         }
                     }
                 });
 
-                // Ordenar las imágenes de tenida por fecha descendente para la galería
-                tenidaImages.sort((a, b) => b.date.getTime() - a.date.getTime());
-
-                // Renderizar imágenes de tenida en la galería
-                if (tenidaImages.length > 0) {
-                    tenidaImages.forEach(image => {
-                        const imgElement = createGalleryImage(image.src, image.alt);
-                        GALLERY_CONTAINER.appendChild(imgElement);
-                    });
+                if (latestTenidaImage) {
+                    ULTIMA_TENIDA_IMG_ELEMENT.src = latestTenidaImage.src;
+                    ULTIMA_TENIDA_IMG_ELEMENT.alt = latestTenidaImage.alt;
+                    ULTIMA_TENIDA_IMG_ELEMENT.classList.remove('loading');
                 } else {
-                    GALLERY_CONTAINER.innerHTML = '<p class="small muted" style="text-align:center;">No se encontraron imágenes de tenidas con el formato "tenida-AAAAMMDD.png".</p>';
+                    ULTIMA_TENIDA_IMG_ELEMENT.src = "images/no-tenida-found.png"; // Imagen por defecto si no se encuentra ninguna tenida
+                    ULTIMA_TENIDA_IMG_ELEMENT.alt = "No se encontró la última tenida";
+                    ULTIMA_TENIDA_IMG_ELEMENT.classList.remove('loading');
                 }
 
 
-                // Manejar la imagen de la última tenida destacada (si existe el elemento y se encontró una imagen)
-                // Se ha reintroducido la lógica de la "última tenida" directamente en la galería si se desea un comportamiento similar
-                // al "placeholder.png" original, pero usando una imagen real de tenida.
-                // Si quieres una imagen destacada fuera de la galería, tendrías que añadir otro <img> con ID y
-                // actualizarlo aquí. Por ahora, se asume que todas se listan en #image-gallery.
-
-                // Re-inicializar el Lightbox para las nuevas imágenes
-                initLightbox();
-
             } catch (error) {
-                console.error("Fallo al cargar imágenes desde GitHub:", error);
-                GALLERY_CONTAINER.innerHTML = `<p class="small" style="color:#d9534f;text-align:center;">Error al cargar la galería: ${error.message}. Por favor, verifica la configuración de GITHUB_USER y GITHUB_REPO.</p>`;
-                GALLERY_CONTAINER.classList.remove('loading');
+                console.error("Fallo al cargar la última imagen de tenida desde GitHub:", error);
+                ULTIMA_TENIDA_IMG_ELEMENT.src = "images/error-loading.png"; // Imagen de error
+                ULTIMA_TENIDA_IMG_ELEMENT.alt = "Error al cargar la tenida";
+                ULTIMA_TENIDA_IMG_ELEMENT.classList.remove('loading');
+                // Podrías añadir un mensaje visible en la interfaz si lo deseas.
             }
         }
         
@@ -472,10 +445,11 @@
         const lbClose = document.getElementById('lb-close');
 
         function initLightbox() {
+             // Ahora los listeners se añaden a TODAS las imágenes dentro de #image-gallery
              const galleryImgs = document.querySelectorAll('#image-gallery img');
 
              galleryImgs.forEach(img => {
-                img.removeEventListener('click', openLightboxHandler); // Eliminar listeners anteriores
+                img.removeEventListener('click', openLightboxHandler); // Evitar duplicados
                 img.addEventListener('click', openLightboxHandler);
             });
         }
@@ -509,10 +483,13 @@
         // --- LÓGICA DE INICIALIZACIÓN ---
 
         document.addEventListener('DOMContentLoaded', () => {
-             // 1. Iniciar la carga de imágenes de GitHub al cargar la página.
-             fetchGitHubImages();
+             // 1. Iniciar la carga de la última imagen de tenida al cargar la página.
+             fetchLatestTenidaImage();
 
-             // 2. Scroll suave (se mantiene)
+             // 2. Inicializar el Lightbox para todas las imágenes (estáticas + la dinámica)
+             initLightbox();
+
+             // 3. Scroll suave (se mantiene)
              document.querySelectorAll('a[href^="#"]').forEach(a=>{
                  a.addEventListener('click', e=>{
                      const href = a.getAttribute('href');
