@@ -135,6 +135,15 @@
         .gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
         .gallery img{width:100%;height:120px;object-fit:cover;border-radius:8px;cursor:pointer;display:block}
 
+        /* Estilo para el indicador de carga */
+        .gallery.loading:empty::after {
+            content: "Cargando imágenes de tenidas...";
+            display: block;
+            text-align: center;
+            padding: 20px;
+            color: var(--brown);
+        }
+
         /* Lightbox simple */
         .lightbox{
             position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.75);
@@ -188,7 +197,8 @@
                 <ul class="nav-list">
                     <li><a href="#about">Sobre</a></li>
                     <li><a href="#oficios">Oficiales</a></li>
-                    <li><a href="#trabajos">Trabajos</a></li> <li><a href="#galeria">Galería</a></li>
+                    <li><a href="#trabajos">Trabajos</a></li>
+                    <li><a href="#galeria">Galería</a></li>
                     <li><a href="#contacto" class="cta">Contacto</a></li>
                 </ul>
             </nav>
@@ -266,15 +276,15 @@
             <p class="small muted">Documentos y trazados para el perfeccionamiento de los Hermanos (Enlaces externos a Google Docs).</p>
             <ul>
                 <li>
-                    <a href="https://drive.google.com/file/d/1Ay9AWw3WhR6rlth5kJJ6U0vcR_cc7n08/view?usp=drive_link" target="_blank">
-                        COLMENA Nº 8 BAJO LA LUNA Y EL EQUINOCCIO
-                        <span>Documento de estudio — 2025</span>
+                    <a href="https://docs.google.com/document/d/EJEMPLO_DOCUMENTO_1" target="_blank">
+                        El Simbolismo de la Colmena en la Masonería
+                        <span>Documento de estudio — 2024</span>
                     </a>
                 </li>
                 <li>
-                    <a href="https://docs.google.com/document/d/EJEMPLO_DOCUMENTO_3" target="_blank">
+                    <a href="https://docs.google.com/document/d/EJEMPLO_DOCUMENTO_2" target="_blank">
                         Trazado: Ética y Moral en la Construcción Social
-                        <span>Trabajo presentado en Tenida — Septiembre 2025</span>
+                        <span>Trabajo presentado en Tenida — Septiembre 2024</span>
                     </a>
                 </li>
                 <li>
@@ -289,17 +299,8 @@
         <section class="card" id="galeria" aria-labelledby="galeria-title">
             <h3 id="galeria-title">Galería</h3>
             <p class="small muted">Haz clic sobre una imagen para verla ampliada.</p>
-            <div class="gallery" aria-live="polite">
-                <img src="images/carta-patente.png" alt="Carta Patente">
-                <img id="ultima-tenida-img" src="images/placeholder.png" alt="Cargando Última Tenida...">
-                <img src="images/Cuadro-Logial.png" alt="Cuadro Logial">
-                <img src="https://via.placeholder.com/600x400?text=Rituales" alt="Rituales simbólicos">
-
-                <div id="tenidas-data" style="display: none;">
-                    <div data-fecha="2025-09-15" data-tipo="otra"></div>
-                    <div data-fecha="2025-09-20" data-tipo="tenida"></div>
+            <div class="gallery loading" id="image-gallery" aria-live="polite">
                 </div>
-            </div>
         </section>
 
         <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-hidden="true">
@@ -349,7 +350,7 @@
                     const nombre = encodeURIComponent(document.getElementById('nombre').value);
                     const email = encodeURIComponent(document.getElementById('email').value);
                     const mensaje = encodeURIComponent(document.getElementById('mensaje').value);
-                    // Email de destino corregido y consistente
+                    // Email de destino
                     window.location.href = `mailto:Rlscolmena8@gmail.com?subject=Mensaje de ${nombre}&body=De: ${email}%0A%0A${mensaje}`;
                 }
             </script>
@@ -359,74 +360,136 @@
     </div>
 
     <script>
-        /* LÓGICA DE ÚLTIMA TENIDA */
-        document.addEventListener('DOMContentLoaded', () => {
-            const ultimaTenidaDestacada = document.getElementById('ultima-tenida-img');
-            const anclasFecha = document.querySelectorAll('#tenidas-data [data-fecha][data-tipo="tenida"]');
+        // --- CONFIGURACIÓN DE GITHUB API ---
+        const GITHUB_USER = 'cyberzona'; // << Reemplaza por tu usuario/organización
+        const GITHUB_REPO = 'YOUR_REPO_NAME';   // << Reemplaza por el nombre de tu repositorio
+        const GITHUB_PATH = 'images';           // << Ruta a la carpeta de imágenes
+        const GITHUB_BRANCH = 'main';           // << Ramificación principal
+        const API_URL = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${GITHUB_PATH}?ref=${GITHUB_BRANCH}`;
+        const GALLERY_CONTAINER = document.getElementById('image-gallery');
+        const ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
+        // Expresión regular para nombres de archivo "tenida-AAAAMMDD.ext"
+        const TENIDA_FILENAME_REGEX = /^tenida-(\d{4})(\d{2})(\d{2})\.(png|jpg|jpeg|gif|webp)$/i;
 
-            if (!ultimaTenidaDestacada || anclasFecha.length === 0) {
-                return;
-            }
+        // --- LÓGICA DE CARGA DINÁMICA DE IMÁGENES CON GITHUB API ---
 
-            let fechaMasReciente = null;
+        // Función para crear un elemento de imagen
+        function createGalleryImage(src, alt) {
+            const img = document.createElement('img');
+            img.src = src;
+            img.alt = alt;
+            return img;
+        }
 
-            anclasFecha.forEach(div => {
-                const fechaStr = div.getAttribute('data-fecha');
-                if (fechaStr) {
-                    const fechaActual = new Date(fechaStr);
-                    if (!fechaMasReciente || fechaActual.getTime() > fechaMasReciente.getTime()) {
-                        fechaMasReciente = fechaActual;
+        async function fetchGitHubImages() {
+            if (!GALLERY_CONTAINER) return;
+
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) {
+                    throw new Error(`Error de GitHub API: ${response.statusText}`);
+                }
+                const files = await response.json();
+
+                GALLERY_CONTAINER.innerHTML = ''; // Limpiar indicador de carga
+                GALLERY_CONTAINER.classList.remove('loading');
+
+                if (!Array.isArray(files)) {
+                    throw new Error("Respuesta inválida de GitHub.");
+                }
+
+                let latestTenidaImage = null;
+                let latestTenidaDate = null;
+                
+                const tenidaImages = [];
+
+                // Filtrar solo archivos de imagen con el formato "tenida-AAAAMMDD.ext"
+                files.forEach(file => {
+                    if (file.type === 'file') {
+                        const match = file.name.match(TENIDA_FILENAME_REGEX);
+                        if (match) {
+                            const year = parseInt(match[1]);
+                            const month = parseInt(match[2]);
+                            const day = parseInt(match[3]);
+                            const date = new Date(year, month - 1, day); // Month is 0-indexed
+
+                            // Construir alt text más legible
+                            const altText = `Tenida del ${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
+                            
+                            tenidaImages.push({
+                                src: file.download_url,
+                                alt: altText,
+                                date: date
+                            });
+
+                            // Verificar si esta es la tenida más reciente
+                            if (!latestTenidaDate || date.getTime() > latestTenidaDate.getTime()) {
+                                latestTenidaDate = date;
+                                latestTenidaImage = {
+                                    src: file.download_url,
+                                    alt: altText
+                                };
+                            }
+                        }
                     }
+                });
+
+                // Ordenar las imágenes de tenida por fecha descendente para la galería
+                tenidaImages.sort((a, b) => b.date.getTime() - a.date.getTime());
+
+                // Renderizar imágenes de tenida en la galería
+                if (tenidaImages.length > 0) {
+                    tenidaImages.forEach(image => {
+                        const imgElement = createGalleryImage(image.src, image.alt);
+                        GALLERY_CONTAINER.appendChild(imgElement);
+                    });
+                } else {
+                    GALLERY_CONTAINER.innerHTML = '<p class="small muted" style="text-align:center;">No se encontraron imágenes de tenidas con el formato "tenida-AAAAMMDD.png".</p>';
                 }
-            });
 
-            if (fechaMasReciente) {
-                const dia = fechaMasReciente.getUTCDate().toString().padStart(2, '0');
-                const mes = (fechaMasReciente.getUTCMonth() + 1).toString().padStart(2, '0');
-                const anio = fechaMasReciente.getUTCFullYear();
 
-                const fechaArchivo = `${mes}${dia}`;
-                const fechaFormateada = `${dia}/${mes}/${anio}`;
+                // Manejar la imagen de la última tenida destacada (si existe el elemento y se encontró una imagen)
+                // Se ha reintroducido la lógica de la "última tenida" directamente en la galería si se desea un comportamiento similar
+                // al "placeholder.png" original, pero usando una imagen real de tenida.
+                // Si quieres una imagen destacada fuera de la galería, tendrías que añadir otro <img> con ID y
+                // actualizarlo aquí. Por ahora, se asume que todas se listan en #image-gallery.
 
-                const srcRecienteDinamico = `images/tenida-${fechaArchivo}.png`;
-                const altText = `Última Tenida - ${fechaFormateada}`;
+                // Re-inicializar el Lightbox para las nuevas imágenes
+                initLightbox();
 
-                ultimaTenidaDestacada.setAttribute('src', srcRecienteDinamico);
-                ultimaTenidaDestacada.setAttribute('alt', altText);
+            } catch (error) {
+                console.error("Fallo al cargar imágenes desde GitHub:", error);
+                GALLERY_CONTAINER.innerHTML = `<p class="small" style="color:#d9534f;text-align:center;">Error al cargar la galería: ${error.message}. Por favor, verifica la configuración de GITHUB_USER y GITHUB_REPO.</p>`;
+                GALLERY_CONTAINER.classList.remove('loading');
             }
-        });
-
-        /* Navegación: scroll suave */
-        document.querySelectorAll('a[href^="#"]').forEach(a=>{
-            a.addEventListener('click', e=>{
-                const href = a.getAttribute('href');
-                if(href.length>1){
-                    e.preventDefault();
-                    const el = document.querySelector(href);
-                    if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
-                }
-            });
-        });
-
-        /* Galería -> lightbox */
-        const galleryImgs = document.querySelectorAll('.gallery img');
+        }
+        
+        // --- LÓGICA DE LIGHTBOX ---
+        
         const lightbox = document.getElementById('lightbox');
         const lbImg = document.getElementById('lb-img');
         const lbCaption = document.getElementById('lb-caption');
         const lbClose = document.getElementById('lb-close');
 
-        galleryImgs.forEach(img=>{
-            img.addEventListener('click', ()=>{
-                const full = img.dataset.full || img.src;
-                lbImg.src = full;
-                lbImg.alt = img.alt || "Imagen Ampliada";
-                lightbox.classList.add('open');
-                lightbox.setAttribute('aria-hidden','false');
+        function initLightbox() {
+             const galleryImgs = document.querySelectorAll('#image-gallery img');
 
-                lbCaption.textContent = lbImg.alt;
-                lbCaption.style.display = "block";
+             galleryImgs.forEach(img => {
+                img.removeEventListener('click', openLightboxHandler); // Eliminar listeners anteriores
+                img.addEventListener('click', openLightboxHandler);
             });
-        });
+        }
+        
+        function openLightboxHandler() {
+            const full = this.dataset.full || this.src;
+            lbImg.src = full;
+            lbImg.alt = this.alt || "Imagen Ampliada";
+            lightbox.classList.add('open');
+            lightbox.setAttribute('aria-hidden', 'false');
+
+            lbCaption.textContent = lbImg.alt;
+            lbCaption.style.display = "block";
+        }
 
         function closeLightbox(){
             lightbox.classList.remove('open');
@@ -434,11 +497,33 @@
             lbImg.src = '';
             lbCaption.style.display = "none";
         }
+        
+        // Listeners para cerrar Lightbox
         lbClose.addEventListener('click', closeLightbox);
         lightbox.addEventListener('click', (e)=>{
             if(e.target === lightbox) closeLightbox();
         });
         document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeLightbox(); });
+
+
+        // --- LÓGICA DE INICIALIZACIÓN ---
+
+        document.addEventListener('DOMContentLoaded', () => {
+             // 1. Iniciar la carga de imágenes de GitHub al cargar la página.
+             fetchGitHubImages();
+
+             // 2. Scroll suave (se mantiene)
+             document.querySelectorAll('a[href^="#"]').forEach(a=>{
+                 a.addEventListener('click', e=>{
+                     const href = a.getAttribute('href');
+                     if(href.length>1){
+                         e.preventDefault();
+                         const el = document.querySelector(href);
+                         if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+                     }
+                 });
+             });
+        });
 
     </script>
 </body>
