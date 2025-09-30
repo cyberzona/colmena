@@ -528,7 +528,7 @@
                     throw new Error(`Error ${response.status}: No se pudo obtener el calendario.`);
                 }
                 const data = await response.json();
-                console.log("DATOS RECIBIDOS DE GOOGLE:", data); 
+                console.log("DATOS RECIBIDOS DE GOOGLE:", data.items)
 
                 if (!data.items || data.items.length === 0) {
                     document.getElementById('tenida-fecha').textContent = "Próxima fecha pendiente de confirmación en el calendario.";
@@ -537,7 +537,7 @@
 
                 const nextEvent = data.items[0];               
                 const startTime = new Date(nextEvent.start.dateTime || nextEvent.start.date);
-                const eventTitle = nextEvent.summary || "Evento Desconocido";
+                const eventTitle = nextEvent.summary || "Evento";
                 
                 // 1. FORMATO DE VISUALIZACIÓN
                 const dateOptions = { year: 'numeric', month: '2-digit', day: '2-digit' }; 
