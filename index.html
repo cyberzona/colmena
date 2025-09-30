@@ -20,7 +20,7 @@
             --accent:#E7D9C9;
             --radius:14px;
             --maxw:1100px;
-            --ff-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --ff-sans: -apple-system, BlinkMacMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             --ff-serif: Georgia, "Times New Roman", serif;
             --ff-medieval: 'MedievalSharp', serif;
         }
@@ -159,7 +159,20 @@
         .small{font-size:0.85rem}
         .medieval-text { font-family: var(--ff-medieval);font-size: 22px; }
         .text-justify { text-align: justify; }
-
+        
+        /* Estilo para el botón de Google Calendar */
+        #add-to-calendar-btn {
+            display: inline-block;
+            background-color: #4285F4; /* Azul de Google */
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+            font-family: var(--ff-sans);
+            font-size: 0.9rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body>
@@ -211,10 +224,16 @@
 
             <aside class="card" aria-labelledby="datos-title">
                 <h3 id="datos-title">Próxima Tenida</h3>
-                <p class="muted small">Viernes — 19:00 horas</p>
-                <p class="small">Lugar: Templo Colmena No.8 <br>Al este de la montaña del águila</p>
+                <p class="muted small" id="tenida-fecha">Cargando fecha del calendario...</p> 
+                <p class="small" id="tenida-lugar">Lugar: Templo Colmena No.8 <br>Al este de la montaña del águila</p>
 
                 <hr style="margin:12px 0;border:none;border-top:1px solid rgba(55,39,30,0.06)">
+                
+                <div style="margin-bottom: 12px;">
+                    <a id="add-to-calendar-btn" href="#" target="_blank">
+                        📅 Añadir a Google Calendar
+                    </a>
+                </div>
 
                 <h4 style="margin-bottom:6px">Contacto rápido</h4>
                 <p class="small">Email: <a href="mailto:Rlscolmena8@gmail.com">Rlscolmena8@gmail.com</a></p>
@@ -343,230 +362,9 @@
         // =========================================================================
         const GITHUB_USER = 'cyberzona'; 
         const GITHUB_REPO = 'colmena';
-        const GITHUB_BRANCH = 'main';             
+        const GITHUB_BRANCH = 'main';          
         
-        const IMAGES_PATH = 'images';            
-        const DOCS_PATH = 'data';               
+        const IMAGES_PATH = 'images';          
+        const DOCS_PATH = 'data';          
         
-        // --- Constantes internas del script ---
-        const IMAGE_API_URL = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${IMAGES_PATH}?ref=${GITHUB_BRANCH}`;
-        const ULTIMA_TENIDA_IMG_ELEMENT = document.getElementById('ultima-tenida-img');
-        const TENIDA_FILENAME_REGEX = /^tenida-(\d{4})(\d{2})(\d{2})\.(png|jpg|jpeg|gif|webp)$/i;
-        
-        const TRABAJOS_FILE = 'work-study.json';
-        const TRABAJOS_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${GITHUB_BRANCH}/${DOCS_PATH}/${TRABAJOS_FILE}`;
-        const TRABAJOS_LIST_ELEMENT = document.getElementById('trabajos-list');
-
-
-        // =========================================================================
-        // === 1. LÓGICA DE CARGA DE TRABAJOS (DESDE JSON RAW Y MODAL) =============
-        // =========================================================================
-        async function loadTrabajos() {
-            if (!TRABAJOS_LIST_ELEMENT) return;            
-            try {
-                const response = await fetch(TRABAJOS_URL);                
-                if (!response.ok) {
-                    throw new Error(`Error ${response.status}: No se pudo obtener ${TRABAJOS_FILE}.`);
-                }                
-                const trabajos = await response.json(); 
-                TRABAJOS_LIST_ELEMENT.innerHTML = ''; // Limpiar el mensaje de carga
-                if (!Array.isArray(trabajos) || trabajos.length === 0) {
-                    TRABAJOS_LIST_ELEMENT.innerHTML = '<li style="text-align:center;color:#6a4f3e;">No hay trabajos publicados aún.</li>';
-                    return;
-                }
-                // Renderizar la lista
-                trabajos.forEach(trabajo => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `
-                        <a href="#" data-url="${trabajo.url}" data-titulo="${trabajo.titulo}">
-                            ${trabajo.titulo}
-                            <span>${trabajo.descripcion}</span>
-                        </a>
-                    `;
-                    // Asignamos el evento que abre el modal
-                    li.querySelector('a').addEventListener('click', openDocumentModal);
-                    TRABAJOS_LIST_ELEMENT.appendChild(li);
-                });
-
-            } catch (error) {
-                console.error("Fallo al cargar los trabajos:", error);
-                TRABAJOS_LIST_ELEMENT.innerHTML = '<li style="color:#d9534f;text-align:center;">Error al cargar la lista de documentos.</li>';
-            }
-        }
-
-        // =========================================================================
-        // === 2. LÓGICA DEL MODAL DE DOCUMENTOS (OCULTAR URL) =====================
-        // =========================================================================
-        
-        const docModal = document.getElementById('document-modal');
-        const docIframe = document.getElementById('doc-iframe');
-        const docTitle = document.getElementById('doc-title');
-        const docCloseButton = document.getElementById('doc-close');
-        
-        function openDocumentModal(event) {
-            event.preventDefault(); // Evita que el navegador navegue a la URL
-            
-            const link = event.currentTarget;
-            let url = link.getAttribute('data-url');
-            const title = link.getAttribute('data-titulo');
-
-            // **MODIFICACIÓN CRUCIAL:** Si es un Google Doc, cambia '/edit' por '/preview'
-            // para que se pueda incrustar correctamente en el iframe.
-            // ====if (url.includes('docs.google.com/document')) {
-            // ====    url = url.replace('/edit', '/preview');
-            // ====} else if (url.includes('docs.google.com/spreadsheets')) {
-            // ====    url = url.replace('/edit', '/pubhtml?widget=true&headers=false');
-            // ====}
-            // Puedes añadir más casos para otros servicios si los usas.
-
-            docTitle.textContent = `Documento: ${title}`;
-            docIframe.src = url;
-            docModal.classList.add('open');
-            docModal.setAttribute('aria-hidden', 'false');
-        }
-
-        function closeDocumentModal() {
-            docModal.classList.remove('open');
-            docModal.setAttribute('aria-hidden', 'true');
-            docIframe.src = ""; // Detener la carga y limpiar la fuente
-            docTitle.textContent = "Cargando Documento...";
-        }
-
-        // Asignar listeners al modal
-        docCloseButton.addEventListener('click', closeDocumentModal);
-        docModal.addEventListener('click', (e) => {
-            if (e.target === docModal) closeDocumentModal();
-        });
-        // Permitir cerrar con Escape
-        document.addEventListener('keydown', (e) => { 
-             if (e.key === 'Escape' && docModal.classList.contains('open')) closeDocumentModal();
-        });
-
-
-        // =========================================================================
-        // === 3. LÓGICA DE CARGA DE LA ÚLTIMA IMAGEN DE TENIDA (FILTRADO) =========
-        // =========================================================================
-
-        async function fetchLatestTenidaImage() {
-            if (!ULTIMA_TENIDA_IMG_ELEMENT) return;
-
-            ULTIMA_TENIDA_IMG_ELEMENT.classList.add('loading'); 
-
-            try {
-                const response = await fetch(IMAGE_API_URL);
-                if (!response.ok) {
-                    throw new Error(`Error de GitHub API: ${response.statusText}`);
-                }
-                const files = await response.json();
-
-                let latestTenidaImage = null;
-                let latestTenidaDate = null;
-
-                files.forEach(file => {
-                    if (file.type === 'file') {
-                        const match = file.name.match(TENIDA_FILENAME_REGEX);
-                        if (match) {
-                            const year = parseInt(match[1]);
-                            const month = parseInt(match[2]);
-                            const day = parseInt(match[3]);
-                            const date = new Date(year, month - 1, day); 
-
-                            if (!latestTenidaDate || date.getTime() > latestTenidaDate.getTime()) {
-                                latestTenidaDate = date;
-                                latestTenidaImage = {
-                                    src: file.download_url,
-                                    alt: `Tenida del ${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`
-                                };
-                            }
-                        }
-                    }
-                });
-
-                if (latestTenidaImage) {
-                    ULTIMA_TENIDA_IMG_ELEMENT.src = latestTenidaImage.src;
-                    ULTIMA_TENIDA_IMG_ELEMENT.alt = latestTenidaImage.alt;
-                } else {
-                    ULTIMA_TENIDA_IMG_ELEMENT.alt = "No se encontró la última tenida (imagen por defecto).";
-                }
-                ULTIMA_TENIDA_IMG_ELEMENT.classList.remove('loading');
-
-            } catch (error) {
-                console.error("Fallo al cargar la última imagen de tenida desde GitHub:", error);
-                ULTIMA_TENIDA_IMG_ELEMENT.alt = "Error al cargar la tenida";
-                ULTIMA_TENIDA_IMG_ELEMENT.classList.remove('loading');
-            }
-        }
-        
-        // =========================================================================
-        // === 4. LÓGICA DE LIGHTBOX DE GALERÍA E INICIALIZACIÓN ===================
-        // =========================================================================
-        
-        const lightbox = document.getElementById('lightbox');
-        const lbImg = document.getElementById('lb-img');
-        const lbCaption = document.getElementById('lb-caption');
-        const lbClose = document.getElementById('lb-close');
-
-        function initLightbox() {
-             // Re-inicializa listeners para que funcione con imágenes cargadas dinámicamente
-             const galleryImgs = document.querySelectorAll('#image-gallery img');
-             galleryImgs.forEach(img => {
-                img.removeEventListener('click', openLightboxHandler);
-                img.addEventListener('click', openLightboxHandler);
-            });
-        }
-        
-        function openLightboxHandler() {
-            const full = this.dataset.full || this.src;
-            lbImg.src = full;
-            lbImg.alt = this.alt || "Imagen Ampliada";
-            lightbox.classList.add('open');
-            lightbox.setAttribute('aria-hidden', 'false');
-            lbCaption.textContent = lbImg.alt;
-            lbCaption.style.display = "block";
-        }
-
-        function closeLightbox(){
-            lightbox.classList.remove('open');
-            lightbox.setAttribute('aria-hidden','true');
-            lbImg.src = '';
-            lbCaption.style.display = "none";
-        }
-        
-        lbClose.addEventListener('click', closeLightbox);
-        lightbox.addEventListener('click', (e)=>{
-            if(e.target === lightbox) closeLightbox();
-        });
-        document.addEventListener('keydown', (e)=>{ 
-            if(e.key === 'Escape' && lightbox.classList.contains('open')) closeLightbox();
-        });
-
-
-        // --- INICIALIZACIÓN GENERAL ---
-
-        document.addEventListener('DOMContentLoaded', () => {
-             // 1. Cargar la lista de trabajos (desde .json)
-             loadTrabajos(); 
-
-             // 2. Iniciar la carga de la última imagen de tenida.
-             fetchLatestTenidaImage();
-
-             // 3. Inicializar el Lightbox.
-             initLightbox();
-
-             // 4. Scroll suave
-             document.querySelectorAll('a[href^="#"]').forEach(a=>{
-                 a.addEventListener('click', e=>{
-                     const href = a.getAttribute('href');
-                     if(href.length>1 && a.closest('#trabajos-list')===null){ 
-                         // Ignora los clics en la lista de trabajos, que tienen su propia función
-                         e.preventDefault();
-                         const el = document.querySelector(href);
-                         if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
-                     }
-                 });
-             });
-        });
-
-    </script>
-</body>
-</html>
+        // --- Constantes de Trab
