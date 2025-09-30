@@ -226,15 +226,8 @@
                 <h3 id="datos-title">Próxima Tenida</h3>
                 <p class="muted small" id="tenida-fecha">Cargando fecha del calendario...</p> 
                 <p class="small" id="tenida-lugar">Lugar: Templo Colmena No.8 <br>Al este de la montaña del águila</p>
-
                 <hr style="margin:12px 0;border:none;border-top:1px solid rgba(55,39,30,0.06)">
-                
-                <div style="margin-bottom: 12px;">
-                    <a id="add-to-calendar-btn" href="#" target="_blank">
-                        📅 Añadir a Google Calendar
-                    </a>
-                </div>
-
+               
                 <h4 style="margin-bottom:6px">Contacto rápido</h4>
                 <p class="small">Email: <a href="mailto:Rlscolmena8@gmail.com">Rlscolmena8@gmail.com</a></p>
                 <p class="small">Tel: +1 (385) 352-3212</p>
@@ -520,10 +513,11 @@
         // =========================================================================
 
         async function fetchNextTenida() {
-            if (CALENDAR_ID === '9d46fca8679c56e5d9dd7a0800eb446f8a06697c8c3233e162d053b15c9b8dc4@group.calendar.google.com') {
+             /*if (CALENDAR_ID === '9d46fca8679c56e5d9dd7a0800eb446f8a06697c8c3233e162d053b15c9b8dc4@group.calendar.google.com') {
                 document.getElementById('tenida-fecha').innerHTML = "⚠️ **Error:** Faltan las claves API/ID de Calendario.";
                 return;
             }
+             */
 
             const today = new Date();
             const isoNow = today.toISOString();
