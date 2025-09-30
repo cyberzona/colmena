@@ -362,24 +362,18 @@
         // === 1. LÓGICA DE CARGA DE TRABAJOS (DESDE JSON RAW Y MODAL) =============
         // =========================================================================
         async function loadTrabajos() {
-            if (!TRABAJOS_LIST_ELEMENT) return;
-            
+            if (!TRABAJOS_LIST_ELEMENT) return;            
             try {
-                const response = await fetch(TRABAJOS_URL);
-                
+                const response = await fetch(TRABAJOS_URL);                
                 if (!response.ok) {
                     throw new Error(`Error ${response.status}: No se pudo obtener ${TRABAJOS_FILE}.`);
-                }
-                
+                }                
                 const trabajos = await response.json(); 
-
                 TRABAJOS_LIST_ELEMENT.innerHTML = ''; // Limpiar el mensaje de carga
-
                 if (!Array.isArray(trabajos) || trabajos.length === 0) {
                     TRABAJOS_LIST_ELEMENT.innerHTML = '<li style="text-align:center;color:#6a4f3e;">No hay trabajos publicados aún.</li>';
                     return;
                 }
-
                 // Renderizar la lista
                 trabajos.forEach(trabajo => {
                     const li = document.createElement('li');
@@ -418,11 +412,11 @@
 
             // **MODIFICACIÓN CRUCIAL:** Si es un Google Doc, cambia '/edit' por '/preview'
             // para que se pueda incrustar correctamente en el iframe.
-            if (url.includes('docs.google.com/document')) {
-                url = url.replace('/edit', '/preview');
-            } else if (url.includes('docs.google.com/spreadsheets')) {
-                url = url.replace('/edit', '/pubhtml?widget=true&headers=false');
-            }
+            // ====if (url.includes('docs.google.com/document')) {
+            // ====    url = url.replace('/edit', '/preview');
+            // ====} else if (url.includes('docs.google.com/spreadsheets')) {
+            // ====    url = url.replace('/edit', '/pubhtml?widget=true&headers=false');
+            // ====}
             // Puedes añadir más casos para otros servicios si los usas.
 
             docTitle.textContent = `Documento: ${title}`;
