@@ -374,8 +374,7 @@
         // =========================================================================
 
         const CALENDAR_ID = '9d46fca8679c56e5d9dd7a0800eb446f8a06697c8c3233e162d053b15c9b8dc4@group.calendar.google.com';       
-        const API_KEY = 'AIzaSyBvH9kdQvKWunKi-IdjDBSKZWODMEcwp-E';         
-        
+        const API_KEY = 'AIzaSyBvH9kdQvKWunKi-IdjDBSKZWODMEcwp-E';       
         const DURATION_HOURS = 2;                  
         const TIMEZONE = "America/Denver";         // Huso horario de la logia (ej: America/Mexico_City)
 
@@ -535,9 +534,9 @@
                     return;
                 }
 
-                const nextEvent = data.items[0];
-                // nextEvent.start.dateTime es para eventos con hora; nextEvent.start.date es para eventos de día completo
+                const nextEvent = data.items[0];               
                 const startTime = new Date(nextEvent.start.dateTime || nextEvent.start.date);
+                const eventTitle = nextEvent.summary || "Evento Desconocido";
                 
                 // 1. FORMATO DE VISUALIZACIÓN
                 const dateOptions = { year: 'numeric', month: '2-digit', day: '2-digit' }; 
@@ -545,7 +544,7 @@
                 const formattedDate = startTime.toLocaleDateString('es-ES', dateOptions);
                 const formattedTime = startTime.toLocaleTimeString('es-ES', timeOptions);
                 
-                document.getElementById('tenida-fecha').innerHTML = `${formattedDate} &mdash; ${formattedTime} horas`;
+                document.getElementById('tenida-fecha').innerHTML = `${eventTitle}: ${formattedDate} &mdash; ${formattedTime} horas`; ;
 
                 // 2. GENERACIÓN DEL ENLACE DE GOOGLE CALENDAR
                 const locationText = nextEvent.location || document.getElementById('tenida-lugar').textContent.trim().replace(/\s*\n\s*/g, ' ');
