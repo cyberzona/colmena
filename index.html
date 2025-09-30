@@ -345,15 +345,15 @@
         const GITHUB_REPO = 'colmena';
         const GITHUB_BRANCH = 'main';             
         
-        const IMAGES_PATH = 'images';             // Carpeta para imágenes (tenidas)
-        const DOCS_PATH = 'data';                 // Carpeta para documentos (trabajos.json)
+        const IMAGES_PATH = 'images';            
+        const DOCS_PATH = 'data';               
         
         // --- Constantes internas del script ---
         const IMAGE_API_URL = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${IMAGES_PATH}?ref=${GITHUB_BRANCH}`;
         const ULTIMA_TENIDA_IMG_ELEMENT = document.getElementById('ultima-tenida-img');
         const TENIDA_FILENAME_REGEX = /^tenida-(\d{4})(\d{2})(\d{2})\.(png|jpg|jpeg|gif|webp)$/i;
         
-        const TRABAJOS_FILE = 'trabajos.json';
+        const TRABAJOS_FILE = 'work-study.json';
         const TRABAJOS_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${GITHUB_BRANCH}/${DOCS_PATH}/${TRABAJOS_FILE}`;
         const TRABAJOS_LIST_ELEMENT = document.getElementById('trabajos-list');
 
