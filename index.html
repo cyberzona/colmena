@@ -540,9 +540,8 @@
                 const startTime = new Date(nextEvent.start.dateTime || nextEvent.start.date);
                 
                 // 1. FORMATO DE VISUALIZACIÓN
-                const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                const timeOptions = { hour: '2-digit', minute: '2-digit', hour12: false };
-                
+                const dateOptions = { year: 'numeric', month: '2-digit', day: '2-digit' }; 
+                const timeOptions = { hour: '2-digit', minute: '2-digit', hour12: false };                
                 const formattedDate = startTime.toLocaleDateString('es-ES', dateOptions);
                 const formattedTime = startTime.toLocaleTimeString('es-ES', timeOptions);
                 
