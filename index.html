@@ -11,7 +11,7 @@
     <link href='https://fonts.googleapis.com/css?family=MedievalSharp' rel='stylesheet'>
 
     <style>
-        /* (Estilos CSS permanecen sin cambios para brevedad) */
+        /* (Estilos CSS - Mantenidos para contexto) */
         :root{
             --gold:#D4A017;
             --beige:#F5EFE6;
@@ -101,6 +101,7 @@
             text-decoration: none;
             font-weight: 600;
             display: block;
+            cursor: pointer; /* Añadido para indicar que es clickeable */
         }
         .trabajos a:hover {
             color: var(--gold);
@@ -120,12 +121,23 @@
             padding: 20px;
             color: var(--brown);
         }
+        /* Estilos base para Lightbox y Modal de Documento (comparten clase .lightbox) */
         .lightbox{
             position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.75);
             z-index:60;
         }
         .lightbox.open{display:flex}
-        .lightbox img{max-width:90%;max-height:80%;border-radius:10px;box-shadow:0 18px 40px rgba(0,0,0,0.6)}
+        /* Estilos específicos para el lightbox de galería */
+        #lightbox img{max-width:90%;max-height:80%;border-radius:10px;box-shadow:0 18px 40px rgba(0,0,0,0.6)}
+        /* Estilos específicos para el modal de documentos */
+        #document-modal > div {
+            width:90vw; height:90vh; max-width:1000px; max-height:800px; border-radius:10px; overflow:hidden; background:white;
+            position: relative; /* Para posicionar el título */
+        }
+        #doc-iframe {
+            display: block;
+        }
+
         footer{margin-top:18px;padding:18px;border-radius:12px;background:linear-gradient(90deg,#fff,#f9f5ef);display:flex;gap:18px;align-items:flex-start;}
         .contact-form{width:420px}
         .contact-form label{margin-top:8px;display:block}
@@ -242,7 +254,7 @@
 
         <section class="card trabajos" id="trabajos" aria-labelledby="trabajos-title">
             <h3 id="trabajos-title">Estudios y Trabajos</h3>
-            <p class="small muted">Documentos y trazados para el perfeccionamiento de los Hermanos (Enlaces externos a Google Docs).</p>
+            <p class="small muted">Documentos y trazados para el perfeccionamiento de los Hermanos (Se abren en ventana segura).</p>
             <ul id="trabajos-list">
                 <li style="text-align:center; padding:15px; color:var(--brown);" class="loading-message">Cargando documentos...</li>
             </ul>
@@ -258,6 +270,15 @@
                 <img src="https://via.placeholder.com/600x400?text=Rituales" alt="Rituales simbólicos">
             </div>
         </section>
+
+        <div id="document-modal" class="lightbox" role="dialog" aria-modal="true" aria-hidden="true">
+            <button id="doc-close" style="position:absolute;top:18px;right:22px;background:transparent;border:0;color:#fff;font-size:30px;cursor:pointer;z-index:70;" aria-label="Cerrar documento">&times;</button>
+            
+            <div style="width:90vw; height:90vh; max-width:1000px; max-height:800px; border-radius:10px; overflow:hidden; background:white;">
+                <h4 id="doc-title" style="color:var(--dark); padding:10px 15px; margin:0; font-family:var(--ff-sans); background:var(--accent); border-bottom:1px solid rgba(0,0,0,0.1);">Cargando Documento...</h4>
+                <iframe id="doc-iframe" src="" frameborder="0" style="width:100%; height:calc(100% - 46px);" allowfullscreen></iframe>
+            </div>
+        </div>
 
         <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-hidden="true">
             <button id="lb-close" style="position:absolute;top:18px;right:22px;background:transparent;border:0;color:#fff;font-size:20px;cursor:pointer" aria-label="Cerrar galería">&times;</button>
@@ -280,6 +301,7 @@
             </div>
         </div>
 
+
         <footer id="contacto" aria-labelledby="contacto-title">
             <div style="flex:1">
                 <h3 id="contacto-title">¿Interesado en saber más?</h3>
@@ -301,6 +323,7 @@
                 </div>
             </form>
             <script>
+                // Función para el formulario de contacto
                 function abrirGmail(e){
                     e.preventDefault();
                     const nombre = encodeURIComponent(document.getElementById('nombre').value);
@@ -318,25 +341,25 @@
         // =========================================================================
         // === ZONA DE CONFIGURACIÓN OBLIGATORIA (ACTUALIZA ESTOS VALORES) =======
         // =========================================================================
-        const GITHUB_USER = 'cyberzona';   // << REEMPLAZA ESTO
-        const GITHUB_REPO = 'colmena';     // << REEMPLAZA ESTO
+        const GITHUB_USER = 'cyberzona'; 
+        const GITHUB_REPO = 'colmena';
         const GITHUB_BRANCH = 'main';             
         
-        const IMAGES_PATH = 'images';             // << Carpeta para imágenes (tenidas)
-        const DOCS_PATH = 'data';                 // << Carpeta para documentos (trabajos.json)
+        const IMAGES_PATH = 'images';             // Carpeta para imágenes (tenidas)
+        const DOCS_PATH = 'data';                 // Carpeta para documentos (trabajos.json)
         
         // --- Constantes internas del script ---
         const IMAGE_API_URL = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${IMAGES_PATH}?ref=${GITHUB_BRANCH}`;
         const ULTIMA_TENIDA_IMG_ELEMENT = document.getElementById('ultima-tenida-img');
         const TENIDA_FILENAME_REGEX = /^tenida-(\d{4})(\d{2})(\d{2})\.(png|jpg|jpeg|gif|webp)$/i;
         
-        const TRABAJOS_FILE = 'work-study.json'; // Nombre del archivo de trabajos
+        const TRABAJOS_FILE = 'trabajos.json';
         const TRABAJOS_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${GITHUB_BRANCH}/${DOCS_PATH}/${TRABAJOS_FILE}`;
         const TRABAJOS_LIST_ELEMENT = document.getElementById('trabajos-list');
 
 
         // =========================================================================
-        // === 1. LÓGICA DE CARGA DE TRABAJOS (DESDE JSON RAW) =====================
+        // === 1. LÓGICA DE CARGA DE TRABAJOS (DESDE JSON RAW Y MODAL) =============
         // =========================================================================
         async function loadTrabajos() {
             if (!TRABAJOS_LIST_ELEMENT) return;
@@ -345,10 +368,9 @@
                 const response = await fetch(TRABAJOS_URL);
                 
                 if (!response.ok) {
-                    throw new Error(`Error ${response.status}: No se pudo obtener ${TRABAJOS_FILE}. Asegúrate que existe en ${DOCS_PATH}.`);
+                    throw new Error(`Error ${response.status}: No se pudo obtener ${TRABAJOS_FILE}.`);
                 }
                 
-                // Leemos directamente como objeto JSON
                 const trabajos = await response.json(); 
 
                 TRABAJOS_LIST_ELEMENT.innerHTML = ''; // Limpiar el mensaje de carga
@@ -362,11 +384,13 @@
                 trabajos.forEach(trabajo => {
                     const li = document.createElement('li');
                     li.innerHTML = `
-                        <a href="${trabajo.url}" target="_blank">
+                        <a href="#" data-url="${trabajo.url}" data-titulo="${trabajo.titulo}">
                             ${trabajo.titulo}
                             <span>${trabajo.descripcion}</span>
                         </a>
                     `;
+                    // Asignamos el evento que abre el modal
+                    li.querySelector('a').addEventListener('click', openDocumentModal);
                     TRABAJOS_LIST_ELEMENT.appendChild(li);
                 });
 
@@ -376,9 +400,57 @@
             }
         }
 
+        // =========================================================================
+        // === 2. LÓGICA DEL MODAL DE DOCUMENTOS (OCULTAR URL) =====================
+        // =========================================================================
+        
+        const docModal = document.getElementById('document-modal');
+        const docIframe = document.getElementById('doc-iframe');
+        const docTitle = document.getElementById('doc-title');
+        const docCloseButton = document.getElementById('doc-close');
+        
+        function openDocumentModal(event) {
+            event.preventDefault(); // Evita que el navegador navegue a la URL
+            
+            const link = event.currentTarget;
+            let url = link.getAttribute('data-url');
+            const title = link.getAttribute('data-titulo');
+
+            // **MODIFICACIÓN CRUCIAL:** Si es un Google Doc, cambia '/edit' por '/preview'
+            // para que se pueda incrustar correctamente en el iframe.
+            if (url.includes('docs.google.com/document')) {
+                url = url.replace('/edit', '/preview');
+            } else if (url.includes('docs.google.com/spreadsheets')) {
+                url = url.replace('/edit', '/pubhtml?widget=true&headers=false');
+            }
+            // Puedes añadir más casos para otros servicios si los usas.
+
+            docTitle.textContent = `Documento: ${title}`;
+            docIframe.src = url;
+            docModal.classList.add('open');
+            docModal.setAttribute('aria-hidden', 'false');
+        }
+
+        function closeDocumentModal() {
+            docModal.classList.remove('open');
+            docModal.setAttribute('aria-hidden', 'true');
+            docIframe.src = ""; // Detener la carga y limpiar la fuente
+            docTitle.textContent = "Cargando Documento...";
+        }
+
+        // Asignar listeners al modal
+        docCloseButton.addEventListener('click', closeDocumentModal);
+        docModal.addEventListener('click', (e) => {
+            if (e.target === docModal) closeDocumentModal();
+        });
+        // Permitir cerrar con Escape
+        document.addEventListener('keydown', (e) => { 
+             if (e.key === 'Escape' && docModal.classList.contains('open')) closeDocumentModal();
+        });
+
 
         // =========================================================================
-        // === 2. LÓGICA DE CARGA DE LA ÚLTIMA IMAGEN DE TENIDA (FILTRADO) =========
+        // === 3. LÓGICA DE CARGA DE LA ÚLTIMA IMAGEN DE TENIDA (FILTRADO) =========
         // =========================================================================
 
         async function fetchLatestTenidaImage() {
@@ -432,7 +504,7 @@
         }
         
         // =========================================================================
-        // === 3. LÓGICA DE LIGHTBOX E INICIALIZACIÓN ==============================
+        // === 4. LÓGICA DE LIGHTBOX DE GALERÍA E INICIALIZACIÓN ===================
         // =========================================================================
         
         const lightbox = document.getElementById('lightbox');
@@ -441,6 +513,7 @@
         const lbClose = document.getElementById('lb-close');
 
         function initLightbox() {
+             // Re-inicializa listeners para que funcione con imágenes cargadas dinámicamente
              const galleryImgs = document.querySelectorAll('#image-gallery img');
              galleryImgs.forEach(img => {
                 img.removeEventListener('click', openLightboxHandler);
@@ -469,10 +542,12 @@
         lightbox.addEventListener('click', (e)=>{
             if(e.target === lightbox) closeLightbox();
         });
-        document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeLightbox(); });
+        document.addEventListener('keydown', (e)=>{ 
+            if(e.key === 'Escape' && lightbox.classList.contains('open')) closeLightbox();
+        });
 
 
-        // --- INICIALIZACIÓN ---
+        // --- INICIALIZACIÓN GENERAL ---
 
         document.addEventListener('DOMContentLoaded', () => {
              // 1. Cargar la lista de trabajos (desde .json)
@@ -488,7 +563,8 @@
              document.querySelectorAll('a[href^="#"]').forEach(a=>{
                  a.addEventListener('click', e=>{
                      const href = a.getAttribute('href');
-                     if(href.length>1){
+                     if(href.length>1 && a.closest('#trabajos-list')===null){ 
+                         // Ignora los clics en la lista de trabajos, que tienen su propia función
                          e.preventDefault();
                          const el = document.querySelector(href);
                          if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
