@@ -1,17 +1,24 @@
 {
-  "actualizado_en": "Septiembre 2025",
+  "actualizado_en": 20/09/2025,
+  "periodo": "2025-2026",
   "venerable_maestro": {
-    "nombre": "M:.M:. Juan Pérez",
-    "titulo": "Venerable Maestro",
-    "periodo": "2025-2026"
+    "nombre": "José Guevara",
+    "titulo": "Venerable Maestro"
   },
   "primer_vigilante": {
-    "nombre": "C:.M:. Ramón Soto",
+    "nombre": "Juan Hernańdez",
     "titulo": "Primer Vigilante"
   },
+  "segundo_vigilante": {
+    "nombre": "Gustavo Montero",
+    "titulo": "Segundo Vigilante"
+  },
   "secretario": {
-    "nombre": "A:.L:. Gabriel Cruz",
+    "nombre": "Andres Hernandez",
     "titulo": "Secretario"
+  },
+  "tesorero": {
+    "nombre": "NOMBRE REAL DEL TESORERO",
+    "titulo": "Tesorero"
   }
 }
- 
