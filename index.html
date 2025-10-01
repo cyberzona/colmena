@@ -416,7 +416,39 @@
         }
 
         // =========================================================================
-        // === 2. LÓGICA DEL MODAL DE DOCUMENTOS (OCULTAR URL) =====================
+        // === 2. LÓGICA DE CARGA DEL CUADRO LOGIAL (DESDE JSON RAW) ===============
+        // =========================================================================
+        async function cargarCuadroLogial() {
+            try {
+            const response = await fetch(CUADRO_URL);
+            if (!response.ok) {
+                throw new Error(`Error HTTP: ${response.status}`);
+            }
+        
+            const datosCuadro = await response.json();
+
+            // **AQUÍ INYECTAS LOS DATOS EN LOS ELEMENTOS HTML**
+            // (Asegúrate de que los IDs existan en tu HTML)
+        
+            if (document.getElementById('vm-nombre')) {
+                document.getElementById('vm-nombre').textContent = datosCuadro.venerable_maestro.nombre;
+            }
+            if (document.getElementById('secretario-nombre')) {
+                document.getElementById('secretario-nombre').textContent = datosCuadro.secretario.nombre;
+            }
+            if (document.getElementById('periodo-logial')) {
+                document.getElementById('periodo-logial').textContent = datosCuadro.venerable_maestro.periodo;
+             }    
+        
+            } catch (error) {
+                console.error("Fallo al cargar el Cuadro Logial:", error);
+            // Opcional: mostrar un mensaje de error en un elemento específico del HTML
+            // document.getElementById('vm-nombre').textContent = "Error";
+            }
+        }    
+
+        // =========================================================================
+        // === 3. LÓGICA DEL MODAL DE DOCUMENTOS (OCULTAR URL) =====================
         // =========================================================================
         
         const docModal = document.getElementById('document-modal');
@@ -462,7 +494,7 @@
         });
 
         // =========================================================================
-        // === 3. LÓGICA DE CARGA DE LA ÚLTIMA IMAGEN DE TENIDA (FILTRADO) =========
+        // === 4. LÓGICA DE CARGA DE LA ÚLTIMA IMAGEN DE TENIDA (FILTRADO) =========
         // =========================================================================
         async function fetchLatestTenidaImage() {
             if (!ULTIMA_TENIDA_IMG_ELEMENT) return;
@@ -506,7 +538,7 @@
         }
         
         // =========================================================================
-        // === 4. LÓGICA DE LECTURA DE GOOGLE CALENDAR API =========================
+        // === 5. LÓGICA DE LECTURA DE GOOGLE CALENDAR API =========================
         // =========================================================================
 
         async function fetchNextTenida() {
@@ -586,7 +618,7 @@
         }
 
         // =========================================================================
-        // === 5. LÓGICA DE LIGHTBOX DE GALERÍA E INICIALIZACIÓN ===================
+        // === 6. LÓGICA DE LIGHTBOX DE GALERÍA E INICIALIZACIÓN ===================
         // =========================================================================
         
         const lightbox = document.getElementById('lightbox');
@@ -635,16 +667,19 @@
              // 1. Cargar la lista de trabajos (desde .json)
              loadTrabajos(); 
 
-             // 2. Iniciar la carga de la última imagen de tenida.
+             // 2. Cargar el Cuadro Logial (desde el nuevo .json) 🆕
+             cargarCuadroLogial(); 
+
+             // 3. Iniciar la carga de la última imagen de tenida.
              fetchLatestTenidaImage();
 
-             // 3. Inicializar el Lightbox.
+             // 4. Inicializar el Lightbox.
              initLightbox();
 
-             // 4. Cargar la próxima Tenida desde Google Calendar API
+             // 5. Cargar la próxima Tenida desde Google Calendar API
              fetchNextTenida();
 
-             // 5. Scroll suave
+             // 6. Scroll suave
              document.querySelectorAll('a[href^="#"]').forEach(a=>{
                  a.addEventListener('click', e=>{
                      const href = a.getAttribute('href');
