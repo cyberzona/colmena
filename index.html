@@ -364,7 +364,8 @@
         const TRABAJOS_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${GITHUB_BRANCH}/${DOCS_PATH}/${TRABAJOS_FILE}`;
         const TRABAJOS_LIST_ELEMENT = document.getElementById('trabajos-list');
         const CUADRO_FILE = 'cuadro-logial.json'; // Nombre de tu archivo JSON
-        const CUADRO_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${GITHUB_BRANCH}/${DOCS_PATH}/${CUADRO_FILE}`;
+        const CUADRO_URL = `https://drive.google.com/file/d/1B6_zUSVLGC0ZmQDyhOkm5vkcAOVNjMEu`;
+        //const CUADRO_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${GITHUB_BRANCH}/${DOCS_PATH}/${CUADRO_FILE}`;
 
         // =========================================================================
         // === CONFIGURACIÓN PARA GOOGLE CALENDAR API (OBLIGATORIO) ================
@@ -431,18 +432,15 @@
                 document.getElementById('vm-nombre').textContent = datosCuadro.venerable_maestro.nombre;
             }
             if (document.getElementById('pv-nombre')) {
-                document.getElementById('pv-nombre').textContent = datosCuadro.venerable_maestro.nombre;
+                document.getElementById('pv-nombre').textContent = datosCuadro.primer_vigilante.nombre;
             }
             if (document.getElementById('sv-nombre')) {
-                document.getElementById('sv-nombre').textContent = datosCuadro.venerable_maestro.nombre;
+                document.getElementById('sv-nombre').textContent = datosCuadro.segundo_vigilante.nombre;
             }
             if (document.getElementById('ms-nombre')) {
-                document.getElementById('ms-nombre').textContent = datosCuadro.venerable_maestro.nombre;
+                document.getElementById('ms-nombre').textContent = datosCuadro.secretario.nombre;
             }
-            if (document.getElementById('periodo-logial')) {
-                document.getElementById('periodo-logial').textContent = datosCuadro.venerable_maestro.periodo;
-             }    
-        
+            
             } catch (error) {
                 console.error("Fallo al cargar el Cuadro Logial:", error);
             // Opcional: mostrar un mensaje de error en un elemento específico del HTML
