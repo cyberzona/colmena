@@ -254,7 +254,7 @@
                     <li><strong>Venerable Maestro:</strong><br><span id="vm-nombre">Cargando...</span></li>
                     <li><strong>Primer Vigilante:</strong><br><span id="pv-nombre">Cargando...</span></li>
                     <li><strong>Segundo Vigilante:</strong><br><span id="sv-nombre">Cargando...</span></li>
-                    <li><strong>Secretario:</strong><br><span id="secretario-nombre">Cargando...</span></li>
+                    <li><strong>Secretario:</strong><br><span id="ms-nombre">Cargando...</span></li>
                 </ul>
             </aside>
         </section>
@@ -363,7 +363,7 @@
         const TRABAJOS_FILE = 'work-study.json';
         const TRABAJOS_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${GITHUB_BRANCH}/${DOCS_PATH}/${TRABAJOS_FILE}`;
         const TRABAJOS_LIST_ELEMENT = document.getElementById('trabajos-list');
-        const CUADRO_FILE = 'cuadro-logial.json'; // Nombre de tu archivo JSON
+        const CUADRO_FILE = 'https://docs.google.com/document/d/1qtPH3pRQ_NR4qj1HFw9qvjlYRZzjKDtCVn9YFHFpdOE/edit?usp=sharing'; // Nombre de tu archivo JSON
         const CUADRO_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${GITHUB_BRANCH}/${DOCS_PATH}/${CUADRO_FILE}`;
 
         // =========================================================================
@@ -430,8 +430,14 @@
             if (document.getElementById('vm-nombre')) {
                 document.getElementById('vm-nombre').textContent = datosCuadro.venerable_maestro.nombre;
             }
-            if (document.getElementById('secretario-nombre')) {
-                document.getElementById('secretario-nombre').textContent = datosCuadro.secretario.nombre;
+            if (document.getElementById('pv-nombre')) {
+                document.getElementById('pv-nombre').textContent = datosCuadro.venerable_maestro.nombre;
+            }
+            if (document.getElementById('sv-nombre')) {
+                document.getElementById('sv-nombre').textContent = datosCuadro.venerable_maestro.nombre;
+            }
+            if (document.getElementById('ms-nombre')) {
+                document.getElementById('ms-nombre').textContent = datosCuadro.venerable_maestro.nombre;
             }
             if (document.getElementById('periodo-logial')) {
                 document.getElementById('periodo-logial').textContent = datosCuadro.venerable_maestro.periodo;
