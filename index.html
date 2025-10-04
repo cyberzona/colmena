@@ -171,6 +171,12 @@
             font-size: 0.9rem;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
+        /* Estilo para el enlace en el pie de foto del lightbox */
+        #lb-caption a {
+            color: var(--gold);
+            text-decoration: underline;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -274,7 +280,11 @@
                 <img src="images/carta-patente.png" alt="Carta Patente">
                 <img id="ultima-tenida-img" src="images/placeholder.png" alt="Cargando Última Tenida..." class="loading">
                 <img src="images/Cuadro-Logial.png" alt="Cuadro Logial">
-                <img src="images/rituales.png" alt="Rituales simbólicos">
+                <img id="rituales-img" 
+                     src="images/rituales.png" 
+                     alt="Rituales simbólicos"
+                     data-url="URL_DEL_DOCUMENTO_DE_RITUALES" 
+                     data-titulo="Ver Documento de Rituales">
             </div>
         </section>
 
@@ -365,6 +375,10 @@
         const TRABAJOS_LIST_ELEMENT = document.getElementById('trabajos-list');
         const CUADRO_FILE = 'cuadro-logial.json'; // Nombre de tu archivo JSON       
         const CUADRO_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${GITHUB_BRANCH}/${DOCS_PATH}/${CUADRO_FILE}`;
+
+        // --- Constante para la URL del documento de rituales (nueva necesidad) ---
+        // !!! IMPORTANTE: REEMPLAZAR 'URL_DEL_DOCUMENTO_DE_RITUALES' con la URL real del documento !!!
+        const RITUALES_DOC_URL = 'https://docs.google.com/document/d/1_YOUR_RITUAL_DOC_ID_GOES_HERE/edit'; 
 
         // =========================================================================
         // === CONFIGURACIÓN PARA GOOGLE CALENDAR API (OBLIGATORIO) ================
@@ -633,15 +647,32 @@
                  img.removeEventListener('click', openLightboxHandler);
                  img.addEventListener('click', openLightboxHandler);
             });
+            
+             // MODIFICACIÓN 7: Sincroniza la URL de la constante con el atributo data-url en el HTML
+             const ritualesImg = document.getElementById('rituales-img');
+             if (ritualesImg) {
+                 ritualesImg.setAttribute('data-url', RITUALES_DOC_URL);
+             }
         }
         
         function openLightboxHandler() {
             const full = this.dataset.full || this.src;
+            const altText = this.alt || "Imagen Ampliada";
+            const docUrl = this.getAttribute('data-url');
+            const docTitle = this.getAttribute('data-titulo');
+
             lbImg.src = full;
-            lbImg.alt = this.alt || "Imagen Ampliada";
+            lbImg.alt = altText;
             lightbox.classList.add('open');
             lightbox.setAttribute('aria-hidden', 'false');
-            lbCaption.textContent = lbImg.alt;
+
+            // MODIFICACIÓN CLAVE: Construir el pie de foto con el enlace
+            let captionHTML = altText;
+            if (docUrl && docTitle) {
+                captionHTML += ` &mdash; <a href="${docUrl}" target="_blank" rel="noopener noreferrer">${docTitle}</a>`;
+            }
+            
+            lbCaption.innerHTML = captionHTML;
             lbCaption.style.display = "block";
         }
 
@@ -667,13 +698,13 @@
              // 1. Cargar la lista de trabajos (desde .json)
              loadTrabajos(); 
 
-             // 2. Cargar el Cuadro Logial (desde el nuevo .json) 🆕
+             // 2. Cargar el Cuadro Logial (desde el nuevo .json) 
              cargarCuadroLogial(); 
 
              // 3. Iniciar la carga de la última imagen de tenida.
              fetchLatestTenidaImage();
 
-             // 4. Inicializar el Lightbox.
+             // 4. Inicializar el Lightbox (y los data-url).
              initLightbox();
 
              // 5. Cargar la próxima Tenida desde Google Calendar API
