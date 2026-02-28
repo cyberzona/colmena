@@ -6,53 +6,54 @@
     <style>
         body { 
             font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif; 
-            line-height: 1.8; 
+            line-height: 2.2; /* Aumentado para más aire entre líneas */
             color: #2c2c2c; 
-            max-width: 900px; 
+            max-width: 950px; 
             margin: 0 auto; 
-            padding: 40px; 
+            padding: 60px; /* Margen general más grande */
             background-color: #fdfaf3;
             background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36z8gGiMAEYIIwAXgAmgGkgAEAF3gD/ZkUAAAAAElFTkSuQmCC'); /* Sutil textura de papel */
         }
         h1 { 
             color: #7A4F35; 
             text-align: center; 
-            border-bottom: 2px solid #D4A017; 
-            padding-bottom: 20px;
-            font-size: 2.5em;
+            border-bottom: 3px solid #D4A017; 
+            padding-bottom: 30px;
+            margin-bottom: 60px; /* Espacio extra debajo del título */
+            font-size: 3em;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
         }
         
-        /* Contenedor de diálogo con más espacio */
+        /* Contenedor de diálogo con máximo espacio */
         dl { 
-            margin-top: 40px; 
+            margin-top: 50px; 
             background: white; 
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            padding: 50px; /* Aumentado padding interno */
+            border-radius: 16px;
+            box-shadow: 0 6px 25px rgba(0,0,0,0.06);
         }
         
         /* Resaltado del Autor (VM∴, 1V∴, etc.) */
         dt { 
             font-weight: bold; 
-            color: #D4A017; /* Color oro */
-            margin-top: 25px;
-            margin-bottom: 5px;
-            font-size: 1.3em;
-            letter-spacing: 1px;
-            display: block; /* Asegura que el nombre esté arriba del texto */
+            color: #D4A017; 
+            margin-top: 40px; /* Mucho espacio antes de cada cargo */
+            margin-bottom: 15px; /* Espacio entre cargo y texto */
+            font-size: 1.5em;
+            letter-spacing: 2px;
+            display: block; 
         }
         
         /* Estilo del texto del diálogo */
         dd { 
             margin-left: 0; 
-            margin-bottom: 25px; 
+            margin-bottom: 40px; /* Mucho espacio debajo de cada diálogo */
             font-style: italic; 
-            font-size: 1.1em;
+            font-size: 1.25em; /* Ligeramente más grande */
             color: #444;
-            padding-left: 20px;
-            border-left: 4px solid #D4A017;
+            padding-left: 30px;
+            border-left: 5px solid #D4A017;
         }
         
         /* Puntuación automática al final */
@@ -62,14 +63,15 @@
             text-align: center; 
             font-weight: bold; 
             color: #8b5a2b; 
-            margin-top: 30px; 
-            margin-bottom: 30px;
-            font-size: 1.1em;
+            margin-top: 60px; /* Más espacio antes de la escena */
+            margin-bottom: 60px; /* Más espacio después de la escena */
+            font-size: 1.2em;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            background: rgba(212,160,23,0.1);
-            padding: 10px;
-            border-radius: 8px;
+            letter-spacing: 2px;
+            background: rgba(212,160,23,0.08);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(212,160,23,0.2);
         }
     </style>
 </head>
