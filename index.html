@@ -9,7 +9,7 @@
     <meta name="author" content="Logia Colmena No. 8">
     <link href='https://fonts.googleapis.com/css?family=MedievalSharp' rel='stylesheet'>
     <style>
-        /* (Estilos CSS - Mantenidos para contexto) */
+        /* (Estilos CSS - Mantenidos) */
         :root{
             --gold:#D4A017;
             --beige:#F5EFE6;
@@ -113,15 +113,8 @@
         .gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
         .gallery img{width:100%;height:120px;object-fit:cover;border-radius:8px;cursor:pointer;display:block}
         
-        /* Modificación para el enlace en la galería */
-        .gallery a {
-            display: block;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
         #ultima-tenida-img.loading::after {
-            content: "Cargando última tenida...";
+            content: "Cargando...";
             display: block;
             text-align: center;
             padding: 20px;
@@ -295,9 +288,12 @@
                 <img id="ultima-tenida-img" src="images/placeholder.png" alt="Cargando Última Tenida..." class="loading">
                 <img src="images/Cuadro-Logial.png" alt="Cuadro Logial">
                 
-                <a href="#" id="rituales-link" data-url="COL82026004.html" data-titulo="Rituales Simbólicos">
-                    <img id="rituales-img" src="images/rituales.png" alt="Rituales simbólicos">
-                </a>
+                <img id="rituales-img" 
+                     src="images/rituales.png" 
+                     alt="Rituales simbólicos" 
+                     data-url="COL82026004.html" 
+                     data-titulo="Rituales Simbólicos" 
+                     style="cursor:pointer;">
             </div>
         </section>
 
@@ -451,107 +447,3 @@
             } else if (url.includes('docs.google.com/spreadsheets')) {
                 url = url.replace('/edit', '/pubhtml?widget=true&headers=false');
             }
-
-            docTitle.textContent = `Documento: ${title}`;
-            docIframe.src = url;
-            docModal.classList.add('open');
-            docModal.setAttribute('aria-hidden', 'false');
-        }
-
-        function closeDocumentModal() {
-            docModal.classList.remove('open');
-            docModal.setAttribute('aria-hidden', 'true');
-            docIframe.src = "";
-            docTitle.textContent = "Cargando Documento...";
-        }
-
-        docCloseButton.addEventListener('click', closeDocumentModal);
-        docModal.addEventListener('click', (e) => { if (e.target === docModal) closeDocumentModal(); });
-        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && docModal.classList.contains('open')) closeDocumentModal(); });
-
-        // =========================================================================
-        // === 4. LÓGICA DE CARGA DE IMAGEN DE TENIDA =============================
-        // =========================================================================
-        async function fetchLatestTenidaImage() {
-            if (!ULTIMA_TENIDA_IMG_ELEMENT) return;
-            ULTIMA_TENIDA_IMG_ELEMENT.classList.add('loading'); 
-            try {
-                const response = await fetch(IMAGE_API_URL);
-                if (!response.ok) throw new Error(`Error: ${response.statusText}`);
-                const files = await response.json();
-                let latestTenidaImage = null;
-                let latestTenidaDate = null;
-                files.forEach(file => {
-                    if (file.type === 'file') {
-                        const match = file.name.match(TENIDA_FILENAME_REGEX);
-                        if (match) {
-                            const date = new Date(parseInt(match[1]), parseInt(match[2]) - 1, parseInt(match[3])); 
-                            if (!latestTenidaDate || date.getTime() > latestTenidaDate.getTime()) {
-                                latestTenidaDate = date;
-                                latestTenidaImage = { src: file.download_url, alt: `Tenida ${match[3]}/${match[2]}/${match[1]}` };
-                            }
-                        }
-                    }
-                });
-                if (latestTenidaImage) {
-                    ULTIMA_TENIDA_IMG_ELEMENT.src = latestTenidaImage.src;
-                    ULTIMA_TENIDA_IMG_ELEMENT.alt = latestTenidaImage.alt;
-                }
-                ULTIMA_TENIDA_IMG_ELEMENT.classList.remove('loading');
-            } catch (error) { console.error("Error:", error); ULTIMA_TENIDA_IMG_ELEMENT.classList.remove('loading'); }
-        }
-        
-        // =========================================================================
-        // === 5. LÓGICA DEL LIGHTBOX E INICIALIZACIÓN =============================
-        // =========================================================================
-        const lightbox = document.getElementById('lightbox');
-        const lbImg = document.getElementById('lb-img');
-        const lbCaption = document.getElementById('lb-caption');
-        const lbClose = document.getElementById('lb-close');
-
-        function initLightbox() {
-             const galleryImgs = document.querySelectorAll('#image-gallery img');
-             galleryImgs.forEach(img => {
-                 img.removeEventListener('click', openLightboxHandler);
-                 img.addEventListener('click', openLightboxHandler);
-            });
-            
-            // CONECTAR EL RITUAL AL MODAL
-            const ritualesLink = document.getElementById('rituales-link');
-            if (ritualesLink) {
-                ritualesLink.addEventListener('click', openDocumentModal);
-            }
-        }
-        
-        function openLightboxHandler() {
-            const full = this.dataset.full || this.src;
-            const altText = this.alt || "Imagen";
-            lbImg.src = full;
-            lbImg.alt = altText;
-            lightbox.classList.add('open');
-            lightbox.setAttribute('aria-hidden', 'false');
-            lbCaption.innerHTML = altText;
-            lbCaption.style.display = "block";
-        }
-
-        function closeLightbox(){
-            lightbox.classList.remove('open');
-            lightbox.setAttribute('aria-hidden','true');
-            lbImg.src = '';
-            lbCaption.style.display = "none";
-        }
-        
-        lbClose.addEventListener('click', closeLightbox);
-        lightbox.addEventListener('click', (e)=>{ if(e.target === lightbox) closeLightbox(); });
-        document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && lightbox.classList.contains('open')) closeLightbox(); });
-
-        document.addEventListener('DOMContentLoaded', () => {
-             loadTrabajos(); 
-             cargarCuadroLogial(); 
-             fetchLatestTenidaImage();
-             initLightbox();                
-        });
-
-    </script>
-</body>
-</html>
