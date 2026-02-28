@@ -310,18 +310,8 @@
                 
                 <div id="lb-controls" style="margin-top:10px;">
                     <div id="lb-caption" style="color:#fff;font-size:16px;margin-bottom:10px;"></div>
-                    <button id="lb-ritual-btn" style="
-                        display:none;
-                        background:var(--gold);
-                        color:#fff;
-                        border:0;
-                        padding:10px 20px;
-                        border-radius:20px;
-                        font-weight:bold;
-                        cursor:pointer;
-                        font-family:var(--ff-sans);">
-                        📖 Ver Ritual en el Templo
-                    </button>
+                    <div id="lb-ritual-buttons" style="display:flex; flex-direction:column; gap:8px; align-items:center;">
+                        </div>
                 </div>
             </div>
         </div>
@@ -508,7 +498,7 @@
         const lbImg = document.getElementById('lb-img');
         const lbCaption = document.getElementById('lb-caption');
         const lbClose = document.getElementById('lb-close');
-        const lbRitualBtn = document.getElementById('lb-ritual-btn');
+        const lbRitualButtons = document.getElementById('lb-ritual-buttons');
 
         function initGalleryListeners() {
              const galleryImgs = document.querySelectorAll('#image-gallery img');
@@ -519,31 +509,50 @@
             
             const ritualesImg = document.getElementById('rituales-img');
             if (ritualesImg) {
-                // AQUÍ SE DEFINE EL ARCHIVO RITUAL
-                ritualesImg.setAttribute('data-url', 'Ritual Aprendiz.html');
-                ritualesImg.setAttribute('data-titulo', 'Rituales Simbólicos');
+                // Definimos los botones asociados a esta imagen
+                ritualesImg.setAttribute('data-rituales', JSON.stringify([
+                    { titulo: 'Ritual de Aprendiz', url: 'Ritual Aprendiz.html' }
+                    // Aquí se pueden añadir más rituales en el futuro
+                ]));
             }
         }
         
         function openLightboxHandler() {
             const full = this.dataset.full || this.src;
             const altText = this.alt || "Imagen";
-            const ritualUrl = this.getAttribute('data-url');
-            const ritualTitulo = this.getAttribute('data-titulo');
+            const ritualesData = this.getAttribute('data-rituales');
 
             lbImg.src = full;
             lbImg.alt = altText;
             lightbox.classList.add('open');
             lightbox.setAttribute('aria-hidden', 'false');
             lbCaption.innerHTML = altText;
+            lbRitualButtons.innerHTML = ''; // Limpiar botones anteriores
 
-            if (ritualUrl) {
-                lbRitualBtn.style.display = "inline-block";
-                lbRitualBtn.onclick = function() {
-                    openDocumentInModal(ritualUrl, ritualTitulo);
-                };
-            } else {
-                lbRitualBtn.style.display = "none";
+            // Si la imagen tiene rituales asociados, creamos los botones
+            if (ritualesData) {
+                const rituales = JSON.parse(ritualesData);
+                rituales.forEach(ritual => {
+                    const btn = document.createElement('button');
+                    btn.textContent = `📖 Ver ${ritual.titulo}`;
+                    btn.style.cssText = `
+                        background:var(--gold);
+                        color:#fff;
+                        border:0;
+                        padding:10px 20px;
+                        border-radius:20px;
+                        font-weight:bold;
+                        cursor:pointer;
+                        font-family:var(--ff-sans);
+                        font-size: 0.9rem;
+                        width: 100%;
+                        max-width: 300px;
+                    `;
+                    btn.onclick = function() {
+                        openDocumentInModal(ritual.url, ritual.titulo);
+                    };
+                    lbRitualButtons.appendChild(btn);
+                });
             }
         }
 
@@ -552,7 +561,7 @@
             lightbox.setAttribute('aria-hidden','true');
             lbImg.src = '';
             lbCaption.style.display = "none";
-            lbRitualBtn.style.display = "none";
+            lbRitualButtons.innerHTML = '';
         }
         
         lbClose.addEventListener('click', closeLightbox);
