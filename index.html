@@ -657,10 +657,13 @@
             });
             
              // MODIFICACIÓN 7: Sincroniza la URL de la constante con el atributo data-url en el HTML
-             const ritualesImg = document.getElementById('rituales-img');
-             if (ritualesImg) {
-                 ritualesImg.setAttribute('data-url', RITUALES_DOC_URL);
-             }
+            const ritualesImg = document.getElementById('rituales-img');
+            const ritualIframe = document.getElementById('ritual-iframe'); // Asegúrate de tener este ID en tu HTML
+            if (ritualesImg && ritualIframe) {
+            // Al hacer clic en la imagen/elemento del ritual, carga el archivo local
+            ritualesImg.addEventListener('click', () => {
+            ritualIframe.src = RITUALES_DOC_URL; // RITUALES_DOC_URL debe ser 'ritual.html'  });
+
         }
         
         function openLightboxHandler() {
