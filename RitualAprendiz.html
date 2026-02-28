@@ -9,9 +9,9 @@
             background-color: #ffffff !important;
             font-family: 'Georgia', serif;
             color: #2c3e50;
-            line-height: 1.1; /* Interlineado general mínimo */
+            line-height: 1.0; /* Altura de línea mínima absoluta */
             margin: 0;
-            padding: 10px; /* Margen reducido al mínimo */
+            padding: 5px; /* Relleno mínimo de la página */
         }
         
         /* CONTENEDOR PARA LIMITAR EL ANCHO DE LECTURA */
@@ -24,20 +24,22 @@
             color: #7A4F35;
             text-align: center;
             font-family: 'Arial', sans-serif;
-            margin-top: 2px; /* Espacio mínimo antes del título */
-            margin-bottom: 2px; /* Espacio mínimo después del título */
+            margin: 0; /* Sin márgenes en títulos */
+            padding: 0;
         }
 
         h3 {
-            border-bottom: 2px solid #D4A017;
-            padding-bottom: 2px;
-            font-size: 1.2em;
+            border-bottom: 1px solid #D4A017; /* Borde más fino */
+            padding-bottom: 1px;
+            font-size: 1.1em; /* Tamaño de fuente ligeramente menor */
+            margin-top: 2px;
         }
 
         p {
-            margin-top: 0;
-            margin-bottom: 2px; /* Espacio mínimo entre párrafos */
+            margin: 0; /* Sin márgenes en párrafos */
+            padding: 0;
             text-align: justify;
+            line-height: 1.0;
         }
 
         /* ESTILO PARA CARGOS (Color dorado) */
@@ -45,18 +47,19 @@
             color: #D4A017;
         }
 
-        /* LISTAS */
+        /* LISTAS - Compactación extrema */
         ol {
-            margin-left: 20px;
-            padding-left: 10px;
+            margin-left: 15px;
+            padding-left: 0;
             margin-top: 0;
             margin-bottom: 0;
         }
         
         li {
-            margin-bottom: 0px; /* Espacio mínimo entre ítems */
+            margin: 0; /* Sin márgenes entre ítems */
+            padding: 0;
             text-align: justify;
-            line-height: 1.1;
+            line-height: 1.0;
         }
     </style>
 </head>
