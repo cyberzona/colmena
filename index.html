@@ -287,13 +287,7 @@
                 <img src="images/carta-patente.png" alt="Carta Patente">
                 <img id="ultima-tenida-img" src="images/placeholder.png" alt="Cargando Última Tenida..." class="loading">
                 <img src="images/Cuadro-Logial.png" alt="Cuadro Logial">
-                
-                <img id="rituales-img" 
-                     src="images/rituales.png" 
-                     alt="Rituales simbólicos" 
-                     data-url="COL82026004.html" 
-                     data-titulo="Rituales Simbólicos" 
-                     style="cursor:pointer;">
+                <img src="images/rituales.png" alt="Rituales simbólicos">
             </div>
         </section>
 
@@ -492,6 +486,15 @@
                 if (latestTenidaImage) {
                     ULTIMA_TENIDA_IMG_ELEMENT.src = latestTenidaImage.src;
                     ULTIMA_TENIDA_IMG_ELEMENT.alt = latestTenidaImage.alt;
+                    
+                    // --- AQUÍ ESTÁ LA MAGIA ---
+                    // Asignamos los atributos del ritual a la imagen dinámica
+                    ULTIMA_TENIDA_IMG_ELEMENT.setAttribute('data-url', 'COL82026004.html');
+                    ULTIMA_TENIDA_IMG_ELEMENT.setAttribute('data-titulo', 'Rituales Simbólicos');
+                    ULTIMA_TENIDA_IMG_ELEMENT.style.cursor = 'pointer';
+                    // Re-inicializamos el listener para asegurar que tome la nueva configuración
+                    ULTIMA_TENIDA_IMG_ELEMENT.removeEventListener('click', openDocumentModal);
+                    ULTIMA_TENIDA_IMG_ELEMENT.addEventListener('click', openDocumentModal);
                 }
                 ULTIMA_TENIDA_IMG_ELEMENT.classList.remove('loading');
             } catch (error) { console.error("Error:", error); ULTIMA_TENIDA_IMG_ELEMENT.classList.remove('loading'); }
@@ -507,15 +510,18 @@
 
         function initLightbox() {
              // 1. Manejar imágenes de la galería para ampliar
-             const galleryImgs = document.querySelectorAll('#image-gallery img:not(#rituales-img)');
+             const galleryImgs = document.querySelectorAll('#image-gallery img:not(#ultima-tenida-img)');
              galleryImgs.forEach(img => {
                  img.removeEventListener('click', openLightboxHandler);
                  img.addEventListener('click', openLightboxHandler);
             });
             
-            // 2. Manejar la imagen de rituales para abrir modal
-            const ritualesImg = document.getElementById('rituales-img');
+            // 2. Manejar la imagen de rituales para abrir modal (Imagen estática)
+            const ritualesImg = document.querySelector('img[alt="Rituales simbólicos"]');
             if (ritualesImg) {
+                ritualesImg.setAttribute('data-url', 'COL82026004.html');
+                ritualesImg.setAttribute('data-titulo', 'Rituales Simbólicos');
+                ritualesImg.style.cursor = 'pointer';
                 ritualesImg.removeEventListener('click', openDocumentModal);
                 ritualesImg.addEventListener('click', openDocumentModal);
             }
