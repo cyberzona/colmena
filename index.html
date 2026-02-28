@@ -135,6 +135,8 @@
         }
         #doc-iframe {
             display: block;
+            /* Mejoras de visualización para documentos cargados */
+            background-color: #fff;
         }
 
         footer{margin-top:18px;padding:18px;border-radius:12px;background:linear-gradient(90deg,#fff,#f9f5ef);display:flex;gap:18px;align-items:flex-start;}
@@ -433,7 +435,6 @@
         const docTitle = document.getElementById('doc-title');
         const docCloseButton = document.getElementById('doc-close');
         
-        // Función genérica para abrir cualquier URL en el modal
         function openDocumentInModal(url, titulo) {
             if (url.includes('docs.google.com/document')) {
                 url = url.replace('/edit', '/preview');
@@ -516,10 +517,10 @@
                  img.addEventListener('click', openLightboxHandler);
             });
             
-            // --- AQUI ESTA LA CONFIGURACIÓN ESPECÍFICA PARA LA IMAGEN DE RITUALES ---
             const ritualesImg = document.getElementById('rituales-img');
             if (ritualesImg) {
-                ritualesImg.setAttribute('data-url', 'COL82026004.html');
+                // AQUÍ SE DEFINE EL ARCHIVO RITUAL
+                ritualesImg.setAttribute('data-url', 'Ritual Aprendiz.html');
                 ritualesImg.setAttribute('data-titulo', 'Rituales Simbólicos');
             }
         }
@@ -536,7 +537,6 @@
             lightbox.setAttribute('aria-hidden', 'false');
             lbCaption.innerHTML = altText;
 
-            // Si la imagen tiene un ritual asociado (como la de ritos), mostramos el botón
             if (ritualUrl) {
                 lbRitualBtn.style.display = "inline-block";
                 lbRitualBtn.onclick = function() {
