@@ -659,15 +659,10 @@
     
         // CORRECCIÓN: Sincroniza la URL de la constante con el atributo data-url en el HTML
         const ritualesImg = document.getElementById('rituales-img');
-    
         if (ritualesImg) {
-            // Aseguramos que la imagen use la función que abre el modal de documentos
-                ritualesImg.removeEventListener('click', openDocumentModal);
-                ritualesImg.addEventListener('click', openDocumentModal);
-        
-                // Asignamos la URL definida en la constante RITUALES_DOC_URL
-                ritualesImg.setAttribute('data-url', RITUALES_DOC_URL); 
-                ritualesImg.setAttribute('data-titulo', "Rituales Simbólicos");
+            ritualesImg.addEventListener('click', openDocumentModal);
+            ritualesImg.setAttribute('data-url', 'COL82026004.html'); 
+            ritualesImg.setAttribute('data-titulo', "Rituales Simbólicos");
             }
         }
         
