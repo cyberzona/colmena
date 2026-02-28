@@ -643,28 +643,32 @@
         // =========================================================================
         // === 6. LÓGICA DE LIGHTBOX DE GALERÍA E INICIALIZACIÓN ===================
         // =========================================================================
-        
+
         const lightbox = document.getElementById('lightbox');
         const lbImg = document.getElementById('lb-img');
         const lbCaption = document.getElementById('lb-caption');
         const lbClose = document.getElementById('lb-close');
 
         function initLightbox() {
-             // Re-inicializa listeners para que funcione con imágenes cargadas dinámicamente
-             const galleryImgs = document.querySelectorAll('#image-gallery img');
-             galleryImgs.forEach(img => {
-                 img.removeEventListener('click', openLightboxHandler);
-                 img.addEventListener('click', openLightboxHandler);
-            });
-            
-             // MODIFICACIÓN 7: Sincroniza la URL de la constante con el atributo data-url en el HTML
-            const ritualesImg = document.getElementById('rituales-img');
-            const ritualIframe = document.getElementById('ritual-iframe'); // Asegúrate de tener este ID en tu HTML
-            if (ritualesImg && ritualIframe) {
-            // Al hacer clic en la imagen/elemento del ritual, carga el archivo local
-            ritualesImg.addEventListener('click', () => {
-            ritualIframe.src = RITUALES_DOC_URL; // RITUALES_DOC_URL debe ser 'ritual.html'  });
-
+         // Re-inicializa listeners para que funcione con imágenes cargadas dinámicamente
+         const galleryImgs = document.querySelectorAll('#image-gallery img');
+         galleryImgs.forEach(img => {
+             img.removeEventListener('click', openLightboxHandler);
+             img.addEventListener('click', openLightboxHandler);
+        });
+    
+        // CORRECCIÓN: Sincroniza la URL de la constante con el atributo data-url en el HTML
+        const ritualesImg = document.getElementById('rituales-img');
+    
+        if (ritualesImg) {
+            // Aseguramos que la imagen use la función que abre el modal de documentos
+                ritualesImg.removeEventListener('click', openDocumentModal);
+                ritualesImg.addEventListener('click', openDocumentModal);
+        
+                // Asignamos la URL definida en la constante RITUALES_DOC_URL
+                ritualesImg.setAttribute('data-url', RITUALES_DOC_URL); 
+                ritualesImg.setAttribute('data-titulo', "Rituales Simbólicos");
+            }
         }
         
         function openLightboxHandler() {
