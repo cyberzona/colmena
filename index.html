@@ -282,16 +282,13 @@
 
         <section class="card" id="galeria" aria-labelledby="galeria-title">
             <h3 id="galeria-title">Galería</h3>
-            <p class="small muted">Haz clic sobre una imagen para verla ampliada.</p>
+            <p class="small muted">Haz clic sobre una imagen para verla ampliada o acceder a su rito.</p>
             <div class="gallery" id="image-gallery" aria-live="polite">
                 <img src="images/carta-patente.png" alt="Carta Patente">
                 <img id="ultima-tenida-img" src="images/placeholder.png" alt="Cargando Última Tenida..." class="loading">
                 <img src="images/Cuadro-Logial.png" alt="Cuadro Logial">
                 
-                <img src="images/rituales.png" 
-                     alt="Rituales simbólicos" 
-                     data-url="COL82026004.html" 
-                     data-titulo="Rituales Simbólicos">
+                <img id="rituales-img" src="images/rituales.png" alt="Rituales simbólicos">
             </div>
         </section>
 
@@ -498,19 +495,13 @@
                 if (latestTenidaImage) {
                     ULTIMA_TENIDA_IMG_ELEMENT.src = latestTenidaImage.src;
                     ULTIMA_TENIDA_IMG_ELEMENT.alt = latestTenidaImage.alt;
-                    
-                    // Asignamos los atributos del ritual a la imagen dinámica
-                    ULTIMA_TENIDA_IMG_ELEMENT.setAttribute('data-url', 'COL82026004.html');
-                    ULTIMA_TENIDA_IMG_ELEMENT.setAttribute('data-titulo', latestTenidaImage.alt);
-                    // Re-inicializamos los eventos para esta imagen
-                    initGalleryListeners();
                 }
                 ULTIMA_TENIDA_IMG_ELEMENT.classList.remove('loading');
             } catch (error) { console.error("Error:", error); ULTIMA_TENIDA_IMG_ELEMENT.classList.remove('loading'); }
         }
         
         // =========================================================================
-        // === 5. LÓGICA DEL LIGHTBOX (Ampliación) =================================
+        // === 5. LÓGICA DEL LIGHTBOX (Ampliación y Rito) =========================
         // =========================================================================
         const lightbox = document.getElementById('lightbox');
         const lbImg = document.getElementById('lb-img');
@@ -524,6 +515,13 @@
                  img.removeEventListener('click', openLightboxHandler);
                  img.addEventListener('click', openLightboxHandler);
             });
+            
+            // --- AQUI ESTA LA CONFIGURACIÓN ESPECÍFICA PARA LA IMAGEN DE RITUALES ---
+            const ritualesImg = document.getElementById('rituales-img');
+            if (ritualesImg) {
+                ritualesImg.setAttribute('data-url', 'COL82026004.html');
+                ritualesImg.setAttribute('data-titulo', 'Rituales Simbólicos');
+            }
         }
         
         function openLightboxHandler() {
@@ -538,7 +536,7 @@
             lightbox.setAttribute('aria-hidden', 'false');
             lbCaption.innerHTML = altText;
 
-            // Si la imagen tiene un ritual asociado, mostramos el botón
+            // Si la imagen tiene un ritual asociado (como la de ritos), mostramos el botón
             if (ritualUrl) {
                 lbRitualBtn.style.display = "inline-block";
                 lbRitualBtn.onclick = function() {
