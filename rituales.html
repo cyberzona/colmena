@@ -15,11 +15,10 @@
         #rituales-content { margin-top: 5px; background: white; padding: 10px; border-radius: 8px; }
         #glosario-container { margin-top: 20px; }
         
-        /* --- CORRECCIÓN: Abreviaturas más discretas --- */
         dt { font-weight: bold; color: #5d4037; margin-top: 10px; font-size: 0.9em; transition: all 0.3s; }
         
         dd { 
-            margin-left: 25px; 
+            margin-left: 35px; /* Aumentado margen para los puntos */
             margin-bottom: 8px; 
             font-style: normal; 
             border-left: 2px solid #d7ccc8; 
@@ -35,19 +34,28 @@
             counter-increment: line-counter; 
             content: counter(line-counter); 
             position: absolute; 
-            left: -25px; 
+            left: -32px; /* Ajustado posición */
             top: 1px;
             color: #8d6e63; 
             font-weight: bold; 
             font-style: normal;
-            font-size: 0.8em; 
+            font-size: 0.9em; /* Aumentado tamaño */
             background-color: transparent; 
             border: none; 
+        }
+
+        /* --- CORRECCIÓN: Puntos de diálogo (Tripuntado) --- */
+        dd::after {
+            content: '...';
+            position: absolute;
+            left: -12px;
+            top: 0px;
+            color: #8d6e63;
+            font-weight: bold;
         }
         
         .parte-ritual { counter-reset: line-counter; }
         
-        /* --- CORRECCIÓN: Resaltado de diálogo más suave --- */
         .highlight-dialogue { 
             background-color: rgba(188, 170, 164, 0.2); 
             border-left: 3px solid #8d6e63; 
@@ -55,7 +63,6 @@
             transition: background-color 0.3s;
         }
         
-        /* Título de parte invertido - colores tierra */
         .section-header { 
             font-weight: bold; 
             color: white; 
@@ -71,7 +78,6 @@
         
         .apartado-header { font-weight: bold; color: #795548; font-size: 0.95em; border-bottom: 1px solid #d7ccc8; padding-bottom: 3px; margin-top: 10px; }
 
-        /* --- CORRECCIÓN: Acciones y paréntesis menos llamativos --- */
         .accion-ritual {
             color: #5d4037; 
             font-weight: bold;
@@ -106,23 +112,18 @@
 
         async function inicializar() {
             try {
-                // 1. Cargar el ritual XML
                 const ritualResponse = await fetch('liturgia.xml');
                 const ritualText = await ritualResponse.text();
                 xmlDoc = new DOMParser().parseFromString(ritualText, "text/xml");
                 
-                // 2. Cargar los recursos generales
                 const dataResponse = await fetch('recursos.json');
                 const data = await dataResponse.json();
                 
-                // Guardar definiciones globalmente para reutilizar
                 definicionesData = data.definiciones;
                 
-                // 3. Poblar los selectores
                 poblarSelectorOficiales(data.oficiales);
                 poblarSelectorPartes();
                 
-                // 4. Renderizar contenido inicial
                 renderizarRiturgia();
                 mostrarDefiniciones();
                 
@@ -136,11 +137,8 @@
             const selector = document.getElementById("oficialFilter");
             oficiales.forEach(ofi => {
                 let opt = document.createElement("option");
-                opt.value = ofi.id; // Ejemplo: "VM∴"
-                
-                // Mostrar solo la sigla en el selector
-                opt.textContent = ofi.id; // Ejemplo: "VM∴"
-                
+                opt.value = ofi.id;
+                opt.textContent = ofi.id;
                 selector.appendChild(opt);
             });
         }
@@ -178,15 +176,12 @@
                     const oficial = paso.getAttribute("oficial");
                     let texto = paso.getAttribute("texto");
                     
-                    // Resaltar acciones [] y paréntesis ()
                     texto = texto.replace(/\[(.*?)\]/g, '<span class="accion-ritual">[$1]</span>');
                     texto = texto.replace(/\((.*?)\)/g, '<span class="parentesis-ritual">($1)</span>');
                     
-                    // Lógica de comparación mejorada para manejar puntos
                     let oficialParaComparar = oficial;
                     let filtroParaComparar = filtroOficial;
                     
-                    // Asegurar consistencia de puntos para la comparación
                     if (!oficial.includes('∴') && filtroOficial.includes('∴')) {
                         oficialParaComparar = oficial + '∴';
                     }
@@ -208,13 +203,14 @@
             if (!definicionesData) return;
             
             const contenedorGlosario = document.getElementById('glosario-container');
-            let htmlDef = `<div class="section-header" style="margin-top: 30px;">Glosario de Abreviaturas</div>`;
-            htmlDef += `<div style="background-color: #f9f6ef; padding: 10px; border-radius: 5px; font-size: 0.85em; color: #555;">`;
+            // --- CORRECCIÓN: Glosario más pequeño y discreto ---
+            let htmlDef = `<div class="section-header" style="margin-top: 30px; font-size: 0.9em; padding: 5px;">Glosario de Abreviaturas</div>`;
+            htmlDef += `<div style="background-color: #f9f6ef; padding: 10px; border-radius: 5px; font-size: 0.75em; color: #777;">`;
             htmlDef += `<dl style="margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">`;
             
             for (const [sigla, definicion] of Object.entries(definicionesData)) {
-                htmlDef += `<dt style="font-weight: bold; color: #5d4037;">${sigla}</dt>`;
-                htmlDef += `<dd style="margin: 0; font-style: normal;">${definicion}</dd>`;
+                htmlDef += `<dt style="font-weight: bold; color: #8d6e63;">${sigla}</dt>`;
+                htmlDef += `<dd style="margin: 0; font-style: normal; border: none; padding: 0; color: #777;">${definicion}</dd>`;
             }
             
             htmlDef += `</dl></div>`;
