@@ -23,10 +23,16 @@
         select { padding: 10px; font-size: 16px; border-radius: 5px; border: 1px solid #ccc; background: white; }
 
         #rituales-container { margin-top: 15px; background: var(--blanco); padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .section-header { font-weight: bold; color: white; text-align: center; text-transform: uppercase; background: var(--cafe); padding: 8px; margin: -15px -15px 15px -15px; border-radius: 8px 8px 0 0; }
+        
+        /* --- NUEVO ESTILO DE TÍTULO DE APARTADO --- */
+        .apartado-header { 
+            font-weight: bold; color: var(--cafe); text-align: left; 
+            border-bottom: 1px solid var(--oro); padding: 5px; margin-top: 20px;
+        }
+        /* ------------------------------------------- */
         
         /* Estilos Liturgia */
-        dt { font-weight: bold; color: var(--oro); margin-top: 12px; font-size: 1.1em; }
+        dt { font-weight: bold; color: var(--oro); margin-top: 10px; font-size: 1.05em; }
         dd { margin: 0 0 5px 20px; font-style: normal; border-left: 2px solid #eee; padding-left: 10px; }
         .ritualistica { color: #c0392b; font-weight: bold; letter-spacing: 3px; text-align: center; display: block; margin: 15px 0; }
         
@@ -34,17 +40,16 @@
         .pregunta { color: #2c3e50; font-weight: bold; }
         .respuesta { color: #34495e; margin-left: 15px; font-style: normal; }
 
-        /* --- NUEVO ESTILO DE ACCIÓN --- */
+        /* Estilo para las acciones dentro del texto de los diálogos [] */
         .accion-inline {                
             color: var(--texto-accion);                
             font-style: italic;                
-            font-size: 0.85em; /* Letra más pequeña */
+            font-size: 0.85em; 
             font-weight: normal;
-            display: block; /* Forzar que aparezca debajo */
-            margin-top: 2px; /* Margen muy pequeño para unión */
-            margin-left: 10px; /* Alineado con el texto del diálogo */
+            display: block; 
+            margin-top: 2px; 
+            margin-left: 10px; 
         }
-        /* ------------------------------ */
 
         .highlight { background-color: rgba(212, 160, 23, 0.15) !important; border-left: 4px solid var(--oro) !important; padding: 5px 10px; border-radius: 4px; }
     </style>
@@ -54,8 +59,8 @@
     <h1>Liturgia de Aprendiz</h1>
 
     <div id="control-panel">
-        <select id="parteFilter" onchange="actualizarApartados()"></select>
-        <select id="apartadoFilter" onchange="renderizarLiturgia()"></select>
+        <select id="parteFilter" onchange="renderizarLiturgia()">
+            </select>
         
         <select id="oficialFilter" onchange="renderizarLiturgia()">
             <option value="todos">Todos los Oficiales</option>
@@ -78,7 +83,7 @@
                 const text = await response.text();
                 xmlDoc = new DOMParser().parseFromString(text, "text/xml");
                 poblarPartes();
-                actualizarApartados();
+                renderizarLiturgia();
             } catch (e) {
                 document.getElementById('rituales-container').innerHTML = "Error al cargar el archivo XML.";
             }
@@ -96,56 +101,46 @@
             });
         }
 
-        function actualizarApartados() {
-            const parteId = document.getElementById("parteFilter").value;
-            const apartadoSelector = document.getElementById("apartadoFilter");
-            const parte = xmlDoc.querySelector(`parte[id="${parteId}"]`);
-            const apartados = parte.querySelectorAll("apartado");
-            
-            apartadoSelector.innerHTML = "";
-            apartados.forEach(ap => {
-                let opt = document.createElement("option");
-                opt.value = ap.getAttribute("id");
-                opt.textContent = ap.getAttribute("titulo");
-                apartadoSelector.appendChild(opt);
-            });
-            renderizarLiturgia();
-        }
-
         function renderizarLiturgia() {
             if (!xmlDoc) return;
-            const idApartado = document.getElementById("apartadoFilter").value;
+            const parteId = document.getElementById("parteFilter").value;
             const filtroOficial = document.getElementById("oficialFilter").value;
             const contenedor = document.getElementById("rituales-container");
-            const apartado = xmlDoc.querySelector(`apartado[id="${idApartado}"]`);
+            const parte = xmlDoc.querySelector(`parte[id="${parteId}"]`);
             
-            if (!apartado) return;
+            if (!parte) return;
 
-            let htmlOutput = `<div class="section-header">${apartado.getAttribute("titulo")}</div><dl>`;
+            let htmlOutput = "";
+            const apartados = parte.querySelectorAll("apartado");
 
-            Array.from(apartado.children).forEach(nodo => {
-                const oficial = nodo.getAttribute("oficial");
-                
-                // --- PROCESAR TEXTO PARA ACCIONES ---
-                let textoRaw = nodo.getAttribute("texto");
-                let textoFormateado = textoRaw.replace(/\[(.*?)\]/g, '<span class="accion-inline">$1</span>');
-                // ------------------------------------
-                
-                const esResaltado = (filtroOficial !== "todos" && oficial === filtroOficial);
-                const claseHighlight = esResaltado ? "highlight" : "";
+            // --- BUCLE PARA RECORRER TODOS LOS APARTADOS DE LA PARTE ---
+            apartados.forEach(apartado => {
+                htmlOutput += `<div class="apartado-header">${apartado.getAttribute("titulo")}</div><dl>`;
 
-                if (nodo.tagName === "pregunta") {
-                    htmlOutput += `<dt class="pregunta ${claseHighlight}">P:. ${oficial}∴</dt><dd class="respuesta ${claseHighlight}">${textoFormateado}</dd>`;
-                } else if (nodo.tagName === "respuesta") {
-                    htmlOutput += `<dt class="respuesta ${claseHighlight}">R:. ${oficial}∴</dt><dd class="respuesta ${claseHighlight}">${textoFormateado}</dd>`;
-                } else if (nodo.getAttribute("tipo") === "dialogo") {
-                    htmlOutput += `<div class="${claseHighlight}"><dt>${oficial}∴</dt><dd>${textoFormateado}</dd></div>`;
-                } else if (nodo.getAttribute("tipo") === "ritualistica") {
-                    htmlOutput += `<span class="ritualistica">${textoFormateado}</span>`;
-                }
+                Array.from(apartado.children).forEach(nodo => {
+                    const oficial = nodo.getAttribute("oficial");
+                    
+                    // Procesar el texto para formatear corchetes automáticamente
+                    let textoRaw = nodo.getAttribute("texto");
+                    let textoFormateado = textoRaw.replace(/\[(.*?)\]/g, '<span class="accion-inline">$1</span>');
+                    
+                    const esResaltado = (filtroOficial !== "todos" && oficial === filtroOficial);
+                    const claseHighlight = esResaltado ? "highlight" : "";
+
+                    if (nodo.tagName === "pregunta") {
+                        htmlOutput += `<dt class="pregunta ${claseHighlight}">P:. ${oficial}∴</dt><dd class="respuesta ${claseHighlight}">${textoFormateado}</dd>`;
+                    } else if (nodo.tagName === "respuesta") {
+                        htmlOutput += `<dt class="respuesta ${claseHighlight}">R:. ${oficial}∴</dt><dd class="respuesta ${claseHighlight}">${textoFormateado}</dd>`;
+                    } else if (nodo.getAttribute("tipo") === "dialogo") {
+                        htmlOutput += `<div class="${claseHighlight}"><dt>${oficial}∴</dt><dd>${textoFormateado}</dd></div>`;
+                    } else if (nodo.getAttribute("tipo") === "ritualistica") {
+                        htmlOutput += `<span class="ritualistica">${textoFormateado}</span>`;
+                    }
+                });
+                htmlOutput += `</dl>`;
             });
+            // ----------------------------------------------------------
 
-            htmlOutput += `</dl>`;
             contenedor.innerHTML = htmlOutput;
         }
 
