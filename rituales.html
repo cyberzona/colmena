@@ -10,10 +10,10 @@
         
         #control-panel { background: #efebe9; padding: 10px; border-radius: 8px; border: 1px solid #d7ccc8; text-align: center; margin-bottom: 10px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         
-        /* Contenedor para la etiqueta + select */
-        .select-container { display: inline-block; width: 45%; margin: 5px; text-align: left; }
+        /* --- CORRECCIÓN: Ajuste de anchos 60% y 30% --- */
+        #container-parte { display: inline-block; width: 60%; margin: 5px; text-align: left; vertical-align: top; }
+        #container-oficial { display: inline-block; width: 30%; margin: 5px; text-align: left; vertical-align: top; }
         
-        /* --- CORRECCIÓN: Etiqueta pequeña sobre los campos --- */
         .select-label { display: block; font-size: 0.7em; color: #795548; margin-bottom: 2px; font-weight: bold; text-transform: uppercase; }
         
         select { padding: 8px; font-size: 0.9em; border-radius: 4px; border: 1px solid #ccc; width: 100%; background-color: white; }
@@ -54,7 +54,7 @@
         .parte-ritual { counter-reset: line-counter; }
         
         .highlight-dialogue { 
-            background-color: rgba(188, 170, 164, 0.3); 
+            background-color: rgba(180,255,100,0.4); 
             border-left: 3px solid #8d6e63; 
             padding-left: 9px; 
             transition: background-color 0.3s;
@@ -92,16 +92,16 @@
     <h1>Ritual de Aprendiz</h1>
 
     <div id="control-panel">
-        <div class="select-container">
+        <div id="container-parte">
             <span class="select-label">Parte</span>
             <select id="parteFilter" onchange="renderizarRiturgia()">
             </select>
         </div>
         
-        <div class="select-container">
+        <div id="container-oficial">
             <span class="select-label">Oficial</span>
             <select id="oficialFilter" onchange="renderizarRiturgia()">
-                <option value="todos" selected>Todos</option>
+                <option value="todos" selected>Mostrar Todo</option>
             </select>
         </div>
     </div>
@@ -141,7 +141,7 @@
             oficiales.forEach(ofi => {
                 let opt = document.createElement("option");
                 opt.value = ofi.id;
-                opt.textContent = ofi.id + '∴'; // Puntos en el menú
+                opt.textContent = ofi.id + '∴'; 
                 selector.appendChild(opt);
             });
         }
@@ -172,7 +172,7 @@
             
             const apartados = parte.querySelectorAll("apartado");
             apartados.forEach(apartado => {
-                htmlOutput += `<div class="apartado-header"><br>${apartado.getAttribute("titulo")}</div>`;
+                htmlOutput += `<div class="apartado-header">${apartado.getAttribute("titulo")}</div>`;
                 
                 const pasos = apartado.querySelectorAll("paso");
                 pasos.forEach(paso => {
