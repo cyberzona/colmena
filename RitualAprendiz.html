@@ -41,17 +41,16 @@
         .pregunta { color: #2c3e50; font-weight: bold; }
         .respuesta { color: #34495e; margin-left: 15px; font-style: normal; }
 
-        /* --- NUEVO ESTILO DE ACCIÓN --- */
+        /* Estilo para las acciones dentro del texto de los diálogos [] */
         .accion-inline {                
             color: var(--texto-accion);                
             font-style: italic;                
             font-size: 0.85em; /* Letra más pequeña */
             font-weight: normal;
             display: block; /* Forzar que aparezca debajo */
-            margin-top: 2px; /* Margen muy pequeño para unión */
+            margin-top: 0px; /* Sin separación */
             margin-left: 10px; /* Alineado con el texto del diálogo */
         }
-        /* ------------------------------ */
 
         .highlight { background-color: rgba(212, 160, 23, 0.15) !important; border-left: 4px solid var(--oro) !important; padding: 5px 10px; border-radius: 4px; }
     </style>
@@ -122,7 +121,7 @@
                 // Título del apartado funcional
                 htmlOutput += `<div class="apartado-header">${apartado.getAttribute("titulo")}</div><dl>`;
 
-                Array.from(apartado.children).forEach(nodo => {
+                Array.from(apartado.children).forEach((nodo, index) => {
                     const oficial = nodo.getAttribute("oficial");
                     
                     // Procesar el texto para formatear corchetes automáticamente como acciones técnicas
@@ -132,12 +131,13 @@
                     const esResaltado = (filtroOficial !== "todos" && oficial === filtroOficial);
                     const claseHighlight = esResaltado ? "highlight" : "";
 
+                    // Añadir el número de diálogo al principio del título (dt)
                     if (nodo.tagName === "pregunta") {
-                        htmlOutput += `<dt class="pregunta ${claseHighlight}">P:. ${oficial}∴</dt><dd class="respuesta ${claseHighlight}">${textoFormateado}</dd>`;
+                        htmlOutput += `<dt class="pregunta ${claseHighlight}">${index + 1}. P:. ${oficial}∴</dt><dd class="respuesta ${claseHighlight}">${textoFormateado}</dd>`;
                     } else if (nodo.tagName === "respuesta") {
-                        htmlOutput += `<dt class="respuesta ${claseHighlight}">R:. ${oficial}∴</dt><dd class="respuesta ${claseHighlight}">${textoFormateado}</dd>`;
+                        htmlOutput += `<dt class="respuesta ${claseHighlight}">${index + 1}. R:. ${oficial}∴</dt><dd class="respuesta ${claseHighlight}">${textoFormateado}</dd>`;
                     } else if (nodo.getAttribute("tipo") === "dialogo") {
-                        htmlOutput += `<div class="${claseHighlight}"><dt>${oficial}∴</dt><dd>${textoFormateado}</dd></div>`;
+                        htmlOutput += `<div class="${claseHighlight}"><dt>${index + 1}. ${oficial}∴</dt><dd>${textoFormateado}</dd></div>`;
                     } else if (nodo.getAttribute("tipo") === "ritualistica") {
                         htmlOutput += `<span class="ritualistica">${textoFormateado}</span>`;
                     }
