@@ -15,10 +15,11 @@
         #rituales-content { margin-top: 5px; background: white; padding: 10px; border-radius: 8px; }
         #glosario-container { margin-top: 20px; }
         
+        /* Abreviaturas */
         dt { font-weight: bold; color: #5d4037; margin-top: 10px; font-size: 0.9em; transition: all 0.3s; }
         
         dd { 
-            margin-left: 35px; /* Aumentado margen para los puntos */
+            margin-left: 25px; 
             margin-bottom: 8px; 
             font-style: normal; 
             border-left: 2px solid #d7ccc8; 
@@ -29,31 +30,21 @@
             color: #3e2723;
         }
         
-        /* Numeración más grande y reposicionada */
+        /* Numeración más grande y reposicionada - SIN PUNTOS DESPUES */
         dd::before { 
             counter-increment: line-counter; 
             content: counter(line-counter); 
             position: absolute; 
-            left: -32px; /* Ajustado posición */
+            left: -25px; 
             top: 1px;
             color: #8d6e63; 
             font-weight: bold; 
             font-style: normal;
-            font-size: 0.9em; /* Aumentado tamaño */
+            font-size: 0.9em; 
             background-color: transparent; 
             border: none; 
         }
 
-        /* --- CORRECCIÓN: Puntos de diálogo (Tripuntado) --- */
-        dd::after {
-            content: '...';
-            position: absolute;
-            left: -12px;
-            top: 0px;
-            color: #8d6e63;
-            font-weight: bold;
-        }
-        
         .parte-ritual { counter-reset: line-counter; }
         
         .highlight-dialogue { 
@@ -96,11 +87,11 @@
 
     <div id="control-panel">
         <select id="parteFilter" onchange="renderizarRiturgia()">
-            </select>
+        </select>
         
         <select id="oficialFilter" onchange="renderizarRiturgia()">
             <option value="todos" selected>Mostrar Todo</option>
-            </select>
+        </select>
     </div>
 
     <div id="rituales-content"></div>
@@ -203,14 +194,15 @@
             if (!definicionesData) return;
             
             const contenedorGlosario = document.getElementById('glosario-container');
-            // --- CORRECCIÓN: Glosario más pequeño y discreto ---
-            let htmlDef = `<div class="section-header" style="margin-top: 30px; font-size: 0.9em; padding: 5px;">Glosario de Abreviaturas</div>`;
-            htmlDef += `<div style="background-color: #f9f6ef; padding: 10px; border-radius: 5px; font-size: 0.75em; color: #777;">`;
-            htmlDef += `<dl style="margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">`;
+            
+            // --- CORRECCIÓN: Glosario extremadamente discreto ---
+            let htmlDef = `<div style="margin-top: 15px; padding: 5px; border-top: 1px solid #efebe9;">`;
+            htmlDef += `<dl style="margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0px 5px; font-size: 0.7em; color: #888;">`;
             
             for (const [sigla, definicion] of Object.entries(definicionesData)) {
-                htmlDef += `<dt style="font-weight: bold; color: #8d6e63;">${sigla}</dt>`;
-                htmlDef += `<dd style="margin: 0; font-style: normal; border: none; padding: 0; color: #777;">${definicion}</dd>`;
+                htmlDef += `<dt style="font-weight: bold; color: #a1887f; display: inline;">${sigla}</dt>`;
+                htmlDef += `<dd style="margin: 0 0 0 3px; font-style: normal; display: inline; border: none; padding: 0; color: #a1887f;">${definicion}</dd>`;
+                htmlDef += `<span style="color: #d7ccc8;"> | </span>`;
             }
             
             htmlDef += `</dl></div>`;
