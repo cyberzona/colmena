@@ -2,7 +2,7 @@
 <ritual taller="Colmena No. 8" grado="1">
     
     <parte id="apertura" titulo="Apertura de Trabajos">
-        <apartado id="silencio" titulo="1. El Silencio: La Purificación del Espacio Sagrado">
+        <apartado id="espacio" titulo="Salvaguarda del Espacio Sagrado">
             <paso tipo="dialogo" oficial="VM" texto="¡Silencio en Logia, Hermanos (HH∴)!"/>
             <paso tipo="dialogo" oficial="VM" texto="Hermano Maestro de Ceremonias (MC∴), ¿los puestos están cubiertos?"/>
             <paso tipo="dialogo" oficial="MC" texto="Si, VM∴ los puestos están cubiertos y los HH∴ prontos a iniciar los trabajos."/>
@@ -15,7 +15,7 @@
             <paso tipo="dialogo" oficial="GT" texto="Hermano 1V∴, el Temp∴ está a cubierto de toda indiscreción profana."/>
             <paso tipo="dialogo" oficial="1V" texto="VM∴ [Da tres golpes de Mallete] el Templo está cubierto de toda indiscreción."/>
         </apartado>
-        <apartado id="orden" titulo="2. El Orden: La Geometría de las Columnas">
+        <apartado id="orden" titulo="El Orden de las Columnas">
             <paso tipo="dialogo" oficial="VM" texto="¿Cuál es vuestro segundo deber en Hermano 1V∴?"/>
             <paso tipo="dialogo" oficial="1V" texto="Ver si todos los HH∴ que decoran ambas columnas son aprendices masones."/>
             <paso tipo="dialogo" oficial="VM" texto="Aseguraos de ello, QQHH∴ Primer y Segundo Vigilantes, de pie y al orden."/>
@@ -23,7 +23,7 @@
             <paso tipo="dialogo" oficial="1V" texto="VM∴ los HH∴ que se cobijan bajo la bóveda de nuestro templo son Masones y se hallan al orden, prontos para cumplir con vuestro mandato, y dispuestos a laborar en la construcción del Templo moral erigido a la ciencia, a la virtud y al trabajo. [Da un golpe de Mallete]."/>
             <paso tipo="dialogo" oficial="VM" texto="HH∴ míos, también son masones los que decoran el Oriente, y están prontos para trabajar en la construcción del Templo Moral que la Masonería eleva en la gloria del perfeccionamiento humano, mediante la conquista de los sublimes principios de Libertad, Igualdad y Fraternidad [Da un golpe de Mallete seguido por los Vigilantes]."/>
         </apartado>
-        <apartado id="magisterio" titulo="3. El Magisterio: El Deber de los Oficiales">
+        <apartado id="oficiales" titulo="El Deber de los Oficiales">
             <paso tipo="dialogo" oficial="VM" texto="¿Para qué ocupáis ese puesto, Querido Hermano 2V∴?"/>
             <paso tipo="dialogo" oficial="2V" texto="Para mejor observar el Sol en su meridiano, mandar a los obreros al trabajo y llamarlos a la recreación, y de la recreación al trabajo a fin de que la humanidad coseche el resplandor de los principios Masónicos."/>
             <paso tipo="dialogo" oficial="VM" texto="Querido Hermano 2V∴ ¿Donde toma asiento nuestro Querido Hermano 1V∴?"/>
@@ -35,7 +35,7 @@
             <paso tipo="dialogo" oficial="VM" texto="¿Para qué H∴ mío."/>
             <paso tipo="dialogo" oficial="1V" texto="Así como el Sol nace en Oriente al iniciar su carrera y romper el día, de igual manera se alza allí el asiento del VM∴ para abrir la Logia, dirigirla en sus trabajos e iluminar con sus luces, esclareciendo así los sublimes preceptos de nuestra."/>
         </apartado>
-        <apartado id="tiempo" titulo="4. El Tiempo: La Percepción de la Verdad">
+        <apartado id="tiempo" titulo="La Edad de los Aprendices">
             <paso tipo="dialogo" oficial="VM" texto="Querido Hermano 2V∴ ¿Qué edad tenéis como Apr∴ Mas∴?"/>
             <paso tipo="dialogo" oficial="2V" texto="Tres años, VM∴."/>
             <paso tipo="dialogo" oficial="VM" texto="¿A qué hora empiezan los trabajos de Apr∴ Mas∴, QH∴ 1V∴?"/>
@@ -47,7 +47,7 @@
             <paso tipo="dialogo" oficial="2V" texto="QQHH∴ de la Col∴ del Norte, por orden del VM∴ comunicada a mí por nuestro QH∴ 1V∴, que os unáis a él y a nosotros para abrir los trabajos de esta RL∴ en grado de Apr∴Mas∴. [Anunciado en mi Col∴, QH∴ 1V∴.]"/>
             <paso tipo="dialogo" oficial="1V" texto="Anunciado en ambas CCol∴, VM∴."/>
         </apartado>
-        <apartado id="logos" titulo="5. El Logos: Consagración de la Luz">
+        <apartado id="logos" titulo="Consagración de la Luz">
             <paso tipo="dialogo" oficial="VM" texto="¡En pie y al Orden, Queridos Hermanos! [Da un golpe de Mallete seguido por los Vigilantes]."/>
             <paso tipo="dialogo" oficial="VM" texto="QH∴ Maestro de Ceremonias (MC∴) , prended las Luces. [MC∴ , abre el Libro de la Ley y coloca la Escuadra y sobre esta el Compás. Enciende la estrella del VM∴, dice: ¡Que la Sabiduría guie nuestros trabajos! ; MC∴, enciende la estrella del 1V∴ VM∴, dice: ¡Que la Fuerza los sostenga! ; MC∴, enciende la estrella del 2V∴, VM∴ dice: ¡Que la Belleza los adorne!]"/>
             <paso tipo="dialogo" oficial="VM" texto="Puesto que todo está justo y perfecto, y que es la hora que los AAp∴ MMas∴ empiezan sus trabajos, uníos a mí HH∴ míos, ALGDGADU∴ y en su nombre y bajo la obediencia de la Ser∴ Gran L∴ de Lengua Española para los EE. UU. de A., declaro abiertos los trabajos de esta RL∴ en el grado de Ap∴Mas∴ del REAA∴. Queda prohibido a todo H∴ pasar de una a otra Col∴ ni cubrir el Templo sin permiso de su respectivo V∴; ni tratar asuntos políticos ni religiosos, a mí HH∴ por el signo y Bat∴ de Grado. [Da tres golpes de Mall∴ que repiten los VV∴] Tomad asiento, QQHH∴."/>
