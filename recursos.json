@@ -1,0 +1,17 @@
+{
+  "oficiales": [
+    { "id": "VM∴", "nombre": "Venerable Maestro" },
+    { "id": "1V∴", "nombre": "Primer Vigilante" },
+    { "id": "2V∴", "nombre": "Segundo Vigilante" },
+    { "id": "MC∴", "nombre": "Maestro de Ceremonias" },
+    { "id": "GdT∴", "nombre": "Guarda Templo" },
+    { "id": "Ora∴", "nombre": "Orador" },
+    { "id": "Hos∴", "nombre": "Hospitalario" }
+  ],
+  "definiciones": {
+    "HH∴": "Hermanos",
+    "QQHH∴": "Queridos Hermanos",
+    "RL∴": "Respetable Logia",
+    "GADU∴": "Gran Arquitecto Del Universo"
+  }
+}
