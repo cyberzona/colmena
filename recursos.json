@@ -1,6 +1,6 @@
 {
   "oficiales": [
-    { "id": "VM∴", "nombre": "Venerable Maestro" },
+    { "id": "VM", "nombre": "Venerable Maestro" },
     { "id": "1V∴", "nombre": "Primer Vigilante" },
     { "id": "2V∴", "nombre": "Segundo Vigilante" },
     { "id": "MC∴", "nombre": "Maestro de Ceremonias" },
