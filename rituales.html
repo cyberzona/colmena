@@ -10,9 +10,13 @@
         
         #control-panel { background: #efebe9; padding: 10px; border-radius: 8px; border: 1px solid #d7ccc8; text-align: center; margin-bottom: 10px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         
-        /* --- CORRECCIÓN: Tamaños de selectores ajustados --- */
-        #parteFilter { padding: 8px; font-size: 0.9em; margin: 5px; border-radius: 4px; border: 1px solid #ccc; width: 60%; display: inline-block; background-color: white; }
-        #oficialFilter { padding: 8px; font-size: 0.9em; margin: 5px; border-radius: 4px; border: 1px solid #ccc; width: 30%; display: inline-block; background-color: white; }
+        /* Contenedor para la etiqueta + select */
+        .select-container { display: inline-block; width: 45%; margin: 5px; text-align: left; }
+        
+        /* --- CORRECCIÓN: Etiqueta pequeña sobre los campos --- */
+        .select-label { display: block; font-size: 0.7em; color: #795548; margin-bottom: 2px; font-weight: bold; text-transform: uppercase; }
+        
+        select { padding: 8px; font-size: 0.9em; border-radius: 4px; border: 1px solid #ccc; width: 100%; background-color: white; }
 
         #rituales-content { margin-top: 5px; background: white; padding: 10px; border-radius: 8px; }
         #glosario-container { margin-top: 20px; }
@@ -30,7 +34,6 @@
             position: relative; 
             transition: all 0.3s; 
             color: #3e2723;
-            text-align: justify;
         }
         
         /* Numeración grande y reposicionada */
@@ -50,18 +53,11 @@
 
         .parte-ritual { counter-reset: line-counter; }
         
-        /* --- Resaltado Amarillo-Verdoso --- */
         .highlight-dialogue { 
-            background-color: rgba(180, 255, 100, 0.4); 
-            border-left: 3px solid #8BC34A; 
+            background-color: rgba(188, 170, 164, 0.3); 
+            border-left: 3px solid #8d6e63; 
             padding-left: 9px; 
             transition: background-color 0.3s;
-        }
-
-        /* --- Resaltado de tripuntuación en Azul Oscuro --- */
-        .tripuntado {
-            color: #00008B; 
-            font-weight: bold;
         }
         
         .section-header { 
@@ -77,27 +73,12 @@
             letter-spacing: 1px;
         }
         
-        /* --- Apartado alineado a la derecha --- */
-        .apartado-header { 
-            font-weight: bold; 
-            color: #795548; 
-            font-size: 0.95em; 
-            border-bottom: 1px solid #d7ccc8; 
-            padding-bottom: 3px; 
-            margin-top: 10px; 
-            text-align: right;
-        }
+        .apartado-header { font-weight: bold; color: #795548; font-size: 0.95em; border-bottom: 1px solid #d7ccc8; padding-bottom: 3px; margin-top: 10px; }
 
-        /* --- Acciones como bloques para forzar salto de línea --- */
         .accion-ritual {
             color: #5d4037; 
             font-weight: bold;
             font-style: normal;
-            display: block; 
-            margin: 5px 0; 
-            border-bottom: 1px dashed #d7ccc8; 
-            padding-bottom: 2px;
-            text-align: left; 
         }
 
         .parentesis-ritual {
@@ -111,12 +92,18 @@
     <h1>Ritual de Aprendiz</h1>
 
     <div id="control-panel">
-        <select id="parteFilter" onchange="renderizarRiturgia()">
-        </select>
+        <div class="select-container">
+            <span class="select-label">Parte</span>
+            <select id="parteFilter" onchange="renderizarRiturgia()">
+            </select>
+        </div>
         
-        <select id="oficialFilter" onchange="renderizarRiturgia()">
-            <option value="todos" selected>Mostrar Todo</option>
-        </select>
+        <div class="select-container">
+            <span class="select-label">Oficial</span>
+            <select id="oficialFilter" onchange="renderizarRiturgia()">
+                <option value="todos" selected>Mostrar Todo</option>
+            </select>
+        </div>
     </div>
 
     <div id="rituales-content"></div>
@@ -128,12 +115,10 @@
 
         async function inicializar() {
             try {
-                // Cargar el ritual XML
                 const ritualResponse = await fetch('liturgia.xml');
                 const ritualText = await ritualResponse.text();
                 xmlDoc = new DOMParser().parseFromString(ritualText, "text/xml");
                 
-                // Cargar los recursos generales
                 const dataResponse = await fetch('recursos.json');
                 const data = await dataResponse.json();
                 
@@ -155,10 +140,8 @@
             const selector = document.getElementById("oficialFilter");
             oficiales.forEach(ofi => {
                 let opt = document.createElement("option");
-                // Mantenemos el ID limpio para la lógica de búsqueda
-                opt.value = ofi.id; 
-                // Añadimos puntos aquí para mostrarlo en el menú
-                opt.textContent = ofi.id + '∴'; 
+                opt.value = ofi.id;
+                opt.textContent = ofi.id + '∴'; // Puntos en el menú
                 selector.appendChild(opt);
             });
         }
@@ -196,19 +179,11 @@
                     const oficial = paso.getAttribute("oficial");
                     let texto = paso.getAttribute("texto");
                     
-                    // Resaltar acciones [] y paréntesis ()
                     texto = texto.replace(/\[(.*?)\]/g, '<span class="accion-ritual">[$1]</span>');
                     texto = texto.replace(/\((.*?)\)/g, '<span class="parentesis-ritual">($1)</span>');
                     
-                    // --- Resaltar la palabra precedente y el símbolo en azul oscuro ---
-                    texto = texto.replace(/(\w+)\.\·\./g, '<span class="tripuntado">$1.·.</span>');
-                    
-                    // --- Lógica de resaltado y puntos ---
-                    
-                    // 1. Añadir tripuntuación al oficial que habla en el texto
                     const oficialTripuntuado = oficial + '∴';
                     
-                    // 2. Comparación flexible (con o sin puntos en el XML)
                     const resaltar = (filtroOficial !== "todos" && 
                                      (oficial === filtroOficial || oficial + '∴' === filtroOficial));
                     const claseHighlight = resaltar ? "highlight-dialogue" : "";
@@ -228,11 +203,9 @@
             
             const contenedorGlosario = document.getElementById('glosario-container');
             
-            // --- Glosario en línea, compacto y discreto ---
             let htmlDef = `<div style="margin-top: 15px; padding: 5px; border-top: 1px solid #efebe9; font-size: 0.7em; color: #a1887f;">`;
             
             for (const [sigla, definicion] of Object.entries(definicionesData)) {
-                // Formato: SIGLA : Definición |
                 htmlDef += `<span style="font-weight: bold;">${sigla}</span> : ${definicion} <span style="color: #d7ccc8; margin: 0 3px;">|</span> `;
             }
             
