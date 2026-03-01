@@ -39,7 +39,7 @@
             background-color: white;
         }
 
-        dl { 
+        #rituales-container { 
             margin-top: 5px; 
             background: white; 
             padding: 10px; 
@@ -63,7 +63,7 @@
             position: relative;
         }
         
-        /* Numeración continua automática dentro de cada parte */
+        /* Numeración continua automática */
         dd::before {
             counter-increment: line-counter;
             content: counter(line-counter) ". ";
@@ -74,12 +74,12 @@
             font-style: normal;
         }
         
-        /* Resetea el contador al inicio de cada PARTE PRINCIPAL */
+        /* Resetea el contador al inicio de cada parte principal */
         .parte-ritual {
             counter-reset: line-counter;
         }
         
-        .hidden { display: none; }
+        .hidden { display: none !important; }
         
         .highlight {
             background-color: rgba(212,160,23,0.1);
@@ -130,7 +130,7 @@
         </select>
     </div>
 
-    <dl>
+    <div id="rituales-container">
         <div class="parte-ritual" data-parte="apertura">
             
             <div data-apartado="apertura" class="contenedor-apertura">
@@ -451,29 +451,21 @@
                 <dd data-dignidad="MC">(Apaga la estrella de 2V∴ , Apaga la estrella del 1V∴ y Apaga la estrella del VM∴ Retira la Escuadra y el Compás, y cierra el Libro de la Ley)</dd>
             </div>
         </div>
-
-    </dl>
+    </div>
 
     <script>
         function filtrarRitual() {
             var filtroApartado = document.getElementById("apartadoFilter").value;
             var filtroDignidad = document.getElementById("dignidadFilter").value;
             
-            // Selecciona las subsecciones individuales
             var secciones = document.querySelectorAll('[data-apartado]');
-            // Selecciona los contenedores principales de "parte"
-            var partes = document.querySelectorAll('.parte-ritual');
-            
             var elementosDd = document.querySelectorAll('dd[data-dignidad]');
             var elementosDt = document.querySelectorAll('dt[data-dignidad]');
 
             // 1. Filtrar por Apartado/Parte
             secciones.forEach(seccion => {
                 var apartado = seccion.getAttribute('data-apartado');
-                
-                // Mapeo de subsecciones a partes principales para el filtro
                 var esApertura = (apartado === "apertura" || seccion.classList.contains("apertura-sub"));
-                var esTrabajo = (apartado === "admin" || apartado === "familiares" || apartado === "proposiciones" || apartado === "beneficencia");
                 var esClausura = (apartado === "clausura");
 
                 if (filtroApartado === "apertura") {
@@ -481,17 +473,16 @@
                 } else if (filtroApartado === "clausura") {
                     seccion.classList.toggle("hidden", !esClausura);
                 } else if (filtroApartado === "trabajos" || (filtroApartado !== "apertura" && filtroApartado !== "clausura" && apartado === filtroApartado)) {
-                    // Si se selecciona un apartado específico de trabajos, mostrarlo
                     seccion.classList.toggle("hidden", seccion.getAttribute('data-apartado') !== filtroApartado);
                 } else {
                     seccion.classList.add("hidden");
                 }
             });
 
-            // 2. Resaltar la dignidad seleccionada
+            // 2. Resaltar la dignidad seleccionada y ajustar visibilidad
             elementosDd.forEach((dd, index) => {
                 var dt = elementosDt[index];
-                var estaVisible = dd.closest('[data-apartado]').classList.contains("hidden") === false;
+                var estaVisible = !dd.closest('[data-apartado]').classList.contains("hidden");
                 
                 if (estaVisible) {
                     var dignidad = dd.getAttribute('data-dignidad');
@@ -507,6 +498,10 @@
                         dt.classList.add("hidden");
                         dd.classList.remove("highlight");
                     }
+                } else {
+                    // Si el apartado está oculto, ocultar también sus elementos dt/dd
+                    dd.classList.add("hidden");
+                    dt.classList.add("hidden");
                 }
             });
         }
