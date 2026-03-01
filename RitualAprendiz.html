@@ -30,11 +30,11 @@
         
         select {
             padding: 5px;
-            font-size: 0.9em;
+            font-size: 0.85em;
             margin: 2px;
             border-radius: 4px;
             border: 1px solid #ccc;
-            width: 45%;
+            width: 48%;
             display: inline-block;
         }
         
@@ -59,17 +59,27 @@
         }
         
         dd { 
-            margin-left: 5px; 
+            margin-left: 25px; 
             margin-bottom: 10px; 
             font-style: italic; 
             border-left: 2px solid #E7D9C9;
             padding-left: 5px;
             font-size: 0.9em;
+            position: relative;
+        }
+        
+        dd::before {
+            counter-increment: line-counter;
+            content: counter(line-counter) ". ";
+            position: absolute;
+            left: -20px;
+            color: #7A4F35;
+            font-weight: bold;
+            font-style: normal;
         }
         
         .hidden { display: none; }
         
-        /* ESTILO PARA RESALTAR LA DIGNIDAD SELECCIONADA */
         .highlight {
             background-color: rgba(212,160,23,0.1);
             border-left: 3px solid #D4A017 !important;
@@ -96,6 +106,11 @@
     <div id="control-panel">
         <select id="apartadoFilter">
             <option value="apertura" selected>Apertura</option>
+            <option value="silencio">Silencio</option>
+            <option value="orden">Orden</option>
+            <option value="magisterio">Magisterio</option>
+            <option value="tiempo">Tiempo</option>
+            <option value="los">Los (Final Apertura)</option>
             <option value="clausura">Clausura</option>
         </select>
         
@@ -105,7 +120,6 @@
             <option value="1V">1V∴</option>
             <option value="2V">2V∴</option>
             <option value="MC">MC∴</option>
-            <option value="GdT">GdT∴</option>
         </select>
         
         <button onclick="filtrarRitual()">Filtrar</button>
@@ -116,10 +130,16 @@
             <div class="section-header">Apertura</div>
             <dt data-dignidad="VM">VM∴</dt>
             <dd data-dignidad="VM">¡Silencio en Logia, Hermanos (HH∴)!</dd>
+        </div>
 
+        <div data-apartado="silencio">
+            <div class="section-header">Silencio</div>
             <dt data-dignidad="VM">VM∴</dt>
             <dd data-dignidad="VM">Hermano MC∴, ¿los puestos están cubiertos?</dd>
+        </div>
 
+        <div data-apartado="orden">
+            <div class="section-header">Orden</div>
             <dt data-dignidad="MC">MC∴</dt>
             <dd data-dignidad="MC">Si, VM∴ los puestos están cubiertos y los HH∴ prontos a iniciar los trabajos.</dd>
         </div>
@@ -128,9 +148,6 @@
             <div class="section-header">Clausura</div>
             <dt data-dignidad="VM">VM∴</dt>
             <dd data-dignidad="VM">QH∴ 1V∴, ¿Cuáles son los caracteres distintivos que deben adornar al verdadero Mas∴?</dd>
-
-            <dt data-dignidad="1V">1V∴</dt>
-            <dd data-dignidad="1V">Ser virtuoso, amante con los HH∴ y tolerante con todos.</dd>
         </div>
     </dl>
 
@@ -140,7 +157,8 @@
             var filtroDignidad = document.getElementById("dignidadFilter").value;
             
             var secciones = document.querySelectorAll('[data-apartado]');
-            var elementos = document.querySelectorAll('[data-dignidad]');
+            var elementosDd = document.querySelectorAll('dd[data-dignidad]');
+            var elementosDt = document.querySelectorAll('dt[data-dignidad]');
 
             // 1. Filtrar por Apartado
             secciones.forEach(seccion => {
@@ -151,27 +169,27 @@
                 }
             });
 
-            // 2. Resaltar la dignidad seleccionada y asegurar que el diálogo del VM sea visible
-            elementos.forEach(el => {
-                var estaEnApartadoCorrecto = el.closest('[data-apartado]').classList.contains("hidden") === false;
+            // 2. Resaltar la dignidad seleccionada y asegurar contexto del VM
+            elementosDd.forEach((dd, index) => {
+                var dt = elementosDt[index];
+                var estaEnApartadoCorrecto = dd.closest('[data-apartado]').classList.contains("hidden") === false;
                 
                 if (estaEnApartadoCorrecto) {
-                    var dignidad = el.getAttribute('data-dignidad');
+                    var dignidad = dd.getAttribute('data-dignidad');
                     
-                    // Si es el VM, mostrar siempre. Si es la dignidad filtrada, resaltar.
                     if (dignidad === "VM" || dignidad === filtroDignidad || filtroDignidad === "todos") {
-                        el.classList.remove("hidden");
+                        dd.classList.remove("hidden");
+                        dt.classList.remove("hidden");
                         
-                        // Resaltar solo si es la dignidad filtrada (y no todos/VM)
                         if (dignidad === filtroDignidad && filtroDignidad !== "VM" && filtroDignidad !== "todos") {
-                            el.classList.add("highlight");
+                            dd.classList.add("highlight");
                         } else {
-                            el.classList.remove("highlight");
+                            dd.classList.remove("highlight");
                         }
                     } else {
-                        // Ocultar si no es el VM ni la dignidad seleccionada
-                        el.classList.add("hidden");
-                        el.classList.remove("highlight");
+                        dd.classList.add("hidden");
+                        dt.classList.add("hidden");
+                        dd.classList.remove("highlight");
                     }
                 }
             });
