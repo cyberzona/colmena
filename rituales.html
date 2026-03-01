@@ -28,6 +28,7 @@
             position: relative; 
             transition: all 0.3s; 
             color: #3e2723;
+            text-align: justify; /* --- CORRECCIÓN: Justificado --- */
         }
         
         /* Numeración grande y reposicionada */
@@ -74,9 +75,18 @@
             letter-spacing: 1px;
         }
         
-        .apartado-header { font-weight: bold; color: #795548; font-size: 0.95em; border-bottom: 1px solid #d7ccc8; padding-bottom: 3px; margin-top: 10px; }
+        /* --- CORRECCIÓN: Apartado alineado a la derecha --- */
+        .apartado-header { 
+            font-weight: bold; 
+            color: #795548; 
+            font-size: 0.95em; 
+            border-bottom: 1px solid #d7ccc8; 
+            padding-bottom: 3px; 
+            margin-top: 10px; 
+            text-align: right;
+        }
 
-        /* --- CORRECCIÓN: Acciones como bloques para forzar salto de línea --- */
+        /* --- Acciones como bloques para forzar salto de línea --- */
         .accion-ritual {
             color: #5d4037; 
             font-weight: bold;
@@ -85,6 +95,7 @@
             margin: 5px 0; /* Espaciado superior e inferior */
             border-bottom: 1px dashed #d7ccc8; /* Opcional: línea divisoria */
             padding-bottom: 2px;
+            text-align: left; /* Las acciones mejor a la izquierda */
         }
 
         .parentesis-ritual {
@@ -187,7 +198,7 @@
                     texto = texto.replace(/\[(.*?)\]/g, '<span class="accion-ritual">[$1]</span>');
                     texto = texto.replace(/\((.*?)\)/g, '<span class="parentesis-ritual">($1)</span>');
                     
-                    // --- CORRECCIÓN: Resaltar la palabra precedente y el símbolo en azul oscuro ---
+                    // --- Resaltar la palabra precedente y el símbolo en azul oscuro ---
                     texto = texto.replace(/(\w+)\.\·\./g, '<span class="tripuntado">$1.·.</span>');
                     
                     // --- Lógica de resaltado y puntos ---
