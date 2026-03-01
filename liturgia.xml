@@ -11,8 +11,8 @@
             <paso tipo="dialogo" oficial="VM" texto="¿Cuál es nuestro primer deber en Logia Hermano 1V∴?"/>
             <paso tipo="dialogo" oficial="1V" texto="Ver si el templo está cubierto de toda indiscreción profana"/>
             <paso tipo="dialogo" oficial="VM" texto="Aseguraos de ello, Hermano mío."/>
-            <paso tipo="dialogo" oficial="1V" texto="Hermano Guarda Templo (GdT∴) Cumplid con vuestro deber. [El GdT da tres golpes en la puerta y la respuesta externa es similar]"/>
-            <paso tipo="dialogo" oficial="GdT" texto="Hermano 1V∴, el Temp∴ está a cubierto de toda indiscreción profana."/>
+            <paso tipo="dialogo" oficial="1V" texto="Hermano Guarda Templo (GT∴) Cumplid con vuestro deber. [El GdT da tres golpes en la puerta y la respuesta externa es similar]"/>
+            <paso tipo="dialogo" oficial="GT" texto="Hermano 1V∴, el Temp∴ está a cubierto de toda indiscreción profana."/>
             <paso tipo="dialogo" oficial="1V" texto="VM∴ [Da tres golpes de Mallete] el Templo está cubierto de toda indiscreción."/>
         </apartado>
         <apartado id="orden" titulo="2. El Orden: La Geometría de las Columnas">
