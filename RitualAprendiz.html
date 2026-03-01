@@ -10,64 +10,39 @@
             --cafe: #7A4F35;
             --fondo: #fdfaf3;
             --blanco: #ffffff;
+            --texto-accion: #7f8c8d;
         }
-
-        body { 
-            font-family: 'Palatino Linotype', serif; 
-            line-height: 1.5; 
-            color: #2c2c2c; 
-            margin: 0; 
-            padding: 10px; 
-            background-color: var(--fondo); 
-        }
-
+        body { font-family: 'Palatino Linotype', serif; line-height: 1.5; color: #2c2c2c; margin: 0; padding: 10px; background-color: var(--fondo); }
         h1 { color: var(--cafe); text-align: center; font-size: 1.3em; margin: 10px 0; border-bottom: 2px solid var(--oro); padding-bottom: 5px; }
 
         #control-panel {
-            background: #fff8e1;
-            padding: 15px;
-            border-radius: 10px;
-            border: 1px solid #ffe082;
-            position: sticky;
-            top: 5px;
-            z-index: 1000;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
+            background: #fff8e1; padding: 15px; border-radius: 10px;
+            border: 1px solid #ffe082; position: sticky; top: 5px; z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: flex; flex-direction: column; gap: 10px;
         }
-
-        select {
-            flex: 1;
-            padding: 10px;
-            font-size: 16px; /* Evita zoom automático en iOS */
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            background: white;
-        }
+        select { padding: 10px; font-size: 16px; border-radius: 5px; border: 1px solid #ccc; background: white; }
 
         #rituales-container { margin-top: 15px; background: var(--blanco); padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-
-        .section-header {
-            font-weight: bold; color: white; text-align: center; 
-            text-transform: uppercase; background: var(--cafe);
-            padding: 8px; margin: -15px -15px 15px -15px; border-radius: 8px 8px 0 0;
-        }
-
+        .section-header { font-weight: bold; color: white; text-align: center; text-transform: uppercase; background: var(--cafe); padding: 8px; margin: -15px -15px 15px -15px; border-radius: 8px 8px 0 0; }
+        
+        /* Estilos Liturgia */
         dt { font-weight: bold; color: var(--oro); margin-top: 15px; font-size: 1.1em; }
         dd { margin: 0 0 10px 20px; font-style: italic; border-left: 2px solid #eee; padding-left: 10px; }
-
-        .accion { color: #7f8c8d; font-size: 0.9em; display: block; margin: 10px 0; text-align: center; font-style: normal; }
         .ritualistica { color: #c0392b; font-weight: bold; letter-spacing: 3px; text-align: center; display: block; margin: 15px 0; }
+        
+        /* Estilos Catecismo */
+        .pregunta { color: #2c3e50; font-weight: bold; }
+        .respuesta { color: #34495e; margin-left: 15px; font-style: normal; }
 
-        .highlight { 
-            background-color: rgba(212, 160, 23, 0.15) !important; 
-            border-left: 4px solid var(--oro) !important;
-            padding: 5px 10px;
-            border-radius: 4px;
+        /* Estilo para las acciones dentro del texto de los diálogos [] */
+        .accion-inline {                
+            color: var(--texto-accion);                
+            font-style: italic;                
+            font-size: 0.9em;
+            font-weight: normal;
         }
 
-        .hidden { display: none; }
+        .highlight { background-color: rgba(212, 160, 23, 0.15) !important; border-left: 4px solid var(--oro) !important; padding: 5px 10px; border-radius: 4px; }
     </style>
 </head>
 <body>
@@ -75,87 +50,93 @@
     <h1>Liturgia de Aprendiz</h1>
 
     <div id="control-panel">
-        <select id="apartadoFilter" onchange="renderizarLiturgia()">
-            </select>
+        <select id="parteFilter" onchange="actualizarApartados()"></select>
+        <select id="apartadoFilter" onchange="renderizarLiturgia()"></select>
         
         <select id="oficialFilter" onchange="renderizarLiturgia()">
-            <option value="todos">Oficiales</option>
+            <option value="todos">Todos los Oficiales</option>
             <option value="VM">VM∴</option>
             <option value="1V">1V∴</option>
             <option value="2V">2V∴</option>
             <option value="MC">MC∴</option>
-            <option value="GdT">GdT∴</option>
-            <option value="Ora">Ora∴</option>
             <option value="Sec">Sec∴</option>
         </select>
     </div>
 
-    <div id="rituales-container">
-        <div id="loading">Cargando Liturgia...</div>
-    </div>
+    <div id="rituales-container"></div>
 
     <script>
         let xmlDoc = null;
 
-        // CARGA INICIAL
         async function inicializar() {
             try {
                 const response = await fetch('liturgia.xml');
                 const text = await response.text();
                 xmlDoc = new DOMParser().parseFromString(text, "text/xml");
-                
-                poblarApartados();
-                renderizarLiturgia();
+                poblarPartes();
+                actualizarApartados();
             } catch (e) {
                 document.getElementById('rituales-container').innerHTML = "Error al cargar el archivo XML.";
             }
         }
 
-        function poblarApartados() {
-            const selector = document.getElementById("apartadoFilter");
-            const apartados = xmlDoc.querySelectorAll("apartado");
+        function poblarPartes() {
+            const selector = document.getElementById("parteFilter");
+            const partes = xmlDoc.querySelectorAll("parte");
             selector.innerHTML = "";
-            apartados.forEach(ap => {
+            partes.forEach(p => {
                 let opt = document.createElement("option");
-                opt.value = ap.getAttribute("id");
-                opt.textContent = ap.getAttribute("titulo");
+                opt.value = p.getAttribute("id");
+                opt.textContent = p.getAttribute("titulo");
                 selector.appendChild(opt);
             });
         }
 
-        // BUCLE DE RENDERIZADO (EL MOTOR)
+        function actualizarApartados() {
+            const parteId = document.getElementById("parteFilter").value;
+            const apartadoSelector = document.getElementById("apartadoFilter");
+            const parte = xmlDoc.querySelector(`parte[id="${parteId}"]`);
+            const apartados = parte.querySelectorAll("apartado");
+            
+            apartadoSelector.innerHTML = "";
+            apartados.forEach(ap => {
+                let opt = document.createElement("option");
+                opt.value = ap.getAttribute("id");
+                opt.textContent = ap.getAttribute("titulo");
+                apartadoSelector.appendChild(opt);
+            });
+            renderizarLiturgia();
+        }
+
         function renderizarLiturgia() {
             if (!xmlDoc) return;
-
             const idApartado = document.getElementById("apartadoFilter").value;
             const filtroOficial = document.getElementById("oficialFilter").value;
             const contenedor = document.getElementById("rituales-container");
-            
             const apartado = xmlDoc.querySelector(`apartado[id="${idApartado}"]`);
-            const titulo = apartado.getAttribute("titulo");
-            const pasos = apartado.querySelectorAll("paso");
+            
+            if (!apartado) return;
 
-            let htmlOutput = `<div class="section-header">${titulo}</div><dl>`;
+            let htmlOutput = `<div class="section-header">${apartado.getAttribute("titulo")}</div><dl>`;
 
-            pasos.forEach(paso => {
-                const tipo = paso.getAttribute("tipo");
-                const oficial = paso.getAttribute("oficial");
-                const texto = paso.getAttribute("texto");
-                const desc = paso.getAttribute("descripcion") || "";
-
+            Array.from(apartado.children).forEach(nodo => {
+                const oficial = nodo.getAttribute("oficial");
+                
+                // Procesar el texto para formatear corchetes automáticamente
+                let textoRaw = nodo.getAttribute("texto");
+                let textoFormateado = textoRaw.replace(/\[(.*?)\]/g, '<span class="accion-inline">[$1]</span>');
+                
                 const esResaltado = (filtroOficial !== "todos" && oficial === filtroOficial);
                 const claseHighlight = esResaltado ? "highlight" : "";
 
-                if (tipo === "dialogo") {
-                    htmlOutput += `
-                        <div class="${claseHighlight}">
-                            <dt>${oficial}∴</dt>
-                            <dd>${texto}</dd>
-                        </div>`;
-                } else if (tipo === "accion") {
-                    htmlOutput += `<span class="accion ${claseHighlight}">[${texto}]</span>`;
-                } else if (tipo === "ritualistica") {
-                    htmlOutput += `<span class="ritualistica">${texto}</span><span class="accion">${desc}</span>`;
+                if (nodo.tagName === "pregunta") {
+                    htmlOutput += `<dt class="pregunta ${claseHighlight}">P:. ${oficial}∴</dt><dd class="respuesta ${claseHighlight}">${textoFormateado}</dd>`;
+                } else if (nodo.tagName === "respuesta") {
+                    htmlOutput += `<dt class="respuesta ${claseHighlight}">R:. ${oficial}∴</dt><dd class="respuesta ${claseHighlight}">${textoFormateado}</dd>`;
+                } else if (nodo.getAttribute("tipo") === "dialogo") {
+                    htmlOutput += `<div class="${claseHighlight}"><dt>${oficial}∴</dt><dd>${textoFormateado}</dd></div>`;
+                } else if (nodo.getAttribute("tipo") === "ritualistica") {
+                    htmlOutput += `<span class="ritualistica">${textoFormateado}</span>`;
                 }
             });
 
