@@ -27,28 +27,29 @@
             transition: all 0.3s; 
         }
         
-        /* Numeración discreta sobre la barra vertical */
+        /* --- CORRECCIÓN: Numeración más grande y reposicionada --- */
         dd::before { 
             counter-increment: line-counter; 
             content: counter(line-counter); 
             position: absolute; 
-            left: -22px; 
-            top: 2px;
+            left: -28px; 
+            top: 0px;
             color: #7A4F35; 
             font-weight: bold; 
             font-style: normal;
-            font-size: 0.7em; 
+            font-size: 0.85em; 
             background-color: transparent; 
             border: none; 
         }
         
         .parte-ritual { counter-reset: line-counter; }
         
-        /* --- CORRECCIÓN: Resaltado solo del diálogo --- */
+        /* --- CORRECCIÓN: Estilo de resaltado mejorado --- */
         .highlight-dialogue { 
             background-color: rgba(212,160,23,0.15); 
             border-left: 3px solid #D4A017; 
             padding-left: 10px; 
+            transition: background-color 0.3s;
         }
         
         /* Título de parte invertido */
@@ -67,14 +68,14 @@
         
         .apartado-header { font-weight: bold; color: #D4A017; font-size: 0.95em; border-bottom: 1px solid #E7D9C9; padding-bottom: 3px; margin-top: 10px; }
 
-        /* --- CORRECCIÓN: Resaltado de acciones en corchetes (Rojo Oscuro) --- */
+        /* --- Resaltado de acciones en corchetes (Rojo Oscuro) --- */
         .accion-ritual {
             color: #b71c1c; 
             font-weight: bold;
             font-style: normal;
         }
 
-        /* --- CORRECCIÓN: Resaltado de paréntesis (Azul Oscuro) --- */
+        /* --- Resaltado de paréntesis (Azul Oscuro) --- */
         .parentesis-ritual {
             color: #0d47a1; 
             font-style: normal;
@@ -172,7 +173,7 @@
                     texto = texto.replace(/\[(.*?)\]/g, '<span class="accion-ritual">[$1]</span>');
                     texto = texto.replace(/\((.*?)\)/g, '<span class="parentesis-ritual">($1)</span>');
                     
-                    // Comparar el ID con puntos (ej: "VM∴" === "VM∴")
+                    // --- CORRECCIÓN: Comparar el ID con puntos (ej: "VM∴" === "VM∴") ---
                     const resaltar = (filtroOficial !== "todos" && oficial === filtroOficial);
                     const claseHighlight = resaltar ? "highlight-dialogue" : "";
                     
