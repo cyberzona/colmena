@@ -2,97 +2,168 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ritual de Aprendiz - Colmena No. 8</title>
     <style>
         body { 
             font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif; 
-            line-height: 2.2; /* Aumentado para más aire entre líneas */
+            line-height: 1.6;
             color: #2c2c2c; 
             max-width: 950px; 
             margin: 0 auto; 
-            padding: 60px; /* Margen general más grande */
+            padding: 20px;
             background-color: #fdfaf3;
-            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36z8gGiMAEYIIwAXgAmgGkgAEAF3gD/ZkUAAAAAElFTkSuQmCC'); /* Sutil textura de papel */
         }
-        h1 { 
-            color: #7A4F35; 
-            text-align: center; 
-            border-bottom: 3px solid #D4A017; 
-            padding-bottom: 30px;
-            margin-bottom: 60px; /* Espacio extra debajo del título */
-            font-size: 3em;
-            text-transform: uppercase;
-            letter-spacing: 3px;
+        h1 { color: #7A4F35; text-align: center; font-size: 1.8em; }
+        
+        /* Panel de control fijo */
+        #control-panel {
+            background: #fff8e1;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #ffe082;
+            text-align: center;
+            margin-bottom: 20px;
+            position: sticky;
+            top: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 1000;
         }
         
-        /* Contenedor de diálogo con máximo espacio */
-        dl { 
-            margin-top: 50px; 
-            background: white; 
-            padding: 50px; /* Aumentado padding interno */
-            border-radius: 16px;
-            box-shadow: 0 6px 25px rgba(0,0,0,0.06);
+        .filter-group {
+            margin-bottom: 10px;
         }
         
-        /* Resaltado del Autor (VM∴, 1V∴, etc.) */
+        select, button {
+            padding: 10px;
+            font-size: 1em;
+            margin: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 90%;
+            max-width: 300px;
+        }
+        
+        button {
+            background-color: #7A4F35;
+            color: white;
+            border: none;
+            cursor: pointer;
+            width: auto;
+            padding: 10px 20px;
+        }
+
+        /* Estilos del ritual */
+        dl { margin-top: 10px; background: white; padding: 20px; border-radius: 10px; }
+        
         dt { 
             font-weight: bold; 
-            color: #D4A017; 
-            margin-top: 40px; /* Mucho espacio antes de cada cargo */
-            margin-bottom: 15px; /* Espacio entre cargo y texto */
-            font-size: 1.5em;
-            letter-spacing: 2px;
-            display: block; 
+            color: #D4A017;
+            margin-top: 15px;
+            font-size: 1.1em;
         }
         
-        /* Estilo del texto del diálogo */
         dd { 
-            margin-left: 0; 
-            margin-bottom: 40px; /* Mucho espacio debajo de cada diálogo */
+            margin-left: 10px; 
+            margin-bottom: 15px; 
             font-style: italic; 
-            font-size: 1.25em; /* Ligeramente más grande */
-            color: #444;
-            padding-left: 30px;
-            border-left: 5px solid #D4A017;
+            border-left: 3px solid #E7D9C9;
+            padding-left: 10px;
+            font-size: 1em;
         }
         
-        /* Puntuación automática al final */
-        dd::after { content: "."; } 
-        
-        .escena { 
-            text-align: center; 
-            font-weight: bold; 
-            color: #8b5a2b; 
-            margin-top: 60px; /* Más espacio antes de la escena */
-            margin-bottom: 60px; /* Más espacio después de la escena */
-            font-size: 1.2em;
+        .hidden { display: none; }
+        .section-header {
+            font-weight: bold;
+            color: #8b5a2b;
+            text-align: center;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            background: rgba(212,160,23,0.08);
-            padding: 20px;
-            border-radius: 10px;
-            border: 1px solid rgba(212,160,23,0.2);
+            margin-top: 25px;
+            background: rgba(212,160,23,0.1);
+            padding: 10px;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
 
     <h1>Ritual de Aprendiz</h1>
-    
-    <div class="escena">[Apertura del Taller]</div>
+
+    <div id="control-panel">
+        <div class="filter-group">
+            <select id="apartadoFilter">
+                <option value="todos">Todo el Ritual</option>
+                <option value="apertura">Apertura</option>
+                <option value="clausura">Clausura</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <select id="dignidadFilter">
+                <option value="todos">Todas las Dignidades</option>
+                <option value="VM">Venerable Maestro (VM∴)</option>
+                <option value="1V">Primer Vigilante (1V∴)</option>
+                <option value="2V">Segundo Vigilante (2V∴)</option>
+                <option value="MC">Maestro de Ceremonias (MC∴)</option>
+                <option value="GdT">Guarda Templo (GdT∴)</option>
+            </select>
+        </div>
+        <button onclick="filtrarRitual()">Aplicar Filtro</button>
+    </div>
 
     <dl>
-        <dt>VM∴</dt>
-        <dd>Hermanos Primer y Segundo Vigilantes, informad a los Hermanos que estamos a punto de abrir el Taller</dd>
+        <div data-apartado="apertura">
+            <div class="section-header">Apertura de Trabajos</div>
+            <dt data-dignidad="VM">VM∴</dt>
+            <dd data-dignidad="VM">¡Silencio en Logia, Hermanos (HH∴)!</dd>
 
-        <dt>1V∴</dt>
-        <dd>Hermanos todos, el Venerable Maestro anuncia la apertura de los trabajos</dd>
+            <dt data-dignidad="VM">VM∴</dt>
+            <dd data-dignidad="VM">Hermano MC∴, ¿los puestos están cubiertos?</dd>
 
-        <dt>2V∴</dt>
-        <dd>Anuncio hecho, Venerable Maestro</dd>
+            <dt data-dignidad="MC">MC∴</dt>
+            <dd data-dignidad="MC">Si, VM∴ los puestos están cubiertos y los HH∴ prontos a iniciar los trabajos.</dd>
+            
+            </div>
+
+        <div data-apartado="clausura">
+            <div class="section-header">Clausura de Trabajos</div>
+            <dt data-dignidad="VM">VM∴</dt>
+            <dd data-dignidad="VM">QH∴ 1V∴, ¿Cuáles son los caracteres distintivos que deben adornar al verdadero Mas∴?</dd>
+
+            <dt data-dignidad="1V">1V∴</dt>
+            <dd data-dignidad="1V">Ser virtuoso, amante con los HH∴ y tolerante con todos.</dd>
+            
+            </div>
     </dl>
 
-    <div class="escena">[... Continúa el Ritual ...]</div>
+    <script>
+        function filtrarRitual() {
+            var filtroApartado = document.getElementById("apartadoFilter").value;
+            var filtroDignidad = document.getElementById("dignidadFilter").value;
+            
+            var secciones = document.querySelectorAll('[data-apartado]');
+            var elementos = document.querySelectorAll('[data-dignidad]');
+
+            // 1. Filtrar por Apartado
+            secciones.forEach(seccion => {
+                if (filtroApartado === "todos" || seccion.getAttribute('data-apartado') === filtroApartado) {
+                    seccion.classList.remove("hidden");
+                } else {
+                    seccion.classList.add("hidden");
+                }
+            });
+
+            // 2. Filtrar por Dignidad dentro del apartado seleccionado
+            elementos.forEach(el => {
+                var estaEnApartadoCorrecto = el.closest('[data-apartado]').classList.contains("hidden") === false;
+                
+                if (estaEnApartadoCorrecto && (filtroDignidad === "todos" || el.getAttribute('data-dignidad') === filtroDignidad)) {
+                    el.classList.remove("hidden");
+                } else {
+                    el.classList.add("hidden");
+                }
+            });
+        }
+    </script>
 
 </body>
 </html>
