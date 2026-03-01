@@ -24,12 +24,13 @@
 
         #rituales-container { margin-top: 15px; background: var(--blanco); padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         
-        /* --- NUEVO ESTILO DE TÍTULO DE APARTADO --- */
+        .section-header { font-weight: bold; color: white; text-align: center; text-transform: uppercase; background: var(--cafe); padding: 8px; margin: -15px -15px 15px -15px; border-radius: 8px 8px 0 0; }
+        
+        /* Título del apartado funcional */
         .apartado-header { 
             font-weight: bold; color: var(--cafe); text-align: left; 
             border-bottom: 1px solid var(--oro); padding: 5px; margin-top: 20px;
         }
-        /* ------------------------------------------- */
         
         /* Estilos Liturgia */
         dt { font-weight: bold; color: var(--oro); margin-top: 10px; font-size: 1.05em; }
@@ -40,16 +41,17 @@
         .pregunta { color: #2c3e50; font-weight: bold; }
         .respuesta { color: #34495e; margin-left: 15px; font-style: normal; }
 
-        /* Estilo para las acciones dentro del texto de los diálogos [] */
+        /* --- NUEVO ESTILO DE ACCIÓN --- */
         .accion-inline {                
             color: var(--texto-accion);                
             font-style: italic;                
-            font-size: 0.85em; 
+            font-size: 0.85em; /* Letra más pequeña */
             font-weight: normal;
-            display: block; 
-            margin-top: 2px; 
-            margin-left: 10px; 
+            display: block; /* Forzar que aparezca debajo */
+            margin-top: 2px; /* Margen muy pequeño para unión */
+            margin-left: 10px; /* Alineado con el texto del diálogo */
         }
+        /* ------------------------------ */
 
         .highlight { background-color: rgba(212, 160, 23, 0.15) !important; border-left: 4px solid var(--oro) !important; padding: 5px 10px; border-radius: 4px; }
     </style>
@@ -69,6 +71,7 @@
             <option value="2V">2V∴</option>
             <option value="MC">MC∴</option>
             <option value="Sec">Sec∴</option>
+            <option value="GdT">GdT∴</option>
         </select>
     </div>
 
@@ -101,7 +104,7 @@
             });
         }
 
-       function renderizarLiturgia() {
+        function renderizarLiturgia() {
             if (!xmlDoc) return;
             const parteId = document.getElementById("parteFilter").value;
             const filtroOficial = document.getElementById("oficialFilter").value;
@@ -110,9 +113,8 @@
             
             if (!parte) return;
 
-            // --- CORRECCIÓN AQUÍ: Mostrar el título de la parte ---
+            // Mostrar el título de la parte con numeración arábiga
             let htmlOutput = `<div class="section-header">${parte.getAttribute("titulo")}</div>`;
-            // ----------------------------------------------------
             
             const apartados = parte.querySelectorAll("apartado");
 
@@ -123,6 +125,7 @@
                 Array.from(apartado.children).forEach(nodo => {
                     const oficial = nodo.getAttribute("oficial");
                     
+                    // Procesar el texto para formatear corchetes automáticamente como acciones técnicas
                     let textoRaw = nodo.getAttribute("texto");
                     let textoFormateado = textoRaw.replace(/\[(.*?)\]/g, '<span class="accion-inline">$1</span>');
                     
