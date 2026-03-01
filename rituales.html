@@ -1,4 +1,4 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -27,7 +27,7 @@
             transition: all 0.3s; 
         }
         
-        /* Numeración discreta sobre la barra vertical */
+        /* Numeración discreta */
         dd::before { 
             counter-increment: line-counter; 
             content: counter(line-counter); 
@@ -44,7 +44,13 @@
         
         .parte-ritual { counter-reset: line-counter; }
         .hidden { display: none !important; }
-        .highlight { background-color: rgba(212,160,23,0.2) !important; border-left: 3px solid #D4A017 !important; padding-left: 10px !important; }
+
+        /* --- CORRECCIÓN: Resaltado solo del diálogo --- */
+        .highlight-dialogue { 
+            background-color: rgba(212,160,23,0.15); 
+            border-left: 3px solid #D4A017; 
+            padding-left: 10px; 
+        }
         
         /* Título de parte invertido */
         .section-header { 
@@ -61,6 +67,19 @@
         }
         
         .apartado-header { font-weight: bold; color: #D4A017; font-size: 0.95em; border-bottom: 1px solid #E7D9C9; padding-bottom: 3px; margin-top: 10px; }
+
+        /* --- CORRECCIÓN: Resaltado de acciones en corchetes (Rojo Oscuro) --- */
+        .accion-ritual {
+            color: #b71c1c; 
+            font-weight: bold;
+            font-style: normal;
+        }
+
+        /* --- CORRECCIÓN: Resaltado de paréntesis (Azul Oscuro) --- */
+        .parentesis-ritual {
+            color: #0d47a1; 
+            font-style: normal;
+        }
     </style>
 </head>
 <body onload="inicializar()">
@@ -78,8 +97,6 @@
             <option value="2V">2V∴</option>
             <option value="MC">MC∴</option>
             <option value="GdT">GdT∴</option>
-            <option value="Ora">Ora∴</option>
-            <option value="Hos">Hos∴</option>
         </select>
     </div>
 
@@ -131,12 +148,16 @@
                 const pasos = apartado.querySelectorAll("paso");
                 pasos.forEach(paso => {
                     const oficial = paso.getAttribute("oficial");
-                    const texto = paso.getAttribute("texto");
+                    let texto = paso.getAttribute("texto");
+                    
+                    // --- CORRECCIÓN: Resaltar acciones [] y paréntesis () ---
+                    texto = texto.replace(/\[(.*?)\]/g, '<span class="accion-ritual">[$1]</span>');
+                    texto = texto.replace(/\((.*?)\)/g, '<span class="parentesis-ritual">($1)</span>');
                     
                     const resaltar = (filtroOficial !== "todos" && oficial === filtroOficial);
-                    const claseHighlight = resaltar ? "highlight" : "";
+                    const claseHighlight = resaltar ? "highlight-dialogue" : "";
                     
-                    htmlOutput += `<dt class="dignidad ${claseHighlight}" data-dignidad="${oficial}">${oficial}∴</dt>`;
+                    htmlOutput += `<dt class="dignidad" data-dignidad="${oficial}">${oficial}∴</dt>`;
                     htmlOutput += `<dd class="dialogo ${claseHighlight}" data-dignidad="${oficial}">${texto}</dd>`;
                 });
             });
