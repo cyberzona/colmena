@@ -34,7 +34,7 @@
             margin: 5px;
             border-radius: 4px;
             border: 1px solid #ccc;
-            width: 45%;
+            width: 30%;
             display: inline-block;
             background-color: white;
             cursor: pointer;
@@ -77,7 +77,6 @@
             font-style: normal;
         }
         
-        /* Resetea el contador al inicio de cada PARTE principal */
         .parte-ritual {
             counter-reset: line-counter;
         }
@@ -103,24 +102,22 @@
         }
     </style>
 </head>
-<body onload="filtrarRitual()">
+<body onload="actualizarSecciones()">
 
     <h1>Ritual de Aprendiz</h1>
 
     <div id="control-panel">
-        <select id="parteFilter" onchange="filtrarRitual()">
-            <option value="apertura" selected>Parte: Apertura</option>
-            <option value="seccion-silencio">-- Secc: Silencio</option>
-            <option value="seccion-orden">-- Secc: Orden</option>
-            <option value="seccion-magisterio">-- Secc: Magisterio</option>
-            <option value="seccion-tiempo">-- Secc: Tiempo</option>
-            <option value="seccion-logos">-- Secc: Logos</option>
-            <option value="proposiciones">Parte: Proposiciones</option>
-            <option value="clausura">Parte: Clausura</option>
+        <select id="parteFilter" onchange="actualizarSecciones()">
+            <option value="apertura" selected>Apertura</option>
+            <option value="proposiciones">Proposiciones</option>
+            <option value="clausura">Clausura</option>
         </select>
         
+        <select id="seccionFilter" onchange="filtrarRitual()">
+            </select>
+        
         <select id="dignidadFilter" onchange="filtrarRitual()">
-            <option value="todos" selected>Mostrar Todo</option>
+            <option value="todos" selected>Todo</option>
             <option value="VM">VM∴</option>
             <option value="1V">1V∴</option>
             <option value="2V">2V∴</option>
@@ -132,140 +129,104 @@
 
     <div id="rituales-container">
         <div class="parte-ritual" data-parte="apertura">
-            
             <div class="section-header">Apertura de Trabajos</div>
-
+            
             <div data-seccion="seccion-silencio">
-                <div class="section-header">1. El Silencio: La Purificación del Espacio Sagrado</div>
+                <div class="section-header">1. El Silencio</div>
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">¡Silencio en Logia, Hermanos (HH∴)!</dd>
-
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">Hermano Maestro de Ceremonias (MC∴), ¿los puestos están cubiertos?</dd>
-
                 <dt data-dignidad="MC">MC∴</dt>
                 <dd data-dignidad="MC">Si, VM∴ los puestos están cubiertos y los HH∴ prontos a iniciar los trabajos.</dd>
-
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">Hermano Primer Vigilante (1V∴): ¿Sois Masón?</dd>
-
                 <dt data-dignidad="1V">1V∴</dt>
                 <dd data-dignidad="1V">Mis Hermanos (HH∴) me reconocen como tal, Venerable Maestro (VM∴)</dd>
-
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">¿Cuál es nuestro primer deber en Logia Hermano 1V∴?</dd>
-
                 <dt data-dignidad="1V">1V∴</dt>
                 <dd data-dignidad="1V">Ver si el templo está cubierto de toda indiscreción profana</dd>
-
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">Aseguraos de ello, Hermano mío.</dd>
-
                 <dt data-dignidad="1V">1V∴</dt>
                 <dd data-dignidad="1V">Hermano Guarda Templo (GdT∴) Cumplid con vuestro deber. (GdT∴ da tres golpes en la puerta y la respuesta externa es similar)</dd>
-
                 <dt data-dignidad="GdT">GdT∴</dt>
                 <dd data-dignidad="GdT">Hermano 1V∴, el Temp∴ está a cubierto de toda indiscreción profana.</dd>
-
                 <dt data-dignidad="1V">1V∴</dt>
                 <dd data-dignidad="1V">VM∴ (Da tres golpes de Mallete) el Templo está cubierto de toda indiscreción.</dd>
             </div>
-
+            
             <div data-seccion="seccion-orden">
-                <div class="section-header">2. El Orden: La Geometría de las Columnas</div>
+                <div class="section-header">2. El Orden</div>
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">¿Cuál es vuestro segundo deber en Hermano 1V∴?</dd>
-
                 <dt data-dignidad="1V">1V∴</dt>
                 <dd data-dignidad="1V">Ver si todos los HH∴ que decoran ambas columnas son aprendices masones.</dd>
-
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">Aseguraos de ello, QQHH∴ Primer y Segundo Vigilantes, de pie y al orden.</dd>
-
                 <dt data-dignidad="2V">2V∴</dt>
                 <dd data-dignidad="2V">Hermano 1V∴, los HH∴ que decoran mi Col∴ son masones y están de pie y al orden en el Grado de Aprendiz. (Da un golpe de mallete)</dd>
-
                 <dt data-dignidad="1V">1V∴</dt>
                 <dd data-dignidad="1V">VM∴ los HH∴ que se cobijan bajo la bóveda de nuestro templo son Masones y se hallan al orden, prontos para cumplir con vuestro mandato, y dispuestos a laborar en la construcción del Templo moral erigido a la ciencia, a la virtud y al trabajo. (Da un golpe de Mallete).</dd>
-
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">HH∴ míos, también son masones los que decoran el Oriente, y están prontos para trabajar en la construcción del Templo Moral que la Masonería eleva en la gloria del perfeccionamiento humano, mediante la conquista de los sublimes principios de Libertad, Igualdad y Fraternidad (Da un golpe de Mallete seguido por los Vigilantes).</dd>
             </div>
 
             <div data-seccion="seccion-magisterio">
-                <div class="section-header">3. El Magisterio: El Deber de los Oficiales</div>
+                <div class="section-header">3. El Magisterio</div>
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">¿Para qué ocupáis ese puesto, Querido Hermano 2V∴?</dd>
-
                 <dt data-dignidad="2V">2V∴</dt>
                 <dd data-dignidad="2V">Para mejor observar el Sol en su meridiano, mandar a los obreros al trabajo y llamarlos a la recreación, y de la recreación al trabajo a fin de que la humanidad coseche el resplandor de los principios Masónicos.</dd>
-
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">Querido Hermano 2V∴ ¿Donde toma asiento nuestro Querido Hermano 1V∴?</dd>
-
                 <dt data-dignidad="2V">2V∴</dt>
                 <dd data-dignidad="2V">Al occidente, VM∴.</dd>
-
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">¿Para qué ocupáis ese puesto Querido Hermano 1V∴?</dd>
-
                 <dt data-dignidad="1V">1V∴</dt>
                 <dd data-dignidad="1V">Así como el Sol se oculta en el Occidente al terminar el día, así se sienta aquí el 1V∴, para ayudar al VM∴, abrir y cerrar la Logia, pagar a los obreros y despedirlos contentos y satisfechos de sus actos en la obra de amor y justicia en que estamos empeñados.</dd>
-
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">¿Donde toma asiento el VM∴ Querido Hermano 1V∴?</dd>
-
                 <dt data-dignidad="1V">1V∴</dt>
                 <dd data-dignidad="1V">En el Oriente (Or∴)</dd>
-
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">¿Para qué H∴ mío.</dd>
-
                 <dt data-dignidad="1V">1V∴</dt>
                 <dd data-dignidad="1V">Así como el Sol nace en Oriente al iniciar su carrera y romper el día, de igual manera se alza allí el asiento del VM∴ para abrir la Logia, dirigirla en sus trabajos e iluminar con sus luces, esclareciendo así los sublimes preceptos de nuestra.</dd>
             </div>
 
             <div data-seccion="seccion-tiempo">
-                <div class="section-header">4. El Tiempo: La Percepción de la Verdad</div>
+                <div class="section-header">4. El Tiempo</div>
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">Querido Hermano 2V∴ ¿Qué edad tenéis como Apr∴ Mas∴?</dd>
-
                 <dt data-dignidad="2V">2V∴</dt>
                 <dd data-dignidad="2V">Tres años, VM∴.</dd>
-
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">¿A qué hora empiezan los trabajos de Apr∴ Mas∴, QH∴ 1V∴?</dd>
-
                 <dt data-dignidad="1V">1V∴</dt>
                 <dd data-dignidad="1V">Al mediodía, VM∴.</dd>
-
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">¿Qué hora es, Querido Hermano 2V∴?</dd>
-
                 <dt data-dignidad="2V">2V∴</dt>
                 <dd data-dignidad="2V">La hora de empezar, mediodía en punto, VM∴.</dd>
-
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">Siendo mediodía en punto, hora que los Apr∴ Mas∴ abren sus trabajos QQHH∴, 1V∴ y 2V∴, servios invitar a los obreros que decoran vuestras respectivas CCol∴, como yo a los de Oriente, para que se unan a vosotros y a mí a fin de abrir los trabajos de esta Augusta y RL∴</dd>
-
                 <dt data-dignidad="1V">1V∴</dt>
                 <dd data-dignidad="1V">QH∴ 2V∴ y HH∴ que decoráis mi Col∴, por orden del VM∴, os invito que os unáis a él y a mí para abrir los trabajos de esta RL∴ en el grado de Apr∴ Mas∴.</dd>
-
                 <dt data-dignidad="2V">2V∴</dt>
                 <dd data-dignidad="2V">QQHH∴ de la Col∴ del Norte, por orden del VM∴ comunicada a mí por nuestro QH∴ 1V∴, que os unáis a él y a nosotros para abrir los trabajos de esta RL∴ en grado de Apr∴Mas∴. (Anunciado en mi Col∴, QH∴ 1V∴.)</dd>
-
                 <dt data-dignidad="1V">1V∴</dt>
                 <dd data-dignidad="1V">Anunciado en ambas CCol∴, VM∴.</dd>
             </div>
 
             <div data-seccion="seccion-logos">
-                <div class="section-header">5. El Logos: Consagración de la Luz</div>
+                <div class="section-header">5. El Logos</div>
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">¡En pie y al Orden, Queridos Hermanos! (Da un golpe de Mallete seguido por los Vigilantes).</dd>
-
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">QH∴ Maestro de Ceremonias (MC∴) , prended las Luces. (MC∴ , abre el Libro de la Ley y coloca la Escuadra y sobre esta el Compás. Enciende la estrella del VM∴, dice: ¡Que la Sabiduría guie nuestros trabajos! ; MC∴, enciende la estrella del 1V∴ VM∴, dice: ¡Que la Fuerza los sostenga! ; MC∴, enciende la estrella del 2V∴, VM∴ dice: ¡Que la Belleza los adorne!)</dd>
-
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">Puesto que todo está justo y perfecto, y que es la hora que los AAp∴ MMas∴ empiezan sus trabajos, uníos a mí HH∴ míos, ALGDGADU∴ y en su nombre y bajo la obediencia de la Ser∴ Gran L∴ de Lengua Española para los EE. UU. de A., declaro abiertos los trabajos de esta RL∴ en el grado de Ap∴Mas∴ del REAA∴. Queda prohibido a todo H∴ pasar de una a otra Col∴ ni cubrir el Templo sin permiso de su respectivo V∴; ni tratar asuntos políticos ni religiosos, a mí HH∴ por el signo y Bat∴ de Grado. (Da tres golpes de Mall∴ que repiten los VV∴) Tomad asiento, QQHH∴.</dd>
             </div>
@@ -275,34 +236,27 @@
             <div class="section-header">Proposiciones y Trabajos</div>
             
             <div data-seccion="admin">
-                <div class="section-header">Administrativo: La Limpieza del Terreno</div>
+                <div class="section-header">Administrativo</div>
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">QQHH∴ 1V∴ y 2V∴, anunciad en vuestras respectivas CCol∴ que se dará lectura a la Plancha de los últimos trabajos.</dd>
-                
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">QQHH∴ 1V∴ y 2V∴, anunciad en vuestras respectivas CCol∴, como yo lo hago en Ort∴ que está en consideración la plancha trazada por nuestro QH∴ Sec∴, en tal sentido, si algún H∴ desea hacer uso de la palabra podéis concedérsela.</dd>
-                
                 <dt data-dignidad="2V">2V∴</dt>
                 <dd data-dignidad="2V">Reina el silencio en mi Columna Hermano 1V∴.</dd>
-                
                 <dt data-dignidad="1V">1V∴</dt>
                 <dd data-dignidad="1V">Reina el silencio en ambas CCol∴, VM∴.</dd>
-                
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">QH∴ Ora∴ ¿Queréis darnos vuestras conclusiones respecto a la plancha trazada por nuestro H∴ Sec∴ de nuestros últimos trabajos? (El H∴Ora∴ da las conclusiones)</dd>
-                
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">Después de las conclusiones del H∴ Ora∴, los HH∴ que estén de acuerdo se servirán de hacer la señal de aprobación al primer golpe de Mall∴.</dd>
-                
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">(Da a conocer el resultado de la votación).</dd>
             </div>
             
             <div data-seccion="familiares">
-                <div class="section-header">Asuntos Familiares, y Otros de Orden General</div>
+                <div class="section-header">Asuntos Familiares</div>
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ como yo lo hago en el Or∴ que vamos a tratar asuntos familiares.</dd>
-                
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">Invitad al MC∴.. a que dé un paseo al salón de pasos perdidos a ver si hay algún visitante.</dd>
             </div>
@@ -311,76 +265,54 @@
                 <div class="section-header">Proposiciones por Escrito</div>
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ como yo lo hago en el Or∴ que nuestro Q∴H∴ M∴ de Cer∴ va a circular el saco de proposiciones. (El MC∴ cumple con su deber y se coloca entre CCol∴.)</dd>
-                
                 <dt data-dignidad="1V">1V∴</dt>
                 <dd data-dignidad="1V">VM∴, el saco de proposiciones se encuentra entre CCol∴ para circular.</dd>
-                
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">Ordenad que circule empezando por mi derecha. Con Cer∴ o sin Cer∴, cumplida su misión, se coloca entre CCol∴.</dd>
-                
                 <dt data-dignidad="1V">1V∴</dt>
                 <dd data-dignidad="1V">He cumplido con mi deber.</dd>
-                
                 <dt data-dignidad="1V">1V∴</dt>
                 <dd data-dignidad="1V">VM∴, el saco de proposiciones, después de haber circulado por los cuatro puntos cardinales, se halla nuevamente entre CCol∴.</dd>
-                
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">Ordenad que pase a Or∴ y que en compañía del H∴ Ora∴ nos enteremos de su contenido. El H∴ Ora∴ da cuenta de la cantidad de PPl∴ producidas, después de un breve examen el Ven∴ M∴ puede dejarlas bajo Mall∴ hasta la próxima Ten∴.</dd>
-                
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">QQHH∴ 1V∴ y 2V∴ anunciad en vuestras respectivas CCol∴ que vamos a pasar a proposiciones verbales.</dd>
-                
                 <dt data-dignidad="2V">2V∴</dt>
                 <dd data-dignidad="2V">H∴ 1V∴, reina el silencio en mi Col∴.</dd>
-                
                 <dt data-dignidad="1V">1V∴</dt>
                 <dd data-dignidad="1V">VM∴, reina silencio en ambas CCol∴.</dd>
-                
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ que voy a conceder la palabra en bien general de la orden y en particular de este Tall∴.</dd>
-                
                 <dt data-dignidad="2V">2V∴</dt>
                 <dd data-dignidad="2V">QH∴ de la Col∴ del Norte, por orden del VM∴ y transmitida a mí por el QH∴ 1V∴ que está concedida la palabra en bien general de la orden y particular de este Tall∴.</dd>
-                
                 <dt data-dignidad="2V">2V∴</dt>
                 <dd data-dignidad="2V">QH∴ 1V∴, reina el silencio en mi Col∴..</dd>
-                
                 <dt data-dignidad="1V">1V∴</dt>
                 <dd data-dignidad="1V">VM∴, reina silencio en ambas CCol∴.</dd>
             </div>
             
             <div data-seccion="beneficencia">
-                <div class="section-header">Tronco de beneficencia</div>
+                <div class="section-header">Tronco de Beneficencia</div>
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">QQHH∴ 1∴ y 2∴ VVig∴ anunciad en vuestras CCol∴ que el H∴ Hos∴ va a circular en tronco de beneficencia.</dd>
-                
                 <dt data-dignidad="2V">2V∴</dt>
                 <dd data-dignidad="2V">Anunciado en la Col∴ del Mediodía, H∴ 1∴ Vig∴.</dd>
-                
                 <dt data-dignidad="1V">1V∴</dt>
                 <dd data-dignidad="1V">Anunciado en ambas Ccol∴, Ven∴ M∴.</dd>
-                
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">Q∴H∴ Hos∴, cumplid con vuestro deber. (El H∴ Hos∴ se coloca entre Ccol∴.).</dd>
-                
                 <dt data-dignidad="1V">1V∴</dt>
                 <dd data-dignidad="1V">Ven∴M∴, el H∴Hos∴ se encuentra entre Ccol∴ pronto a circular entre los HH∴.</dd>
-                
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">Ordenad que circule empezando por la derecha.</dd>
-                
                 <dt data-dignidad="1V">1V∴</dt>
                 <dd data-dignidad="1V">Q∴H∴Hos∴, cumplid con vuestro deber. (El H∴Hos∴ después de haber circulado se coloca entre Ccol∴.)</dd>
-                
                 <dt data-dignidad="MC">Hos∴</dt>
                 <dd data-dignidad="MC">Q∴H∴1∴Vig∴, he cumplido vuestro mandato.</dd>
-                
                 <dt data-dignidad="1V">1V∴</dt>
                 <dd data-dignidad="1V">Ven∴M∴, el tronco de beneficencia después de circular por los cuatro puntos cardinales del templo se encuentra nuevamente entre Ccol∴..</dd>
-                
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">Ordenad que ocupe su puesto y nos de cuenta de su contenido.</dd>
-                
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">Q∴ H∴ Ora∴, ¿Nos queréis dar las conclusiones de los trabajos de la Ten∴ de hoy?</dd>
             </div>
@@ -388,71 +320,97 @@
 
         <div class="parte-ritual" data-parte="clausura">
             <div class="section-header">Clausura de Trabajos</div>
-            <dt data-dignidad="VM">VM∴</dt>
-            <dd data-dignidad="VM">En virtud de haber sido en un todo favorable las conclusiones del H∴ OF∴ a la labor realizada, vamos a proceder al cierre de los trabajos de esta RL∴. Pero antes, QH∴ 1V∴ podéis decirnos. ¿Cuáles son los caracteres distintivos que deben de adornar al verdadero Mas∴?</dd>
-
-            <dt data-dignidad="1V">1V∴</dt>
-            <dd data-dignidad="1V">Ser virtuoso y amante con los HH∴ y tolerante con todos.</dd>
-            
-            <dt data-dignidad="VM">VM∴</dt>
-            <dd data-dignidad="VM">QH∴ 2V∴ ¿Qué se deben los Masones entre sí?</dd>
-            
-            <dt data-dignidad="2V">2V∴</dt>
-            <dd data-dignidad="2V">Respeto mutuo y amor fraternal, VM∴.</dd>
-            
-            <dt data-dignidad="VM">VM∴</dt>
-            <dd data-dignidad="VM">¿Cuál debe ser la conducta del Masón en el mundo profano, QH∴ 1V∴?</dd>
-            
-            <dt data-dignidad="1V">1V∴</dt>
-            <dd data-dignidad="1V">Enseñar con la práctica el ejercicio de las virtudes.</dd>
-            
-            <dt data-dignidad="VM">VM∴</dt>
-            <dd data-dignidad="VM">QH∴ 1V∴ ¿Qué edad tenéis como Ap∴Mas∴?</dd>
-            
-            <dt data-dignidad="1V">1V∴</dt>
-            <dd data-dignidad="1V">Tres años, VM∴.</dd>
-            
-            <dt data-dignidad="VM">VM∴</dt>
-            <dd data-dignidad="VM">QH∴ 2V∴ ¿A qué hora cierran los trabajos los AAp∴ Mas∴?</dd>
-            
-            <dt data-dignidad="2V">2V∴</dt>
-            <dd data-dignidad="2V">Medianoche en punto, VM∴.</dd>
-            
-            <dt data-dignidad="VM">VM∴</dt>
-            <dd data-dignidad="VM">¿Qué hora es, QH∴ 1V∴?</dd>
-            
-            <dt data-dignidad="1V">1V∴</dt>
-            <dd data-dignidad="1V">La hora de cerrar, medianoche en punto, VM∴.</dd>
-            
-            <dt data-dignidad="VM">VM∴</dt>
-            <dd data-dignidad="VM">Puesto que es la hora en que los AAp∴ MMas∴ cierran sus trabajos, QQHH∴ 1V∴ y 2V∴, invitad a los obreros de vuestras respectivas CCol∴ como yo invito a los de Or∴ para que se unan a vosotros y a mí a fin de cerrar los trabajos de esta Aug∴ RL∴. (El VM∴ da tres golpes de Mall∴ que repiten los VV∴ y dice: de pie y al orden mis HH∴.).</dd>
-            
-            <dt data-dignidad="2V">2V∴</dt>
-            <dd data-dignidad="2V">Todo está justo y perfecto, VM∴.</dd>
-            
-            <dt data-dignidad="1V">1V∴</dt>
-            <dd data-dignidad="1V">Reina completa armonía, VM∴ y estamos en condición de luchar por la emancipación Moral y Material de los seres humanos.</dd>
-            
-            <dt data-dignidad="VM">VM∴</dt>
-            <dd data-dignidad="VM">YaHermanos míos: puesto que todo es justo y perfecto, y nos hallamos en condición de luchar para que el estandarte de la Justicia ondee desde la cúpula de nuestros Templos sobre toda la humanidad, acompañadme a clausurar las tareas de esta Respetable Logia. ALGDGADU∴, en su nombre y bajo la obediencia de la Ser∴ Gr∴ L∴ de Lengua Española para los EE. UU. de A., declaro cerrados los trabajos de este Taller por el día de hoy. ¡A mí, Hermanos, con el Signo y la Batería de Grado!</dd>
-            
-            <dt data-dignidad="VM">VM∴</dt>
-            <dd data-dignidad="VM">Queridos Hermanos, antes de partir: ¿Juráis guardar absoluto silencio sobre lo aquí visto y oído, incluso ante aquellos Hermanos que no asistieron a esta Tenida?</dd>
-            
-            <dt data-dignidad="All">Todos</dt>
-            <dd data-dignidad="All">¡Lo juramos!</dd>
-            
-            <dt data-dignidad="VM">VM∴</dt>
-            <dd data-dignidad="VM">Si así lo hiciereis, que el GADU∴ os lo premie; si no, que Él os lo demande. H∴ MC∴ servíos cerrar el Ara. Hermanos míos, retirémonos en paz y fraternidad.</dd>
-            
-            <dt data-dignidad="MC">MC∴</dt>
-            <dd data-dignidad="MC">(Apaga la estrella de 2V∴ , Apaga la estrella del 1V∴ y Apaga la estrella del VM∴ Retira la Escuadra y el Compás, y cierra el Libro de la Ley)</dd>
+            <div data-seccion="clausura-general">
+                <div class="section-header">Cierre</div>
+                <dt data-dignidad="VM">VM∴</dt>
+                <dd data-dignidad="VM">En virtud de haber sido en un todo favorable las conclusiones del H∴ OF∴ a la labor realizada, vamos a proceder al cierre de los trabajos de esta RL∴. Pero antes, QH∴ 1V∴ podéis decirnos. ¿Cuáles son los caracteres distintivos que deben de adornar al verdadero Mas∴?</dd>
+                <dt data-dignidad="1V">1V∴</dt>
+                <dd data-dignidad="1V">Ser virtuoso y amante con los HH∴ y tolerante con todos.</dd>
+                <dt data-dignidad="VM">VM∴</dt>
+                <dd data-dignidad="VM">QH∴ 2V∴ ¿Qué se deben los Masones entre sí?</dd>
+                <dt data-dignidad="2V">2V∴</dt>
+                <dd data-dignidad="2V">Respeto mutuo y amor fraternal, VM∴.</dd>
+                <dt data-dignidad="VM">VM∴</dt>
+                <dd data-dignidad="VM">¿Cuál debe ser la conducta del Masón en el mundo profano, QH∴ 1V∴?</dd>
+                <dt data-dignidad="1V">1V∴</dt>
+                <dd data-dignidad="1V">Enseñar con la práctica el ejercicio de las virtudes.</dd>
+                <dt data-dignidad="VM">VM∴</dt>
+                <dd data-dignidad="VM">QH∴ 1V∴ ¿Qué edad tenéis como Ap∴Mas∴?</dd>
+                <dt data-dignidad="1V">1V∴</dt>
+                <dd data-dignidad="1V">Tres años, VM∴.</dd>
+                <dt data-dignidad="VM">VM∴</dt>
+                <dd data-dignidad="VM">QH∴ 2V∴ ¿A qué hora cierran los trabajos los AAp∴ Mas∴?</dd>
+                <dt data-dignidad="2V">2V∴</dt>
+                <dd data-dignidad="2V">Medianoche en punto, VM∴.</dd>
+                <dt data-dignidad="VM">VM∴</dt>
+                <dd data-dignidad="VM">¿Qué hora es, QH∴ 1V∴?</dd>
+                <dt data-dignidad="1V">1V∴</dt>
+                <dd data-dignidad="1V">La hora de cerrar, medianoche en punto, VM∴.</dd>
+                <dt data-dignidad="VM">VM∴</dt>
+                <dd data-dignidad="VM">Puesto que es la hora en que los AAp∴ MMas∴ cierran sus trabajos, QQHH∴ 1V∴ y 2V∴, invitad a los obreros de vuestras respectivas CCol∴ como yo invito a los de Or∴ para que se unan a vosotros y a mí a fin de cerrar los trabajos de esta Aug∴ RL∴. (El VM∴ da tres golpes de Mall∴ que repiten los VV∴ y dice: de pie y al orden mis HH∴.).</dd>
+                <dt data-dignidad="2V">2V∴</dt>
+                <dd data-dignidad="2V">Todo está justo y perfecto, VM∴.</dd>
+                <dt data-dignidad="1V">1V∴</dt>
+                <dd data-dignidad="1V">Reina completa armonía, VM∴ y estamos en condición de luchar por la emancipación Moral y Material de los seres humanos.</dd>
+                <dt data-dignidad="VM">VM∴</dt>
+                <dd data-dignidad="VM">YaHermanos míos: puesto que todo es justo y perfecto, y nos hallamos en condición de luchar para que el estandarte de la Justicia ondee desde la cúpula de nuestros Templos sobre toda la humanidad, acompañadme a clausurar las tareas de esta Respetable Logia. ALGDGADU∴, en su nombre y bajo la obediencia de la Ser∴ Gr∴ L∴ de Lengua Española para los EE. UU. de A., declaro cerrados los trabajos de este Taller por el día de hoy. ¡A mí, Hermanos, con el Signo y la Batería de Grado!</dd>
+                <dt data-dignidad="VM">VM∴</dt>
+                <dd data-dignidad="VM">Queridos Hermanos, antes de partir: ¿Juráis guardar absoluto silencio sobre lo aquí visto y oído, incluso ante aquellos Hermanos que no asistieron a esta Tenida?</dd>
+                <dt data-dignidad="All">Todos</dt>
+                <dd data-dignidad="All">¡Lo juramos!</dd>
+                <dt data-dignidad="VM">VM∴</dt>
+                <dd data-dignidad="VM">Si así lo hiciereis, que el GADU∴ os lo premie; si no, que Él os lo demande. H∴ MC∴ servíos cerrar el Ara. Hermanos míos, retirémonos en paz y fraternidad.</dd>
+                <dt data-dignidad="MC">MC∴</dt>
+                <dd data-dignidad="MC">(Apaga la estrella de 2V∴ , Apaga la estrella del 1V∴ y Apaga la estrella del VM∴ Retira la Escuadra y el Compás, y cierra el Libro de la Ley)</dd>
+            </div>
         </div>
     </div>
 
     <script>
+        // Mapeo de Secciones por Parte (COMPLETO)
+        const mapaSecciones = {
+            "apertura": [
+                {value: "todas", text: "Todas las Secciones"},
+                {value: "seccion-silencio", text: "1. Silencio"},
+                {value: "seccion-orden", text: "2. Orden"},
+                {value: "seccion-magisterio", text: "3. Magisterio"},
+                {value: "seccion-tiempo", text: "4. Tiempo"},
+                {value: "seccion-logos", text: "5. Logos"}
+            ],
+            "proposiciones": [
+                {value: "todas", text: "Todas las Secciones"},
+                {value: "admin", text: "Administrativo"},
+                {value: "familiares", text: "Asuntos Familiares"},
+                {value: "proposiciones-escrito", text: "Proposiciones"},
+                {value: "beneficencia", text: "Tronco Beneficencia"}
+            ],
+            "clausura": [
+                {value: "todas", text: "Todas las Secciones"},
+                {value: "clausura-general", text: "Cierre"}
+            ]
+        };
+
+        function actualizarSecciones() {
+            var parteSeleccionada = document.getElementById("parteFilter").value;
+            var selectorSeccion = document.getElementById("seccionFilter");
+            
+            // Limpiar opciones actuales
+            selectorSeccion.innerHTML = "";
+            
+            // Llenar nuevas opciones
+            mapaSecciones[parteSeleccionada].forEach(function(seccion) {
+                var option = document.createElement("option");
+                option.value = seccion.value;
+                option.text = seccion.text;
+                selectorSeccion.appendChild(option);
+            });
+            
+            filtrarRitual();
+        }
+
         function filtrarRitual() {
             var filtroParte = document.getElementById("parteFilter").value;
+            var filtroSeccion = document.getElementById("seccionFilter").value;
             var filtroDignidad = document.getElementById("dignidadFilter").value;
             
             var partes = document.querySelectorAll('.parte-ritual');
@@ -463,47 +421,29 @@
             // 1. Filtrar Partes y Secciones
             partes.forEach(parte => {
                 var parteId = parte.getAttribute('data-parte');
-                var esSeccionEspecifica = filtroParte.startsWith('seccion-');
-                
-                // Mapeo lógico: qué sección pertenece a qué parte
-                var perteneceAParte = false;
-                if (esSeccionEspecifica) {
-                    if (filtroParte === "seccion-silencio" || filtroParte === "seccion-orden" || 
-                        filtroParte === "seccion-magisterio" || filtroParte === "seccion-tiempo" || 
-                        filtroParte === "seccion-logos") {
-                        perteneceAParte = (parteId === "apertura");
-                    } else if (filtroParte === "admin" || filtroParte === "familiares" || 
-                               filtroParte === "proposiciones-escrito" || filtroParte === "beneficencia") {
-                        perteneceAParte = (parteId === "proposiciones");
-                    }
-                } else {
-                    perteneceAParte = (parteId === filtroParte);
-                }
+                parte.classList.toggle("hidden", parteId !== filtroParte);
 
-                parte.classList.toggle("hidden", !perteneceAParte);
-
-                // Ocultar/Mostrar Secciones específicas
-                if (perteneceAParte) {
+                if (parteId === filtroParte) {
                     secciones.forEach(seccion => {
-                        var seccionId = seccion.getAttribute('data-seccion');
-                        if (esSeccionEspecifica) {
-                            seccion.classList.toggle("hidden", seccionId !== filtroParte);
-                        } else {
-                            seccion.classList.remove("hidden");
+                        var seccionPadre = seccion.closest('.parte-ritual');
+                        if (seccionPadre.getAttribute('data-parte') === filtroParte) {
+                            if (filtroSeccion === "todas") {
+                                seccion.classList.remove("hidden");
+                            } else {
+                                seccion.classList.toggle("hidden", seccion.getAttribute('data-seccion') !== filtroSeccion);
+                            }
                         }
                     });
                 }
             });
 
-            // 2. Filtrar por Dignidad y asegurar visibilidad de bloques
+            // 2. Filtrar por Dignidad (Resaltar y ocultar)
             elementosDd.forEach((dd, index) => {
                 var dt = elementosDt[index];
                 var seccionPadre = dd.closest('[data-seccion]');
                 var partePadre = dd.closest('.parte-ritual');
                 
-                // Verificar si la estructura superior está visible
-                var estructuraVisible = partePadre && !partePadre.classList.contains("hidden") && 
-                                       seccionPadre && !seccionPadre.classList.contains("hidden");
+                var estructuraVisible = !partePadre.classList.contains("hidden") && !seccionPadre.classList.contains("hidden");
                 
                 if (estructuraVisible) {
                     var dignidad = dd.getAttribute('data-dignidad');
