@@ -54,7 +54,7 @@
         </apartado>
     </parte>
 
-    <parte id="trabajos" titulo="Trabajos">
+    <parte id="2" titulo="Otros Trabajos">
         <apartado id="admin" titulo="Administrativo: La Limpieza del Terreno">
             <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴, anunciad en vuestras respectivas CCol∴ que se dará lectura a la Plancha de los últimos trabajos."/>
             <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴, anunciad en vuestras respectivas CCol∴, como yo lo hago en Ort∴ que está en consideración la plancha trazada por nuestro QH∴ Sec∴, en tal sentido, si algún H∴ desea hacer uso de la palabra podéis concedérsela."/>
@@ -65,13 +65,13 @@
             <paso tipo="dialogo" oficial="VM" texto="[Da a conocer el resultado de la votación]."/>
         </apartado>
     </parte>    
-    <parte id="trabajos" titulo="Trabajos">
+    <parte id="4" titulo="Asuntos Familiares">
         <apartado id="familiares" titulo="Asuntos Familiares, y Otros de Orden General">
             <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ como yo lo hago en el Or∴ que vamos a tratar asuntos familiares."/>
             <paso tipo="dialogo" oficial="VM" texto="Invitad al MC∴.. a que dé un paseo al salón de pasos perdidos a ver si hay algún visitante."/>
         </apartado>
     </parte>
-    
+    <parte id="5" titulo="Proposiciones">
         <apartado id="proposiciones" titulo="Proposiciones por Escrito">
             <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ como yo lo hago en el Or∴ que nuestro Q∴H∴ M∴ de Cer∴ va a circular el saco de proposiciones. [El MC∴ cumple con su deber y se coloca entre CCol∴.]"/>
             <paso tipo="dialogo" oficial="1V" texto="VM∴, the saco de proposiciones se encuentra entre CCol∴ para circular."/>
@@ -87,6 +87,8 @@
             <paso tipo="dialogo" oficial="2V" texto="QH∴ 1V∴, reina el silencio en mi Col∴.."/>
             <paso tipo="dialogo" oficial="1V" texto="VM∴, reina silencio en ambas CCol∴."/>
         </apartado>
+    </parte>
+    <parte id="6" titulo="Beneficencia">
         <apartado id="beneficencia" titulo="Tronco de beneficencia">
             <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1∴ y 2∴ VVig∴ anunciad en vuestras CCol∴ que el H∴ Hos∴ va a circular en tronco de beneficencia."/>
             <paso tipo="dialogo" oficial="2V" texto="Anunciado en la Col∴ del Mediodía, H∴ 1∴ Vig∴."/>
@@ -102,7 +104,7 @@
         </apartado>
     </parte>
 
-    <parte id="clausura" titulo="Clausura de Trabajos">
+    <parte id="7" titulo="Clausura de Trabajos">
         <apartado id="cierre" titulo="Clausura de Trabajos">
             <paso tipo="dialogo" oficial="VM" texto="En virtud de haber sido en un todo favorable las conclusiones del H∴ OF∴ a la labor realizada, vamos a proceder al cierre de los trabajos de esta RL∴. Pero antes, QH∴ 1V∴ podéis decirnos. ¿Cuáles son los caracteres distintivos que deben de adornar al verdadero Mas∴?"/>
             <paso tipo="dialogo" oficial="1V" texto="Ser virtuoso y amante con los HH∴ y tolerante con todos."/>
