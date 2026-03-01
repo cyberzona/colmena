@@ -172,7 +172,7 @@
             
             const apartados = parte.querySelectorAll("apartado");
             apartados.forEach(apartado => {
-                htmlOutput += `<div class="apartado-header">${apartado.getAttribute("titulo")}</div>`;
+                htmlOutput += `<div class="apartado-header"><br>${apartado.getAttribute("titulo")}</div>`;
                 
                 const pasos = apartado.querySelectorAll("paso");
                 pasos.forEach(paso => {
