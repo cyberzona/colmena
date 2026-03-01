@@ -71,7 +71,7 @@
             <paso tipo="dialogo" oficial="VM" texto="Invitad al MC∴.. a que dé un paseo al salón de pasos perdidos a ver si hay algún visitante."/>
         </apartado>
     </parte>
-    <parte id="5" titulo="Proposiciones">
+    <parte id="5" titulo="Proposiciones por Escrito">
         <apartado id="proposiciones" titulo="Proposiciones por Escrito">
             <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ como yo lo hago en el Or∴ que nuestro Q∴H∴ M∴ de Cer∴ va a circular el saco de proposiciones. [El MC∴ cumple con su deber y se coloca entre CCol∴.]"/>
             <paso tipo="dialogo" oficial="1V" texto="VM∴, the saco de proposiciones se encuentra entre CCol∴ para circular."/>
@@ -128,4 +128,6 @@
             <paso tipo="dialogo" oficial="MC" texto="[Apaga la estrella de 2V∴ , Apaga la estrella del 1V∴ y Apaga la estrella del VM∴ Retira la Escuadra y el Compás, y cierra el Libro de la Ley]"/>
         </apartado>
     </parte>
+</ritual>
+<ritual taller="Colmena No. 8" grado="2">
 </ritual>
