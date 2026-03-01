@@ -12,7 +12,7 @@
             --blanco: #ffffff;
             --texto-accion: #7f8c8d;
         }
-        body { font-family: 'Palatino Linotype', serif; line-height: 1.5; color: #2c2c2c; margin: 0; padding: 10px; background-color: var(--fondo); }
+        body { font-family: 'Palatino Linotype', serif; line-height: 1.4; color: #2c2c2c; margin: 0; padding: 10px; background-color: var(--fondo); }
         h1 { color: var(--cafe); text-align: center; font-size: 1.3em; margin: 10px 0; border-bottom: 2px solid var(--oro); padding-bottom: 5px; }
 
         #control-panel {
@@ -26,21 +26,25 @@
         .section-header { font-weight: bold; color: white; text-align: center; text-transform: uppercase; background: var(--cafe); padding: 8px; margin: -15px -15px 15px -15px; border-radius: 8px 8px 0 0; }
         
         /* Estilos Liturgia */
-        dt { font-weight: bold; color: var(--oro); margin-top: 15px; font-size: 1.1em; }
-        dd { margin: 0 0 10px 20px; font-style: italic; border-left: 2px solid #eee; padding-left: 10px; }
+        dt { font-weight: bold; color: var(--oro); margin-top: 12px; font-size: 1.1em; }
+        dd { margin: 0 0 5px 20px; font-style: normal; border-left: 2px solid #eee; padding-left: 10px; }
         .ritualistica { color: #c0392b; font-weight: bold; letter-spacing: 3px; text-align: center; display: block; margin: 15px 0; }
         
         /* Estilos Catecismo */
         .pregunta { color: #2c3e50; font-weight: bold; }
         .respuesta { color: #34495e; margin-left: 15px; font-style: normal; }
 
-        /* Estilo para las acciones dentro del texto de los diálogos [] */
+        /* --- NUEVO ESTILO DE ACCIÓN --- */
         .accion-inline {                
             color: var(--texto-accion);                
             font-style: italic;                
-            font-size: 0.9em;
+            font-size: 0.85em; /* Letra más pequeña */
             font-weight: normal;
+            display: block; /* Forzar que aparezca debajo */
+            margin-top: 2px; /* Margen muy pequeño para unión */
+            margin-left: 10px; /* Alineado con el texto del diálogo */
         }
+        /* ------------------------------ */
 
         .highlight { background-color: rgba(212, 160, 23, 0.15) !important; border-left: 4px solid var(--oro) !important; padding: 5px 10px; border-radius: 4px; }
     </style>
@@ -122,9 +126,10 @@
             Array.from(apartado.children).forEach(nodo => {
                 const oficial = nodo.getAttribute("oficial");
                 
-                // Procesar el texto para formatear corchetes automáticamente
+                // --- PROCESAR TEXTO PARA ACCIONES ---
                 let textoRaw = nodo.getAttribute("texto");
-                let textoFormateado = textoRaw.replace(/\[(.*?)\]/g, '<span class="accion-inline">[$1]</span>');
+                let textoFormateado = textoRaw.replace(/\[(.*?)\]/g, '<span class="accion-inline">$1</span>');
+                // ------------------------------------
                 
                 const esResaltado = (filtroOficial !== "todos" && oficial === filtroOficial);
                 const claseHighlight = esResaltado ? "highlight" : "";
