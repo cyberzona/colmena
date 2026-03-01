@@ -20,14 +20,12 @@
         #rituales-content { margin-top: 5px; background: white; padding: 10px; border-radius: 8px; }
         #glosario-container { margin-top: 20px; }
         
-        /* --- CORRECCIÓN: Estilo para siglas tripuntuadas (Azul Fuerte) --- */
         .sigla-tripuntuada {
             font-weight: bold;
-            color: #0056b3; /* Azul Fuerte */
+            color: #0056b3; 
             transition: color 0.3s;
         }
         
-        /* Abreviaturas del diálogo (Aplicamos estilo aquí) */
         dt { font-weight: bold; color: #5d4037; margin-top: 10px; font-size: 0.9em; }
         
         dd { 
@@ -88,7 +86,16 @@
             letter-spacing: 1px;
         }
         
-        .apartado-header { font-weight: bold; color: #795548; font-size: 0.95em; border-bottom: 1px solid #d7ccc8; padding-bottom: 3px; margin-top: 10px; }
+        /* --- CORRECCIÓN: Subtítulos alineados a la derecha y espaciados --- */
+        .apartado-header { 
+            font-weight: bold; 
+            color: #795548; 
+            font-size: 0.95em; 
+            border-bottom: 1px solid #d7ccc8; 
+            padding-bottom: 3px; 
+            margin-top: 25px; /* Línea de espacio antes */
+            text-align: right; /* Alineado a la derecha */
+        }
 
         .accion-ritual {
             color: #5d4037; 
@@ -156,7 +163,6 @@
             oficiales.forEach(ofi => {
                 let opt = document.createElement("option");
                 opt.value = ofi.id;
-                // Aplicar clase para color azul en el menú también
                 opt.textContent = ofi.id + '∴'; 
                 selector.appendChild(opt);
             });
@@ -205,7 +211,7 @@
                     // Formatear paréntesis (...) en el texto principal
                     texto = texto.replace(/\((.*?)\)/g, '<span class="parentesis-ritual">($1)</span>');
                     
-                    // --- CORRECCIÓN: Aplicar clase azul a la sigla del oficial ---
+                    // Aplicar clase azul a la sigla del oficial
                     const oficialTripuntuado = `<span class="sigla-tripuntuada">${oficial}∴</span>`;
                     
                     const resaltar = (filtroOficial !== "todos" && 
@@ -236,7 +242,6 @@
             let htmlDef = `<div style="margin-top: 15px; padding: 5px; border-top: 1px solid #efebe9; font-size: 0.7em; color: #a1887f;">`;
             
             for (const [sigla, definicion] of Object.entries(definicionesData)) {
-                // Aplicar azul a las siglas del glosario también
                 htmlDef += `<span class="sigla-tripuntuada" style="font-size: 1.1em;">${sigla}</span> : ${definicion} <span style="color: #d7ccc8; margin: 0 3px;">|</span> `;
             }
             
