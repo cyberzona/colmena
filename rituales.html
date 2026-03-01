@@ -47,10 +47,10 @@
 
         .parte-ritual { counter-reset: line-counter; }
         
-        /* --- CORRECCIÓN: Resaltado de diálogo mejorado --- */
+        /* --- CORRECCIÓN: Resaltado Amarillo Resaltador --- */
         .highlight-dialogue { 
-            background-color: rgba(188, 170, 164, 0.3); /* Un poco más oscuro */
-            border-left: 3px solid #8d6e63; 
+            background-color: rgba(255, 255, 0, 0.4); /* Amarillo con transparencia */
+            border-left: 3px solid #FFD700; /* Borde dorado para definir */
             padding-left: 9px; 
             transition: background-color 0.3s;
         }
@@ -104,10 +104,12 @@
 
         async function inicializar() {
             try {
+                // Cargar el ritual XML
                 const ritualResponse = await fetch('liturgia.xml');
                 const ritualText = await ritualResponse.text();
                 xmlDoc = new DOMParser().parseFromString(ritualText, "text/xml");
                 
+                // Cargar los recursos generales
                 const dataResponse = await fetch('recursos.json');
                 const data = await dataResponse.json();
                 
@@ -129,7 +131,7 @@
             const selector = document.getElementById("oficialFilter");
             oficiales.forEach(ofi => {
                 let opt = document.createElement("option");
-                // Mantenemos el ID limpio para la lógica
+                // Mantenemos el ID limpio para la lógica de búsqueda
                 opt.value = ofi.id; 
                 // Añadimos puntos aquí para mostrarlo en el menú
                 opt.textContent = ofi.id + '∴'; 
@@ -170,15 +172,16 @@
                     const oficial = paso.getAttribute("oficial");
                     let texto = paso.getAttribute("texto");
                     
+                    // Resaltar acciones [] y paréntesis ()
                     texto = texto.replace(/\[(.*?)\]/g, '<span class="accion-ritual">[$1]</span>');
                     texto = texto.replace(/\((.*?)\)/g, '<span class="parentesis-ritual">($1)</span>');
                     
-                    // --- CORRECCIÓN: Lógica de resaltado y puntos ---
+                    // --- Lógica de resaltado y puntos ---
                     
                     // 1. Añadir tripuntuación al oficial que habla en el texto
                     const oficialTripuntuado = oficial + '∴';
                     
-                    // 2. Comparación flexible (con o sin puntos)
+                    // 2. Comparación flexible (con o sin puntos en el XML)
                     const resaltar = (filtroOficial !== "todos" && 
                                      (oficial === filtroOficial || oficial + '∴' === filtroOficial));
                     const claseHighlight = resaltar ? "highlight-dialogue" : "";
@@ -198,6 +201,7 @@
             
             const contenedorGlosario = document.getElementById('glosario-container');
             
+            // --- Glosario en línea, compacto y discreto ---
             let htmlDef = `<div style="margin-top: 15px; padding: 5px; border-top: 1px solid #efebe9; font-size: 0.7em; color: #a1887f;">`;
             
             for (const [sigla, definicion] of Object.entries(definicionesData)) {
