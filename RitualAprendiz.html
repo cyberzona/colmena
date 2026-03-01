@@ -47,13 +47,13 @@
             border-radius: 8px; 
         }
         
+        /* Contenedor de la línea (Dt + Dd) */
         .linea-dialogo {
             display: block;
             margin-bottom: 10px;
             position: relative;
-            counter-increment: line-counter;
-            padding-left: 35px;
-            transition: opacity 0.3s ease, background-color 0.3s ease;
+            counter-increment: line-counter; /* El incremento está aquí */
+            padding-left: 30px;
         }
         
         dt { 
@@ -71,15 +71,17 @@
             color: #2c2c2c;
         }
         
+        /* Numeración automática usando el contenedor */
         .linea-dialogo::before {
             content: counter(line-counter) ". ";
             position: absolute;
-            left: 5px;
+            left: 0;
             color: #7A4F35;
             font-weight: bold;
             font-style: normal;
         }
         
+        /* REINICIO DEL CONTADOR AL CAMBIAR DE PARTE */
         .parte-ritual {
             counter-reset: line-counter;
             display: none;
@@ -89,16 +91,10 @@
             display: block;
         }
         
-        /* ESTILOS DE RESALTADO */
-        .linea-dialogo.highlight {
-            background-color: rgba(212,160,23,0.15);
-            border-left: 3px solid #D4A017;
+        .highlight {
+            background-color: rgba(212,160,23,0.1);
             border-radius: 4px;
-            padding-left: 32px;
-        }
-        
-        .linea-dialogo.dimmed {
-            opacity: 0.3;
+            padding: 2px 4px;
         }
         
         .section-header {
@@ -112,20 +108,22 @@
             font-size: 1em;
             display: block;
         }
+        
+        .hidden { display: none !important; }
     </style>
 </head>
-<body onload="aplicarResaltado()">
+<body onload="filtrarRitual()">
 
     <h1>Ritual de Aprendiz</h1>
 
     <div id="control-panel">
-        <select id="parteFilter" onchange="aplicarResaltado()">
+        <select id="parteFilter" onchange="filtrarRitual()">
             <option value="apertura" selected>Apertura</option>
             <option value="proposiciones">Proposiciones</option>
             <option value="clausura">Clausura</option>
         </select>
         
-        <select id="dignidadFilter" onchange="aplicarResaltado()">
+        <select id="dignidadFilter" onchange="filtrarRitual()">
             <option value="todos" selected>Todo</option>
             <option value="VM">VM∴</option>
             <option value="1V">1V∴</option>
@@ -313,23 +311,236 @@
 
         <div class="parte-ritual" id="proposiciones" data-parte="proposiciones">
             <div class="section-header">Proposiciones y Trabajos</div>
+            
+            <div class="section-header">Administrativo</div>
             <div class="linea-dialogo" data-dignidad="VM">
                 <dt>VM∴</dt>
                 <dd>QQHH∴ 1V∴ y 2V∴, anunciad en vuestras respectivas CCol∴ que se dará lectura a la Plancha de los últimos trabajos.</dd>
             </div>
+            <div class="linea-dialogo" data-dignidad="VM">
+                <dt>VM∴</dt>
+                <dd>QQHH∴ 1V∴ y 2V∴, anunciad en vuestras respectivas CCol∴, como yo lo hago en Ort∴ que está en consideración la plancha trazada por nuestro QH∴ Sec∴, en tal sentido, si algún H∴ desea hacer uso de la palabra podéis concedérsela.</dd>
             </div>
+            <div class="linea-dialogo" data-dignidad="2V">
+                <dt>2V∴</dt>
+                <dd>Reina el silencio en mi Columna Hermano 1V∴.</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="1V">
+                <dt>1V∴</dt>
+                <dd>Reina el silencio en ambas CCol∴, VM∴.</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="VM">
+                <dt>VM∴</dt>
+                <dd>QH∴ Ora∴ ¿Queréis darnos vuestras conclusiones respecto a la plancha trazada por nuestro H∴ Sec∴ de nuestros últimos trabajos? (El H∴Ora∴ da las conclusiones)</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="VM">
+                <dt>VM∴</dt>
+                <dd>Después de las conclusiones del H∴ Ora∴, los HH∴ que estén de acuerdo se servirán de hacer la señal de aprobación al primer golpe de Mall∴.</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="VM">
+                <dt>VM∴</dt>
+                <dd>(Da a conocer el resultado de la votación).</dd>
+            </div>
+            
+            <div class="section-header">Asuntos Familiares</div>
+            <div class="linea-dialogo" data-dignidad="VM">
+                <dt>VM∴</dt>
+                <dd>QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ como yo lo hago en el Or∴ que vamos a tratar asuntos familiares.</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="VM">
+                <dt>VM∴</dt>
+                <dd>Invitad al MC∴.. a que dé un paseo al salón de pasos perdidos a ver si hay algún visitante.</dd>
+            </div>
+            
+            <div class="section-header">Proposiciones por Escrito</div>
+            <div class="linea-dialogo" data-dignidad="VM">
+                <dt>VM∴</dt>
+                <dd>QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ como yo lo hago en el Or∴ que nuestro Q∴H∴ M∴ de Cer∴ va a circular el saco de proposiciones. (El MC∴ cumple con su deber y se coloca entre CCol∴.)</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="1V">
+                <dt>1V∴</dt>
+                <dd>VM∴, the saco de proposiciones se encuentra entre CCol∴ para circular.</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="VM">
+                <dt>VM∴</dt>
+                <dd>Ordenad que circule empezando por mi derecha. Con Cer∴ o sin Cer∴, cumplida su misión, se coloca entre CCol∴.</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="1V">
+                <dt>1V∴</dt>
+                <dd>He cumplido con mi deber.</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="1V">
+                <dt>1V∴</dt>
+                <dd>VM∴, el saco de proposiciones, después de haber circulado por los cuatro puntos cardinales, se halla nuevamente entre CCol∴.</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="VM">
+                <dt>VM∴</dt>
+                <dd>Ordenad que pase a Or∴ y que en compañía del H∴ Ora∴ nos enteremos de su contenido. El H∴ Ora∴ da cuenta de la cantidad de PPl∴ producidas, después de un breve examen el Ven∴ M∴ puede dejarlas bajo Mall∴ hasta la próxima Ten∴.</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="VM">
+                <dt>VM∴</dt>
+                <dd>QQHH∴ 1V∴ y 2V∴ anunciad en vuestras respectivas CCol∴ que vamos a pasar a proposiciones verbales.</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="2V">
+                <dt>2V∴</dt>
+                <dd>H∴ 1V∴, reina el silencio en mi Col∴.</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="1V">
+                <dt>1V∴</dt>
+                <dd>VM∴, reina silencio en ambas CCol∴.</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="VM">
+                <dt>VM∴</dt>
+                <dd>QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ que voy a conceder la palabra en bien general de la orden y en particular de este Tall∴.</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="2V">
+                <dt>2V∴</dt>
+                <dd>QH∴ de la Col∴ del Norte, por orden del VM∴ y transmitida a mí por el QH∴ 1V∴ que está concedida la palabra en bien general de la orden y particular de este Tall∴.</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="2V">
+                <dt>2V∴</dt>
+                <dd>QH∴ 1V∴, reina el silencio en mi Col∴..</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="1V">
+                <dt>1V∴</dt>
+                <dd>VM∴, reina silencio en ambas CCol∴.</dd>
+            </div>
+            
+            <div class="section-header">Tronco de Beneficencia</div>
+            <div class="linea-dialogo" data-dignidad="VM">
+                <dt>VM∴</dt>
+                <dd>QQHH∴ 1∴ y 2∴ VVig∴ anunciad en vuestras CCol∴ que el H∴ Hos∴ va a circular en tronco de beneficencia.</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="2V">
+                <dt>2V∴</dt>
+                <dd>Anunciado en la Col∴ del Mediodía, H∴ 1∴ Vig∴.</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="1V">
+                <dt>1V∴</dt>
+                <dd>Anunciado en ambas Ccol∴, Ven∴ M∴.</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="VM">
+                <dt>VM∴</dt>
+                <dd>Q∴H∴ Hos∴, cumplid con vuestro deber. (El H∴ Hos∴ se coloca entre Ccol∴.).</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="1V">
+                <dt>1V∴</dt>
+                <dd>Ven∴M∴, el H∴Hos∴ se encuentra entre Ccol∴ pronto a circular entre los HH∴.</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="VM">
+                <dt>VM∴</dt>
+                <dd>Ordenad que circule empezando por la derecha.</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="1V">
+                <dt>1V∴</dt>
+                <dd>Q∴H∴Hos∴, cumplid con vuestro deber. (El H∴Hos∴ después de haber circulado se coloca entre Ccol∴.)</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="MC">
+                <dt>Hos∴</dt>
+                <dd>Q∴H∴1∴Vig∴, he cumplido vuestro mandato.</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="1V">
+                <dt>1V∴</dt>
+                <dd>Ven∴M∴, el tronco de beneficencia después de circular por los cuatro puntos cardinales del templo se encuentra nuevamente entre Ccol∴..</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="VM">
+                <dt>VM∴</dt>
+                <dd>Ordenad que ocupe su puesto y nos de cuenta de su contenido.</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="VM">
+                <dt>VM∴</dt>
+                <dd>Q∴ H∴ Ora∴, ¿Nos queréis dar las conclusiones de los trabajos de la Ten∴ de hoy?</dd>
+            </div>
+        </div>
 
         <div class="parte-ritual" id="clausura" data-parte="clausura">
             <div class="section-header">Clausura de Trabajos</div>
+            
             <div class="linea-dialogo" data-dignidad="VM">
                 <dt>VM∴</dt>
-                <dd>En virtud de haber sido en un todo favorable las conclusiones del H∴ OF∴ a la labor realizada, vamos a proceder al cierre de los trabajos de esta RL∴.</dd>
+                <dd>En virtud de haber sido en un todo favorable las conclusiones del H∴ OF∴ a la labor realizada, vamos a proceder al cierre de los trabajos de esta RL∴. Pero antes, QH∴ 1V∴ podéis decirnos. ¿Cuáles son los caracteres distintivos que deben de adornar al verdadero Mas∴?</dd>
             </div>
+            <div class="linea-dialogo" data-dignidad="1V">
+                <dt>1V∴</dt>
+                <dd>Ser virtuoso y amante con los HH∴ y tolerante con todos.</dd>
             </div>
+            <div class="linea-dialogo" data-dignidad="VM">
+                <dt>VM∴</dt>
+                <dd>QH∴ 2V∴ ¿Qué se deben los Masones entre sí?</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="2V">
+                <dt>2V∴</dt>
+                <dd>Respeto mutuo y amor fraternal, VM∴.</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="VM">
+                <dt>VM∴</dt>
+                <dd>¿Cuál debe ser la conducta del Masón en el mundo profano, QH∴ 1V∴?</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="1V">
+                <dt>1V∴</dt>
+                <dd>Enseñar con la práctica el ejercicio de las virtudes.</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="VM">
+                <dt>VM∴</dt>
+                <dd>QH∴ 1V∴ ¿Qué edad tenéis como Ap∴Mas∴?</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="1V">
+                <dt>1V∴</dt>
+                <dd>Tres años, VM∴.</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="VM">
+                <dt>VM∴</dt>
+                <dd>QH∴ 2V∴ ¿A qué hora cierran los trabajos los AAp∴ Mas∴?</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="2V">
+                <dt>2V∴</dt>
+                <dd>Medianoche en punto, VM∴.</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="VM">
+                <dt>VM∴</dt>
+                <dd>¿Qué hora es, QH∴ 1V∴?</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="1V">
+                <dt>1V∴</dt>
+                <dd>La hora de cerrar, medianoche en punto, VM∴.</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="VM">
+                <dt>VM∴</dt>
+                <dd>Puesto que es la hora en que los AAp∴ MMas∴ cierran sus trabajos, QQHH∴ 1V∴ y 2V∴, invitad a los obreros de vuestras respectivas CCol∴ como yo invito a los de Or∴ para que se unan a vosotros y a mí a fin de cerrar los trabajos de esta Aug∴ RL∴. (El VM∴ da tres golpes de Mall∴ que repiten los VV∴ y dice: de pie y al orden mis HH∴.).</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="2V">
+                <dt>2V∴</dt>
+                <dd>Todo está justo y perfecto, VM∴.</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="1V">
+                <dt>1V∴</dt>
+                <dd>Reina completa armonía, VM∴ y estamos en condición de luchar por la emancipación Moral y Material de los seres humanos.</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="VM">
+                <dt>VM∴</dt>
+                <dd>Ya Hermanos míos: puesto que todo es justo y perfecto, y nos hallamos en condición de luchar para que el estandarte de la Justicia ondee desde la cúpula de nuestros Templos sobre toda la humanidad, acompañadme a clausurar las tareas de esta Respetable Logia. ALGDGADU∴, en su nombre y bajo la obediencia de la Ser∴ Gr∴ L∴ de Lengua Española para los EE. UU. de A., declaro cerrados los trabajos de este Taller por el día de hoy. ¡A mí, Hermanos, con el Signo y la Batería de Grado!</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="VM">
+                <dt>VM∴</dt>
+                <dd>Queridos Hermanos, antes de partir: ¿Juráis guardar absoluto silencio sobre lo aquí visto y oído, incluso ante aquellos Hermanos que no asistieron a esta Tenida?</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="All">
+                <dt>Todos</dt>
+                <dd>¡Lo juramos!</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="VM">
+                <dt>VM∴</dt>
+                <dd>Si así lo hiciereis, que el GADU∴ os lo premie; si no, que Él os lo demande. H∴ MC∴ servíos cerrar el Ara. Hermanos míos, retirémonos en paz y fraternidad.</dd>
+            </div>
+            <div class="linea-dialogo" data-dignidad="MC">
+                <dt>MC∴</dt>
+                <dd>(Apaga la estrella de 2V∴ , Apaga la estrella del 1V∴ y Apaga la estrella del VM∴ Retira la Escuadra y el Compás, y cierra el Libro de la Ley)</dd>
+            </div>
+        </div>
     </div>
 
     <script>
-        function aplicarResaltado() {
+        function filtrarRitual() {
             var filtroParte = document.getElementById("parteFilter").value;
             var filtroDignidad = document.getElementById("dignidadFilter").value;
             
@@ -340,21 +551,20 @@
                 parte.classList.toggle("active", parte.id === filtroParte);
             });
 
-            // 2. Resaltar por Dignidad dentro de la parte activa
+            // 2. Filtrar por Dignidad dentro de la parte activa
             var parteActiva = document.getElementById(filtroParte);
             var lineas = parteActiva.querySelectorAll('.linea-dialogo');
 
             lineas.forEach(linea => {
                 var dignidad = linea.getAttribute('data-dignidad');
                 
-                if (filtroDignidad === "todos") {
-                    linea.classList.remove("highlight", "dimmed");
-                } else if (dignidad === filtroDignidad) {
-                    linea.classList.add("highlight");
-                    linea.classList.remove("dimmed");
+                // VM siempre visible, o si coincide el filtro, o si es "todos"
+                if (filtroDignidad === "todos" || dignidad === filtroDignidad || dignidad === "VM" || dignidad === "All") {
+                    linea.classList.remove("hidden");
+                    // Resaltar si coincide con el filtro, pero no el VM
+                    linea.classList.toggle("highlight", dignidad === filtroDignidad && filtroDignidad !== "VM" && filtroDignidad !== "todos");
                 } else {
-                    linea.classList.add("dimmed");
-                    linea.classList.remove("highlight");
+                    linea.classList.add("hidden");
                 }
             });
         }
