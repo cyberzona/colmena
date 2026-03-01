@@ -52,6 +52,7 @@
             color: #D4A017;
             margin-top: 10px;
             font-size: 1em;
+            display: block;
         }
         
         dd { 
@@ -62,9 +63,10 @@
             padding-left: 5px;
             font-size: 0.9em;
             position: relative;
+            display: block;
         }
         
-        /* Numeración continua automática */
+        /* NUMERACIÓN AUTOMÁTICA */
         dd::before {
             counter-increment: line-counter;
             content: counter(line-counter) ". ";
@@ -196,7 +198,7 @@
                 <dd data-dignidad="VM">¿Para qué ocupáis ese puesto, Querido Hermano 2V∴?</dd>
 
                 <dt data-dignidad="2V">2V∴</dt>
-                <dd data-dignidad="2V">Para mejor observar el Sol en su meridiano, mandar a los obreros al trabajo y llamarlos a la recreación, y de la recreación al trabajo a fin de que la humanidad coseche el respandor de los principios Masónicos.</dd>
+                <dd data-dignidad="2V">Para mejor observar el Sol en su meridiano, mandar a los obreros al trabajo y llamarlos a la recreación, y de la recreación al trabajo a fin de que la humanidad coseche el resplandor de los principios Masónicos.</dd>
 
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">Querido Hermano 2V∴ ¿Donde toma asiento nuestro Querido Hermano 1V∴?</dd>
@@ -462,9 +464,8 @@
             partes.forEach(parte => {
                 var parteId = parte.getAttribute('data-parte');
                 var esSeccionEspecifica = filtroParte.startsWith('seccion-');
-                var parteContenedora = esSeccionEspecifica ? filtroParte.split('-')[1] : filtroParte;
                 
-                // Lógica de mapeo: Secciones de Silencio..Logos pertenecen a 'apertura'
+                // Mapeo lógico: qué sección pertenece a qué parte
                 var perteneceAParte = false;
                 if (esSeccionEspecifica) {
                     if (filtroParte === "seccion-silencio" || filtroParte === "seccion-orden" || 
@@ -481,7 +482,7 @@
 
                 parte.classList.toggle("hidden", !perteneceAParte);
 
-                // Ocultar/Mostrar Secciones específicas dentro de la parte visible
+                // Ocultar/Mostrar Secciones específicas
                 if (perteneceAParte) {
                     secciones.forEach(seccion => {
                         var seccionId = seccion.getAttribute('data-seccion');
@@ -494,14 +495,19 @@
                 }
             });
 
-            // 2. Filtrar por Dignidad (Resaltar)
+            // 2. Filtrar por Dignidad y asegurar visibilidad de bloques
             elementosDd.forEach((dd, index) => {
                 var dt = elementosDt[index];
+                var seccionPadre = dd.closest('[data-seccion]');
                 var partePadre = dd.closest('.parte-ritual');
-                var estaVisible = partePadre && !partePadre.classList.contains("hidden") && !dd.closest('[data-seccion]').classList.contains("hidden");
                 
-                if (estaVisible) {
+                // Verificar si la estructura superior está visible
+                var estructuraVisible = partePadre && !partePadre.classList.contains("hidden") && 
+                                       seccionPadre && !seccionPadre.classList.contains("hidden");
+                
+                if (estructuraVisible) {
                     var dignidad = dd.getAttribute('data-dignidad');
+                    
                     if (dignidad === "VM" || dignidad === filtroDignidad || filtroDignidad === "todos") {
                         dd.classList.remove("hidden");
                         dt.classList.remove("hidden");
