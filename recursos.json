@@ -4,8 +4,9 @@
     { "id": "1V∴", "nombre": "Primer Vigilante" },
     { "id": "2V∴", "nombre": "Segundo Vigilante" },
     { "id": "MC∴", "nombre": "Maestro de Ceremonias" },
-    { "id": "GdT∴", "nombre": "Guarda Templo" },
-    { "id": "Ora∴", "nombre": "Orador" },
+    { "id": "GT∴", "nombre": "Guarda Templo" },
+    { "id": "Sec∴", "nombre": "Secretario" },
+    { "id": "Ora∴", "nombre": "Orador Fiscal" },
     { "id": "Hos∴", "nombre": "Hospitalario" }
   ],
   "definiciones": {
