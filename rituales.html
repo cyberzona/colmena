@@ -6,27 +6,28 @@
     <title>Ritual de Aprendiz - Colmena No. 8</title>
     <style>
         body { font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif; line-height: 1.4; color: #2c2c2c; margin: 0; padding: 10px; background-color: #fdfaf3; }
-        h1 { color: #7A4F35; text-align: center; font-size: 1.4em; margin: 10px 0; }
+        h1 { color: #5d4037; text-align: center; font-size: 1.4em; margin: 10px 0; }
         
-        #control-panel { background: #fff8e1; padding: 10px; border-radius: 8px; border: 1px solid #ffe082; text-align: center; margin-bottom: 10px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        #control-panel { background: #efebe9; padding: 10px; border-radius: 8px; border: 1px solid #d7ccc8; text-align: center; margin-bottom: 10px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         
         select { padding: 8px; font-size: 0.9em; margin: 5px; border-radius: 4px; border: 1px solid #ccc; width: 45%; display: inline-block; background-color: white; }
 
-        /* Contenedores separados para mantener la estructura */
         #rituales-content { margin-top: 5px; background: white; padding: 10px; border-radius: 8px; }
         #glosario-container { margin-top: 20px; }
         
-        dt { font-weight: bold; color: #D4A017; margin-top: 10px; font-size: 1em; transition: all 0.3s; }
+        /* --- CORRECCIÓN: Abreviaturas más discretas --- */
+        dt { font-weight: bold; color: #5d4037; margin-top: 10px; font-size: 0.9em; transition: all 0.3s; }
         
         dd { 
-            margin-left: 30px; 
-            margin-bottom: 10px; 
-            font-style: italic; 
-            border-left: 2px solid #E7D9C9; 
+            margin-left: 25px; 
+            margin-bottom: 8px; 
+            font-style: normal; 
+            border-left: 2px solid #d7ccc8; 
             padding-left: 10px; 
-            font-size: 0.9em; 
+            font-size: 0.95em; 
             position: relative; 
             transition: all 0.3s; 
+            color: #3e2723;
         }
         
         /* Numeración más grande y reposicionada */
@@ -34,52 +35,51 @@
             counter-increment: line-counter; 
             content: counter(line-counter); 
             position: absolute; 
-            left: -28px; 
-            top: 0px;
-            color: #7A4F35; 
+            left: -25px; 
+            top: 1px;
+            color: #8d6e63; 
             font-weight: bold; 
             font-style: normal;
-            font-size: 0.85em; 
+            font-size: 0.8em; 
             background-color: transparent; 
             border: none; 
         }
         
         .parte-ritual { counter-reset: line-counter; }
         
-        /* Estilo de resaltado mejorado */
+        /* --- CORRECCIÓN: Resaltado de diálogo más suave --- */
         .highlight-dialogue { 
-            background-color: rgba(212,160,23,0.15); 
-            border-left: 3px solid #D4A017; 
-            padding-left: 10px; 
+            background-color: rgba(188, 170, 164, 0.2); 
+            border-left: 3px solid #8d6e63; 
+            padding-left: 9px; 
             transition: background-color 0.3s;
         }
         
-        /* Título de parte invertido */
+        /* Título de parte invertido - colores tierra */
         .section-header { 
             font-weight: bold; 
             color: white; 
             text-align: center; 
             text-transform: uppercase; 
             margin-top: 15px; 
-            background-color: #7A4F35; 
+            background-color: #5d4037; 
             padding: 8px; 
             font-size: 1.1em; 
             border-radius: 4px;
             letter-spacing: 1px;
         }
         
-        .apartado-header { font-weight: bold; color: #D4A017; font-size: 0.95em; border-bottom: 1px solid #E7D9C9; padding-bottom: 3px; margin-top: 10px; }
+        .apartado-header { font-weight: bold; color: #795548; font-size: 0.95em; border-bottom: 1px solid #d7ccc8; padding-bottom: 3px; margin-top: 10px; }
 
-        /* Resaltado de acciones en corchetes (Rojo Oscuro) */
+        /* --- CORRECCIÓN: Acciones y paréntesis menos llamativos --- */
         .accion-ritual {
-            color: #b71c1c; 
+            color: #5d4037; 
             font-weight: bold;
             font-style: normal;
         }
 
-        /* Resaltado de paréntesis (Azul Oscuro) */
         .parentesis-ritual {
-            color: #0d47a1; 
+            color: #6d4c41; 
             font-style: normal;
         }
     </style>
@@ -138,7 +138,7 @@
                 let opt = document.createElement("option");
                 opt.value = ofi.id; // Ejemplo: "VM∴"
                 
-                // CORRECCIÓN: Mostrar solo la sigla en el selector
+                // Mostrar solo la sigla en el selector
                 opt.textContent = ofi.id; // Ejemplo: "VM∴"
                 
                 selector.appendChild(opt);
@@ -182,7 +182,7 @@
                     texto = texto.replace(/\[(.*?)\]/g, '<span class="accion-ritual">[$1]</span>');
                     texto = texto.replace(/\((.*?)\)/g, '<span class="parentesis-ritual">($1)</span>');
                     
-                    // CORRECCIÓN: Lógica de comparación mejorada para manejar puntos
+                    // Lógica de comparación mejorada para manejar puntos
                     let oficialParaComparar = oficial;
                     let filtroParaComparar = filtroOficial;
                     
@@ -213,7 +213,7 @@
             htmlDef += `<dl style="margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">`;
             
             for (const [sigla, definicion] of Object.entries(definicionesData)) {
-                htmlDef += `<dt style="font-weight: bold; color: #7A4F35;">${sigla}</dt>`;
+                htmlDef += `<dt style="font-weight: bold; color: #5d4037;">${sigla}</dt>`;
                 htmlDef += `<dd style="margin: 0; font-style: normal;">${definicion}</dd>`;
             }
             
