@@ -1,18 +1,20 @@
 {
   "oficiales": [
     { "id": "VM", "nombre": "Venerable Maestro" },
-    { "id": "1V∴", "nombre": "Primer Vigilante" },
-    { "id": "2V∴", "nombre": "Segundo Vigilante" },
-    { "id": "MC∴", "nombre": "Maestro de Ceremonias" },
-    { "id": "GT∴", "nombre": "Guarda Templo" },
-    { "id": "Sec∴", "nombre": "Secretario" },
-    { "id": "Ora∴", "nombre": "Orador Fiscal" },
-    { "id": "Hos∴", "nombre": "Hospitalario" }
+    { "id": "1V", "nombre": "Primer Vigilante" },
+    { "id": "2V", "nombre": "Segundo Vigilante" },
+    { "id": "MC", "nombre": "Maestro de Ceremonias" },
+    { "id": "GT", "nombre": "Guarda Templo" },
+    { "id": "Sec", "nombre": "Secretario" },
+    { "id": "Ora", "nombre": "Orador Fiscal" },
+    { "id": "Hos", "nombre": "Hospitalario" }
   ],
   "definiciones": {
+    "VM∴": "Venerable Maestro",
     "HH∴": "Hermanos",
     "QQHH∴": "Queridos Hermanos",
     "RL∴": "Respetable Logia",
-    "GADU∴": "Gran Arquitecto Del Universo"
+    "GADU∴": "Gran Arquitecto Del Universo",
+    "ALGDGADU∴": "A la Gloria del Gran Arquitecto Del Universo"
   }
 }
