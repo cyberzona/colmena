@@ -101,7 +101,7 @@
             });
         }
 
-        function renderizarLiturgia() {
+       function renderizarLiturgia() {
             if (!xmlDoc) return;
             const parteId = document.getElementById("parteFilter").value;
             const filtroOficial = document.getElementById("oficialFilter").value;
@@ -110,17 +110,19 @@
             
             if (!parte) return;
 
-            let htmlOutput = "";
+            // --- CORRECCIÓN AQUÍ: Mostrar el título de la parte ---
+            let htmlOutput = `<div class="section-header">${parte.getAttribute("titulo")}</div>`;
+            // ----------------------------------------------------
+            
             const apartados = parte.querySelectorAll("apartado");
 
-            // --- BUCLE PARA RECORRER TODOS LOS APARTADOS DE LA PARTE ---
             apartados.forEach(apartado => {
+                // Título del apartado funcional
                 htmlOutput += `<div class="apartado-header">${apartado.getAttribute("titulo")}</div><dl>`;
 
                 Array.from(apartado.children).forEach(nodo => {
                     const oficial = nodo.getAttribute("oficial");
                     
-                    // Procesar el texto para formatear corchetes automáticamente
                     let textoRaw = nodo.getAttribute("texto");
                     let textoFormateado = textoRaw.replace(/\[(.*?)\]/g, '<span class="accion-inline">$1</span>');
                     
@@ -139,7 +141,6 @@
                 });
                 htmlOutput += `</dl>`;
             });
-            // ----------------------------------------------------------
 
             contenedor.innerHTML = htmlOutput;
         }
