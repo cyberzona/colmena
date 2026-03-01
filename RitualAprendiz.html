@@ -77,6 +77,7 @@
             font-style: normal;
         }
         
+        /* REINICIO DEL CONTADOR POR PARTE */
         .parte-ritual {
             counter-reset: line-counter;
         }
@@ -367,7 +368,6 @@
     </div>
 
     <script>
-        // Mapeo de Secciones por Parte (COMPLETO)
         const mapaSecciones = {
             "apertura": [
                 {value: "todas", text: "Todas las Secciones"},
@@ -394,10 +394,7 @@
             var parteSeleccionada = document.getElementById("parteFilter").value;
             var selectorSeccion = document.getElementById("seccionFilter");
             
-            // Limpiar opciones actuales
             selectorSeccion.innerHTML = "";
-            
-            // Llenar nuevas opciones
             mapaSecciones[parteSeleccionada].forEach(function(seccion) {
                 var option = document.createElement("option");
                 option.value = seccion.value;
@@ -418,7 +415,6 @@
             var elementosDd = document.querySelectorAll('dd[data-dignidad]');
             var elementosDt = document.querySelectorAll('dt[data-dignidad]');
 
-            // 1. Filtrar Partes y Secciones
             partes.forEach(parte => {
                 var parteId = parte.getAttribute('data-parte');
                 parte.classList.toggle("hidden", parteId !== filtroParte);
@@ -437,7 +433,6 @@
                 }
             });
 
-            // 2. Filtrar por Dignidad (Resaltar y ocultar)
             elementosDd.forEach((dd, index) => {
                 var dt = elementosDt[index];
                 var seccionPadre = dd.closest('[data-seccion]');
