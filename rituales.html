@@ -10,7 +10,6 @@
         
         #control-panel { background: #efebe9; padding: 10px; border-radius: 8px; border: 1px solid #d7ccc8; text-align: center; margin-bottom: 10px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         
-        /* --- CORRECCIÓN: Ajuste de anchos 60% y 30% --- */
         #container-parte { display: inline-block; width: 60%; margin: 5px; text-align: left; vertical-align: top; }
         #container-oficial { display: inline-block; width: 30%; margin: 5px; text-align: left; vertical-align: top; }
         
@@ -26,7 +25,7 @@
         
         dd { 
             margin-left: 25px; 
-            margin-bottom: 8px; 
+            margin-bottom: 2px; /* Reducido para acercar la acción */
             font-style: normal; 
             border-left: 2px solid #d7ccc8; 
             padding-left: 10px; 
@@ -58,6 +57,18 @@
             border-left: 3px solid #8d6e63; 
             padding-left: 9px; 
             transition: background-color 0.3s;
+        }
+        
+        /* --- CORRECCIÓN: Estilo para acciones en línea siguiente --- */
+        .accion-siguiente-linea {
+            font-size: 0.85em;
+            color: #5d4037;
+            font-style: italic;
+            margin-left: 38px;
+            margin-bottom: 8px;
+            padding-left: 10px;
+            border-left: 2px solid #d7ccc8;
+            display: block;
         }
         
         .section-header { 
@@ -179,7 +190,16 @@
                     const oficial = paso.getAttribute("oficial");
                     let texto = paso.getAttribute("texto");
                     
-                    texto = texto.replace(/\[(.*?)\]/g, '<span class="accion-ritual">[$1]</span>');
+                    // --- CORRECCIÓN: Separar acciones en línea siguiente ---
+                    
+                    // 1. Extraer acciones [...]
+                    let acciones = [];
+                    texto = texto.replace(/\[(.*?)\]/g, (match, p1) => {
+                        acciones.push(p1);
+                        return ""; // Quitar la acción del texto principal
+                    });
+                    
+                    // 2. Formatear paréntesis (...) en el texto principal
                     texto = texto.replace(/\((.*?)\)/g, '<span class="parentesis-ritual">($1)</span>');
                     
                     const oficialTripuntuado = oficial + '∴';
@@ -188,8 +208,14 @@
                                      (oficial === filtroOficial || oficial + '∴' === filtroOficial));
                     const claseHighlight = resaltar ? "highlight-dialogue" : "";
                     
+                    // 3. Generar HTML
                     htmlOutput += `<dt class="dignidad" data-dignidad="${oficial}">${oficialTripuntuado}</dt>`;                
                     htmlOutput += `<dd class="dialogo ${claseHighlight}" data-dignidad="${oficial}">${texto}</dd>`;
+                    
+                    // 4. Añadir acciones en línea siguiente
+                    acciones.forEach(accion => {
+                        htmlOutput += `<div class="accion-siguiente-linea"><em>[${accion}]</em></div>`;
+                    });
                 });
             });
             
