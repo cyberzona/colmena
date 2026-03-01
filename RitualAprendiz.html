@@ -47,13 +47,13 @@
             border-radius: 8px; 
         }
         
-        /* Contenedor de la línea (Dt + Dd) */
         .linea-dialogo {
             display: block;
             margin-bottom: 10px;
             position: relative;
-            counter-increment: line-counter; /* El incremento está aquí */
-            padding-left: 30px;
+            counter-increment: line-counter;
+            padding-left: 35px;
+            transition: opacity 0.3s ease, background-color 0.3s ease;
         }
         
         dt { 
@@ -71,17 +71,15 @@
             color: #2c2c2c;
         }
         
-        /* Numeración automática usando el contenedor */
         .linea-dialogo::before {
             content: counter(line-counter) ". ";
             position: absolute;
-            left: 0;
+            left: 5px;
             color: #7A4F35;
             font-weight: bold;
             font-style: normal;
         }
         
-        /* REINICIO DEL CONTADOR AL CAMBIAR DE PARTE */
         .parte-ritual {
             counter-reset: line-counter;
             display: none;
@@ -91,10 +89,16 @@
             display: block;
         }
         
-        .highlight {
-            background-color: rgba(212,160,23,0.1);
+        /* ESTILOS DE RESALTADO */
+        .linea-dialogo.highlight {
+            background-color: rgba(212,160,23,0.15);
+            border-left: 3px solid #D4A017;
             border-radius: 4px;
-            padding: 2px 4px;
+            padding-left: 32px;
+        }
+        
+        .linea-dialogo.dimmed {
+            opacity: 0.3;
         }
         
         .section-header {
@@ -108,22 +112,20 @@
             font-size: 1em;
             display: block;
         }
-        
-        .hidden { display: none !important; }
     </style>
 </head>
-<body onload="filtrarRitual()">
+<body onload="aplicarResaltado()">
 
     <h1>Ritual de Aprendiz</h1>
 
     <div id="control-panel">
-        <select id="parteFilter" onchange="filtrarRitual()">
+        <select id="parteFilter" onchange="aplicarResaltado()">
             <option value="apertura" selected>Apertura</option>
             <option value="proposiciones">Proposiciones</option>
             <option value="clausura">Clausura</option>
         </select>
         
-        <select id="dignidadFilter" onchange="filtrarRitual()">
+        <select id="dignidadFilter" onchange="aplicarResaltado()">
             <option value="todos" selected>Todo</option>
             <option value="VM">VM∴</option>
             <option value="1V">1V∴</option>
@@ -131,6 +133,8 @@
             <option value="MC">MC∴</option>
             <option value="GdT">GdT∴</option>
             <option value="Ora">Ora∴</option>
+            <option value="Sec">Sec∴</option>
+            <option value="Hos">Hos∴</option>
         </select>
     </div>
 
@@ -349,7 +353,7 @@
             </div>
             <div class="linea-dialogo" data-dignidad="VM">
                 <dt>VM∴</dt>
-                <dd>Invitad al MC∴.. a que dé un paseo al salón de pasos perdidos a ver si hay algún visitante.</dd>
+                <dd>Invitad al MC∴ a que dé un paseo al salón de pasos perdidos a ver si hay algún visitante.</dd>
             </div>
             
             <div class="section-header">Proposiciones por Escrito</div>
@@ -371,7 +375,7 @@
             </div>
             <div class="linea-dialogo" data-dignidad="1V">
                 <dt>1V∴</dt>
-                <dd>VM∴, el saco de proposiciones, después de haber circulado por los cuatro puntos cardinales, se halla nuevamente entre CCol∴.</dd>
+                <dd>VM∴, the saco de proposiciones, después de haber circulado por los cuatro puntos cardinales, se halla nuevamente entre CCol∴.</dd>
             </div>
             <div class="linea-dialogo" data-dignidad="VM">
                 <dt>VM∴</dt>
@@ -399,7 +403,7 @@
             </div>
             <div class="linea-dialogo" data-dignidad="2V">
                 <dt>2V∴</dt>
-                <dd>QH∴ 1V∴, reina el silencio en mi Col∴..</dd>
+                <dd>QH∴ 1V∴, reina el silencio en mi Col∴.</dd>
             </div>
             <div class="linea-dialogo" data-dignidad="1V">
                 <dt>1V∴</dt>
@@ -409,11 +413,11 @@
             <div class="section-header">Tronco de Beneficencia</div>
             <div class="linea-dialogo" data-dignidad="VM">
                 <dt>VM∴</dt>
-                <dd>QQHH∴ 1∴ y 2∴ VVig∴ anunciad en vuestras CCol∴ que el H∴ Hos∴ va a circular en tronco de beneficencia.</dd>
+                <dd>QQHH∴ 1V∴ y 2V∴ anunciad en vuestras CCol∴ que el H∴ Hos∴ va a circular en tronco de beneficencia.</dd>
             </div>
             <div class="linea-dialogo" data-dignidad="2V">
                 <dt>2V∴</dt>
-                <dd>Anunciado en la Col∴ del Mediodía, H∴ 1∴ Vig∴.</dd>
+                <dd>Anunciado en la Col∴ del Mediodía, H∴ 1V∴.</dd>
             </div>
             <div class="linea-dialogo" data-dignidad="1V">
                 <dt>1V∴</dt>
@@ -425,7 +429,7 @@
             </div>
             <div class="linea-dialogo" data-dignidad="1V">
                 <dt>1V∴</dt>
-                <dd>Ven∴M∴, el H∴Hos∴ se encuentra entre Ccol∴ pronto a circular entre los HH∴.</dd>
+                <dd>Ven∴M∴, the H∴Hos∴ se encuentra entre Ccol∴ pronto a circular entre los HH∴.</dd>
             </div>
             <div class="linea-dialogo" data-dignidad="VM">
                 <dt>VM∴</dt>
@@ -435,13 +439,13 @@
                 <dt>1V∴</dt>
                 <dd>Q∴H∴Hos∴, cumplid con vuestro deber. (El H∴Hos∴ después de haber circulado se coloca entre Ccol∴.)</dd>
             </div>
-            <div class="linea-dialogo" data-dignidad="MC">
+            <div class="linea-dialogo" data-dignidad="Hos">
                 <dt>Hos∴</dt>
-                <dd>Q∴H∴1∴Vig∴, he cumplido vuestro mandato.</dd>
+                <dd>Q∴H∴1V∴, he cumplido vuestro mandato.</dd>
             </div>
             <div class="linea-dialogo" data-dignidad="1V">
                 <dt>1V∴</dt>
-                <dd>Ven∴M∴, el tronco de beneficencia después de circular por los cuatro puntos cardinales del templo se encuentra nuevamente entre Ccol∴..</dd>
+                <dd>Ven∴M∴, the tronco de beneficencia después de circular por los cuatro puntos cardinales del templo se encuentra nuevamente entre Ccol∴.</dd>
             </div>
             <div class="linea-dialogo" data-dignidad="VM">
                 <dt>VM∴</dt>
@@ -540,7 +544,7 @@
     </div>
 
     <script>
-        function filtrarRitual() {
+        function aplicarResaltado() {
             var filtroParte = document.getElementById("parteFilter").value;
             var filtroDignidad = document.getElementById("dignidadFilter").value;
             
@@ -551,20 +555,21 @@
                 parte.classList.toggle("active", parte.id === filtroParte);
             });
 
-            // 2. Filtrar por Dignidad dentro de la parte activa
+            // 2. Resaltar por Dignidad dentro de la parte activa
             var parteActiva = document.getElementById(filtroParte);
             var lineas = parteActiva.querySelectorAll('.linea-dialogo');
 
             lineas.forEach(linea => {
                 var dignidad = linea.getAttribute('data-dignidad');
                 
-                // VM siempre visible, o si coincide el filtro, o si es "todos"
-                if (filtroDignidad === "todos" || dignidad === filtroDignidad || dignidad === "VM" || dignidad === "All") {
-                    linea.classList.remove("hidden");
-                    // Resaltar si coincide con el filtro, pero no el VM
-                    linea.classList.toggle("highlight", dignidad === filtroDignidad && filtroDignidad !== "VM" && filtroDignidad !== "todos");
+                if (filtroDignidad === "todos") {
+                    linea.classList.remove("highlight", "dimmed");
+                } else if (dignidad === filtroDignidad) {
+                    linea.classList.add("highlight");
+                    linea.classList.remove("dimmed");
                 } else {
-                    linea.classList.add("hidden");
+                    linea.classList.add("dimmed");
+                    linea.classList.remove("highlight");
                 }
             });
         }
