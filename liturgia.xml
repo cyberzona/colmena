@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ritual taller="Colmena No. 8" grado="1">
     
-    <parte id="apertura" titulo="Apertura de Trabajos">
+    <parte id="1" titulo="Apertura de Trabajos">
         <apartado id="espacio" titulo="Salvaguarda del Espacio Sagrado">
             <paso tipo="dialogo" oficial="VM" texto="¡Silencio en Logia, Hermanos (HH∴)! [Golpe de Mallete]"/>
             <paso tipo="dialogo" oficial="VM" texto="Hermano Maestro de Ceremonias (MC∴), ¿los puestos están cubiertos?"/>
@@ -13,7 +13,7 @@
             <paso tipo="dialogo" oficial="VM" texto="Aseguraos de ello, Hermano mío."/>
             <paso tipo="dialogo" oficial="1V" texto="Hermano Guarda Templo (GT∴) Cumplid con vuestro deber. [El GT da tres golpes en la puerta y la respuesta externa es similar]"/>
             <paso tipo="dialogo" oficial="GT" texto="Hermano 1V∴, el Temp∴ está a cubierto de toda indiscreción profana."/>
-            <paso tipo="dialogo" oficial="1V" texto="VM∴ [Da tres golpes de Mallete] el Templo está cubierto de toda indiscreción."/>
+            <paso tipo="dialogo" oficial="1V" texto="VM∴ el Templo está cubierto de toda indiscreción. [Da tres golpes de Mallete]"/>
         </apartado>
         <apartado id="orden" titulo="El Orden de las Columnas">
             <paso tipo="dialogo" oficial="VM" texto="¿Cuál es vuestro segundo deber en Hermano 1V∴?"/>
@@ -64,10 +64,14 @@
             <paso tipo="dialogo" oficial="VM" texto="Después de las conclusiones del H∴ Ora∴, los HH∴ que estén de acuerdo se servirán de hacer la señal de aprobación al primer golpe de Mall∴."/>
             <paso tipo="dialogo" oficial="VM" texto="[Da a conocer el resultado de la votación]."/>
         </apartado>
+    </parte>    
+    <parte id="trabajos" titulo="Trabajos">
         <apartado id="familiares" titulo="Asuntos Familiares, y Otros de Orden General">
             <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ como yo lo hago en el Or∴ que vamos a tratar asuntos familiares."/>
             <paso tipo="dialogo" oficial="VM" texto="Invitad al MC∴.. a que dé un paseo al salón de pasos perdidos a ver si hay algún visitante."/>
         </apartado>
+    </parte>
+    
         <apartado id="proposiciones" titulo="Proposiciones por Escrito">
             <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ como yo lo hago en el Or∴ que nuestro Q∴H∴ M∴ de Cer∴ va a circular el saco de proposiciones. [El MC∴ cumple con su deber y se coloca entre CCol∴.]"/>
             <paso tipo="dialogo" oficial="1V" texto="VM∴, the saco de proposiciones se encuentra entre CCol∴ para circular."/>
