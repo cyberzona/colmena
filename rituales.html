@@ -137,7 +137,10 @@
             oficiales.forEach(ofi => {
                 let opt = document.createElement("option");
                 opt.value = ofi.id; // Ejemplo: "VM∴"
-                opt.textContent = `${ofi.id} - ${ofi.nombre}`;
+                
+                // CORRECCIÓN: Mostrar solo la sigla en el selector
+                opt.textContent = ofi.id; // Ejemplo: "VM∴"
+                
                 selector.appendChild(opt);
             });
         }
@@ -179,9 +182,7 @@
                     texto = texto.replace(/\[(.*?)\]/g, '<span class="accion-ritual">[$1]</span>');
                     texto = texto.replace(/\((.*?)\)/g, '<span class="parentesis-ritual">($1)</span>');
                     
-                    // --- CORRECCIÓN: Lógica de comparación mejorada ---
-                    // Si el oficial en XML no tiene puntos pero el filtro sí (o viceversa),
-                    // ajustamos el valor de comparación.
+                    // CORRECCIÓN: Lógica de comparación mejorada para manejar puntos
                     let oficialParaComparar = oficial;
                     let filtroParaComparar = filtroOficial;
                     
