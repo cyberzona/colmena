@@ -2,168 +2,256 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ritual de Aprendiz - Colmena No. 8</title>
     <style>
         body { 
             font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif; 
-            line-height: 1.6;
+            line-height: 2.2; /* Mucho aire entre líneas */
             color: #2c2c2c; 
             max-width: 950px; 
             margin: 0 auto; 
-            padding: 20px;
+            padding: 60px; /* Margen general generoso */
             background-color: #fdfaf3;
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36z8gGiMAEYIIwAXgAmgGkgAEAF3gD/ZkUAAAAAElFTkSuQmCC'); /* Sutil textura de papel */
         }
-        h1 { color: #7A4F35; text-align: center; font-size: 1.8em; }
-        
-        /* Panel de control fijo */
-        #control-panel {
-            background: #fff8e1;
-            padding: 15px;
-            border-radius: 10px;
-            border: 1px solid #ffe082;
-            text-align: center;
-            margin-bottom: 20px;
-            position: sticky;
-            top: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            z-index: 1000;
+        h1 { 
+            color: #7A4F35; 
+            text-align: center; 
+            border-bottom: 3px solid #D4A017; 
+            padding-bottom: 30px;
+            margin-bottom: 60px; 
+            font-size: 3em;
+            text-transform: uppercase;
+            letter-spacing: 3px;
         }
         
-        .filter-group {
-            margin-bottom: 10px;
+        /* Contenedor de diálogo con máximo espacio */
+        dl { 
+            margin-top: 50px; 
+            background: white; 
+            padding: 50px; /* Padding interno aumentado */
+            border-radius: 16px;
+            box-shadow: 0 6px 25px rgba(0,0,0,0.06);
+            counter-reset: line-counter; /* Reinicia la numeración en cada lista de diálogos */
         }
         
-        select, button {
-            padding: 10px;
-            font-size: 1em;
-            margin: 5px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            width: 90%;
-            max-width: 300px;
-        }
-        
-        button {
-            background-color: #7A4F35;
-            color: white;
-            border: none;
-            cursor: pointer;
-            width: auto;
-            padding: 10px 20px;
-        }
-
-        /* Estilos del ritual */
-        dl { margin-top: 10px; background: white; padding: 20px; border-radius: 10px; }
-        
+        /* Resaltado del Autor (VM∴, 1V∴, etc.) - NEGrita y Color Oro */
         dt { 
             font-weight: bold; 
-            color: #D4A017;
-            margin-top: 15px;
-            font-size: 1.1em;
+            color: #D4A017; /* Color oro */
+            margin-top: 40px; /* Espacio antes de cada cargo */
+            margin-bottom: 15px; /* Espacio entre cargo y texto */
+            font-size: 1.5em;
+            letter-spacing: 2px;
+            display: block; 
         }
         
+        /* Estilo del texto del diálogo - Cursiva */
         dd { 
-            margin-left: 10px; 
-            margin-bottom: 15px; 
+            margin-left: 0; 
+            margin-bottom: 40px; /* Espacio grande debajo de cada diálogo */
             font-style: italic; 
-            border-left: 3px solid #E7D9C9;
-            padding-left: 10px;
-            font-size: 1em;
+            font-size: 1.25em; 
+            color: #444;
+            padding-left: 30px;
+            border-left: 5px solid #D4A017;
+            position: relative;
         }
         
-        .hidden { display: none; }
-        .section-header {
+        /* Numeración automática antes del texto */
+        dd::before {
+            counter-increment: line-counter;
+            content: counter(line-counter) ". ";
+            position: absolute;
+            left: -35px;
+            color: #D4A017;
             font-weight: bold;
-            color: #8b5a2b;
-            text-align: center;
+            font-style: normal;
+        }
+        
+        /* Puntuación automática al final */
+        dd::after { content: "."; } 
+        
+        .escena { 
+            text-align: center; 
+            font-weight: bold; 
+            color: #8b5a2b; 
+            margin-top: 60px; 
+            margin-bottom: 60px; 
+            font-size: 1.2em;
             text-transform: uppercase;
-            margin-top: 25px;
-            background: rgba(212,160,23,0.1);
-            padding: 10px;
-            border-radius: 5px;
+            letter-spacing: 2px;
+            background: rgba(212,160,23,0.08);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(212,160,23,0.2);
+        }
+        
+        .header-info {
+            text-align: center;
+            font-size: 1.1em;
+            color: #555;
+            margin-bottom: 40px;
+            line-height: 1.6;
         }
     </style>
 </head>
 <body>
 
     <h1>Ritual de Aprendiz</h1>
-
-    <div id="control-panel">
-        <div class="filter-group">
-            <select id="apartadoFilter">
-                <option value="todos">Todo el Ritual</option>
-                <option value="apertura">Apertura</option>
-                <option value="clausura">Clausura</option>
-            </select>
-        </div>
-        <div class="filter-group">
-            <select id="dignidadFilter">
-                <option value="todos">Todas las Dignidades</option>
-                <option value="VM">Venerable Maestro (VM∴)</option>
-                <option value="1V">Primer Vigilante (1V∴)</option>
-                <option value="2V">Segundo Vigilante (2V∴)</option>
-                <option value="MC">Maestro de Ceremonias (MC∴)</option>
-                <option value="GdT">Guarda Templo (GdT∴)</option>
-            </select>
-        </div>
-        <button onclick="filtrarRitual()">Aplicar Filtro</button>
+    
+    <div class="header-info">
+        <p>A.·. L.·. G.·. D.·. G.·. A.·. D.·. U.·.</p>
+        <p><strong>Respetable Logia Simbólica Colmena N° 8</strong></p>
+        <p>Regularmente Constituida en la Jurisdicción de la Serenísima Gran Logia de Lengua Española para E.E.U.U. de Norteamérica</p>
+        <p><em>Codex Alvearis: [A8L4-0601]</em></p>
     </div>
+    
+    <div class="escena">[Apertura de Trabajos]</div>
 
     <dl>
-        <div data-apartado="apertura">
-            <div class="section-header">Apertura de Trabajos</div>
-            <dt data-dignidad="VM">VM∴</dt>
-            <dd data-dignidad="VM">¡Silencio en Logia, Hermanos (HH∴)!</dd>
+        <dt><strong>VM∴</strong></dt>
+        <dd>¡Silencio en Logia, Hermanos (HH∴)!</dd>
 
-            <dt data-dignidad="VM">VM∴</dt>
-            <dd data-dignidad="VM">Hermano MC∴, ¿los puestos están cubiertos?</dd>
+        <dt><strong>VM∴</strong></dt>
+        <dd>Hermano <strong>MC∴</strong>, ¿los puestos están cubiertos</dd>
 
-            <dt data-dignidad="MC">MC∴</dt>
-            <dd data-dignidad="MC">Si, VM∴ los puestos están cubiertos y los HH∴ prontos a iniciar los trabajos.</dd>
-            
-            </div>
+        <dt><strong>MC∴</strong></dt>
+        <dd>Si, <strong>VM∴</strong> los puestos están cubiertos y los HH∴ prontos a iniciar los trabajos</dd>
 
-        <div data-apartado="clausura">
-            <div class="section-header">Clausura de Trabajos</div>
-            <dt data-dignidad="VM">VM∴</dt>
-            <dd data-dignidad="VM">QH∴ 1V∴, ¿Cuáles son los caracteres distintivos que deben adornar al verdadero Mas∴?</dd>
+        <dt><strong>VM∴</strong></dt>
+        <dd>Hermano <strong>1V∴</strong>: ¿Sois Masón</dd>
 
-            <dt data-dignidad="1V">1V∴</dt>
-            <dd data-dignidad="1V">Ser virtuoso, amante con los HH∴ y tolerante con todos.</dd>
-            
-            </div>
+        <dt><strong>1V∴</strong></dt>
+        <dd>Mis Hermanos (HH∴) me reconocen como tal, <strong>VM∴</strong></dd>
+
+        <dt><strong>VM∴</strong></dt>
+        <dd>¿Cuál es nuestro primer deber en Logia Hermano <strong>1V∴</strong></dd>
+
+        <dt><strong>1V∴</strong></dt>
+        <dd>Ver si el templo está cubierto de toda indiscreción profana</dd>
+
+        <dt><strong>VM∴</strong></dt>
+        <dd>Aseguraos de ello, Hermano mío</dd>
+
+        <dt><strong>1V∴</strong></dt>
+        <dd>Hermano <strong>GdT∴</strong> Cumplid con vuestro deber. (GdT∴ da tres golpes en la puerta)</dd>
+
+        <dt><strong>GdT∴</strong></dt>
+        <dd>Hermano <strong>1V∴</strong>, el Temp∴ está a cubierto de toda indiscreción profana</dd>
+
+        <dt><strong>1V∴</strong></dt>
+        <dd><strong>VM∴</strong> (Da tres golpes de Mallete) el Templo está cubierto de toda indiscreción</dd>
+        
+        <dt><strong>VM∴</strong></dt>
+        <dd>¿Cuál es vuestro segundo deber en Hermano <strong>1V∴</strong></dd>
+
+        <dt><strong>1V∴</strong></dt>
+        <dd>Ver si todos los HH∴ que decoran ambas columnas son aprendices masones</dd>
+
+        <dt><strong>VM∴</strong></dt>
+        <dd>Aseguraos de ello, <strong>1V∴</strong> y <strong>2V∴</strong>, de pie y al orden</dd>
+
+        <dt><strong>2V∴</strong></dt>
+        <dd>Hermano <strong>1V∴</strong>, the HH∴ que decoran mi Col∴ son masones y están de pie y al orden en el Grado de Aprendiz</dd>
+
+        <dt><strong>1V∴</strong></dt>
+        <dd><strong>VM∴</strong> los HH∴ que se cobijan bajo la bóveda de nuestro templo son Masones y se hallan al orden, prontos para cumplir con vuestro mandato</dd>
+
+        <dt><strong>VM∴</strong></dt>
+        <dd>HH∴ míos, también son masones los que decoran el Oriente, y están prontos para trabajar en la construcción del Templo Moral</dd>
+        
+        <dt><strong>VM∴</strong></dt>
+        <dd>¿Para qué ocupáis ese puesto, Querido Hermano <strong>2V∴</strong></dd>
+
+        <dt><strong>2V∴</strong></dt>
+        <dd>Para mejor observar el Sol en su meridiano, mandar a los obreros al trabajo y llamarlos a la recreación</dd>
+
+        <dt><strong>VM∴</strong></dt>
+        <dd>Querido Hermano <strong>2V∴</strong> ¿Donde toma asiento nuestro Querido Hermano <strong>1V∴</strong></dd>
+
+        <dt><strong>2V∴</strong></dt>
+        <dd>Al occidente, <strong>VM∴</strong></dd>
+
+        <dt><strong>VM∴</strong></dt>
+        <dd>¿Para qué ocupáis ese puesto Querido Hermano <strong>1V∴</strong></dd>
+
+        <dt><strong>1V∴</strong></dt>
+        <dd>Para ayudar al <strong>VM∴</strong>, abrir y cerrar la Logia, pagar a los obreros y despedirlos contentos y satisfechos</dd>
+
+        <dt><strong>VM∴</strong></dt>
+        <dd>¿Donde toma asiento el <strong>VM∴</strong> Querido Hermano <strong>1V∴</strong></dd>
+
+        <dt><strong>1V∴</strong></dt>
+        <dd>En el Oriente (Or∴)</dd>
+
+        <dt><strong>VM∴</strong></dt>
+        <dd>¿Para qué H∴ mío</dd>
+
+        <dt><strong>1V∴</strong></dt>
+        <dd>Para abrir la Logia, dirigirla en sus trabajos e iluminar con sus luces</dd>
+        
+        <dt><strong>VM∴</strong></dt>
+        <dd>Querido Hermano <strong>2V∴</strong> ¿Qué edad tenéis como Apr∴ Mas∴</dd>
+
+        <dt><strong>2V∴</strong></dt>
+        <dd>Tres años, <strong>VM∴</strong></dd>
+
+        <dt><strong>VM∴</strong></dt>
+        <dd>¿A qué hora empiezan los trabajos de Apr∴ Mas∴, QH∴ <strong>1V∴</strong></dd>
+
+        <dt><strong>1V∴</strong></dt>
+        <dd>Al mediodía, <strong>VM∴</strong></dd>
+
+        <dt><strong>VM∴</strong></dt>
+        <dd>¿Qué hora es, Querido Hermano <strong>2V∴</strong></dd>
+
+        <dt><strong>2V∴</strong></dt>
+        <dd>La hora de empezar, mediodía en punto, <strong>VM∴</strong></dd>
+
+        <dt><strong>VM∴</strong></dt>
+        <dd>Siendo mediodía en punto, hora que los Apr∴ Mas∴ abren sus trabajos, servios invitar a los obreros a abrir los trabajos</dd>
+
+        <dt><strong>1V∴</strong></dt>
+        <dd>QH∴ <strong>2V∴</strong> y HH∴ de mi Col∴, por orden del <strong>VM∴</strong>, os invito a abrir los trabajos</dd>
+
+        <dt><strong>2V∴</strong></dt>
+        <dd>QQHH∴ de la Col∴ del Norte, por orden del <strong>VM∴</strong>, uníos a nosotros para abrir los trabajos</dd>
+        
+        <dt><strong>VM∴</strong></dt>
+        <dd>¡En pie y al Orden, Queridos Hermanos!</dd>
+
+        <dt><strong>VM∴</strong></dt>
+        <dd>QH∴ <strong>MC∴</strong>, prended las Luces</dd>
+
+        <dt><strong>VM∴</strong></dt>
+        <dd>Declaro abiertos los trabajos de esta RL∴ en el grado de Ap∴Mas∴. Queda prohibido tratar asuntos políticos ni religiosos. ¡Tomad asiento, QQHH∴!</dd>
     </dl>
+    
+    <div class="escena">[Clausura de Trabajos]</div>
+    
+    <dl>
+        <dt><strong>VM∴</strong></dt>
+        <dd>QH∴ <strong>1V∴</strong>, ¿Cuáles son los caracteres distintivos que deben adornar al verdadero Mas∴</dd>
 
-    <script>
-        function filtrarRitual() {
-            var filtroApartado = document.getElementById("apartadoFilter").value;
-            var filtroDignidad = document.getElementById("dignidadFilter").value;
-            
-            var secciones = document.querySelectorAll('[data-apartado]');
-            var elementos = document.querySelectorAll('[data-dignidad]');
+        <dt><strong>1V∴</strong></dt>
+        <dd>Ser virtuoso, amante con los HH∴ y tolerante con todos</dd>
 
-            // 1. Filtrar por Apartado
-            secciones.forEach(seccion => {
-                if (filtroApartado === "todos" || seccion.getAttribute('data-apartado') === filtroApartado) {
-                    seccion.classList.remove("hidden");
-                } else {
-                    seccion.classList.add("hidden");
-                }
-            });
+        <dt><strong>VM∴</strong></dt>
+        <dd>QH∴ <strong>2V∴</strong> ¿Qué se deben los Masones entre sí</dd>
 
-            // 2. Filtrar por Dignidad dentro del apartado seleccionado
-            elementos.forEach(el => {
-                var estaEnApartadoCorrecto = el.closest('[data-apartado]').classList.contains("hidden") === false;
-                
-                if (estaEnApartadoCorrecto && (filtroDignidad === "todos" || el.getAttribute('data-dignidad') === filtroDignidad)) {
-                    el.classList.remove("hidden");
-                } else {
-                    el.classList.add("hidden");
-                }
-            });
-        }
-    </script>
+        <dt><strong>2V∴</strong></dt>
+        <dd>Respeto mutuo y amor fraternal, <strong>VM∴</strong></dd>
+
+        <dt><strong>VM∴</strong></dt>
+        <dd>QH∴ <strong>2V∴</strong> ¿A qué hora cierran los trabajos los AAp∴ Mas∴</dd>
+
+        <dt><strong>2V∴</strong></dt>
+        <dd>Medianoche en punto, <strong>VM∴</strong></dd>
+
+        <dt><strong>VM∴</strong></dt>
+        <dd>H∴ <strong>MC∴</strong> servíos cerrar el Ara. ¡Declaro cerrados los trabajos!</dd>
+    </dl>
 
 </body>
 </html>
