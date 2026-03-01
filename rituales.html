@@ -54,6 +54,12 @@
             padding-left: 9px; 
             transition: background-color 0.3s;
         }
+
+        /* --- CORRECCIÓN: Resaltado de tripuntuación en Azul Oscuro --- */
+        .tripuntado {
+            color: #00008B; /* Azul oscuro */
+            font-weight: bold;
+        }
         
         .section-header { 
             font-weight: bold; 
@@ -175,6 +181,10 @@
                     // Resaltar acciones [] y paréntesis ()
                     texto = texto.replace(/\[(.*?)\]/g, '<span class="accion-ritual">[$1]</span>');
                     texto = texto.replace(/\((.*?)\)/g, '<span class="parentesis-ritual">($1)</span>');
+                    
+                    // --- CORRECCIÓN: Resaltar la palabra precedente y el símbolo en azul oscuro ---
+                    // Busca palabras seguidas de \.\·\.
+                    texto = texto.replace(/(\w+)\.\·\./g, '<span class="tripuntado">$1.·.</span>');
                     
                     // --- Lógica de resaltado y puntos ---
                     
