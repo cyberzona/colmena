@@ -3,7 +3,7 @@
     
     <parte id="apertura" titulo="Apertura de Trabajos">
         <apartado id="espacio" titulo="Salvaguarda del Espacio Sagrado">
-            <paso tipo="dialogo" oficial="VM" texto="¡Silencio en Logia, Hermanos (HH∴)!"/>
+            <paso tipo="dialogo" oficial="VM" texto="¡Silencio en Logia, Hermanos (HH∴)! [Golpe de Mallete]"/>
             <paso tipo="dialogo" oficial="VM" texto="Hermano Maestro de Ceremonias (MC∴), ¿los puestos están cubiertos?"/>
             <paso tipo="dialogo" oficial="MC" texto="Si, VM∴ los puestos están cubiertos y los HH∴ prontos a iniciar los trabajos."/>
             <paso tipo="dialogo" oficial="VM" texto="Hermano Primer Vigilante (1V∴): ¿Sois Masón?"/>
