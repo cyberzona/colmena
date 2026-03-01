@@ -105,10 +105,13 @@
     <h1>Ritual de Aprendiz</h1>
 
     <div id="control-panel">
-        <select id="parteFilter" onchange="filtrarRitual()">
-            <option value="apertura" selected>Apertura</option>
-            <option value="trabajos">Trabajos</option>
+        <select id="apartadoFilter" onchange="filtrarRitual()">
+            <option value="apertura" selected>Apertura (Todo)</option>          
             <option value="clausura">Clausura</option>
+            <option value="admin">Administrativo</option>
+            <option value="familiares">Asuntos Familiares</option>
+            <option value="proposiciones">Proposiciones</option>
+            <option value="beneficencia">Tronco Beneficencia</option>
         </select>
         
         <select id="dignidadFilter" onchange="filtrarRitual()">
@@ -265,7 +268,7 @@
             </div>
         </div>
 
-        <div class="parte-ritual hidden" data-parte="trabajos">
+        <div class="parte-ritual" data-parte="trabajos">
             
             <div data-apartado="admin">
                 <div class="section-header">Administrativo: La Limpieza del Terreno</div>
@@ -379,7 +382,7 @@
             </div>
         </div>
 
-        <div class="parte-ritual hidden" data-parte="clausura">
+        <div class="parte-ritual" data-parte="clausura">
             <div data-apartado="clausura">
                 <div class="section-header">Clausura de Trabajos</div>
                 <dt data-dignidad="VM">VM∴</dt>
@@ -447,27 +450,34 @@
 
     <script>
         function filtrarRitual() {
-            var filtroParte = document.getElementById("parteFilter").value;
+            var filtroApartado = document.getElementById("apartadoFilter").value;
             var filtroDignidad = document.getElementById("dignidadFilter").value;
             
-            // Seleccionamos las partes principales
-            var partes = document.querySelectorAll('.parte-ritual');
+            var secciones = document.querySelectorAll('[data-apartado]');
             var elementosDd = document.querySelectorAll('dd[data-dignidad]');
             var elementosDt = document.querySelectorAll('dt[data-dignidad]');
 
-            // 1. Filtrar por Parte Principal
-            partes.forEach(parte => {
-                var esParteSeleccionada = (parte.getAttribute('data-parte') === filtroParte);
-                parte.classList.toggle("hidden", !esParteSeleccionada);
+            // 1. Filtrar por Apartado/Parte
+            secciones.forEach(seccion => {
+                var apartado = seccion.getAttribute('data-apartado');
+                var esApertura = (apartado === "apertura" || seccion.classList.contains("apertura-sub"));
+                var esClausura = (apartado === "clausura");
+
+                if (filtroApartado === "apertura") {
+                    seccion.classList.toggle("hidden", !esApertura);
+                } else if (filtroApartado === "clausura") {
+                    seccion.classList.toggle("hidden", !esClausura);
+                } else if (filtroApartado === "trabajos" || (filtroApartado !== "apertura" && filtroApartado !== "clausura" && apartado === filtroApartado)) {
+                    seccion.classList.toggle("hidden", seccion.getAttribute('data-apartado') !== filtroApartado);
+                } else {
+                    seccion.classList.add("hidden");
+                }
             });
 
-            // 2. Resaltar la dignidad seleccionada dentro de la parte activa
+            // 2. Resaltar la dignidad seleccionada y ajustar visibilidad
             elementosDd.forEach((dd, index) => {
                 var dt = elementosDt[index];
-                
-                // Verificar si el padre directo (la parte) está visible
-                var parteContenedora = dd.closest('.parte-ritual');
-                var estaVisible = !parteContenedora.classList.contains("hidden");
+                var estaVisible = !dd.closest('[data-apartado]').classList.contains("hidden");
                 
                 if (estaVisible) {
                     var dignidad = dd.getAttribute('data-dignidad');
@@ -476,7 +486,7 @@
                         dd.classList.remove("hidden");
                         dt.classList.remove("hidden");
                         
-                        // Resaltar dignidad específica (excluyendo VM por defecto según requerimiento anterior)
+                        // Resaltar dignidad específica
                         dd.classList.toggle("highlight", dignidad === filtroDignidad && filtroDignidad !== "VM" && filtroDignidad !== "todos");
                     } else {
                         dd.classList.add("hidden");
@@ -484,7 +494,7 @@
                         dd.classList.remove("highlight");
                     }
                 } else {
-                    // Si la parte está oculta, ocultar también sus elementos dt/dd
+                    // Si el apartado está oculto, ocultar también sus elementos dt/dd
                     dd.classList.add("hidden");
                     dt.classList.add("hidden");
                 }
