@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ritual de Aprendiz - Colmena No. 8</title>
+    <style>
+        body { font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif; line-height: 1.4; color: #2c2c2c; margin: 0; padding: 10px; background-color: #fdfaf3; }
+        h1 { color: #7A4F35; text-align: center; font-size: 1.4em; margin: 10px 0; }
+        
+        #control-panel { background: #fff8e1; padding: 10px; border-radius: 8px; border: 1px solid #ffe082; text-align: center; margin-bottom: 10px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        
+        select { padding: 8px; font-size: 0.9em; margin: 5px; border-radius: 4px; border: 1px solid #ccc; width: 45%; display: inline-block; background-color: white; }
+
+        #rituales-container { margin-top: 5px; background: white; padding: 10px; border-radius: 8px; }
+        
+        dt { font-weight: bold; color: #D4A017; margin-top: 10px; font-size: 1em; transition: all 0.3s; }
+        
+        dd { 
+            margin-left: 30px; 
+            margin-bottom: 10px; 
+            font-style: italic; 
+            border-left: 3px solid #E7D9C9; 
+            padding-left: 10px; 
+            font-size: 0.9em; 
+            position: relative; 
+            transition: all 0.3s; 
+        }
+        
+        /* Numeración en la barra vertical */
+        dd::before { 
+            counter-increment: line-counter; 
+            content: counter(line-counter); 
+            position: absolute; 
+            left: -26px; /* Posicionado sobre la barra */
+            top: 0;
+            color: white; 
+            font-weight: bold; 
+            font-style: normal;
+            font-size: 0.8em;
+            background-color: #7A4F35; /* Fondo oscuro para contraste */
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #E7D9C9;
+        }
+        
+        .parte-ritual { counter-reset: line-counter; }
+        .hidden { display: none !important; }
+        .highlight { background-color: rgba(212,160,23,0.2) !important; border-left: 3px solid #D4A017 !important; padding-left: 10px !important; }
+        
+        .section-header { font-weight: bold; color: #8b5a2b; text-align: center; text-transform: uppercase; margin-top: 15px; background: rgba(212,160,23,0.1); padding: 5px; font-size: 1em; }
+        .apartado-header { font-weight: bold; color: #D4A017; font-size: 0.95em; border-bottom: 1px solid #E7D9C9; padding-bottom: 3px; margin-top: 10px; }
+    </style>
+</head>
+<body onload="inicializar()">
+
+    <h1>Ritual de Aprendiz</h1>
+
+    <div id="control-panel">
+        <select id="parteFilter" onchange="renderizarRiturgia()">
+            </select>
+        
+        <select id="oficialFilter" onchange="renderizarRiturgia()">
+            <option value="todos" selected>Mostrar Todo</option>
+            <option value="VM">VM∴</option>
+            <option value="1V">1V∴</option>
+            <option value="2V">2V∴</option>
+            <option value="MC">MC∴</option>
+            <option value="GdT">GdT∴</option>
+            <option value="Ora">Ora∴</option>
+            <option value="Hos">Hos∴</option>
+        </select>
+    </div>
+
+    <div id="rituales-container"></div>
+
+    <script>
+        let xmlDoc = null;
+
+        async function inicializar() {
+            try {
+                const response = await fetch('liturgia.xml');
+                const text = await response.text();
+                xmlDoc = new DOMParser().parseFromString(text, "text/xml");
+                poblarSelectorPartes();
+                renderizarRiturgia();
+            } catch (e) {
+                console.error("Error al cargar el XML", e);
+                document.getElementById('rituales-container').innerHTML = "Error al cargar el ritual.";
+            }
+        }
+
+        function poblarSelectorPartes() {
+            const selector = document.getElementById("parteFilter");
+            const partes = xmlDoc.querySelectorAll("parte");
+            partes.forEach(p => {
+                let opt = document.createElement("option");
+                opt.value = p.getAttribute("id");
+                opt.textContent = p.getAttribute("titulo");
+                selector.appendChild(opt);
+            });
+        }
+
+        function renderizarRiturgia() {
+            if (!xmlDoc) return;
+            const parteId = document.getElementById("parteFilter").value;
+            const filtroOficial = document.getElementById("oficialFilter").value;
+            const contenedor = document.getElementById("rituales-container");
+            
+            const parte = xmlDoc.querySelector(`parte[id="${parteId}"]`);
+            if (!parte) return;
+
+            let htmlOutput = `<div class="parte-ritual">`;
+            htmlOutput += `<div class="section-header">${parte.getAttribute("titulo")}</div>`;
+            
+            const apartados = parte.querySelectorAll("apartado");
+            apartados.forEach(apartado => {
+                htmlOutput += `<div class="apartado-header">${apartado.getAttribute("titulo")}</div>`;
+                
+                const pasos = apartado.querySelectorAll("paso");
+                pasos.forEach(paso => {
+                    const oficial = paso.getAttribute("oficial");
+                    const texto = paso.getAttribute("texto");
+                    
+                    const resaltar = (filtroOficial !== "todos" && oficial === filtroOficial);
+                    const claseHighlight = resaltar ? "highlight" : "";
+                    
+                    htmlOutput += `<dt class="dignidad ${claseHighlight}" data-dignidad="${oficial}">${oficial}∴</dt>`;
+                    htmlOutput += `<dd class="dialogo ${claseHighlight}" data-dignidad="${oficial}">${texto}</dd>`;
+                });
+            });
+            
+            htmlOutput += `</div>`;
+            contenedor.innerHTML = htmlOutput;
+        }
+    </script>
+</body>
+</html>
