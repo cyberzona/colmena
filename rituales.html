@@ -15,7 +15,7 @@
         #rituales-content { margin-top: 5px; background: white; padding: 10px; border-radius: 8px; }
         #glosario-container { margin-top: 20px; }
         
-        /* Abreviaturas */
+        /* Abreviaturas del diálogo */
         dt { font-weight: bold; color: #5d4037; margin-top: 10px; font-size: 0.9em; transition: all 0.3s; }
         
         dd { 
@@ -30,7 +30,7 @@
             color: #3e2723;
         }
         
-        /* Numeración más grande y reposicionada - SIN PUNTOS DESPUES */
+        /* Numeración grande y reposicionada */
         dd::before { 
             counter-increment: line-counter; 
             content: counter(line-counter); 
@@ -129,7 +129,7 @@
             oficiales.forEach(ofi => {
                 let opt = document.createElement("option");
                 opt.value = ofi.id;
-                opt.textContent = ofi.id;
+                opt.textContent = ofi.id; // Ya incluye los puntos desde el JSON
                 selector.appendChild(opt);
             });
         }
@@ -170,14 +170,10 @@
                     texto = texto.replace(/\[(.*?)\]/g, '<span class="accion-ritual">[$1]</span>');
                     texto = texto.replace(/\((.*?)\)/g, '<span class="parentesis-ritual">($1)</span>');
                     
-                    let oficialParaComparar = oficial;
-                    let filtroParaComparar = filtroOficial;
-                    
-                    if (!oficial.includes('∴') && filtroOficial.includes('∴')) {
-                        oficialParaComparar = oficial + '∴';
-                    }
-
-                    const resaltar = (filtroOficial !== "todos" && oficialParaComparar === filtroParaComparar);
+                    // --- CORRECCIÓN: Comparación flexible ---
+                    // El filtro ya tiene puntos (ej: "VM∴"). 
+                    // El oficial en el XML debe tenerlos también para que sea exacto.
+                    const resaltar = (filtroOficial !== "todos" && oficial === filtroOficial);
                     const claseHighlight = resaltar ? "highlight-dialogue" : "";
                     
                     htmlOutput += `<dt class="dignidad" data-dignidad="${oficial}">${oficial}</dt>`;                
@@ -195,17 +191,13 @@
             
             const contenedorGlosario = document.getElementById('glosario-container');
             
-            // --- CORRECCIÓN: Glosario extremadamente discreto ---
-            let htmlDef = `<div style="margin-top: 15px; padding: 5px; border-top: 1px solid #efebe9;">`;
-            htmlDef += `<dl style="margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0px 5px; font-size: 0.7em; color: #888;">`;
+            let htmlDef = `<div style="margin-top: 15px; padding: 5px; border-top: 1px solid #efebe9; font-size: 0.7em; color: #a1887f;">`;
             
             for (const [sigla, definicion] of Object.entries(definicionesData)) {
-                htmlDef += `<dt style="font-weight: bold; color: #a1887f; display: inline;">${sigla}</dt>`;
-                htmlDef += `<dd style="margin: 0 0 0 3px; font-style: normal; display: inline; border: none; padding: 0; color: #a1887f;">${definicion}</dd>`;
-                htmlDef += `<span style="color: #d7ccc8;"> | </span>`;
+                htmlDef += `<span style="font-weight: bold;">${sigla}</span> : ${definicion} <span style="color: #d7ccc8; margin: 0 3px;">|</span> `;
             }
             
-            htmlDef += `</dl></div>`;
+            htmlDef += `</div>`;
             
             contenedorGlosario.innerHTML = htmlDef;
         }
