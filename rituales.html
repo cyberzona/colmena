@@ -47,10 +47,10 @@
 
         .parte-ritual { counter-reset: line-counter; }
         
-        /* --- CORRECCIÓN: Resaltado Amarillo Resaltador --- */
+        /* --- CORRECCIÓN: Resaltado Amarillo-Verdoso --- */
         .highlight-dialogue { 
-            background-color: rgba(180,255,100,0.4); /* Amarillo con transparencia */
-            border-left: 3px solid #FFD700; /* Borde dorado para definir */
+            background-color: rgba(180, 255, 100, 0.4); /* Toque de verde */
+            border-left: 3px solid #8BC34A; /* Borde verde para definir */
             padding-left: 9px; 
             transition: background-color 0.3s;
         }
@@ -76,10 +76,15 @@
         
         .apartado-header { font-weight: bold; color: #795548; font-size: 0.95em; border-bottom: 1px solid #d7ccc8; padding-bottom: 3px; margin-top: 10px; }
 
+        /* --- CORRECCIÓN: Acciones como bloques para forzar salto de línea --- */
         .accion-ritual {
             color: #5d4037; 
             font-weight: bold;
             font-style: normal;
+            display: block; /* Forzar retorno de carro */
+            margin: 5px 0; /* Espaciado superior e inferior */
+            border-bottom: 1px dashed #d7ccc8; /* Opcional: línea divisoria */
+            padding-bottom: 2px;
         }
 
         .parentesis-ritual {
@@ -183,7 +188,6 @@
                     texto = texto.replace(/\((.*?)\)/g, '<span class="parentesis-ritual">($1)</span>');
                     
                     // --- CORRECCIÓN: Resaltar la palabra precedente y el símbolo en azul oscuro ---
-                    // Busca palabras seguidas de \.\·\.
                     texto = texto.replace(/(\w+)\.\·\./g, '<span class="tripuntado">$1.·.</span>');
                     
                     // --- Lógica de resaltado y puntos ---
