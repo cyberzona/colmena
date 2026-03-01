@@ -61,6 +61,7 @@
             padding-left: 5px;
             font-size: 0.9em;
             position: relative;
+            transition: background-color 0.3s;
         }
         
         /* Numeración continua automática */
@@ -81,11 +82,11 @@
         
         .hidden { display: none !important; }
         
+        /* Estilo de resaltado mejorado */
         .highlight {
-            background-color: rgba(212,160,23,0.1);
+            background-color: rgba(212,160,23,0.2) !important;
             border-left: 3px solid #D4A017 !important;
-            border-radius: 4px;
-            padding-left: 5px;
+            padding-left: 4px;
         }
         
         .section-header {
@@ -309,7 +310,7 @@
                 <dd data-dignidad="VM">QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ como yo lo hago en el Or∴ que nuestro Q∴H∴ M∴ de Cer∴ va a circular el saco de proposiciones. (El MC∴ cumple con su deber y se coloca entre CCol∴.)</dd>
                 
                 <dt data-dignidad="1V">1V∴</dt>
-                <dd data-dignidad="1V">VM∴, el saco de proposiciones se encuentra entre CCol∴ para circular.</dd>
+                <dd data-dignidad="1V">VM∴, the saco de proposiciones se encuentra entre CCol∴ para circular.</dd>
                 
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">Ordenad que circule empezando por mi derecha. Con Cer∴ o sin Cer∴, cumplida su misión, se coloca entre CCol∴.</dd>
@@ -318,7 +319,7 @@
                 <dd data-dignidad="1V">He cumplido con mi deber.</dd>
                 
                 <dt data-dignidad="1V">1V∴</dt>
-                <dd data-dignidad="1V">VM∴, el saco de proposiciones, después de haber circulado por los cuatro puntos cardinales, se halla nuevamente entre CCol∴.</dd>
+                <dd data-dignidad="1V">VM∴, the saco de proposiciones, después de haber circulado por los cuatro puntos cardinales, se halla nuevamente entre CCol∴.</dd>
                 
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">Ordenad que pase a Or∴ y que en compañía del H∴ Ora∴ nos enteremos de su contenido. El H∴ Ora∴ da cuenta de la cantidad de PPl∴ producidas, después de un breve examen el Ven∴ M∴ puede dejarlas bajo Mall∴ hasta la próxima Ten∴.</dd>
@@ -360,7 +361,7 @@
                 <dd data-dignidad="VM">Q∴H∴ Hos∴, cumplid con vuestro deber. (El H∴ Hos∴ se coloca entre Ccol∴.).</dd>
                 
                 <dt data-dignidad="1V">1V∴</dt>
-                <dd data-dignidad="1V">Ven∴M∴, el H∴Hos∴ se encuentra entre Ccol∴ pronto a circular entre los HH∴.</dd>
+                <dd data-dignidad="1V">Ven∴M∴, the H∴Hos∴ se encuentra entre Ccol∴ pronto a circular entre los HH∴.</dd>
                 
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">Ordenad que circule empezando por la derecha.</dd>
@@ -372,7 +373,7 @@
                 <dd data-dignidad="MC">Q∴H∴1∴Vig∴, he cumplido vuestro mandato.</dd>
                 
                 <dt data-dignidad="1V">1V∴</dt>
-                <dd data-dignidad="1V">Ven∴M∴, el tronco de beneficencia después de circular por los cuatro puntos cardinales del templo se encuentra nuevamente entre Ccol∴..</dd>
+                <dd data-dignidad="1V">Ven∴M∴, the tronco de beneficencia después de circular por los cuatro puntos cardinales del templo se encuentra nuevamente entre Ccol∴..</dd>
                 
                 <dt data-dignidad="VM">VM∴</dt>
                 <dd data-dignidad="VM">Ordenad que ocupe su puesto y nos de cuenta de su contenido.</dd>
@@ -474,7 +475,7 @@
                 }
             });
 
-            // 2. Resaltar la dignidad seleccionada y ajustar visibilidad
+            // 2. MODIFICADO: Resaltar dignidad seleccionada sin ocultar las demás
             elementosDd.forEach((dd, index) => {
                 var dt = elementosDt[index];
                 var estaVisible = !dd.closest('[data-apartado]').classList.contains("hidden");
@@ -482,21 +483,24 @@
                 if (estaVisible) {
                     var dignidad = dd.getAttribute('data-dignidad');
                     
-                    if (dignidad === "VM" || dignidad === filtroDignidad || filtroDignidad === "todos") {
-                        dd.classList.remove("hidden");
-                        dt.classList.remove("hidden");
-                        
-                        // Resaltar dignidad específica
-                        dd.classList.toggle("highlight", dignidad === filtroDignidad && filtroDignidad !== "VM" && filtroDignidad !== "todos");
+                    // Asegurar que el elemento esté visible
+                    dd.classList.remove("hidden");
+                    dt.classList.remove("hidden");
+                    
+                    // Aplicar resaltado
+                    if (filtroDignidad !== "todos" && dignidad === filtroDignidad) {
+                        dd.classList.add("highlight");
+                        dt.classList.add("highlight");
                     } else {
-                        dd.classList.add("hidden");
-                        dt.classList.add("hidden");
                         dd.classList.remove("highlight");
+                        dt.classList.remove("highlight");
                     }
                 } else {
                     // Si el apartado está oculto, ocultar también sus elementos dt/dd
                     dd.classList.add("hidden");
                     dt.classList.add("hidden");
+                    dd.classList.remove("highlight");
+                    dt.classList.remove("highlight");
                 }
             });
         }
