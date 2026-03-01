@@ -27,7 +27,7 @@
             transition: all 0.3s; 
         }
         
-        /* Numeración discreta */
+        /* Numeración discreta sobre la barra vertical */
         dd::before { 
             counter-increment: line-counter; 
             content: counter(line-counter); 
@@ -43,8 +43,7 @@
         }
         
         .parte-ritual { counter-reset: line-counter; }
-        .hidden { display: none !important; }
-
+        
         /* --- CORRECCIÓN: Resaltado solo del diálogo --- */
         .highlight-dialogue { 
             background-color: rgba(212,160,23,0.15); 
@@ -92,12 +91,7 @@
         
         <select id="oficialFilter" onchange="renderizarRiturgia()">
             <option value="todos" selected>Mostrar Todo</option>
-            <option value="VM">VM∴</option>
-            <option value="1V">1V∴</option>
-            <option value="2V">2V∴</option>
-            <option value="MC">MC∴</option>
-            <option value="GT">GT∴</option>
-        </select>
+            </select>
     </div>
 
     <div id="rituales-container"></div>
@@ -107,15 +101,39 @@
 
         async function inicializar() {
             try {
-                const response = await fetch('liturgia.xml');
-                const text = await response.text();
-                xmlDoc = new DOMParser().parseFromString(text, "text/xml");
+                // 1. Cargar el ritual XML
+                const ritualResponse = await fetch('liturgia.xml');
+                const ritualText = await ritualResponse.text();
+                xmlDoc = new DOMParser().parseFromString(ritualText, "text/xml");
+                
+                // 2. Cargar los recursos generales (oficiales y definiciones)
+                const dataResponse = await fetch('recursos.json');
+                const data = await dataResponse.json();
+                
+                // 3. Poblar los selectores
+                poblarSelectorOficiales(data.oficiales);
                 poblarSelectorPartes();
+                
+                // 4. Renderizar el ritual
                 renderizarRiturgia();
+                
+                // 5. Mostrar glosario al final
+                mostrarDefiniciones(data.definiciones);
+                
             } catch (e) {
-                console.error("Error al cargar el XML", e);
-                document.getElementById('rituales-container').innerHTML = "Error al cargar el ritual.";
+                console.error("Error al cargar los archivos", e);
+                document.getElementById('rituales-container').innerHTML = "Error al cargar los datos. Asegúrese de tener liturgia.xml y recursos.json en la misma carpeta.";
             }
+        }
+
+        function poblarSelectorOficiales(oficiales) {
+            const selector = document.getElementById("oficialFilter");
+            oficiales.forEach(ofi => {
+                let opt = document.createElement("option");
+                opt.value = ofi.id; // Ejemplo: "VM∴"
+                opt.textContent = `${ofi.id} - ${ofi.nombre}`; // Ejemplo: "VM∴ - Venerable Maestro"
+                selector.appendChild(opt);
+            });
         }
 
         function poblarSelectorPartes() {
@@ -133,7 +151,7 @@
             if (!xmlDoc) return;
             const parteId = document.getElementById("parteFilter").value;
             const filtroOficial = document.getElementById("oficialFilter").value;
-            const contenedor = document.getElementById("rituales-container");
+            const contenedor = document.getElementById('rituales-container');
             
             const parte = xmlDoc.querySelector(`parte[id="${parteId}"]`);
             if (!parte) return;
@@ -150,20 +168,45 @@
                     const oficial = paso.getAttribute("oficial");
                     let texto = paso.getAttribute("texto");
                     
-                    // --- CORRECCIÓN: Resaltar acciones [] y paréntesis () ---
+                    // --- Resaltar acciones [] y paréntesis () ---
                     texto = texto.replace(/\[(.*?)\]/g, '<span class="accion-ritual">[$1]</span>');
                     texto = texto.replace(/\((.*?)\)/g, '<span class="parentesis-ritual">($1)</span>');
                     
+                    // Comparar el ID con puntos (ej: "VM∴" === "VM∴")
                     const resaltar = (filtroOficial !== "todos" && oficial === filtroOficial);
                     const claseHighlight = resaltar ? "highlight-dialogue" : "";
                     
-                    htmlOutput += `<dt class="dignidad" data-dignidad="${oficial}">${oficial}∴</dt>`;
+                    htmlOutput += `<dt class="dignidad" data-dignidad="${oficial}">${oficial}</dt>`;                
                     htmlOutput += `<dd class="dialogo ${claseHighlight}" data-dignidad="${oficial}">${texto}</dd>`;
                 });
             });
             
             htmlOutput += `</div>`;
+            
+            // Reemplazamos el contenido, pero mantenemos el glosario abajo
             contenedor.innerHTML = htmlOutput;
+            
+            // Volver a añadir el glosario al final si ya existía
+            if (window.glosarioHTML) {
+                contenedor.innerHTML += window.glosarioHTML;
+            }
+        }
+        
+        function mostrarDefiniciones(definiciones) {
+            let htmlDef = `<div class="section-header" style="margin-top: 30px;">Glosario de Abreviaturas</div>`;
+            htmlDef += `<div style="background-color: #f9f6ef; padding: 10px; border-radius: 5px; font-size: 0.85em; color: #555;">`;
+            htmlDef += `<dl style="margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">`;
+            
+            for (const [sigla, definicion] of Object.entries(definiciones)) {
+                htmlDef += `<dt style="font-weight: bold; color: #7A4F35;">${sigla}</dt>`;
+                htmlDef += `<dd style="margin: 0; font-style: normal;">${definicion}</dd>`;
+            }
+            
+            htmlDef += `</dl></div>`;
+            
+            // Guardamos el HTML del glosario para reutilizarlo
+            window.glosarioHTML = htmlDef;
+            document.getElementById('rituales-container').innerHTML += htmlDef;
         }
     </script>
 </body>
