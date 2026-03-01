@@ -20,18 +20,24 @@
         #rituales-content { margin-top: 5px; background: white; padding: 10px; border-radius: 8px; }
         #glosario-container { margin-top: 20px; }
         
-        /* Abreviaturas del diálogo */
-        dt { font-weight: bold; color: #5d4037; margin-top: 10px; font-size: 0.9em; transition: all 0.3s; }
+        /* --- CORRECCIÓN: Estilo para siglas tripuntuadas (Azul Fuerte) --- */
+        .sigla-tripuntuada {
+            font-weight: bold;
+            color: #0056b3; /* Azul Fuerte */
+            transition: color 0.3s;
+        }
+        
+        /* Abreviaturas del diálogo (Aplicamos estilo aquí) */
+        dt { font-weight: bold; color: #5d4037; margin-top: 10px; font-size: 0.9em; }
         
         dd { 
             margin-left: 25px; 
-            margin-bottom: 2px; /* Reducido para acercar la acción */
+            margin-bottom: 2px; 
             font-style: normal; 
             border-left: 2px solid #d7ccc8; 
             padding-left: 10px; 
             font-size: 0.95em; 
             position: relative; 
-            transition: all 0.3s; 
             color: #3e2723;
         }
         
@@ -56,10 +62,8 @@
             background-color: rgba(180,255,100,0.4); 
             border-left: 3px solid #8d6e63; 
             padding-left: 9px; 
-            transition: background-color 0.3s;
         }
         
-        /* --- CORRECCIÓN: Estilo para acciones en línea siguiente --- */
         .accion-siguiente-linea {
             font-size: 0.85em;
             color: #5d4037;
@@ -152,6 +156,7 @@
             oficiales.forEach(ofi => {
                 let opt = document.createElement("option");
                 opt.value = ofi.id;
+                // Aplicar clase para color azul en el menú también
                 opt.textContent = ofi.id + '∴'; 
                 selector.appendChild(opt);
             });
@@ -190,29 +195,28 @@
                     const oficial = paso.getAttribute("oficial");
                     let texto = paso.getAttribute("texto");
                     
-                    // --- CORRECCIÓN: Separar acciones en línea siguiente ---
-                    
-                    // 1. Extraer acciones [...]
+                    // Extraer acciones [...]
                     let acciones = [];
                     texto = texto.replace(/\[(.*?)\]/g, (match, p1) => {
                         acciones.push(p1);
-                        return ""; // Quitar la acción del texto principal
+                        return "";
                     });
                     
-                    // 2. Formatear paréntesis (...) en el texto principal
+                    // Formatear paréntesis (...) en el texto principal
                     texto = texto.replace(/\((.*?)\)/g, '<span class="parentesis-ritual">($1)</span>');
                     
-                    const oficialTripuntuado = oficial + '∴';
+                    // --- CORRECCIÓN: Aplicar clase azul a la sigla del oficial ---
+                    const oficialTripuntuado = `<span class="sigla-tripuntuada">${oficial}∴</span>`;
                     
                     const resaltar = (filtroOficial !== "todos" && 
                                      (oficial === filtroOficial || oficial + '∴' === filtroOficial));
                     const claseHighlight = resaltar ? "highlight-dialogue" : "";
                     
-                    // 3. Generar HTML
+                    // Generar HTML
                     htmlOutput += `<dt class="dignidad" data-dignidad="${oficial}">${oficialTripuntuado}</dt>`;                
                     htmlOutput += `<dd class="dialogo ${claseHighlight}" data-dignidad="${oficial}">${texto}</dd>`;
                     
-                    // 4. Añadir acciones en línea siguiente
+                    // Añadir acciones en línea siguiente
                     acciones.forEach(accion => {
                         htmlOutput += `<div class="accion-siguiente-linea"><em>[${accion}]</em></div>`;
                     });
@@ -232,7 +236,8 @@
             let htmlDef = `<div style="margin-top: 15px; padding: 5px; border-top: 1px solid #efebe9; font-size: 0.7em; color: #a1887f;">`;
             
             for (const [sigla, definicion] of Object.entries(definicionesData)) {
-                htmlDef += `<span style="font-weight: bold;">${sigla}</span> : ${definicion} <span style="color: #d7ccc8; margin: 0 3px;">|</span> `;
+                // Aplicar azul a las siglas del glosario también
+                htmlDef += `<span class="sigla-tripuntuada" style="font-size: 1.1em;">${sigla}</span> : ${definicion} <span style="color: #d7ccc8; margin: 0 3px;">|</span> `;
             }
             
             htmlDef += `</div>`;
