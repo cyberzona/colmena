@@ -47,8 +47,9 @@
 
         .parte-ritual { counter-reset: line-counter; }
         
+        /* --- CORRECCIÓN: Resaltado de diálogo mejorado --- */
         .highlight-dialogue { 
-            background-color: rgba(188, 170, 164, 0.2); 
+            background-color: rgba(188, 170, 164, 0.3); /* Un poco más oscuro */
             border-left: 3px solid #8d6e63; 
             padding-left: 9px; 
             transition: background-color 0.3s;
@@ -128,8 +129,10 @@
             const selector = document.getElementById("oficialFilter");
             oficiales.forEach(ofi => {
                 let opt = document.createElement("option");
-                opt.value = ofi.id;
-                opt.textContent = ofi.id; // Ya incluye los puntos desde el JSON
+                // Mantenemos el ID limpio para la lógica
+                opt.value = ofi.id; 
+                // Añadimos puntos aquí para mostrarlo en el menú
+                opt.textContent = ofi.id + '∴'; 
                 selector.appendChild(opt);
             });
         }
@@ -170,13 +173,17 @@
                     texto = texto.replace(/\[(.*?)\]/g, '<span class="accion-ritual">[$1]</span>');
                     texto = texto.replace(/\((.*?)\)/g, '<span class="parentesis-ritual">($1)</span>');
                     
-                    // --- CORRECCIÓN: Comparación flexible ---
-                    // El filtro ya tiene puntos (ej: "VM∴"). 
-                    // El oficial en el XML debe tenerlos también para que sea exacto.
-                    const resaltar = (filtroOficial !== "todos" && oficial === filtroOficial);
+                    // --- CORRECCIÓN: Lógica de resaltado y puntos ---
+                    
+                    // 1. Añadir tripuntuación al oficial que habla en el texto
+                    const oficialTripuntuado = oficial + '∴';
+                    
+                    // 2. Comparación flexible (con o sin puntos)
+                    const resaltar = (filtroOficial !== "todos" && 
+                                     (oficial === filtroOficial || oficial + '∴' === filtroOficial));
                     const claseHighlight = resaltar ? "highlight-dialogue" : "";
                     
-                    htmlOutput += `<dt class="dignidad" data-dignidad="${oficial}">${oficial}</dt>`;                
+                    htmlOutput += `<dt class="dignidad" data-dignidad="${oficial}">${oficialTripuntuado}</dt>`;                
                     htmlOutput += `<dd class="dialogo ${claseHighlight}" data-dignidad="${oficial}">${texto}</dd>`;
                 });
             });
@@ -194,6 +201,7 @@
             let htmlDef = `<div style="margin-top: 15px; padding: 5px; border-top: 1px solid #efebe9; font-size: 0.7em; color: #a1887f;">`;
             
             for (const [sigla, definicion] of Object.entries(definicionesData)) {
+                // Formato: SIGLA : Definición |
                 htmlDef += `<span style="font-weight: bold;">${sigla}</span> : ${definicion} <span style="color: #d7ccc8; margin: 0 3px;">|</span> `;
             }
             
