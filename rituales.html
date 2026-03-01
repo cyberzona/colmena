@@ -12,7 +12,9 @@
         
         select { padding: 8px; font-size: 0.9em; margin: 5px; border-radius: 4px; border: 1px solid #ccc; width: 45%; display: inline-block; background-color: white; }
 
-        #rituales-container { margin-top: 5px; background: white; padding: 10px; border-radius: 8px; }
+        /* Contenedores separados para mantener la estructura */
+        #rituales-content { margin-top: 5px; background: white; padding: 10px; border-radius: 8px; }
+        #glosario-container { margin-top: 20px; }
         
         dt { font-weight: bold; color: #D4A017; margin-top: 10px; font-size: 1em; transition: all 0.3s; }
         
@@ -27,7 +29,7 @@
             transition: all 0.3s; 
         }
         
-        /* --- CORRECCIÓN: Numeración más grande y reposicionada --- */
+        /* Numeración más grande y reposicionada */
         dd::before { 
             counter-increment: line-counter; 
             content: counter(line-counter); 
@@ -44,7 +46,7 @@
         
         .parte-ritual { counter-reset: line-counter; }
         
-        /* --- CORRECCIÓN: Estilo de resaltado mejorado --- */
+        /* Estilo de resaltado mejorado */
         .highlight-dialogue { 
             background-color: rgba(212,160,23,0.15); 
             border-left: 3px solid #D4A017; 
@@ -68,14 +70,14 @@
         
         .apartado-header { font-weight: bold; color: #D4A017; font-size: 0.95em; border-bottom: 1px solid #E7D9C9; padding-bottom: 3px; margin-top: 10px; }
 
-        /* --- Resaltado de acciones en corchetes (Rojo Oscuro) --- */
+        /* Resaltado de acciones en corchetes (Rojo Oscuro) */
         .accion-ritual {
             color: #b71c1c; 
             font-weight: bold;
             font-style: normal;
         }
 
-        /* --- Resaltado de paréntesis (Azul Oscuro) --- */
+        /* Resaltado de paréntesis (Azul Oscuro) */
         .parentesis-ritual {
             color: #0d47a1; 
             font-style: normal;
@@ -95,10 +97,12 @@
             </select>
     </div>
 
-    <div id="rituales-container"></div>
+    <div id="rituales-content"></div>
+    <div id="glosario-container"></div>
 
     <script>
         let xmlDoc = null;
+        let definicionesData = null;
 
         async function inicializar() {
             try {
@@ -107,23 +111,24 @@
                 const ritualText = await ritualResponse.text();
                 xmlDoc = new DOMParser().parseFromString(ritualText, "text/xml");
                 
-                // 2. Cargar los recursos generales (oficiales y definiciones)
+                // 2. Cargar los recursos generales
                 const dataResponse = await fetch('recursos.json');
                 const data = await dataResponse.json();
+                
+                // Guardar definiciones globalmente para reutilizar
+                definicionesData = data.definiciones;
                 
                 // 3. Poblar los selectores
                 poblarSelectorOficiales(data.oficiales);
                 poblarSelectorPartes();
                 
-                // 4. Renderizar el ritual
+                // 4. Renderizar contenido inicial
                 renderizarRiturgia();
-                
-                // 5. Mostrar glosario al final
-                mostrarDefiniciones(data.definiciones);
+                mostrarDefiniciones();
                 
             } catch (e) {
                 console.error("Error al cargar los archivos", e);
-                document.getElementById('rituales-container').innerHTML = "Error al cargar los datos. Asegúrese de tener liturgia.xml y recursos.json en la misma carpeta.";
+                document.getElementById('rituales-content').innerHTML = "Error al cargar los datos. Asegúrese de tener liturgia.xml y recursos.json en la misma carpeta.";
             }
         }
 
@@ -132,7 +137,7 @@
             oficiales.forEach(ofi => {
                 let opt = document.createElement("option");
                 opt.value = ofi.id; // Ejemplo: "VM∴"
-                opt.textContent = `${ofi.id} - ${ofi.nombre}`; // Ejemplo: "VM∴ - Venerable Maestro"
+                opt.textContent = `${ofi.id} - ${ofi.nombre}`;
                 selector.appendChild(opt);
             });
         }
@@ -152,7 +157,8 @@
             if (!xmlDoc) return;
             const parteId = document.getElementById("parteFilter").value;
             const filtroOficial = document.getElementById("oficialFilter").value;
-            const contenedor = document.getElementById('rituales-container');
+            
+            const contenedorContenido = document.getElementById('rituales-content');
             
             const parte = xmlDoc.querySelector(`parte[id="${parteId}"]`);
             if (!parte) return;
@@ -169,12 +175,22 @@
                     const oficial = paso.getAttribute("oficial");
                     let texto = paso.getAttribute("texto");
                     
-                    // --- Resaltar acciones [] y paréntesis () ---
+                    // Resaltar acciones [] y paréntesis ()
                     texto = texto.replace(/\[(.*?)\]/g, '<span class="accion-ritual">[$1]</span>');
                     texto = texto.replace(/\((.*?)\)/g, '<span class="parentesis-ritual">($1)</span>');
                     
-                    // --- CORRECCIÓN: Comparar el ID con puntos (ej: "VM∴" === "VM∴") ---
-                    const resaltar = (filtroOficial !== "todos" && oficial === filtroOficial);
+                    // --- CORRECCIÓN: Lógica de comparación mejorada ---
+                    // Si el oficial en XML no tiene puntos pero el filtro sí (o viceversa),
+                    // ajustamos el valor de comparación.
+                    let oficialParaComparar = oficial;
+                    let filtroParaComparar = filtroOficial;
+                    
+                    // Asegurar consistencia de puntos para la comparación
+                    if (!oficial.includes('∴') && filtroOficial.includes('∴')) {
+                        oficialParaComparar = oficial + '∴';
+                    }
+
+                    const resaltar = (filtroOficial !== "todos" && oficialParaComparar === filtroParaComparar);
                     const claseHighlight = resaltar ? "highlight-dialogue" : "";
                     
                     htmlOutput += `<dt class="dignidad" data-dignidad="${oficial}">${oficial}</dt>`;                
@@ -184,30 +200,25 @@
             
             htmlOutput += `</div>`;
             
-            // Reemplazamos el contenido, pero mantenemos el glosario abajo
-            contenedor.innerHTML = htmlOutput;
-            
-            // Volver a añadir el glosario al final si ya existía
-            if (window.glosarioHTML) {
-                contenedor.innerHTML += window.glosarioHTML;
-            }
+            contenedorContenido.innerHTML = htmlOutput;
         }
         
-        function mostrarDefiniciones(definiciones) {
+        function mostrarDefiniciones() {
+            if (!definicionesData) return;
+            
+            const contenedorGlosario = document.getElementById('glosario-container');
             let htmlDef = `<div class="section-header" style="margin-top: 30px;">Glosario de Abreviaturas</div>`;
             htmlDef += `<div style="background-color: #f9f6ef; padding: 10px; border-radius: 5px; font-size: 0.85em; color: #555;">`;
             htmlDef += `<dl style="margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">`;
             
-            for (const [sigla, definicion] of Object.entries(definiciones)) {
+            for (const [sigla, definicion] of Object.entries(definicionesData)) {
                 htmlDef += `<dt style="font-weight: bold; color: #7A4F35;">${sigla}</dt>`;
                 htmlDef += `<dd style="margin: 0; font-style: normal;">${definicion}</dd>`;
             }
             
             htmlDef += `</dl></div>`;
             
-            // Guardamos el HTML del glosario para reutilizarlo
-            window.glosarioHTML = htmlDef;
-            document.getElementById('rituales-container').innerHTML += htmlDef;
+            contenedorGlosario.innerHTML = htmlDef;
         }
     </script>
 </body>
