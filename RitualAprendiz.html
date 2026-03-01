@@ -51,6 +51,8 @@
             color: #D4A017;
             margin-top: 10px;
             font-size: 1em;
+            /* Añadimos transición para el resaltado */
+            transition: all 0.3s;
         }
         
         dd { 
@@ -61,7 +63,8 @@
             padding-left: 5px;
             font-size: 0.9em;
             position: relative;
-            transition: background-color 0.3s;
+            /* Añadimos transición para el resaltado */
+            transition: all 0.3s;
         }
         
         /* Numeración continua automática */
@@ -82,11 +85,11 @@
         
         .hidden { display: none !important; }
         
-        /* Estilo de resaltado mejorado */
+        /* Estilo de resaltado mejorado: aplica tanto a dd como dt */
         .highlight {
             background-color: rgba(212,160,23,0.2) !important;
             border-left: 3px solid #D4A017 !important;
-            padding-left: 4px;
+            padding-left: 4px !important;
         }
         
         .section-header {
@@ -458,7 +461,7 @@
             var elementosDd = document.querySelectorAll('dd[data-dignidad]');
             var elementosDt = document.querySelectorAll('dt[data-dignidad]');
 
-            // 1. Filtrar por Apartado/Parte
+            // 1. Filtrar por Apartado/Parte (Ocultar secciones completas)
             secciones.forEach(seccion => {
                 var apartado = seccion.getAttribute('data-apartado');
                 var esApertura = (apartado === "apertura" || seccion.classList.contains("apertura-sub"));
@@ -475,30 +478,23 @@
                 }
             });
 
-            // 2. MODIFICADO: Resaltar dignidad seleccionada sin ocultar las demás
+            // 2. CORREGIDO: Resaltar dignidad seleccionada sin ocultar NUNCA
             elementosDd.forEach((dd, index) => {
                 var dt = elementosDt[index];
-                var estaVisible = !dd.closest('[data-apartado]').classList.contains("hidden");
                 
-                if (estaVisible) {
-                    var dignidad = dd.getAttribute('data-dignidad');
-                    
-                    // Asegurar que el elemento esté visible
-                    dd.classList.remove("hidden");
-                    dt.classList.remove("hidden");
-                    
-                    // Aplicar resaltado
-                    if (filtroDignidad !== "todos" && dignidad === filtroDignidad) {
-                        dd.classList.add("highlight");
-                        dt.classList.add("highlight");
-                    } else {
-                        dd.classList.remove("highlight");
-                        dt.classList.remove("highlight");
-                    }
+                // --- CAMBIO AQUÍ ---
+                // Nos aseguramos de quitar la clase hidden si existiera
+                dd.classList.remove("hidden");
+                dt.classList.remove("hidden");
+                // -------------------
+
+                var dignidad = dd.getAttribute('data-dignidad');
+                
+                // Aplicar resaltado
+                if (filtroDignidad !== "todos" && dignidad === filtroDignidad) {
+                    dd.classList.add("highlight");
+                    dt.classList.add("highlight");
                 } else {
-                    // Si el apartado está oculto, ocultar también sus elementos dt/dd
-                    dd.classList.add("hidden");
-                    dt.classList.add("hidden");
                     dd.classList.remove("highlight");
                     dt.classList.remove("highlight");
                 }
