@@ -59,24 +59,12 @@
         }
         
         dd { 
-            margin-left: 25px; /* Espacio para el número */
+            margin-left: 5px; 
             margin-bottom: 10px; 
             font-style: italic; 
             border-left: 2px solid #E7D9C9;
             padding-left: 5px;
             font-size: 0.9em;
-            position: relative;
-        }
-        
-        /* ESTILO PARA LA NUMERACIÓN */
-        dd::before {
-            counter-increment: line-counter;
-            content: counter(line-counter) ". ";
-            position: absolute;
-            left: -20px;
-            color: #7A4F35;
-            font-weight: bold;
-            font-style: normal;
         }
         
         .hidden { display: none; }
@@ -152,8 +140,7 @@
             var filtroDignidad = document.getElementById("dignidadFilter").value;
             
             var secciones = document.querySelectorAll('[data-apartado]');
-            var elementosDt = document.querySelectorAll('dt[data-dignidad]');
-            var elementosDd = document.querySelectorAll('dd[data-dignidad]');
+            var elementos = document.querySelectorAll('[data-dignidad]');
 
             // 1. Filtrar por Apartado
             secciones.forEach(seccion => {
@@ -164,27 +151,27 @@
                 }
             });
 
-            // 2. Resaltar la dignidad seleccionada y asegurar contexto del VM
-            elementosDd.forEach((dd, index) => {
-                var dt = elementosDt[index];
-                var estaEnApartadoCorrecto = dd.closest('[data-apartado]').classList.contains("hidden") === false;
+            // 2. Resaltar la dignidad seleccionada y asegurar que el diálogo del VM sea visible
+            elementos.forEach(el => {
+                var estaEnApartadoCorrecto = el.closest('[data-apartado]').classList.contains("hidden") === false;
                 
                 if (estaEnApartadoCorrecto) {
-                    var dignidad = dd.getAttribute('data-dignidad');
+                    var dignidad = el.getAttribute('data-dignidad');
                     
+                    // Si es el VM, mostrar siempre. Si es la dignidad filtrada, resaltar.
                     if (dignidad === "VM" || dignidad === filtroDignidad || filtroDignidad === "todos") {
-                        dd.classList.remove("hidden");
-                        dt.classList.remove("hidden");
+                        el.classList.remove("hidden");
                         
+                        // Resaltar solo si es la dignidad filtrada (y no todos/VM)
                         if (dignidad === filtroDignidad && filtroDignidad !== "VM" && filtroDignidad !== "todos") {
-                            dd.classList.add("highlight");
+                            el.classList.add("highlight");
                         } else {
-                            dd.classList.remove("highlight");
+                            el.classList.remove("highlight");
                         }
                     } else {
-                        dd.classList.add("hidden");
-                        dt.classList.add("hidden");
-                        dd.classList.remove("highlight");
+                        // Ocultar si no es el VM ni la dignidad seleccionada
+                        el.classList.add("hidden");
+                        el.classList.remove("highlight");
                     }
                 }
             });
