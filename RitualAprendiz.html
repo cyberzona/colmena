@@ -137,7 +137,7 @@
             <div class="section-header">Apertura de Trabajos</div>
         </div>
 
-        <div data-apartado="silencio">
+        <div data-apartado="silencio" class="apertura-sub">
             <div class="section-header">1. El Silencio: La Purificación del Espacio Sagrado</div>
             <dt data-dignidad="VM">VM∴</dt>
             <dd data-dignidad="VM">¡Silencio en Logia, Hermanos (HH∴)!</dd>
@@ -173,7 +173,7 @@
             <dd data-dignidad="1V">VM∴ (Da tres golpes de Mallete) el Templo está cubierto de toda indiscreción.</dd>
         </div>
 
-        <div data-apartado="orden">
+        <div data-apartado="orden" class="apertura-sub">
             <div class="section-header">2. El Orden: La Geometría de las Columnas</div>
             <dt data-dignidad="VM">VM∴</dt>
             <dd data-dignidad="VM">¿Cuál es vuestro segundo deber en Hermano 1V∴?</dd>
@@ -185,7 +185,7 @@
             <dd data-dignidad="VM">Aseguraos de ello, QQHH∴ Primer y Segundo Vigilantes, de pie y al orden.</dd>
 
             <dt data-dignidad="2V">2V∴</dt>
-            <dd data-dignidad="2V">Hermano 1V∴, los HH∴ que decoran mi Col∴ son masones y están de pie y al orden en el Grado de Aprendiz. (Da un golpe de mallete)</dd>
+            <dd data-dignidad="2V">Hermano 1V∴, los HH∴ que decoran mi Col∴ son masones y están de pie y al orden en the Grado de Aprendiz. (Da un golpe de mallete)</dd>
 
             <dt data-dignidad="1V">1V∴</dt>
             <dd data-dignidad="1V">VM∴ los HH∴ que se cobijan bajo la bóveda de nuestro templo son Masones y se hallan al orden, prontos para cumplir con vuestro mandato, y dispuestos a laborar en la construcción del Templo moral erigido a la ciencia, a la virtud y al trabajo. (Da un golpe de Mallete).</dd>
@@ -194,7 +194,7 @@
             <dd data-dignidad="VM">HH∴ míos, también son masones los que decoran el Oriente, y están prontos para trabajar en la construcción del Templo Moral que la Masonería eleva en la gloria del perfeccionamiento humano, mediante la conquista de los sublimes principios de Libertad, Igualdad y Fraternidad (Da un golpe de Mallete seguido por los Vigilantes).</dd>
         </div>
 
-        <div data-apartado="magisterio">
+        <div data-apartado="magisterio" class="apertura-sub">
             <div class="section-header">3. El Magisterio: El Deber de los Oficiales</div>
             <dt data-dignidad="VM">VM∴</dt>
             <dd data-dignidad="VM">¿Para qué ocupáis ese puesto, Querido Hermano 2V∴?</dd>
@@ -227,7 +227,7 @@
             <dd data-dignidad="1V">Así como el Sol nace en Oriente al iniciar su carrera y romper el día, de igual manera se alza allí el asiento del VM∴ para abrir la Logia, dirigirla en sus trabajos e iluminar con sus luces, esclareciendo así los sublimes preceptos de nuestra.</dd>
         </div>
 
-        <div data-apartado="tiempo">
+        <div data-apartado="tiempo" class="apertura-sub">
             <div class="section-header">4. El Tiempo: La Percepción de la Verdad</div>
             <dt data-dignidad="VM">VM∴</dt>
             <dd data-dignidad="VM">Querido Hermano 2V∴ ¿Qué edad tenéis como Apr∴ Mas∴?</dd>
@@ -260,7 +260,7 @@
             <dd data-dignidad="1V">Anunciado en ambas CCol∴, VM∴.</dd>
         </div>
 
-        <div data-apartado="logos">
+        <div data-apartado="logos" class="apertura-sub">
             <div class="section-header">5. El Logos: Consagración de la Luz</div>
             <dt data-dignidad="VM">VM∴</dt>
             <dd data-dignidad="VM">¡En pie y al Orden, Queridos Hermanos! (Da un golpe de Mallete seguido por los Vigilantes).</dd>
@@ -458,7 +458,19 @@
 
             // 1. Filtrar por Apartado
             secciones.forEach(seccion => {
-                if (seccion.getAttribute('data-apartado') === filtroApartado) {
+                var apartado = seccion.getAttribute('data-apartado');
+                
+                // LÓGICA ESPECIAL PARA APERTURA
+                if (filtroApartado === "apertura") {
+                    // Mostrar si es la cabecera lógica o una de las subsecciones
+                    if (apartado === "apertura" || seccion.classList.contains("apertura-sub")) {
+                        seccion.classList.remove("hidden");
+                    } else {
+                        seccion.classList.add("hidden");
+                    }
+                } 
+                // LÓGICA NORMAL
+                else if (apartado === filtroApartado) {
                     seccion.classList.remove("hidden");
                 } else {
                     seccion.classList.add("hidden");
