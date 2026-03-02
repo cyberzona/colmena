@@ -20,13 +20,13 @@
         #rituales-content { margin-top: 5px; background: white; padding: 10px; border-radius: 8px; }
         #glosario-container { margin-top: 20px; }
         
-        /* --- CORRECCIÓN: Estilo exclusivo para siglas en el diálogo --- */
-        .sigla-dialogo {
+        /* --- CORRECCIÓN: Estilo para siglas tripuntuadas DENTRO del diálogo --- */
+        .sigla-en-dialogo {
             font-weight: bold;
             color: #0056b3; /* Azul Fuerte */
         }
         
-        /* Estilo general para dt (siglas) */
+        /* Estilo para dt (interlocutor) normal */
         dt { font-weight: bold; color: #5d4037; margin-top: 10px; font-size: 0.9em; }
         
         dd { 
@@ -163,7 +163,6 @@
             oficiales.forEach(ofi => {
                 let opt = document.createElement("option");
                 opt.value = ofi.id;
-                // Mantenemos el texto del selector normal
                 opt.textContent = ofi.id + '∴'; 
                 selector.appendChild(opt);
             });
@@ -212,8 +211,10 @@
                     // Formatear paréntesis (...) en el texto principal
                     texto = texto.replace(/\((.*?)\)/g, '<span class="parentesis-ritual">($1)</span>');
                     
-                    // --- CORRECCIÓN: Aplicar clase azul solo al DT (sigla) ---
-                    const oficialTripuntuado = `<span class="sigla-dialogo">${oficial}∴</span>`;
+                    // --- CORRECCIÓN: Aplicar clase azul a siglas DENTRO del texto ---
+                    texto = texto.replace(/(QQHH|HH|VM|1V|2V)∴/g, '<span class="sigla-en-dialogo">$1∴</span>');
+                    
+                    const oficialTripuntuado = oficial + '∴';
                     
                     const resaltar = (filtroOficial !== "todos" && 
                                      (oficial === filtroOficial || oficial + '∴' === filtroOficial));
@@ -243,7 +244,6 @@
             let htmlDef = `<div style="margin-top: 15px; padding: 5px; border-top: 1px solid #efebe9; font-size: 0.7em; color: #a1887f;">`;
             
             for (const [sigla, definicion] of Object.entries(definicionesData)) {
-                // Glosario normal
                 htmlDef += `<span>${sigla}</span> : ${definicion} <span style="color: #d7ccc8; margin: 0 3px;">|</span> `;
             }
             
