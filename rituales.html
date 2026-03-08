@@ -172,7 +172,8 @@
         async function inicializar() {
             const urlParams = new URLSearchParams(window.location.search);
             const numRitual = urlParams.get('num') || '1'; 
-            const archivoXML = `ritual${numRitual}.xml`;
+            const archivoXML = `liturgia.xml`;
+            //const archivoXML = `ritual${numRitual}.xml`;
 
             try {
                 const response = await fetch(archivoXML);
