@@ -148,7 +148,7 @@
                 const info = recursosData.oficiales.find(o => o.id === sigla);
                 let opt = document.createElement("option");
                 opt.value = sigla;
-                opt.textContent = info ? info.nombre + "∴" : sigla + "∴";
+                opt.textContent = info ? info.id + "∴" : sigla + "∴";
                 selector.appendChild(opt);
             });
         }
