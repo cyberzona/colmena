@@ -3,12 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cargando Ritual...</title>
+    <title>Cargando Ritual - Colmena No. 8</title>
     <style>
-        /* Estilos base conservados */
         body { font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif; line-height: 1.4; color: #2c2c2c; margin: 0; padding: 10px; background-color: #fdfaf3; }
         
-        header { text-align: center; margin-bottom: 20px; }
+        /* Contenedor del Logo */
+        .logo-contenedor { position: absolute; top: 15px; left: 15px; z-index: 1001; }
+        .logo-mini { width: 65px; height: auto; filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.1)); }
+
+        header { text-align: center; margin-bottom: 20px; padding-top: 10px; }
         h1 { color: #5d4037; font-size: 1.6em; margin: 10px 0 5px 0; }
         .logia-header { font-variant: small-caps; color: #8d6e63; font-weight: bold; letter-spacing: 2px; font-size: 1.1em; }
         .logia-nombre { font-size: 1.3em; color: #5d4037; display: block; margin-top: 5px; }
@@ -21,17 +24,27 @@
         select { padding: 8px; font-size: 0.9em; border-radius: 4px; border: 1px solid #ccc; width: 100%; background-color: white; }
 
         .sigla-en-dialogo { font-weight: bold; color: #0056b3; }
-        dt { font-weight: bold; color: #5d4037; margin-top: 10px; font-size: 0.9em; }
-        dd { margin-left: 25px; margin-bottom: 2px; border-left: 2px solid #d7ccc8; padding-left: 10px; font-size: 0.95em; position: relative; color: #3e2723; counter-increment: line-counter; }
-        dd::before { content: counter(line-counter); position: absolute; left: -25px; top: 1px; color: #8d6e63; font-weight: bold; font-size: 0.9em; }
+        dt { font-weight: bold; color: #5d4037; margin-top: 15px; font-size: 0.9em; }
+        dd { margin-left: 25px; margin-bottom: 5px; border-left: 2px solid #d7ccc8; padding-left: 10px; font-size: 0.95em; position: relative; color: #3e2723; counter-increment: line-counter; }
+        dd::before { content: counter(line-counter); position: absolute; left: -25px; top: 1px; color: #8d6e63; font-weight: bold; font-size: 0.85em; }
+        
         .parte-ritual { counter-reset: line-counter; }
-        .highlight-dialogue { background-color: rgba(180,255,100,0.4); border-left: 3px solid #8d6e63; }
+        .highlight-dialogue { background-color: rgba(180,255,100,0.3); border-left: 3px solid #5d4037; padding-left: 9px; }
         .accion-siguiente-linea { font-size: 0.85em; color: #5d4037; font-style: italic; margin-left: 38px; margin-bottom: 8px; padding-left: 10px; border-left: 2px solid #d7ccc8; display: block; }
-        .section-header { font-weight: bold; color: white; text-align: center; text-transform: uppercase; margin-top: 15px; background-color: #5d4037; padding: 8px; font-size: 1.1em; border-radius: 4px; }
+        .section-header { font-weight: bold; color: white; text-align: center; text-transform: uppercase; margin-top: 15px; background-color: #5d4037; padding: 8px; font-size: 1.1em; border-radius: 4px; letter-spacing: 1px; }
         .apartado-header { font-weight: bold; color: #795548; font-size: 0.95em; border-bottom: 1px solid #d7ccc8; padding-bottom: 3px; margin-top: 25px; text-align: right; }
+
+        @media (max-width: 600px) {
+            header { padding-top: 60px; }
+            .logo-mini { width: 50px; }
+        }
     </style>
 </head>
 <body onload="inicializar()">
+
+    <div class="logo-contenedor">
+        <img src="./images/logo-mini.png" alt="Logo" class="logo-mini">
+    </div>
 
     <header id="main-header">
         <h1 id="titulo-ritual">Cargando...</h1>
@@ -63,33 +76,38 @@
         async function inicializar() {
             try {
                 const response = await fetch('liturgia.xml');
+                if (!response.ok) throw new Error("No se pudo cargar liturgia.xml");
                 const text = await response.text();
                 xmlDoc = new DOMParser().parseFromString(text, "text/xml");
 
-                // Extraer info de Logia y Grado del XML
                 const ritualNode = xmlDoc.querySelector("ritual");
                 const logia = ritualNode.getAttribute("logia");
                 const grado = ritualNode.getAttribute("grado");
 
-                // Actualizar interfaz
                 document.title = `Ritual de ${grado} - ${logia}`;
                 document.getElementById("titulo-ritual").textContent = `Ritual de ${grado}`;
                 document.getElementById("nombre-logia").textContent = logia;
 
                 poblarSelectorPartes();
-                poblarSelectorOficiales(); // Basado en los oficiales presentes en el XML
+                poblarSelectorOficiales();
                 renderizarRiturgia();
+
+                // Generar memo de acceso
+                const fechaHoy = new Date().toLocaleDateString();
+                console.log(`[MEMO DE ACCESO] - Logia: ${logia} | Grado: ${grado} | Fecha: ${fechaHoy}`);
 
             } catch (e) {
                 console.error(e);
-                document.getElementById('rituales-content').innerHTML = "Error: Asegúrate de que 'liturgia.xml' esté en la misma carpeta.";
+                document.getElementById('rituales-content').innerHTML = 
+                    `<div style="color:red; text-align:center; padding:20px;">
+                        <b>Error de carga:</b> Asegúrate de que 'liturgia.xml' y la carpeta 'images' estén en el mismo directorio.
+                    </div>`;
             }
         }
 
         function poblarSelectorPartes() {
             const selector = document.getElementById("parteFilter");
-            const partes = xmlDoc.querySelectorAll("parte");
-            partes.forEach(p => {
+            xmlDoc.querySelectorAll("parte").forEach(p => {
                 let opt = document.createElement("option");
                 opt.value = p.getAttribute("id");
                 opt.textContent = p.getAttribute("titulo");
@@ -128,13 +146,12 @@
                     const oficial = paso.getAttribute("oficial");
                     let texto = paso.getAttribute("texto");
                     
-                    // Procesar acciones [...] y siglas
                     let acciones = [];
                     texto = texto.replace(/\[(.*?)\]/g, (m, p1) => { acciones.push(p1); return ""; });
                     texto = texto.replace(/(QQHH|HH|VM|1V|2V)∴/g, '<span class="sigla-en-dialogo">$1∴</span>');
                     
                     const resaltar = (filtroOficial === "todos" || oficial === filtroOficial);
-                    const claseH = resaltar && filtroOficial !== "todos" ? "highlight-dialogue" : "";
+                    const claseH = (resaltar && filtroOficial !== "todos") ? "highlight-dialogue" : "";
                     
                     html += `<dt>${oficial}∴</dt>`;
                     html += `<dd class="${claseH}">${texto}</dd>`;
@@ -142,6 +159,7 @@
                 });
             });
             contenedor.innerHTML = html + `</div>`;
+            window.scrollTo(0, 0); // Volver arriba al cambiar de parte
         }
     </script>
 </body>
