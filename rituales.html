@@ -17,46 +17,40 @@
         }
         
         /* Cabecera Institucional con MedievalSharp */
-        .header-container { 
-            display: flex; 
-            align-items: center; 
-            justify-content: flex-start; 
-            gap: 15px; 
-            margin-bottom: 20px; 
-            border-bottom: 2px solid #5d4037; 
-            padding-bottom: 12px; 
-            font-family: 'MedievalSharp', cursive; /* Aplicada al contenedor */
-        }
-        
-        .logo-mini { 
-            width: 65px; 
-            height: auto; 
-            filter: drop-shadow(0px 2px 3px rgba(0,0,0,0.1)); 
-        }
-        
-        .logia-info { display: flex; flex-direction: column; }
-        
-        .logia-linea1 { 
-            font-size: 0.9em; 
-            color: #8d6e63; 
-            letter-spacing: 1px; 
-            line-height: 1.2; 
-        }
-        
-        .logia-linea2 { 
-            font-size: 1.4em; 
-            color: #5d4037; 
-            margin: 2px 0; 
-            line-height: 1; 
-        }
-        
-        #titulo-ritual-header { 
-            font-size: 1.1em; 
-            color: #795548; 
-            text-transform: uppercase; 
-            letter-spacing: 2px; 
-            margin-top: 5px;
-        }
+       .header-container { 
+        display: flex; 
+        align-items: center; 
+        justify-content: flex-start; 
+        gap: 12px; /* Reducido un poco el espacio con el logo */
+        margin-bottom: 15px; 
+        border-bottom: 2px solid #5d4037; 
+        padding-bottom: 10px; 
+        font-family: 'MedievalSharp', cursive;}
+
+    .logia-linea1 { 
+        font-size: 0.75rem; /* Antes 0.9em - Más pequeño y sutil */
+        color: #8d6e63; 
+        letter-spacing: 0.5px; 
+        line-height: 1.1;}
+
+    .logia-linea2 { 
+        font-size: 1.15rem; /* Antes 1.4em - Más equilibrado con el logo */
+        color: #5d4037; 
+        margin: 1px 0; 
+        line-height: 1;}
+
+    #titulo-ritual-header { 
+        font-size: 0.85rem; /* Antes 1.1em - Menos prominente */
+        color: #795548; 
+        text-transform: uppercase; 
+        letter-spacing: 1.5px; 
+        margin-top: 3px;}
+
+    /* Ajuste proporcional del logo si la letra es más pequeña */
+    .logo-mini { 
+        width: 55px; /* Bajamos de 65px a 55px para mantener la armonía */
+        height: auto; 
+        filter: drop-shadow(0px 2px 3px rgba(0,0,0,0.1));}
 
         /* Panel de Control Sticky */
         #control-panel { 
