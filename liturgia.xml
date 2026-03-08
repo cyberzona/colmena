@@ -91,32 +91,36 @@
         </apartado>
     </parte>
     <parte id="3" titulo="Clausura de Trabajos">
-         <apartado id="1" titulo="Tronco de beneficencia">
-            <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1∴ y 2∴ VVig∴ anunciad en vuestras CCol∴ que el H∴ Hos∴ va a circular en tronco de beneficencia."/>
-            <paso tipo="dialogo" oficial="2V" texto="Anunciado en la Col∴ del Mediodía, H∴ 1∴ Vig∴."/>
-            <paso tipo="dialogo" oficial="1V" texto="Anunciado en ambas Ccol∴, Ven∴ M∴."/>
-            <paso tipo="dialogo" oficial="VM" texto="Q∴H∴ Hos∴, cumplid con vuestro deber. [El H∴ Hos∴ se coloca entre Ccol∴.]."/>
-            <paso tipo="dialogo" oficial="1V" texto="Ven∴M∴, the H∴Hos∴ se encuentra entre Ccol∴ pronto a circular entre los HH∴."/>
+         <apartado id="1" titulo="Tronco de Beneficencia">
+            <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴ anunciad en vuestras CCol∴ que el H∴ Hos∴ va a circular en tronco de beneficencia."/>
+            <paso tipo="dialogo" oficial="2V" texto="Anunciado en la Col∴ del Mediodía, H∴ 1V∴."/>
+            <paso tipo="dialogo" oficial="1V" texto="Anunciado en ambas Ccol∴, VM∴."/>
+            <paso tipo="dialogo" oficial="VM" texto="QH∴ Hos∴, cumplid con vuestro deber. [El H∴ Hos∴ se coloca entre Ccol∴.]."/>
+            <paso tipo="dialogo" oficial="1V" texto="VM∴, the H∴ Hos∴ se encuentra entre Ccol∴ pronto a circular entre los HH∴."/>
             <paso tipo="dialogo" oficial="VM" texto="Ordenad que circule empezando por la derecha."/>
-            <paso tipo="dialogo" oficial="1V" texto="Q∴H∴Hos∴, cumplid con vuestro deber. [El H∴Hos∴ después de haber circulado se coloca entre Ccol∴.]"/>
-            <paso tipo="dialogo" oficial="Hos" texto="Q∴H∴1∴Vig∴, he cumplido vuestro mandato."/>
-            <paso tipo="dialogo" oficial="1V" texto="Ven∴M∴, the tronco de beneficencia después de circular por los cuatro puntos cardinales del templo se encuentra nuevamente entre Ccol∴.."/>
+            <paso tipo="dialogo" oficial="1V" texto="QH∴ Hos∴, cumplid con vuestro deber. [El H∴ Hos∴ después de haber circulado se coloca entre Ccol∴.]"/>
+            <paso tipo="dialogo" oficial="Hos" texto="QH∴ 1V∴, he cumplido vuestro mandato."/>
+            <paso tipo="dialogo" oficial="1V" texto="VM∴, el tronco de beneficencia después de circular por los cuatro puntos cardinales del templo se encuentra nuevamente entre Ccol∴.."/>
             <paso tipo="dialogo" oficial="VM" texto="Ordenad que ocupe su puesto y nos de cuenta de su contenido."/>
-            <paso tipo="dialogo" oficial="VM" texto="Q∴ H∴ Ora∴, ¿Nos queréis dar las conclusiones de los trabajos de la Ten∴ de hoy?"/>
-        </apartado>   
-        <apartado id="2" titulo="Clausura de Trabajos">
-            <paso tipo="dialogo" oficial="VM" texto="En virtud de haber sido en un todo favorable las conclusiones del H∴ OF∴ a la labor realizada, vamos a proceder al cierre de los trabajos de esta RL∴. Pero antes, QH∴ 1V∴ podéis decirnos. ¿Cuáles son los caracteres distintivos que deben de adornar al verdadero Mas∴?"/>
+            <paso tipo="dialogo" oficial="VM" texto="QH∴ OF∴, ¿Nos queréis dar las conclusiones de los trabajos de la Ten∴ de hoy?"/>
+            <paso tipo="dialogo" oficial="OF" texto="[Da a conocer el resultado del Trazado]."/>
+            <paso tipo="dialogo" oficial="VM" texto="En virtud de haber sido en un todo favorable las conclusiones del H∴ OF∴ a la labor realizada, vamos a proceder al cierre de los trabajos de esta RL∴."/>
+            <paso tipo="dialogo" oficial="VM" texto="QH∴ 1V∴ podéis decirnos. ¿Cuáles son los caracteres distintivos que deben de adornar al verdadero Mas∴?"/>
             <paso tipo="dialogo" oficial="1V" texto="Ser virtuoso y amante con los HH∴ y tolerante con todos."/>
             <paso tipo="dialogo" oficial="VM" texto="QH∴ 2V∴ ¿Qué se deben los Masones entre sí?"/>
             <paso tipo="dialogo" oficial="2V" texto="Respeto mutuo y amor fraternal, VM∴."/>
             <paso tipo="dialogo" oficial="VM" texto="¿Cuál debe ser la conducta del Masón en el mundo profano, QH∴ 1V∴?"/>
             <paso tipo="dialogo" oficial="1V" texto="Enseñar con la práctica el ejercicio de las virtudes."/>
+        </apartado>    
+        <apartado id="2" titulo="Verificaión Temporal de los Trabajos">
             <paso tipo="dialogo" oficial="VM" texto="QH∴ 1V∴ ¿Qué edad tenéis como Ap∴Mas∴?"/>
             <paso tipo="dialogo" oficial="1V" texto="Tres años, VM∴."/>
             <paso tipo="dialogo" oficial="VM" texto="QH∴ 2V∴ ¿A qué hora cierran los trabajos los AAp∴ Mas∴?"/>
             <paso tipo="dialogo" oficial="2V" texto="Medianoche en punto, VM∴."/>
             <paso tipo="dialogo" oficial="VM" texto="¿Qué hora es, QH∴ 1V∴?"/>
             <paso tipo="dialogo" oficial="1V" texto="La hora de cerrar, medianoche en punto, VM∴."/>
+        </apartado>     
+        <apartado id="3" titulo="Cierre de los Trabajos">    
             <paso tipo="dialogo" oficial="VM" texto="Puesto que es la hora en que los AAp∴ MMas∴ cierran sus trabajos, QQHH∴ 1V∴ y 2V∴, invitad a los obreros de vuestras respectivas CCol∴ como yo invito a los de Or∴ para que se unan a vosotros y a mí a fin de cerrar los trabajos de esta Aug∴ RL∴. [El VM∴ da tres golpes de Mall∴ que repiten los VV∴ y dice: de pie y al orden mis HH∴.]."/>
             <paso tipo="dialogo" oficial="2V" texto="Todo está justo y perfecto, VM∴."/>
             <paso tipo="dialogo" oficial="1V" texto="Reina completa armonía, VM∴ y estamos en condición de luchar por la emancipación Moral y Material de los seres humanos."/>
