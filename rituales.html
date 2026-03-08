@@ -3,64 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cargando Ritual - Colmena No. 8</title>
+    <title>Ritual - Colmena No. 8</title>
     <style>
         body { font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif; line-height: 1.4; color: #2c2c2c; margin: 0; padding: 10px; background-color: #fdfaf3; }
         
-        /* Contenedor del Logo */
-        .logo-contenedor { position: absolute; top: 15px; left: 15px; z-index: 1001; }
-        .logo-mini { width: 65px; height: auto; filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.1)); }
+        /* Cabecera Alineada */
+        .header-container { display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 15px; padding: 10px; }
+        .logo-mini { width: 70px; height: auto; filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.1)); }
+        .logia-info { text-align: left; }
+        .logia-header { font-variant: small-caps; color: #8d6e63; font-weight: bold; letter-spacing: 1px; font-size: 0.9em; line-height: 1.1; }
+        .logia-nombre { font-size: 1.2em; color: #5d4037; font-weight: bold; display: block; }
 
-        header { text-align: center; margin-bottom: 20px; padding-top: 10px; }
-        h1 { color: #5d4037; font-size: 1.6em; margin: 10px 0 5px 0; }
-        .logia-header { font-variant: small-caps; color: #8d6e63; font-weight: bold; letter-spacing: 2px; font-size: 1.1em; }
-        .logia-nombre { font-size: 1.3em; color: #5d4037; display: block; margin-top: 5px; }
-        hr { width: 40%; border: 0; border-top: 1px solid #d7ccc8; margin: 15px auto; }
+        h1#titulo-ritual { text-align: center; color: #5d4037; font-size: 1.5em; margin: 5px 0; text-transform: uppercase; border-top: 1px solid #d7ccc8; padding-top: 10px; }
 
+        /* Panel de Control Sticky */
         #control-panel { background: #efebe9; padding: 10px; border-radius: 8px; border: 1px solid #d7ccc8; text-align: center; margin-bottom: 10px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        #container-parte { display: inline-block; width: 60%; margin: 5px; text-align: left; vertical-align: top; }
-        #container-oficial { display: inline-block; width: 30%; margin: 5px; text-align: left; vertical-align: top; }
+        .container-select { display: inline-block; margin: 5px; text-align: left; vertical-align: top; }
+        #container-parte { width: 55%; }
+        #container-oficial { width: 35%; }
         .select-label { display: block; font-size: 0.7em; color: #795548; margin-bottom: 2px; font-weight: bold; text-transform: uppercase; }
         select { padding: 8px; font-size: 0.9em; border-radius: 4px; border: 1px solid #ccc; width: 100%; background-color: white; }
 
+        /* Contenido del Ritual */
         .sigla-en-dialogo { font-weight: bold; color: #0056b3; }
         dt { font-weight: bold; color: #5d4037; margin-top: 15px; font-size: 0.9em; }
         dd { margin-left: 25px; margin-bottom: 5px; border-left: 2px solid #d7ccc8; padding-left: 10px; font-size: 0.95em; position: relative; color: #3e2723; counter-increment: line-counter; }
         dd::before { content: counter(line-counter); position: absolute; left: -25px; top: 1px; color: #8d6e63; font-weight: bold; font-size: 0.85em; }
-        
         .parte-ritual { counter-reset: line-counter; }
-        .highlight-dialogue { background-color: rgba(180,255,100,0.3); border-left: 3px solid #5d4037; padding-left: 9px; }
+        .highlight-dialogue { background-color: rgba(180,255,100,0.3); border-left: 3px solid #5d4037; }
         .accion-siguiente-linea { font-size: 0.85em; color: #5d4037; font-style: italic; margin-left: 38px; margin-bottom: 8px; padding-left: 10px; border-left: 2px solid #d7ccc8; display: block; }
-        .section-header { font-weight: bold; color: white; text-align: center; text-transform: uppercase; margin-top: 15px; background-color: #5d4037; padding: 8px; font-size: 1.1em; border-radius: 4px; letter-spacing: 1px; }
+        .section-header { font-weight: bold; color: white; text-align: center; text-transform: uppercase; margin-top: 15px; background-color: #5d4037; padding: 8px; font-size: 1.1em; border-radius: 4px; }
         .apartado-header { font-weight: bold; color: #795548; font-size: 0.95em; border-bottom: 1px solid #d7ccc8; padding-bottom: 3px; margin-top: 25px; text-align: right; }
 
         @media (max-width: 600px) {
-            header { padding-top: 60px; }
+            .header-container { gap: 10px; }
             .logo-mini { width: 50px; }
+            .logia-nombre { font-size: 1em; }
         }
     </style>
 </head>
 <body onload="inicializar()">
 
-    <div class="logo-contenedor">
+    <div class="header-container">
         <img src="./images/logo-mini.png" alt="Logo" class="logo-mini">
+        <div class="logia-info">
+            <span class="logia-header">Respetable Logia Simbólica</span>
+            <span class="logia-nombre">Colmena No. 8</span>
+        </div>
     </div>
 
-    <header id="main-header">
-        <h1 id="titulo-ritual">Cargando...</h1>
-        <div class="logia-header">
-            Respetable Logia Simbólica <br/>
-            <span id="nombre-logia" class="logia-nombre">---</span>
-        </div>
-        <hr />
-    </header>
+    <h1 id="titulo-ritual">Cargando Ritual...</h1>
 
     <div id="control-panel">
-        <div id="container-parte">
-            <span class="select-label">Parte</span>
+        <div id="container-parte" class="container-select">
+            <span class="select-label">Parte del Ritual</span>
             <select id="parteFilter" onchange="renderizarRiturgia()"></select>
         </div>
-        <div id="container-oficial">
+        <div id="container-oficial" class="container-select">
             <span class="select-label">Oficial</span>
             <select id="oficialFilter" onchange="renderizarRiturgia()">
                 <option value="todos" selected>Todos</option>
@@ -74,34 +73,30 @@
         let xmlDoc = null;
 
         async function inicializar() {
+            // Detectar qué ritual cargar basado en el nombre del archivo o parámetro
+            // Por defecto buscaremos 'liturgia.xml'
+            const archivoXML = 'liturgia.xml'; 
+            
             try {
-                const response = await fetch('liturgia.xml');
-                if (!response.ok) throw new Error("No se pudo cargar liturgia.xml");
+                const response = await fetch(archivoXML);
                 const text = await response.text();
                 xmlDoc = new DOMParser().parseFromString(text, "text/xml");
 
                 const ritualNode = xmlDoc.querySelector("ritual");
-                const logia = ritualNode.getAttribute("logia");
                 const grado = ritualNode.getAttribute("grado");
+                const num = ritualNode.getAttribute("numero");
 
-                document.title = `Ritual de ${grado} - ${logia}`;
+                document.title = `Ritual ${num} (${grado}) - Colmena No. 8`;
                 document.getElementById("titulo-ritual").textContent = `Ritual de ${grado}`;
-                document.getElementById("nombre-logia").textContent = logia;
 
                 poblarSelectorPartes();
                 poblarSelectorOficiales();
                 renderizarRiturgia();
 
-                // Generar memo de acceso
-                const fechaHoy = new Date().toLocaleDateString();
-                console.log(`[MEMO DE ACCESO] - Logia: ${logia} | Grado: ${grado} | Fecha: ${fechaHoy}`);
+                console.log(`[MEMO] Ritual ${num}: ${grado} cargado correctamente.`);
 
             } catch (e) {
-                console.error(e);
-                document.getElementById('rituales-content').innerHTML = 
-                    `<div style="color:red; text-align:center; padding:20px;">
-                        <b>Error de carga:</b> Asegúrate de que 'liturgia.xml' y la carpeta 'images' estén en el mismo directorio.
-                    </div>`;
+                document.getElementById('rituales-content').innerHTML = "Error al cargar el archivo XML.";
             }
         }
 
@@ -119,7 +114,6 @@
             const selector = document.getElementById("oficialFilter");
             const oficialesSet = new Set();
             xmlDoc.querySelectorAll("paso").forEach(p => oficialesSet.add(p.getAttribute("oficial")));
-            
             oficialesSet.forEach(ofi => {
                 let opt = document.createElement("option");
                 opt.value = ofi;
@@ -133,19 +127,15 @@
             const parteId = document.getElementById("parteFilter").value;
             const filtroOficial = document.getElementById("oficialFilter").value;
             const contenedor = document.getElementById('rituales-content');
-            
             const parte = xmlDoc.querySelector(`parte[id="${parteId}"]`);
-            if (!parte) return;
-
+            
             let html = `<div class="parte-ritual"><div class="section-header">${parte.getAttribute("titulo")}</div>`;
             
             parte.querySelectorAll("apartado").forEach(apartado => {
                 html += `<div class="apartado-header">${apartado.getAttribute("titulo")}</div>`;
-                
                 apartado.querySelectorAll("paso").forEach(paso => {
                     const oficial = paso.getAttribute("oficial");
                     let texto = paso.getAttribute("texto");
-                    
                     let acciones = [];
                     texto = texto.replace(/\[(.*?)\]/g, (m, p1) => { acciones.push(p1); return ""; });
                     texto = texto.replace(/(QQHH|HH|VM|1V|2V)∴/g, '<span class="sigla-en-dialogo">$1∴</span>');
@@ -159,7 +149,6 @@
                 });
             });
             contenedor.innerHTML = html + `</div>`;
-            window.scrollTo(0, 0); // Volver arriba al cambiar de parte
         }
     </script>
 </body>
