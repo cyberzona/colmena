@@ -72,6 +72,12 @@
         let xmlDoc = null;
 
         async function inicializar() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const numRitual = urlParams.get('num') || '1'; // Si no hay número, por defecto es el 1
+            const archivoXML = `liturgia.xml`;
+            // 2. Construir el nombre del archivo XML dinámicamente
+            // Esto buscará ritual1.xml, ritual2.xml o ritual3.xml
+            //const archivoXML = `ritual${numRitual}.xml`;
             try {
                 const response = await fetch('liturgia.xml');
                 const text = await response.text();
