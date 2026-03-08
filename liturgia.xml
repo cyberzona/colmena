@@ -2,7 +2,7 @@
 <ritual taller="Colmena No. 8" grado="1">
     
     <parte id="1" titulo="Apertura de Trabajos">
-        <apartado id="espacio" titulo="Salvaguarda del Espacio Sagrado">
+        <apartado id="espacio" titulo="Aseguramiento del Espacio Sagrado">
             <paso tipo="dialogo" oficial="VM" texto="¡Silencio en Logia, Hermanos (HH∴)! [Golpe de Mallete]"/>
             <paso tipo="dialogo" oficial="VM" texto="Hermano Maestro de Ceremonias (MC∴), ¿los puestos están cubiertos?"/>
             <paso tipo="dialogo" oficial="MC" texto="Si, VM∴ los puestos están cubiertos y los HH∴ prontos a iniciar los trabajos."/>
