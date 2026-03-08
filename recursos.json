@@ -3,10 +3,10 @@
     { "id": "VM", "nombre": "Venerable Maestro" },
     { "id": "1V", "nombre": "Primer Vigilante" },
     { "id": "2V", "nombre": "Segundo Vigilante" },
+    { "id": "OF", "nombre": "Orador Fiscal" },
     { "id": "MC", "nombre": "Maestro de Ceremonias" },
     { "id": "GT", "nombre": "Guarda Templo" },
-    { "id": "Sec", "nombre": "Secretario" },
-    { "id": "Ora", "nombre": "Orador Fiscal" },
+    { "id": "Sec", "nombre": "Secretario" },    
     { "id": "Hos", "nombre": "Hospitalario" }
   ],
   "definiciones": {
