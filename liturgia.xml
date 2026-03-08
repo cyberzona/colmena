@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ritual taller="Colmena No. 8" grado="1">
-    
+<ritual taller="Colmena No. 8" grado="1">    
     <parte id="1" titulo="Apertura de Trabajos">
         <apartado id="espacio" titulo="Aseguramiento del Espacio Físico">
             <paso tipo="dialogo" oficial="VM" texto="¡Silencio en Logia, Hermanos (HH∴)! [Golpe de Mallete]"/>
