@@ -12,7 +12,7 @@
         #titulo-ritual-header { font-size: 0.85rem; color: #795548; text-transform: uppercase; letter-spacing: 1.5px; font-style: italic; }
         .logo-mini { width: 75px; height: auto; flex-shrink: 0; }
         
-        #control-panel { background: #efebe9; padding: 10px; border-radius: 8px; border: 1px solid #d7ccc8; position: sticky; top: 0; z-index: 1000; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        #control-panel { background: #efebe9; padding: 10px; border-radius: 8px; border: 1px solid #d7ccc8; position: sticky; top: 0; z-index: 1000; text-align: center; }
         .container-select { display: inline-block; margin: 5px; text-align: left; }
         #container-parte { width: 55%; }
         #container-oficial { width: 35%; }
@@ -21,11 +21,11 @@
 
         .parte-ritual { counter-reset: line-counter; }
         dt { font-weight: bold; color: #5d4037; margin-top: 15px; font-size: 0.9em; }
-        dd { margin-left: 35px; border-left: 2px solid #d7ccc8; padding-left: 10px; font-size: 0.95em; position: relative; counter-increment: line-counter; margin-bottom: 5px; transition: background 0.3s ease; }
+        dd { margin-left: 35px; border-left: 2px solid #d7ccc8; padding-left: 10px; font-size: 0.95em; position: relative; counter-increment: line-counter; margin-bottom: 5px; transition: all 0.3s ease; }
         dd::before { content: counter(line-counter); position: absolute; left: -30px; color: #8d6e63; font-size: 0.8em; font-weight: bold; width: 20px; text-align: right; }
         
         /* Estilo de Resaltado */
-        .resaltado { background: rgba(180, 255, 100, 0.3) !important; border-left: 4px solid #5d4037 !important; font-weight: 500; }
+        .resaltado { background: rgba(180, 255, 100, 0.35) !important; border-left: 4px solid #5d4037 !important; transform: translateX(5px); }
         
         .section-header { background: #5d4037; color: white; padding: 8px; text-align: center; border-radius: 4px; margin-top: 10px; text-transform: uppercase; font-weight: bold; }
         .apartado-header { font-weight: bold; color: #795548; font-size: 0.9em; border-bottom: 1px solid #d7ccc8; text-align: right; margin-top: 20px; padding-bottom: 3px; }
@@ -110,7 +110,11 @@
             }
 
             oSel.innerHTML = '<option value="todos">Todos</option>';
-            Array.from(oficialesSet).sort().forEach(ofi => {
+            
+            // INVERSIÓN DE OFICIALES
+            const listaOficiales = Array.from(oficialesSet).sort().reverse();
+            
+            listaOficiales.forEach(ofi => {
                 oSel.add(new Option(ofi + "∴", ofi));
             });
         }
@@ -140,7 +144,7 @@
                     let acciones = [];
                     texto = texto.replace(/\[(.*?)\]/g, (m, p1) => { acciones.push(p1); return ""; });
 
-                    // APLICACIÓN DE LA LÓGICA DE RESALTE (No oculta, solo resalta)
+                    // LÓGICA DE RESALTE (Sin ocultar al resto)
                     const claseResaltado = (fOfi !== "todos" && ofi === fOfi) ? "class='resaltado'" : "";
                     
                     pasosHtml += `<dt>${ofi}∴</dt><dd ${claseResaltado}>${texto}</dd>`;
@@ -160,12 +164,9 @@
                     ${htmlAcumulado}
                 </div>`;
 
-            // Opcional: Auto-scroll al primer elemento resaltado
             if (fOfi !== "todos") {
-                setTimeout(() => {
-                    const primero = document.querySelector('.resaltado');
-                    if (primero) primero.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 100);
+                const primero = document.querySelector('.resaltado');
+                if (primero) primero.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         }
     </script>
