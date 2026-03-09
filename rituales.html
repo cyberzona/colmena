@@ -21,10 +21,10 @@
         #container-parte { width: 55%; }
         #container-oficial { width: 35%; }
         .select-label { display: block; font-size: 0.7em; color: #795548; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; }
-        select { padding: 8px; font-size: 0.9em; width: 100%; border-radius: 4px; border: 1px solid #ccc; }
+        select { padding: 8px; font-size: 0.9em; width: 100%; border-radius: 4px; border: 1px solid #ccc; background: white; }
 
         /* Estilos Ritual y Enumeración */
-        .parte-ritual { counter-reset: line-counter; } /* Reinicia contador por parte */
+        .parte-ritual { counter-reset: line-counter; }
         .sigla-en-dialogo { font-weight: bold; color: #0056b3; border-bottom: 1px dotted #0056b3; }
         dt { font-weight: bold; color: #5d4037; margin-top: 15px; font-size: 0.9em; }
         
@@ -34,7 +34,6 @@
             counter-increment: line-counter; 
         }
         
-        /* Restauración de la enumeración */
         dd::before { 
             content: counter(line-counter); position: absolute; left: -30px; 
             color: #8d6e63; font-size: 0.8em; font-weight: bold; width: 20px; text-align: right;
@@ -52,7 +51,7 @@
     <div class="header-container">
         <img src="./images/logo-mini.png" alt="Logo" class="logo-mini">
         <div class="logia-info">
-            <span class="logia-linea1">R∴ L∴ S∴ COLMENA Nº 8</span>
+            <span class="logia-linea1">Resp∴ Log∴ Simb∴ Colmena Nº 8</span>
             <span id="titulo-ritual-header">Cargando Ritual...</span>
         </div>
     </div>
@@ -76,7 +75,6 @@
     <script>
         let xmlDoc = null;
         
-        // Estructura de recursos preparada para futura carga XML
         const recursos = {
             oficiales: [
                 { id: "VM", nombre: "Venerable Maestro" },
@@ -109,7 +107,6 @@
                 const ritualNode = xmlDoc.querySelector("ritual");
                 const grade = ritualNode.getAttribute("grado");
                 
-                // Mapeo de grados numéricos
                 const ritos = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Ritual de Maestro" };
                 document.getElementById("titulo-ritual-header").textContent = ritos[grade] || "Ritual Masónico";
                 
@@ -118,7 +115,7 @@
                 renderizarLiturgia();
                 mostrarGlosario();
             } catch (e) {
-                document.getElementById('rituales-content').innerHTML = "Error al leer la liturgia.";
+                document.getElementById('rituales-content').innerHTML = "Error al leer liturgia.xml.";
             }
         }
 
@@ -147,43 +144,53 @@
         }
 
         function renderizarLiturgia() {
+            if (!xmlDoc) return;
             const pId = document.getElementById("parteFilter").value;
             const fOfi = document.getElementById("oficialFilter").value;
             const contenedor = document.getElementById('rituales-content');
             
-            // Selector compatible con IDs numéricos
             const parte = Array.from(xmlDoc.querySelectorAll("parte")).find(p => p.getAttribute("id") === pId);
-            if (!parte) return;
+            if (!parte) { contenedor.innerHTML = ""; return; }
 
-            let html = `<div class="parte-ritual"><div class="section-header">${parte.getAttribute("titulo")}</div>`;
+            let contenidoParteHtml = ""; 
             
             parte.querySelectorAll("apartado").forEach(apa => {
-                html += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>`;
+                let pasosHtml = "";
                 apa.querySelectorAll("paso").forEach(paso => {
                     const oficial = paso.getAttribute("oficial");
+                    const textoOriginal = paso.getAttribute("texto") || "";
+                    
+                    // Solo procesa si hay texto real (evita Compañero vacío)
+                    if (!textoOriginal.trim()) return;
                     if (fOfi !== "todos" && oficial !== fOfi) return;
 
-                    let texto = paso.getAttribute("texto");
+                    let texto = textoOriginal;
                     let acciones = [];
                     
-                    // Extraer acciones
                     texto = texto.replace(/\[(.*?)\]/g, (m, p1) => { acciones.push(p1); return ""; });
                     
-                    // Aplicar glosario
                     for (const sigla in recursos.definiciones) {
-                        const escapedSigla = sigla.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                        const regex = new RegExp(escapedSigla, 'g');
-                        texto = texto.replace(regex, `<span class="sigla-en-dialogo">${sigla}</span>`);
+                        const escaped = sigla.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                        texto = texto.replace(new RegExp(escaped, 'g'), `<span class="sigla-en-dialogo">${sigla}</span>`);
                     }
 
-                    const resaltar = (fOfi !== "todos") ? "style='background:rgba(180,255,100,0.25); border-left:3px solid #5d4037;'" : "";
+                    const estiloH = (fOfi !== "todos") ? "style='background:rgba(180,255,100,0.25); border-left:3px solid #5d4037;'" : "";
                     
-                    html += `<dt>${oficial}∴</dt><dd ${resaltar}>${texto}</dd>`;
-                    acciones.forEach(a => html += `<span class="accion-siguiente-linea">[${a}]</span>`);
+                    pasosHtml += `<dt>${oficial}∴</dt><dd ${estiloH}>${texto}</dd>`;
+                    acciones.forEach(a => pasosHtml += `<span class="accion-siguiente-linea">[${a}]</span>`);
                 });
+
+                if (pasosHtml !== "") {
+                    contenidoParteHtml += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>` + pasosHtml;
+                }
             });
-            
-            contenedor.innerHTML = html + `</div>`;
+
+            if (contenidoParteHtml === "") {
+                contenedor.innerHTML = ""; 
+            } else {
+                const headerParte = `<div class="parte-ritual"><div class="section-header">${parte.getAttribute("titulo")}</div>`;
+                contenedor.innerHTML = headerParte + contenidoParteHtml + `</div>`;
+            }
             window.scrollTo(0,0);
         }
     </script>
