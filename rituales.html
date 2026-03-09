@@ -19,13 +19,34 @@
         .select-label { display: block; font-size: 0.7em; color: #795548; font-weight: bold; text-transform: uppercase; }
         select { padding: 8px; font-size: 0.9em; width: 100%; border-radius: 4px; border: 1px solid #ccc; background: white; }
 
-        /* Estilo Azul para Siglas */
-        .sigla-azul { color: #0277bd; font-weight: bold; }
+        /* SIGLAS EN EL TEXTO (AZUL) */
+        .sigla-texto-azul { color: #0277bd; font-weight: bold; }
         
+        /* ENCABEZADOS (OSCURO) */
         dt { font-weight: bold; color: #5d4037; margin-top: 15px; font-size: 0.9em; }
-        dd { margin-left: 35px; border-left: 2px solid #d7ccc8; padding-left: 10px; font-size: 0.95em; position: relative; margin-bottom: 5px; }
         
-        /* Resaltado de Selección */
+        /* NUMERACIÓN */
+        .parte-ritual { counter-reset: line-counter; }
+        dd { 
+            margin-left: 35px; 
+            border-left: 2px solid #d7ccc8; 
+            padding-left: 10px; 
+            font-size: 0.95em; 
+            position: relative; 
+            margin-bottom: 5px; 
+            counter-increment: line-counter; 
+        }
+        dd::before { 
+            content: counter(line-counter); 
+            position: absolute; 
+            left: -30px; 
+            color: #8d6e63; 
+            font-size: 0.8em; 
+            font-weight: bold; 
+            width: 20px; 
+            text-align: right; 
+        }
+        
         .resaltado { background: rgba(180, 255, 100, 0.35) !important; border-left: 4px solid #5d4037 !important; }
         
         .section-header { background: #5d4037; color: white; padding: 8px; text-align: center; border-radius: 4px; margin-top: 10px; text-transform: uppercase; font-weight: bold; }
@@ -83,7 +104,7 @@
 
                 poblarPartes();
                 cambioDeParte(); 
-            } catch (e) { console.error("Error inicializando:", e); }
+            } catch (e) { console.error(e); }
         }
 
         function poblarPartes() {
@@ -120,7 +141,6 @@
 
             for (let item of itemsGlosario) {
                 const siglaG = item.getAttribute("sigla").toUpperCase();
-                // Solo mostramos la SIGLA en el selector
                 if (oficialesEnEsteSegmento.has(siglaG)) {
                     oSel.add(new Option(siglaG + "∴", siglaG));
                 }
@@ -150,12 +170,14 @@
                     let acciones = [];
                     texto = texto.replace(/\[(.*?)\]/g, (m, p1) => { acciones.push(p1); return ""; });
 
-                    // Resaltado de siglas con tripuntuación en Azul
-                    texto = texto.replace(/(\b\w+∴)/g, '<span class="sigla-azul">$1</span>');
+                    // RESALTADO AZUL: Cualquier palabra que termine en ∴ (Case Insensitive)
+                    // La expresión regular /.../gi busca globalmente e ignora mayúsculas
+                    texto = texto.replace(/(\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
 
                     const claseResaltado = (fOfi !== "todos" && ofiId.toUpperCase() === fOfi) ? "class='resaltado'" : "";
                     
-                    pasosHtml += `<dt class="sigla-azul">${ofiId}∴</dt><dd ${claseResaltado}>${texto}</dd>`;
+                    // El oficial de la línea queda en el color original (oscuro)
+                    pasosHtml += `<dt>${ofiId}∴</dt><dd ${claseResaltado}>${texto}</dd>`;
                     acciones.forEach(acc => {
                         pasosHtml += `<span class="accion-siguiente-linea">[${acc}]</span>`;
                     });
