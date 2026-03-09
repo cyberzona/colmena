@@ -6,7 +6,7 @@
     <item sigla="OF" expansion="Orador Fiscal" />
     <item sigla="GT" expansion="Guarda Templo" />
     <item sigla="MS" expansion="Maestro Secretario" />
-    <item sigla="SEC" expansion="Secretario" />
+    <item sigla="Sec" expansion="Secretario" />
     <item sigla="QQHH" expansion="Queridos Hermanos" />
     <item sigla="GADU" expansion="Gran Arquitecto Del Universo" />
 </glosario>
