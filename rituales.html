@@ -12,18 +12,20 @@
         #titulo-ritual-header { font-size: 0.85rem; color: #795548; text-transform: uppercase; letter-spacing: 1.5px; font-style: italic; }
         .logo-mini { width: 75px; height: auto; flex-shrink: 0; }
         
-        #control-panel { background: #efebe9; padding: 10px; border-radius: 8px; border: 1px solid #d7ccc8; position: sticky; top: 0; z-index: 1000; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        #control-panel { background: #efebe9; padding: 10px; border-radius: 8px; border: 1px solid #d7ccc8; position: sticky; top: 0; z-index: 1000; text-align: center; }
         .container-select { display: inline-block; margin: 5px; text-align: left; }
         #container-parte { width: 55%; }
         #container-oficial { width: 35%; }
         .select-label { display: block; font-size: 0.7em; color: #795548; font-weight: bold; text-transform: uppercase; }
         select { padding: 8px; font-size: 0.9em; width: 100%; border-radius: 4px; border: 1px solid #ccc; background: white; }
 
-        .parte-ritual { counter-reset: line-counter; }
-        dt { font-weight: bold; color: #5d4037; margin-top: 15px; font-size: 0.9em; }
-        dd { margin-left: 35px; border-left: 2px solid #d7ccc8; padding-left: 10px; font-size: 0.95em; position: relative; counter-increment: line-counter; margin-bottom: 5px; transition: background 0.3s ease; }
-        dd::before { content: counter(line-counter); position: absolute; left: -30px; color: #8d6e63; font-size: 0.8em; font-weight: bold; width: 20px; text-align: right; }
+        /* Resaltado de Siglas en Azul */
+        .sigla-tripuntuada { color: #0277bd; font-weight: bold; }
         
+        dt { font-weight: bold; color: #5d4037; margin-top: 15px; font-size: 0.9em; }
+        dd { margin-left: 35px; border-left: 2px solid #d7ccc8; padding-left: 10px; font-size: 0.95em; position: relative; margin-bottom: 5px; }
+        
+        /* Resaltado del Oficial Seleccionado */
         .resaltado { background: rgba(180, 255, 100, 0.35) !important; border-left: 4px solid #5d4037 !important; }
         
         .section-header { background: #5d4037; color: white; padding: 8px; text-align: center; border-radius: 4px; margin-top: 10px; text-transform: uppercase; font-weight: bold; }
@@ -74,25 +76,13 @@
 
                 const rituales = xmlDoc.getElementsByTagName("ritual");
                 for (let r of rituales) {
-                    if (r.getAttribute("grado") === numGrado) {
-                        ritualActivo = r;
-                        break;
-                    }
+                    if (r.getAttribute("grado") === numGrado) { ritualActivo = r; break; }
                 }
 
-                if (!ritualActivo) {
-                    document.getElementById('rituales-content').innerHTML = "Grado no encontrado.";
-                    return;
-                }
-
-                const nombres = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Ritual de Maestro" };
-                document.getElementById("titulo-ritual-header").textContent = nombres[numGrado];
-
+                if (!ritualActivo) return;
                 poblarPartes();
                 cambioDeParte(); 
-            } catch (error) {
-                document.getElementById('rituales-content').innerHTML = "Error cargando archivos XML.";
-            }
+            } catch (e) { console.error(e); }
         }
 
         function poblarPartes() {
@@ -113,33 +103,23 @@
             const pId = document.getElementById("parteFilter").value;
             const oSel = document.getElementById("oficialFilter");
             
-            const partes = ritualActivo.getElementsByTagName("parte");
-            let parteEnPantalla = null;
-            for(let p of partes) {
-                if(p.getAttribute("id") === pId) {
-                    parteEnPantalla = p;
-                    break;
-                }
-            }
-
+            const parteEnPantalla = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") === pId);
             const oficialesEnEsteSegmento = new Set();
+            
             if (parteEnPantalla) {
-                // Escaneo profundo de todos los pasos dentro de la parte
                 const pasos = parteEnPantalla.getElementsByTagName("paso");
                 for (let paso of pasos) {
                     const idOfi = paso.getAttribute("oficial");
-                    if (idOfi) oficialesEnEsteSegmento.add(idOfi.trim());
+                    if (idOfi) oficialesEnEsteSegmento.add(idOfi.trim().toUpperCase());
                 }
             }
 
             oSel.innerHTML = '<option value="todos">Todos los Oficiales</option>';
             const itemsGlosario = glosarioDoc.getElementsByTagName("item");
 
-            // Cruzamos con el glosario para mantener el orden jerárquico
             for (let item of itemsGlosario) {
-                const siglaG = item.getAttribute("sigla");
+                const siglaG = item.getAttribute("sigla").toUpperCase();
                 const nombreG = item.getAttribute("expansion");
-
                 if (oficialesEnEsteSegmento.has(siglaG)) {
                     oSel.add(new Option(nombreG, siglaG));
                 }
@@ -147,20 +127,11 @@
         }
 
         function renderizarLiturgia() {
-            if (!ritualActivo) return;
             const pId = document.getElementById("parteFilter").value;
-            const fOfi = document.getElementById("oficialFilter").value;
+            const fOfi = document.getElementById("oficialFilter").value.toUpperCase();
             const contenedor = document.getElementById('rituales-content');
             
-            const partes = ritualActivo.getElementsByTagName("parte");
-            let parteActiva = null;
-            for(let p of partes) {
-                if(p.getAttribute("id") === pId) {
-                    parteActiva = p;
-                    break;
-                }
-            }
-
+            const parteActiva = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") === pId);
             if (!parteActiva) return;
 
             let htmlAcumulado = "";
@@ -173,35 +144,31 @@
                 for (let paso of pasos) {
                     const ofiId = paso.getAttribute("oficial");
                     let texto = paso.getAttribute("texto") || "";
-
                     if (texto.trim() === "") continue;
 
+                    // 1. Resaltar acciones [ ]
                     let acciones = [];
                     texto = texto.replace(/\[(.*?)\]/g, (m, p1) => { acciones.push(p1); return ""; });
 
-                    const claseResaltado = (fOfi !== "todos" && ofiId === fOfi) ? "class='resaltado'" : "";
+                    // 2. RESALTAR SIGLAS AZULES (Cualquier palabra que termine en ∴)
+                    texto = texto.replace(/(\b\w+∴)/g, '<span class="sigla-tripuntuated">$1</span>');
+                    // Fallback para siglas específicas si el XML no trae el símbolo
+                    texto = texto.replace(/(VM|1V|2V|OF|SEC|QQHH|GADU)∴/g, '<span class="sigla-tripuntuada">$1∴</span>');
+
+                    const claseResaltado = (fOfi !== "todos" && ofiId.toUpperCase() === fOfi) ? "class='resaltado'" : "";
                     
-                    // Mostramos la sigla exacta de la liturgia con tripuntuación
-                    pasosHtml += `<dt>${ofiId}∴</dt><dd ${claseResaltado}>${texto}</dd>`;
+                    pasosHtml += `<dt class="sigla-tripuntuada">${ofiId}∴</dt><dd ${claseResaltado}>${texto}</dd>`;
                     acciones.forEach(acc => {
                         pasosHtml += `<span class="accion-siguiente-linea">[${acc}]</span>`;
                     });
                 }
-
-                if (pasosHtml !== "") {
-                    htmlAcumulado += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>` + pasosHtml;
-                }
+                if (pasosHtml !== "") htmlAcumulado += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>` + pasosHtml;
             }
 
-            contenedor.innerHTML = `
-                <div class="parte-ritual">
-                    <div class="section-header">${parteActiva.getAttribute("titulo")}</div>
-                    ${htmlAcumulado}
-                </div>`;
-
+            contenedor.innerHTML = `<div class="parte-ritual"><div class="section-header">${parteActiva.getAttribute("titulo")}</div>${htmlAcumulado}</div>`;
             if (fOfi !== "todos") {
-                const primero = document.querySelector('.resaltado');
-                if (primero) primero.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                const p = document.querySelector('.resaltado');
+                if (p) p.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         }
     </script>
