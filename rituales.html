@@ -132,6 +132,7 @@
                 const pasos = parteEnPantalla.getElementsByTagName("paso");
                 for (let paso of pasos) {
                     const idOfi = paso.getAttribute("oficial");
+                    // Guardamos en mayúsculas solo para la lógica de comparación interna
                     if (idOfi) oficialesEnEsteSegmento.add(idOfi.trim().toUpperCase());
                 }
             }
@@ -142,14 +143,15 @@
             for (let item of itemsGlosario) {
                 const siglaG = item.getAttribute("sigla").toUpperCase();
                 if (oficialesEnEsteSegmento.has(siglaG)) {
-                    oSel.add(new Option(siglaG + "∴", siglaG));
+                    // Mostramos la sigla del glosario original
+                    oSel.add(new Option(item.getAttribute("sigla") + "∴", siglaG));
                 }
             }
         }
 
         function renderizarLiturgia() {
             const pId = document.getElementById("parteFilter").value;
-            const fOfi = document.getElementById("oficialFilter").value.toUpperCase();
+            const fOfi = document.getElementById("oficialFilter").value; // Ya viene en UpperCase
             const contenedor = document.getElementById('rituales-content');
             
             const parteActiva = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") === pId);
@@ -163,20 +165,19 @@
                 const pasos = apa.getElementsByTagName("paso");
 
                 for (let paso of pasos) {
-                    const ofiId = paso.getAttribute("oficial");
+                    const ofiId = paso.getAttribute("oficial") || "";
                     let texto = paso.getAttribute("texto") || "";
                     if (texto.trim() === "") continue;
 
                     let acciones = [];
                     texto = texto.replace(/\[(.*?)\]/g, (m, p1) => { acciones.push(p1); return ""; });
 
-                    // RESALTADO AZUL: Cualquier palabra que termine en ∴ (Case Insensitive)
-                    // La expresión regular /.../gi busca globalmente e ignora mayúsculas
-                    texto = texto.replace(/(\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
+                    // REEMPLAZO AZUL: Detecta cualquier sigla con tripuntuación sin importar mayúsculas
+                    // Usamos la bandera 'gi' (Global + Ignore Case)
+                    texto = texto.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
 
                     const claseResaltado = (fOfi !== "todos" && ofiId.toUpperCase() === fOfi) ? "class='resaltado'" : "";
                     
-                    // El oficial de la línea queda en el color original (oscuro)
                     pasosHtml += `<dt>${ofiId}∴</dt><dd ${claseResaltado}>${texto}</dd>`;
                     acciones.forEach(acc => {
                         pasosHtml += `<span class="accion-siguiente-linea">[${acc}]</span>`;
