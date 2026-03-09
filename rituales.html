@@ -23,38 +23,38 @@
         .sigla-texto-azul { color: #0277bd; font-weight: bold; }
         
         /* ENCABEZADOS (OSCURO) */
-        dt { font-weight: bold; color: #5d4037; margin-top: 15px; font-size: 0.95em; }
+        dt { font-weight: bold; color: #5d4037; margin-top: 15px; font-size: 1em; }
         
-        /* NUMERACIÓN MUCHO MÁS GRANDE */
+        /* NUMERACIÓN IMPONENTE */
         .parte-ritual { counter-reset: line-counter; }
         dd { 
-            margin-left: 55px; 
+            margin-left: 65px; 
             border-left: 3px solid #d7ccc8; 
             padding-left: 15px; 
-            font-size: 1em; 
+            font-size: 1.05em; 
             position: relative; 
-            margin-bottom: 12px; 
+            margin-bottom: 15px; 
             counter-increment: line-counter; 
         }
         dd::before { 
             content: counter(line-counter); 
             position: absolute; 
-            left: -50px; 
-            color: #5d4037; /* Color más oscuro para contraste */
-            font-size: 1.4em; /* Tamaño aumentado */
+            left: -60px; 
+            color: #4e342e; 
+            font-size: 1.6em; /* Aún más grande */
             font-weight: 900; 
-            width: 40px; 
+            width: 50px; 
             text-align: right; 
-            top: -4px;
-            font-family: Arial, sans-serif;
+            top: -5px;
+            font-family: 'Arial Black', sans-serif;
         }
         
-        /* RESALTADO DE DIÁLOGO */
-        .resaltado { background: rgba(180, 255, 100, 0.45) !important; border-left: 5px solid #2e7d32 !important; }
+        /* RESALTADO DE DIÁLOGO REFORZADO */
+        .resaltado { background: rgba(180, 255, 100, 0.5) !important; border-left: 6px solid #1b5e20 !important; }
         
         .section-header { background: #5d4037; color: white; padding: 10px; text-align: center; border-radius: 4px; margin-top: 10px; text-transform: uppercase; font-weight: bold; }
-        .apartado-header { font-weight: bold; color: #795548; font-size: 0.95em; border-bottom: 1px solid #d7ccc8; text-align: right; margin-top: 25px; padding-bottom: 5px; }
-        .accion-siguiente-linea { font-size: 0.9em; color: #5d4037; font-style: italic; margin-left: 70px; display: block; margin-top: 4px; border-left: 2px dashed #d7ccc8; padding-left: 10px; }
+        .apartado-header { font-weight: bold; color: #795548; font-size: 1em; border-bottom: 1px solid #d7ccc8; text-align: right; margin-top: 30px; padding-bottom: 5px; }
+        .accion-siguiente-linea { font-size: 0.9em; color: #5d4037; font-style: italic; margin-left: 80px; display: block; margin-top: 5px; border-left: 2px dashed #d7ccc8; padding-left: 10px; }
     </style>
 </head>
 <body onload="inicializar()">
@@ -102,9 +102,6 @@
                 }
                 if (!ritualActivo) return;
 
-                const nombres = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Ritual de Maestro" };
-                document.getElementById("titulo-ritual-header").textContent = nombres[numGrado];
-
                 poblarPartes();
                 cambioDeParte(); 
             } catch (e) { console.error("Error:", e); }
@@ -144,16 +141,16 @@
 
             for (let item of itemsGlosario) {
                 const siglaG = item.getAttribute("sigla");
-                if (oficialesActivos.has(siglaG.toLowerCase())) {
-                    // El valor del select siempre se guarda en minúsculas para comparar
-                    oSel.add(new Option(siglaG + "∴", siglaG.toLowerCase()));
+                if (oficialesActivos.has(siglaG.trim().toLowerCase())) {
+                    // Valor normalizado para el filtro
+                    oSel.add(new Option(siglaG.trim() + "∴", siglaG.trim().toLowerCase()));
                 }
             }
         }
 
         function renderizarLiturgia() {
             const pId = document.getElementById("parteFilter").value;
-            const fOfi = document.getElementById("oficialFilter").value.toLowerCase(); 
+            const fOfi = document.getElementById("oficialFilter").value.trim().toLowerCase(); 
             const contenedor = document.getElementById('rituales-content');
             
             const parteActiva = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") === pId);
@@ -174,13 +171,14 @@
                     let acciones = [];
                     texto = texto.replace(/\[(.*?)\]/g, (m, p1) => { acciones.push(p1); return ""; });
 
-                    // Resaltado AZUL de siglas en el cuerpo (Agnóstico a mayúsculas)
+                    // Resaltado AZUL de siglas en el cuerpo (Cualquier palabra que termine en ∴)
                     texto = texto.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
 
-                    // CORRECCIÓN DE RESALTADO: Compara en minúsculas para que "Sec" == "sec"
-                    const claseResaltado = (fOfi !== "todos" && ofiOriginal.toLowerCase() === fOfi) ? "class='resaltado'" : "";
+                    // COMPARACIÓN REFORZADA: Se limpian espacios y se ignora caja en ambos extremos
+                    const oficialLimpio = ofiOriginal.trim().toLowerCase();
+                    const claseResaltado = (fOfi !== "todos" && oficialLimpio === fOfi) ? "class='resaltado'" : "";
                     
-                    pasosHtml += `<dt>${ofiOriginal}∴</dt><dd ${claseResaltado}>${texto}</dd>`;
+                    pasosHtml += `<dt>${ofiOriginal.trim()}∴</dt><dd ${claseResaltado}>${texto}</dd>`;
                     acciones.forEach(acc => {
                         pasosHtml += `<span class="accion-siguiente-linea">[${acc}]</span>`;
                     });
@@ -191,8 +189,8 @@
             contenedor.innerHTML = `<div class="parte-ritual"><div class="section-header">${parteActiva.getAttribute("titulo")}</div>${htmlAcumulado}</div>`;
             
             if (fOfi !== "todos") {
-                const p = document.querySelector('.resaltado');
-                if (p) p.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                const target = document.querySelector('.resaltado');
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         }
     </script>
