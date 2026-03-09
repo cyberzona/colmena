@@ -19,42 +19,41 @@
         .select-label { display: block; font-size: 0.7em; color: #795548; font-weight: bold; text-transform: uppercase; }
         select { padding: 8px; font-size: 0.9em; width: 100%; border-radius: 4px; border: 1px solid #ccc; background: white; }
 
-        /* SIGLAS EN EL TEXTO (AZUL) */
         .sigla-texto-azul { color: #0277bd; font-weight: bold; }
+        dt { font-weight: bold; color: #5d4037; margin-top: 15px; font-size: 0.95em; }
         
-        /* ENCABEZADOS (OSCURO) */
-        dt { font-weight: bold; color: #5d4037; margin-top: 15px; font-size: 1em; }
-        
-        /* NUMERACIÓN IMPONENTE */
+        /* NUMERACIÓN EQUILIBRADA */
         .parte-ritual { counter-reset: line-counter; }
         dd { 
-            margin-left: 65px; 
+            margin-left: 50px; 
             border-left: 3px solid #d7ccc8; 
-            padding-left: 15px; 
-            font-size: 1.05em; 
+            padding-left: 12px; 
+            font-size: 1em; 
             position: relative; 
-            margin-bottom: 15px; 
+            margin-bottom: 10px; 
             counter-increment: line-counter; 
+            min-height: 1.2em;
         }
         dd::before { 
             content: counter(line-counter); 
             position: absolute; 
-            left: -60px; 
-            color: #4e342e; 
-            font-size: 1.6em; /* Aún más grande */
-            font-weight: 900; 
-            width: 50px; 
+            left: -45px; 
+            color: #5d4037; 
+            font-size: 1.2em; 
+            font-weight: 800; 
+            width: 35px; 
             text-align: right; 
-            top: -5px;
-            font-family: 'Arial Black', sans-serif;
+            top: -2px;
         }
         
-        /* RESALTADO DE DIÁLOGO REFORZADO */
-        .resaltado { background: rgba(180, 255, 100, 0.5) !important; border-left: 6px solid #1b5e20 !important; }
+        /* RESALTADO */
+        .resaltado { background: rgba(180, 255, 100, 0.4) !important; border-left: 5px solid #2e7d32 !important; }
         
         .section-header { background: #5d4037; color: white; padding: 10px; text-align: center; border-radius: 4px; margin-top: 10px; text-transform: uppercase; font-weight: bold; }
-        .apartado-header { font-weight: bold; color: #795548; font-size: 1em; border-bottom: 1px solid #d7ccc8; text-align: right; margin-top: 30px; padding-bottom: 5px; }
-        .accion-siguiente-linea { font-size: 0.9em; color: #5d4037; font-style: italic; margin-left: 80px; display: block; margin-top: 5px; border-left: 2px dashed #d7ccc8; padding-left: 10px; }
+        .apartado-header { font-weight: bold; color: #795548; font-size: 0.95em; border-bottom: 1px solid #d7ccc8; text-align: right; margin-top: 25px; padding-bottom: 5px; }
+        
+        /* ACCIONES DENTRO O FUERA */
+        .accion-texto { font-style: italic; color: #5d4037; }
     </style>
 </head>
 <body onload="inicializar()">
@@ -95,16 +94,15 @@
                 const parser = new DOMParser();
                 glosarioDoc = parser.parseFromString(resGlosario, "text/xml");
                 xmlDoc = parser.parseFromString(resLiturgia, "text/xml");
-
                 const rituales = xmlDoc.getElementsByTagName("ritual");
                 for (let r of rituales) {
                     if (r.getAttribute("grado") === numGrado) { ritualActivo = r; break; }
                 }
-                if (!ritualActivo) return;
-
-                poblarPartes();
-                cambioDeParte(); 
-            } catch (e) { console.error("Error:", e); }
+                if (ritualActivo) {
+                    poblarPartes();
+                    cambioDeParte(); 
+                }
+            } catch (e) { console.error(e); }
         }
 
         function poblarPartes() {
@@ -124,10 +122,8 @@
         function poblarOficialesDeEstaParte() {
             const pId = document.getElementById("parteFilter").value;
             const oSel = document.getElementById("oficialFilter");
-            
             const parteEnPantalla = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") === pId);
             const oficialesActivos = new Set();
-            
             if (parteEnPantalla) {
                 const pasos = parteEnPantalla.getElementsByTagName("paso");
                 for (let paso of pasos) {
@@ -135,14 +131,11 @@
                     if (idOfi) oficialesActivos.add(idOfi.trim().toLowerCase());
                 }
             }
-
             oSel.innerHTML = '<option value="todos">Todos</option>';
             const itemsGlosario = glosarioDoc.getElementsByTagName("item");
-
             for (let item of itemsGlosario) {
                 const siglaG = item.getAttribute("sigla");
                 if (oficialesActivos.has(siglaG.trim().toLowerCase())) {
-                    // Valor normalizado para el filtro
                     oSel.add(new Option(siglaG.trim() + "∴", siglaG.trim().toLowerCase()));
                 }
             }
@@ -152,7 +145,6 @@
             const pId = document.getElementById("parteFilter").value;
             const fOfi = document.getElementById("oficialFilter").value.trim().toLowerCase(); 
             const contenedor = document.getElementById('rituales-content');
-            
             const parteActiva = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") === pId);
             if (!parteActiva) return;
 
@@ -162,32 +154,28 @@
             for (let apa of apartados) {
                 let pasosHtml = "";
                 const pasos = apa.getElementsByTagName("paso");
-
                 for (let paso of pasos) {
                     const ofiOriginal = paso.getAttribute("oficial") || "";
                     let texto = paso.getAttribute("texto") || "";
                     if (texto.trim() === "") continue;
 
-                    let acciones = [];
-                    texto = texto.replace(/\[(.*?)\]/g, (m, p1) => { acciones.push(p1); return ""; });
-
-                    // Resaltado AZUL de siglas en el cuerpo (Cualquier palabra que termine en ∴)
+                    // Pintar azul siglas en el texto
                     texto = texto.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
+                    
+                    // Si el texto es una acción [ ], lo envolvemos en un span especial pero lo dejamos dentro del DD
+                    if (texto.startsWith('[') && texto.endsWith(']')) {
+                        texto = `<span class="accion-texto">${texto}</span>`;
+                    }
 
-                    // COMPARACIÓN REFORZADA: Se limpian espacios y se ignora caja en ambos extremos
                     const oficialLimpio = ofiOriginal.trim().toLowerCase();
                     const claseResaltado = (fOfi !== "todos" && oficialLimpio === fOfi) ? "class='resaltado'" : "";
                     
                     pasosHtml += `<dt>${ofiOriginal.trim()}∴</dt><dd ${claseResaltado}>${texto}</dd>`;
-                    acciones.forEach(acc => {
-                        pasosHtml += `<span class="accion-siguiente-linea">[${acc}]</span>`;
-                    });
                 }
                 if (pasosHtml !== "") htmlAcumulado += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>` + pasosHtml;
             }
 
             contenedor.innerHTML = `<div class="parte-ritual"><div class="section-header">${parteActiva.getAttribute("titulo")}</div>${htmlAcumulado}</div>`;
-            
             if (fOfi !== "todos") {
                 const target = document.querySelector('.resaltado');
                 if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
