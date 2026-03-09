@@ -113,7 +113,6 @@
             const pId = document.getElementById("parteFilter").value;
             const oSel = document.getElementById("oficialFilter");
             
-            // FILTRO CRÍTICO: Buscar la parte actual dentro del ritual activo
             const partes = ritualActivo.getElementsByTagName("parte");
             let parteEnPantalla = null;
             for(let p of partes) {
@@ -125,22 +124,22 @@
 
             const oficialesEnEsteSegmento = new Set();
             if (parteEnPantalla) {
+                // Escaneo profundo de todos los pasos dentro de la parte
                 const pasos = parteEnPantalla.getElementsByTagName("paso");
                 for (let paso of pasos) {
                     const idOfi = paso.getAttribute("oficial");
-                    if (idOfi) oficialesEnEsteSegmento.add(idOfi);
+                    if (idOfi) oficialesEnEsteSegmento.add(idOfi.trim());
                 }
             }
 
-            // RECONSTRUIR SELECTOR: Orden jerárquico del Glosario
             oSel.innerHTML = '<option value="todos">Todos los Oficiales</option>';
             const itemsGlosario = glosarioDoc.getElementsByTagName("item");
 
+            // Cruzamos con el glosario para mantener el orden jerárquico
             for (let item of itemsGlosario) {
                 const siglaG = item.getAttribute("sigla");
                 const nombreG = item.getAttribute("expansion");
 
-                // Solo agregamos si el oficial realmente habla en esta sección
                 if (oficialesEnEsteSegmento.has(siglaG)) {
                     oSel.add(new Option(nombreG, siglaG));
                 }
@@ -182,6 +181,7 @@
 
                     const claseResaltado = (fOfi !== "todos" && ofiId === fOfi) ? "class='resaltado'" : "";
                     
+                    // Mostramos la sigla exacta de la liturgia con tripuntuación
                     pasosHtml += `<dt>${ofiId}∴</dt><dd ${claseResaltado}>${texto}</dd>`;
                     acciones.forEach(acc => {
                         pasosHtml += `<span class="accion-siguiente-linea">[${acc}]</span>`;
