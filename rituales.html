@@ -21,11 +21,11 @@
 
         .parte-ritual { counter-reset: line-counter; }
         dt { font-weight: bold; color: #5d4037; margin-top: 15px; font-size: 0.9em; }
-        dd { margin-left: 35px; border-left: 2px solid #d7ccc8; padding-left: 10px; font-size: 0.95em; position: relative; counter-increment: line-counter; margin-bottom: 5px; transition: all 0.3s ease; }
+        dd { margin-left: 35px; border-left: 2px solid #d7ccc8; padding-left: 10px; font-size: 0.95em; position: relative; counter-increment: line-counter; margin-bottom: 5px; transition: background 0.3s ease; }
         dd::before { content: counter(line-counter); position: absolute; left: -30px; color: #8d6e63; font-size: 0.8em; font-weight: bold; width: 20px; text-align: right; }
         
-        /* Estilo de Resaltado */
-        .resaltado { background: rgba(180, 255, 100, 0.35) !important; border-left: 4px solid #5d4037 !important; transform: translateX(5px); }
+        /* Resaltado del Oficial Seleccionado */
+        .resaltado { background: rgba(180, 255, 100, 0.35) !important; border-left: 4px solid #5d4037 !important; }
         
         .section-header { background: #5d4037; color: white; padding: 8px; text-align: center; border-radius: 4px; margin-top: 10px; text-transform: uppercase; font-weight: bold; }
         .apartado-header { font-weight: bold; color: #795548; font-size: 0.9em; border-bottom: 1px solid #d7ccc8; text-align: right; margin-top: 20px; padding-bottom: 3px; }
@@ -92,29 +92,24 @@
         function poblarSelectores() {
             const pSel = document.getElementById("parteFilter");
             const oSel = document.getElementById("oficialFilter");
-            const partes = ritualActivo.getElementsByTagName("parte");
-            const pasos = ritualActivo.getElementsByTagName("paso");
             const oficialesSet = new Set();
 
+            const partes = ritualActivo.getElementsByTagName("parte");
             pSel.innerHTML = "";
             for (let p of partes) {
-                let opt = document.createElement("option");
-                opt.value = p.getAttribute("id");
-                opt.textContent = p.getAttribute("titulo");
-                pSel.appendChild(opt);
+                pSel.add(new Option(p.getAttribute("titulo"), p.getAttribute("id")));
             }
 
+            // Capturar oficiales en el orden en que aparecen en el XML (Jerárquico)
+            const pasos = ritualActivo.getElementsByTagName("paso");
             for (let paso of pasos) {
                 let ofi = paso.getAttribute("oficial");
                 if (ofi) oficialesSet.add(ofi);
             }
 
             oSel.innerHTML = '<option value="todos">Todos</option>';
-            
-            // INVERSIÓN DE OFICIALES
-            const listaOficiales = Array.from(oficialesSet).sort().reverse();
-            
-            listaOficiales.forEach(ofi => {
+            // Se eliminó el .reverse(). Ahora el VM (que suele ser el primero) queda arriba.
+            Array.from(oficialesSet).forEach(ofi => {
                 oSel.add(new Option(ofi + "∴", ofi));
             });
         }
@@ -144,7 +139,7 @@
                     let acciones = [];
                     texto = texto.replace(/\[(.*?)\]/g, (m, p1) => { acciones.push(p1); return ""; });
 
-                    // LÓGICA DE RESALTE (Sin ocultar al resto)
+                    // Resalte: Se mantiene todo visible, solo cambia el fondo del oficial elegido
                     const claseResaltado = (fOfi !== "todos" && ofi === fOfi) ? "class='resaltado'" : "";
                     
                     pasosHtml += `<dt>${ofi}∴</dt><dd ${claseResaltado}>${texto}</dd>`;
