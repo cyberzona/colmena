@@ -23,36 +23,38 @@
         .sigla-texto-azul { color: #0277bd; font-weight: bold; }
         
         /* ENCABEZADOS (OSCURO) */
-        dt { font-weight: bold; color: #5d4037; margin-top: 15px; font-size: 0.9em; }
+        dt { font-weight: bold; color: #5d4037; margin-top: 15px; font-size: 0.95em; }
         
-        /* NUMERACIÓN MÁS GRANDE */
+        /* NUMERACIÓN MUCHO MÁS GRANDE */
         .parte-ritual { counter-reset: line-counter; }
         dd { 
-            margin-left: 45px; 
-            border-left: 2px solid #d7ccc8; 
-            padding-left: 12px; 
-            font-size: 0.95em; 
+            margin-left: 55px; 
+            border-left: 3px solid #d7ccc8; 
+            padding-left: 15px; 
+            font-size: 1em; 
             position: relative; 
-            margin-bottom: 8px; 
+            margin-bottom: 12px; 
             counter-increment: line-counter; 
         }
         dd::before { 
             content: counter(line-counter); 
             position: absolute; 
-            left: -40px; 
-            color: #8d6e63; 
-            font-size: 1.1em; /* Numeración más grande */
+            left: -50px; 
+            color: #5d4037; /* Color más oscuro para contraste */
+            font-size: 1.4em; /* Tamaño aumentado */
             font-weight: 900; 
-            width: 30px; 
+            width: 40px; 
             text-align: right; 
-            top: -2px;
+            top: -4px;
+            font-family: Arial, sans-serif;
         }
         
-        .resaltado { background: rgba(180, 255, 100, 0.35) !important; border-left: 4px solid #5d4037 !important; }
+        /* RESALTADO DE DIÁLOGO */
+        .resaltado { background: rgba(180, 255, 100, 0.45) !important; border-left: 5px solid #2e7d32 !important; }
         
-        .section-header { background: #5d4037; color: white; padding: 8px; text-align: center; border-radius: 4px; margin-top: 10px; text-transform: uppercase; font-weight: bold; }
-        .apartado-header { font-weight: bold; color: #795548; font-size: 0.9em; border-bottom: 1px solid #d7ccc8; text-align: right; margin-top: 20px; padding-bottom: 3px; }
-        .accion-siguiente-linea { font-size: 0.85em; color: #5d4037; font-style: italic; margin-left: 55px; display: block; margin-top: 2px; }
+        .section-header { background: #5d4037; color: white; padding: 10px; text-align: center; border-radius: 4px; margin-top: 10px; text-transform: uppercase; font-weight: bold; }
+        .apartado-header { font-weight: bold; color: #795548; font-size: 0.95em; border-bottom: 1px solid #d7ccc8; text-align: right; margin-top: 25px; padding-bottom: 5px; }
+        .accion-siguiente-linea { font-size: 0.9em; color: #5d4037; font-style: italic; margin-left: 70px; display: block; margin-top: 4px; border-left: 2px dashed #d7ccc8; padding-left: 10px; }
     </style>
 </head>
 <body onload="inicializar()">
@@ -100,6 +102,9 @@
                 }
                 if (!ritualActivo) return;
 
+                const nombres = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Ritual de Maestro" };
+                document.getElementById("titulo-ritual-header").textContent = nombres[numGrado];
+
                 poblarPartes();
                 cambioDeParte(); 
             } catch (e) { console.error("Error:", e); }
@@ -130,7 +135,7 @@
                 const pasos = parteEnPantalla.getElementsByTagName("paso");
                 for (let paso of pasos) {
                     const idOfi = paso.getAttribute("oficial");
-                    if (idOfi) oficialesActivos.add(idOfi.trim().toLowerCase()); // Guardamos en minúsculas para comparar
+                    if (idOfi) oficialesActivos.add(idOfi.trim().toLowerCase());
                 }
             }
 
@@ -139,8 +144,8 @@
 
             for (let item of itemsGlosario) {
                 const siglaG = item.getAttribute("sigla");
-                // Comprobamos contra el Set sin importar la caja (mayúsculas/minúsculas)
                 if (oficialesActivos.has(siglaG.toLowerCase())) {
+                    // El valor del select siempre se guarda en minúsculas para comparar
                     oSel.add(new Option(siglaG + "∴", siglaG.toLowerCase()));
                 }
             }
@@ -166,14 +171,13 @@
                     let texto = paso.getAttribute("texto") || "";
                     if (texto.trim() === "") continue;
 
-                    // 1. Extraer acciones
                     let acciones = [];
                     texto = texto.replace(/\[(.*?)\]/g, (m, p1) => { acciones.push(p1); return ""; });
 
-                    // 2. Pintar AZUL las siglas en el texto (Case Insensitive)
+                    // Resaltado AZUL de siglas en el cuerpo (Agnóstico a mayúsculas)
                     texto = texto.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
 
-                    // 3. Resaltar si coincide con el filtro (agnóstico a mayúsculas)
+                    // CORRECCIÓN DE RESALTADO: Compara en minúsculas para que "Sec" == "sec"
                     const claseResaltado = (fOfi !== "todos" && ofiOriginal.toLowerCase() === fOfi) ? "class='resaltado'" : "";
                     
                     pasosHtml += `<dt>${ofiOriginal}∴</dt><dd ${claseResaltado}>${texto}</dd>`;
