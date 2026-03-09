@@ -43,13 +43,11 @@
     <div id="control-panel">
         <div class="container-select" id="container-parte">
             <span class="select-label">Parte</span>
-            <select id="parteFilter" onchange="actualizarParte()"></select>
+            <select id="parteFilter" onchange="cambioDeParte()"></select>
         </div>
         <div class="container-select" id="container-oficial">
             <span class="select-label">Oficial</span>
-            <select id="oficialFilter" onchange="renderizarLiturgia()">
-                <option value="todos">Todos</option>
-            </select>
+            <select id="oficialFilter" onchange="renderizarLiturgia()"></select>
         </div>
     </div>
 
@@ -91,7 +89,7 @@
                 document.getElementById("titulo-ritual-header").textContent = nombres[numGrado];
 
                 poblarPartes();
-                actualizarParte(); // Al iniciar, carga la primera parte y sus oficiales
+                cambioDeParte(); 
             } catch (error) {
                 document.getElementById('rituales-content').innerHTML = "Error cargando archivos XML.";
             }
@@ -106,37 +104,45 @@
             }
         }
 
-        function actualizarParte() {
-            poblarOficialesPorParte();
+        function cambioDeParte() {
+            poblarOficialesDeEstaParte();
             renderizarLiturgia();
         }
 
-        function poblarOficialesPorParte() {
+        function poblarOficialesDeEstaParte() {
             const pId = document.getElementById("parteFilter").value;
             const oSel = document.getElementById("oficialFilter");
             
-            // Buscar la parte seleccionada para ver quién interviene
-            const parteActiva = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") == pId);
-            const oficialesEnParte = new Set();
-            
-            if (parteActiva) {
-                const pasos = parteActiva.getElementsByTagName("paso");
-                for (let paso of pasos) {
-                    if (paso.getAttribute("oficial")) oficialesEnParte.add(paso.getAttribute("oficial"));
+            // FILTRO CRÍTICO: Buscar la parte actual dentro del ritual activo
+            const partes = ritualActivo.getElementsByTagName("parte");
+            let parteEnPantalla = null;
+            for(let p of partes) {
+                if(p.getAttribute("id") === pId) {
+                    parteEnPantalla = p;
+                    break;
                 }
             }
 
-            // Alimentar selector basándonos en el Glosario (Orden Jerárquico)
+            const oficialesEnEsteSegmento = new Set();
+            if (parteEnPantalla) {
+                const pasos = parteEnPantalla.getElementsByTagName("paso");
+                for (let paso of pasos) {
+                    const idOfi = paso.getAttribute("oficial");
+                    if (idOfi) oficialesEnEsteSegmento.add(idOfi);
+                }
+            }
+
+            // RECONSTRUIR SELECTOR: Orden jerárquico del Glosario
             oSel.innerHTML = '<option value="todos">Todos los Oficiales</option>';
             const itemsGlosario = glosarioDoc.getElementsByTagName("item");
 
             for (let item of itemsGlosario) {
-                const sigla = item.getAttribute("sigla");
-                const expansion = item.getAttribute("expansion");
+                const siglaG = item.getAttribute("sigla");
+                const nombreG = item.getAttribute("expansion");
 
-                // Solo añadimos si el oficial interviene en ESTA parte seleccionada
-                if (oficialesEnParte.has(sigla)) {
-                    oSel.add(new Option(expansion, sigla));
+                // Solo agregamos si el oficial realmente habla en esta sección
+                if (oficialesEnEsteSegmento.has(siglaG)) {
+                    oSel.add(new Option(nombreG, siglaG));
                 }
             }
         }
@@ -147,7 +153,15 @@
             const fOfi = document.getElementById("oficialFilter").value;
             const contenedor = document.getElementById('rituales-content');
             
-            const parteActiva = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") == pId);
+            const partes = ritualActivo.getElementsByTagName("parte");
+            let parteActiva = null;
+            for(let p of partes) {
+                if(p.getAttribute("id") === pId) {
+                    parteActiva = p;
+                    break;
+                }
+            }
+
             if (!parteActiva) return;
 
             let htmlAcumulado = "";
@@ -166,14 +180,9 @@
                     let acciones = [];
                     texto = texto.replace(/\[(.*?)\]/g, (m, p1) => { acciones.push(p1); return ""; });
 
-                    // Resaltado: Mantenemos el diálogo íntegro
                     const claseResaltado = (fOfi !== "todos" && ofiId === fOfi) ? "class='resaltado'" : "";
                     
-                    // Buscamos sigla en glosario para la tripuntuación correcta
-                    const itemGlosario = Array.from(glosarioDoc.getElementsByTagName("item")).find(i => i.getAttribute("sigla") === ofiId);
-                    const siglaMostrar = itemGlosario ? ofiId + "∴" : ofiId + "∴";
-
-                    pasosHtml += `<dt>${siglaMostrar}</dt><dd ${claseResaltado}>${texto}</dd>`;
+                    pasosHtml += `<dt>${ofiId}∴</dt><dd ${claseResaltado}>${texto}</dd>`;
                     acciones.forEach(acc => {
                         pasosHtml += `<span class="accion-siguiente-linea">[${acc}]</span>`;
                     });
@@ -184,7 +193,7 @@
                 }
             }
 
-            contenedor.innerHTML = htmlAcumulado === "" ? "" : `
+            contenedor.innerHTML = `
                 <div class="parte-ritual">
                     <div class="section-header">${parteActiva.getAttribute("titulo")}</div>
                     ${htmlAcumulado}
