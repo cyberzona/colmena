@@ -1,17 +1,15 @@
-<!DOCTYPE html>
+<!DOCTYPE html><!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <title>Colmena No. 8 - Masonería Simbólica</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="description" content="Sitio oficial de la Respetable Logia Simbólica Colmena No. 8.">
     <link href='https://fonts.googleapis.com/css?family=MedievalSharp' rel='stylesheet'>
     <style>
         :root{
             --gold:#D4A017; --beige:#F5EFE6; --brown:#7A4F35; --dark:#37271E;
             --accent:#E7D9C9; --radius:14px; --maxw:1100px;
             --ff-sans: -apple-system, BlinkMacMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            --ff-serif: Georgia, "Times New Roman", serif;
             --ff-medieval: 'MedievalSharp', serif;
         }
         *, *::before, *::after {box-sizing:border-box}
@@ -26,50 +24,45 @@
             border-radius:var(--radius); padding:18px 22px; display:flex;
             align-items:center; gap:18px; box-shadow:0 6px 18px rgba(55,39,30,0.08); margin-bottom:20px;
         }
-        .logo img{max-width: 60px; height:auto;}
         .brand h1{margin:0; font-size:1.5rem; color:var(--dark)}
-        .nav-list{display:flex; gap:12px; list-style:none; padding:0; margin:0; margin-left:auto;}
+        .nav-list{display:flex; gap:12px; list-style:none; padding:0; margin-left:auto;}
         .nav-list li a{text-decoration:none; padding:8px 12px; color:var(--dark); font-weight:600;}
         .nav-list li a.cta{background:var(--gold); color:#fff; border-radius:10px;}
 
         .hero{display:grid; grid-template-columns:1fr 360px; gap:20px; margin-bottom:22px;}
         .card{background:#fff; border-radius:12px; padding:18px; box-shadow:0 8px 22px rgba(55,39,30,0.06);}
-        
-        .columns{display:grid; grid-template-columns:1fr 360px; gap:20px; margin-bottom:22px}
-        .trabajos ul {list-style:none; padding:0;}
-        .trabajos li {padding:10px 0; border-bottom:1px dashed rgba(55,39,30,0.1);}
-        .trabajos a {color:var(--dark); text-decoration:none; font-weight:600; display:block; cursor:pointer;}
-        .trabajos a:hover {color:var(--gold);}
+        .text-justify{text-align:justify;}
+        .muted{color:#6a4f3e;}
 
-        .gallery{display:grid; grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); gap:10px;}
-        .gallery img{width:100%; height:120px; object-fit:cover; border-radius:8px; cursor:pointer; transition: transform 0.2s;}
-        .gallery img:hover {transform: scale(1.03);}
+        .hex-grid{display:flex; gap:10px; margin-top:10px}
+        .hex{
+            width:60px; height:70px; background:linear-gradient(180deg,var(--gold),#f5c869);
+            clip-path: polygon(25% 6%,75% 6%,100% 50%,75% 94%,25% 94%,0% 50%);
+            display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700;
+        }
+
+        .columns{display:grid; grid-template-columns:1fr 360px; gap:20px; margin-bottom:22px}
+        .gallery{display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:10px;}
+        .gallery img{width:100%; height:120px; object-fit:cover; border-radius:8px; cursor:pointer;}
 
         /* MODALES */
         .lightbox{
             position:fixed; inset:0; display:none; align-items:center; justify-content:center;
-            background:rgba(0,0,0,0.85); z-index:100;
+            background:rgba(0,0,0,0.8); z-index:1000;
         }
         .lightbox.open{display:flex}
-        #document-modal > div {width:95vw; height:90vh; background:white; border-radius:10px; position:relative;}
         
-        .btn-ritual {
-            background:var(--gold); color:#fff; border:0; padding:12px 20px; 
-            border-radius:20px; font-weight:bold; cursor:pointer; width: 100%; max-width: 280px; margin: 5px 0;
-        }
-
-        @media (max-width:880px){
-            .hero, .columns {grid-template-columns:1fr;}
-            header {flex-direction: column; text-align: center;}
-            .nav-list {margin: 10px 0; justify-content: center;}
-        }
+        footer{margin-top:18px; padding:18px; border-radius:12px; background:#fff; display:flex; gap:18px;}
+        .contact-form{width:420px}
+        .contact-form input, .contact-form textarea{width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid #ddd;}
+        .contact-form button{background:var(--brown); color:#fff; padding:10px 20px; border:0; border-radius:10px; cursor:pointer;}
     </style>
 </head>
 <body>
 
 <div class="container">
     <header>
-        <div class="logo"><img src="images/logo-mini.png" alt="Colmena 8"></div>
+        <img src="images/logo-mini.png" alt="Logo" style="width:60px;">
         <div class="brand">
             <h1>COLMENA No. 8</h1>
             <p>Masonería Simbólica</p>
@@ -85,167 +78,129 @@
     <section class="hero">
         <article class="card">
             <h2>Bienvenidos a la Colmena</h2>
-            <p style="text-align:justify">La R.·.L.·.S.·. COLMENA No. 8 es un taller consagrado al perfeccionamiento moral, inspirado en la labor solidaria de las abejas. Aquí, cada hermano contribuye al bien común bajo los valores de libertad, igualdad y fraternidad.</p>
+            <p class="muted text-justify">La R.·.L.·.S.·. COLMENA No. 8, es un taller masónico consagrado al perfeccionamiento moral y espiritual de sus miembros, inspirado en la labor de las abejas: ordenadas, laboriosas y solidarias...</p>
+            <p class="text-justify"><strong>Misión:</strong> Ser faro de luz en las tinieblas, allí donde el hombre, piedra bruta, se esculpe con el cincel del conocimiento y el mazo de la voluntad...</p>
+            <div class="hex-grid">
+                <div class="hex">R.·.</div><div class="hex">L.·.</div><div class="hex">S.·.</div><div class="hex">C8</div>
+            </div>
         </article>
         <aside class="card">
             <h3>Próximo Evento</h3>
-            <p id="tenida-fecha" class="small">Cargando fecha...</p>
-            <p><strong>Lugar:</strong> Oriente de Eagle Mountain</p>
-            <a href="https://wa.me/18017873487" target="_blank" style="text-decoration:none; color:#25D366; font-weight:bold;">💬 WhatsApp</a>
+            <p id="tenida-fecha" class="muted small">Cargando fecha del calendario...</p>
+            <p class="small"><strong>Lugar:</strong> <span id="tenida-lugar">Al Oriente de Eagle Mountain</span></p>
+            <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
+            <a href="https://wa.me/18017873487" target="_blank" style="display:block; background:#25D366; color:#fff; padding:12px; text-align:center; border-radius:50px; text-decoration:none; font-weight:bold;">💬 WhatsApp</a>
         </aside>
     </section>
 
     <section class="columns" id="about">
         <div class="card">
-            <h3>Nuestra Historia</h3>
-            <p>Fundada el 1 de febrero de 2022. Los símbolos del hexágono y la abeja representan nuestra disciplina y sabiduría compartida.</p>
+            <h3>Nuestra historia</h3>
+            <p class="text-justify">La Logia Colmena No. 8 nació el 24 de febrero de 2020... Los fundadores fueron José Guevara, Gerjes Guevara y Gustavo Montero...</p>
         </div>
-        <aside class="card" id="oficios">
+        <aside class="card">
             <h3>Oficiales</h3>
             <ul style="list-style:none; padding:0;">
                 <li><strong>VM:</strong> <span id="vm-nombre">...</span></li>
-                <li><strong>1er Vig:</strong> <span id="pv-nombre">...</span></li>
-                <li><strong>2do Vig:</strong> <span id="sv-nombre">...</span></li>
+                <li><strong>1er Vigilante:</strong> <span id="pv-nombre">...</span></li>
+                <li><strong>2do Vigilante:</strong> <span id="sv-nombre">...</span></li>
             </ul>
         </aside>
     </section>
 
-    <section class="card trabajos" id="trabajos">
+    <section class="card" id="trabajos">
         <h3>Estudios y Trabajos (Memos)</h3>
-        <ul id="trabajos-list"><li>Cargando...</li></ul>
+        <ul id="trabajos-list" style="list-style:none; padding:0;"></ul>
     </section>
 
     <section class="card" id="galeria">
         <h3>Galería</h3>
         <div class="gallery" id="image-gallery">
             <img src="images/carta-patente.png" alt="Carta Patente">
-            <img id="ultima-tenida-img" src="images/placeholder.png" alt="Último Memo Visual" class="loading">
+            <img id="ultima-tenida-img" src="images/placeholder.png" alt="Último Memo">
             <img src="images/Cuadro-Logial.png" alt="Cuadro Logial">
             <img id="rituales-img" src="images/rituales.png" alt="Rituales Simbólicos">
         </div>
     </section>
+
+    <footer id="contacto">
+        <div style="flex:1">
+            <h3>¿Interesado en saber más?</h3>
+            <p class="muted">Escríbenos para consultas sobre admisión o eventos.</p>
+        </div>
+        <form class="contact-form" onsubmit="abrirGmail(event)">
+            <input id="nombre" type="text" placeholder="Tu nombre" required>
+            <input id="email" type="email" placeholder="Tu correo" required>
+            <textarea id="mensaje" rows="3" placeholder="Mensaje..." required></textarea>
+            <button type="submit">Enviar Mensaje</button>
+        </form>
+    </footer>
 </div>
 
-<div id="lightbox" class="lightbox">
-    <button onclick="closeLightbox()" style="position:absolute; top:20px; right:20px; color:#fff; font-size:40px; background:none; border:0; cursor:pointer;">&times;</button>
-    <div style="text-align:center;">
-        <img id="lb-img" style="max-width:90vw; max-height:70vh; border-radius:8px;">
-        <div id="lb-caption" style="color:#fff; margin:15px; font-size:18px;"></div>
-        <div id="lb-ritual-buttons" style="display:flex; flex-direction:column; align-items:center;"></div>
-    </div>
-</div>
-
-<div id="document-modal" class="lightbox">
-    <div>
-        <h4 id="doc-title" style="margin:0; padding:15px; background:var(--accent);">Cargando Documento...</h4>
-        <button onclick="closeDocumentModal()" style="position:absolute; top:10px; right:15px; font-size:24px; cursor:pointer; border:0; background:none;">&times;</button>
-        <iframe id="doc-iframe" src="" frameborder="0" style="width:100%; height:calc(100% - 50px);"></iframe>
+<div id="master-modal" class="lightbox">
+    <div id="modal-content" style="background:#fff; border-radius:10px; position:relative; max-width:1000px; width:95%; overflow:hidden;">
+        <button onclick="closeMasterModal()" style="position:absolute; top:10px; right:15px; font-size:30px; border:0; background:none; cursor:pointer; z-index:10;">&times;</button>
+        <div id="modal-body" style="padding:20px; text-align:center;">
+            </div>
     </div>
 </div>
 
 <script>
-    const CONFIG = {
-        user: 'cyberzona', repo: 'colmena', branch: 'main',
-        imgApi: `https://api.github.com/repos/cyberzona/colmena/contents/images?ref=main`,
-        docsUrl: `https://raw.githubusercontent.com/cyberzona/colmena/main/data/work-study.json`,
-        cuadroUrl: `https://raw.githubusercontent.com/cyberzona/colmena/main/data/cuadro-logial.json`,
-        regex: /^tenida-(\d{4})(\d{2})(\d{2})\.(png|jpg|jpeg|webp)$/i
-    };
+    const GITHUB_API = "https://api.github.com/repos/cyberzona/colmena/contents/images?ref=main";
+    const DATA_PATH = "https://raw.githubusercontent.com/cyberzona/colmena/main/data/";
 
-    // 1. CARGA DE IMAGEN (API GITHUB)
-    async function fetchLatestMemo() {
-        const img = document.getElementById('ultima-tenida-img');
+    // 1. CARGA DE API IMÁGENES
+    async function initImages() {
         try {
-            const res = await fetch(CONFIG.imgApi);
+            const res = await fetch(GITHUB_API);
             const files = await res.json();
-            const latest = files
-                .filter(f => f.name.match(CONFIG.regex))
-                .sort((a, b) => b.name.localeCompare(a.name))[0];
-
-            if (latest) {
-                img.src = latest.download_url;
-                img.alt = `Memo Visual: ${latest.name.split('.')[0]}`;
-            }
-        } catch (e) { console.error("Error API:", e); }
+            const latest = files.filter(f => f.name.includes('tenida-')).sort((a,b) => b.name.localeCompare(a.name))[0];
+            if(latest) document.getElementById('ultima-tenida-img').src = latest.download_url;
+        } catch(e) {}
     }
 
-    // 2. LÓGICA DE GALERÍA (DELEGACIÓN DE EVENTOS)
-    const gallery = document.getElementById('image-gallery');
-    gallery.addEventListener('click', (e) => {
-        if (e.target.tagName === 'IMG') {
-            const img = e.target;
-            const lb = document.getElementById('lightbox');
-            const lbImg = document.getElementById('lb-img');
-            const lbCap = document.getElementById('lb-caption');
-            const lbBtns = document.getElementById('lb-ritual-buttons');
-
-            // Reset
-            lbBtns.innerHTML = '';
-            lbImg.src = img.src;
-            lbCap.textContent = img.alt;
-
-            // Si es rituales, acción inmediata de botones
-            if (img.id === 'rituales-img' || img.src.includes('rituales')) {
-                const ritos = [
-                    {t:'Aprendiz', n:1}, {t:'Compañero', n:2}, {t:'Maestro', n:3}
-                ];
-                ritos.forEach(r => {
-                    const b = document.createElement('button');
-                    b.className = 'btn-ritual';
-                    b.textContent = `📖 Ver Ritual de ${r.t}`;
-                    b.onclick = () => openDocumentInModal(`rituales.html?num=${r.n}`, `Ritual ${r.t}`);
-                    lbBtns.appendChild(b);
+    // 2. LÓGICA DE GALERÍA (ACCION INMEDIATA)
+    document.getElementById('image-gallery').addEventListener('click', (e) => {
+        if(e.target.tagName === 'IMG') {
+            const body = document.getElementById('modal-body');
+            body.innerHTML = `<img src="${e.target.src}" style="max-width:100%; max-height:60vh; border-radius:8px;"><br><h4 class="muted">${e.target.alt}</h4>`;
+            
+            if(e.target.id === 'rituales-img') {
+                ['Aprendiz', 'Compañero', 'Maestro'].forEach((r, i) => {
+                    const btn = document.createElement('button');
+                    btn.textContent = `📖 Ritual ${r}`;
+                    btn.style.cssText = "background:var(--gold); color:#fff; border:0; padding:10px; margin:5px; border-radius:5px; cursor:pointer;";
+                    btn.onclick = () => openDoc(`rituales.html?num=${i+1}`, `Ritual ${r}`);
+                    body.appendChild(btn);
                 });
             }
-            lb.classList.add('open');
+            document.getElementById('master-modal').classList.add('open');
         }
     });
 
-    function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
-
-    // 3. MODAL DE DOCUMENTOS
-    function openDocumentInModal(url, titulo) {
-        const modal = document.getElementById('document-modal');
-        document.getElementById('doc-title').textContent = titulo;
-        document.getElementById('doc-iframe').src = url;
-        modal.classList.add('open');
-        closeLightbox(); // Cerrar galería si estaba abierta
+    // 3. DOCUMENTOS E IFRAME
+    function openDoc(url, title) {
+        const body = document.getElementById('modal-body');
+        body.innerHTML = `<h4 style="margin-top:0">${title}</h4><iframe src="${url}" style="width:100%; height:70vh; border:0;"></iframe>`;
+        document.getElementById('master-modal').classList.add('open');
     }
 
-    function closeDocumentModal() {
-        const modal = document.getElementById('document-modal');
-        modal.classList.remove('open');
-        document.getElementById('doc-iframe').src = '';
-    }
+    function closeMasterModal() { document.getElementById('master-modal').classList.remove('open'); document.getElementById('modal-body').innerHTML = '';}
 
     // 4. CARGA DE TRABAJOS (MEMOS)
-    async function loadTrabajos() {
-        const list = document.getElementById('trabajos-list');
+    async function loadData() {
         try {
-            const res = await fetch(CONFIG.docsUrl);
-            const data = await res.json();
-            list.innerHTML = data.map(t => `
-                <li><a onclick="openDocumentInModal('${t.url}', '${t.titulo}')">${t.titulo} <span>- ${t.descripcion}</span></a></li>
-            `).join('');
-        } catch (e) { list.innerHTML = 'Error al cargar memos.'; }
+            const [w, c] = await Promise.all([fetch(DATA_PATH+'work-study.json').then(r=>r.json()), fetch(DATA_PATH+'cuadro-logial.json').then(r=>r.json())]);
+            document.getElementById('trabajos-list').innerHTML = w.map(t => `<li><a onclick="openDoc('${t.url}', '${t.titulo}')">${t.titulo}</a></li>`).join('');
+            document.getElementById('vm-nombre').textContent = c.venerable_maestro.nombre;
+            document.getElementById('pv-nombre').textContent = c.primer_vigilante.nombre;
+            document.getElementById('sv-nombre').textContent = c.segundo_vigilante.nombre;
+        } catch(e) {}
     }
 
-    // 5. CUADRO LOGIAL
-    async function loadCuadro() {
-        try {
-            const res = await fetch(CONFIG.cuadroUrl);
-            const d = await res.json();
-            document.getElementById('vm-nombre').textContent = d.venerable_maestro.nombre;
-            document.getElementById('pv-nombre').textContent = d.primer_vigilante.nombre;
-            document.getElementById('sv-nombre').textContent = d.segundo_vigilante.nombre;
-        } catch (e) { }
-    }
+    function abrirGmail(e) { e.preventDefault(); window.location.href = `mailto:Rlscolmena8@gmail.com?subject=Mensaje de ${document.getElementById('nombre').value}&body=${document.getElementById('mensaje').value}`; }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        fetchLatestMemo();
-        loadTrabajos();
-        loadCuadro();
-    });
+    window.onload = () => { initImages(); loadData(); };
 </script>
 </body>
 </html>
