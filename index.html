@@ -351,9 +351,9 @@
         <p style="text-align:center;color:#6a4f3e;font-size:0.85rem;margin-top:12px" class="small">© Colmena No. 8 — Todos los derechos reservados</p>
     </div>
 
-    <script>
+  <script>
         // =========================================================================
-        // === ZONA DE CONFIGURACIÓN OBLIGATORIA ===================================
+        // === ZONA DE CONFIGURACIÓN ===============================================
         // =========================================================================
         const GITHUB_USER = 'cyberzona'; 
         const GITHUB_REPO = 'colmena';
@@ -368,11 +368,13 @@
         const TRABAJOS_FILE = 'work-study.json';
         const TRABAJOS_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${GITHUB_BRANCH}/${DOCS_PATH}/${TRABAJOS_FILE}`;
         const TRABAJOS_LIST_ELEMENT = document.getElementById('trabajos-list');
+        
         const CUADRO_FILE = 'cuadro-logial.json'; 
         const CUADRO_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${GITHUB_BRANCH}/${DOCS_PATH}/${CUADRO_FILE}`;
+        
         const CALENDAR_API_KEY = 'AIzaSyB2ObZTbhXwsFKnQLm73XTcdCNW7aqQEPo';
         const CALENDAR_ID = '9d46fca8679c56e5d9dd7a0800eb446f8a06697c8c3233e162d053b15c9b8dc4@group.calendar.google.com';
-        
+
         // =========================================================================
         // === 0. LÓGICA DE CARGA DE CALENDARIO (OPERACIÓN: CAL-SYNC) ===
         // =========================================================================
@@ -450,7 +452,7 @@
         }    
 
         // =========================================================================
-        // === 3. LÓGICA DEL MODAL DE DOCUMENTOS (Ritual) =========================
+        // === 3. LÓGICA DEL MODAL DE DOCUMENTOS ===================================
         // =========================================================================
         const docModal = document.getElementById('document-modal');
         const docIframe = document.getElementById('doc-iframe');
@@ -463,12 +465,10 @@
             } else if (url.includes('docs.google.com/spreadsheets')) {
                 url = url.replace('/edit', '/pubhtml?widget=true&headers=false');
             }
-
             docTitle.textContent = `Documento: ${titulo}`;
             docIframe.src = url;
             docModal.classList.add('open');
             docModal.setAttribute('aria-hidden', 'false');
-            // Si venía del lightbox, cerrarlo
             closeLightbox();
         }
         
@@ -481,15 +481,15 @@
         }
 
         function closeDocumentModal() {
+            if(!docModal) return;
             docModal.classList.remove('open');
             docModal.setAttribute('aria-hidden', 'true');
             docIframe.src = "";
             docTitle.textContent = "Cargando Documento...";
         }
 
-        docCloseButton.addEventListener('click', closeDocumentModal);
-        docModal.addEventListener('click', (e) => { if (e.target === docModal) closeDocumentModal(); });
-        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && docModal.classList.contains('open')) closeDocumentModal(); });
+        if(docCloseButton) docCloseButton.addEventListener('click', closeDocumentModal);
+        if(docModal) docModal.addEventListener('click', (e) => { if (e.target === docModal) closeDocumentModal(); });
 
         // =========================================================================
         // === 4. LÓGICA DE CARGA DE IMAGEN DE TENIDA =============================
@@ -520,28 +520,25 @@
                     ULTIMA_TENIDA_IMG_ELEMENT.alt = latestTenidaImage.alt;
                 }
                 ULTIMA_TENIDA_IMG_ELEMENT.classList.remove('loading');
-            } catch (error) { console.error("Error:", error); ULTIMA_TENIDA_IMG_ELEMENT.classList.remove('loading'); }
+            } catch (error) { console.error("Error Imagen:", error); ULTIMA_TENIDA_IMG_ELEMENT.classList.remove('loading'); }
         }
         
         // =========================================================================
-        // === 5. LÓGICA DEL LIGHTBOX (Ampliación y Rito) =========================
+        // === 5. LÓGICA DEL LIGHTBOX (Galería) ====================================
         // =========================================================================
         const lightbox = document.getElementById('lightbox');
         const lbImg = document.getElementById('lb-img');
         const lbCaption = document.getElementById('lb-caption');
-        const lbClose = document.getElementById('lb-close');
         const lbRitualButtons = document.getElementById('lb-ritual-buttons');
 
         function initGalleryListeners() {
              const galleryImgs = document.querySelectorAll('#image-gallery img');
              galleryImgs.forEach(img => {
-                 img.removeEventListener('click', openLightboxHandler);
                  img.addEventListener('click', openLightboxHandler);
             });
             
             const ritualesImg = document.getElementById('rituales-img');
             if (ritualesImg) {
-            // Definimos los tres grados como opciones independientes
                 ritualesImg.setAttribute('data-rituales', JSON.stringify([
                 { titulo: 'Ritual de Aprendiz', url: 'rituales.html?num=1' },
                 { titulo: 'Ritual de Compañero', url: 'rituales.html?num=2' },
@@ -551,7 +548,7 @@
         }
         
         function openLightboxHandler() {
-            const full = this.dataset.full || this.src;
+            const full = this.src;
             const altText = this.alt || "Imagen";
             const ritualesData = this.getAttribute('data-rituales');
 
@@ -560,54 +557,45 @@
             lightbox.classList.add('open');
             lightbox.setAttribute('aria-hidden', 'false');
             lbCaption.innerHTML = altText;
-            lbRitualButtons.innerHTML = ''; // Limpiar botones anteriores
+            lbRitualButtons.innerHTML = '';
 
-            // Si la imagen tiene rituales asociados, creamos los botones
             if (ritualesData) {
                 const rituales = JSON.parse(ritualesData);
                 rituales.forEach(ritual => {
                     const btn = document.createElement('button');
                     btn.textContent = `📖 Ver ${ritual.titulo}`;
-                    btn.style.cssText = `
-                        background:var(--gold);
-                        color:#fff;
-                        border:0;
-                        padding:10px 20px;
-                        border-radius:20px;
-                        font-weight:bold;
-                        cursor:pointer;
-                        font-family:var(--ff-sans);
-                        font-size: 0.9rem;
-                        width: 100%;
-                        max-width: 300px;
-                    `;
-                    btn.onclick = function() {
-                        openDocumentInModal(ritual.url, ritual.titulo);
-                    };
+                    btn.style.cssText = `background:var(--gold);color:#fff;border:0;padding:10px 20px;border-radius:20px;font-weight:bold;cursor:pointer;font-family:var(--ff-sans);font-size:0.9rem;width:100%;max-width:300px;margin-bottom:5px;`;
+                    btn.onclick = () => openDocumentInModal(ritual.url, ritual.titulo);
                     lbRitualButtons.appendChild(btn);
                 });
             }
         }
 
         function closeLightbox(){
+            if(!lightbox) return;
             lightbox.classList.remove('open');
             lightbox.setAttribute('aria-hidden','true');
             lbImg.src = '';
-            lbCaption.style.display = "none";
             lbRitualButtons.innerHTML = '';
         }
         
-        lbClose.addEventListener('click', closeLightbox);
-        lightbox.addEventListener('click', (e)=>{ if(e.target === lightbox) closeLightbox(); });
-        document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && lightbox.classList.contains('open')) closeLightbox(); });
+        if(document.getElementById('lb-close')) document.getElementById('lb-close').addEventListener('click', closeLightbox);
+        if(lightbox) lightbox.addEventListener('click', (e)=>{ if(e.target === lightbox) closeLightbox(); });
 
+        // =========================================================================
+        // === 6. INICIALIZACIÓN GLOBAL ============================================
+        // =========================================================================
         document.addEventListener('DOMContentLoaded', () => {
-             loadTrabajos(); 
-             cargarCuadroLogial(); 
-             fetchLatestTenidaImage();
-             initGalleryListeners();                
+             cargarProximoEvento(); // Fecha del calendario
+             loadTrabajos();       // Lista de GitHub
+             cargarCuadroLogial(); // Oficiales
+             fetchLatestTenidaImage(); 
+             initGalleryListeners(); 
         });
 
+        document.addEventListener('keydown', (e) => { 
+            if (e.key === 'Escape') { closeLightbox(); closeDocumentModal(); }
+        });
     </script>
 </body>
 </html>
