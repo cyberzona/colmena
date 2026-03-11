@@ -366,49 +366,44 @@
     </div>
 
  <script>
-    /**
-     * CANON ALVEARIS - Sistema Operativo index(10)
-     * Estructura: Configuración -> Utilidades -> Operaciones [0-5] -> Init
-     */
+    // =========================================================================
+    // === ZONA DE CONFIGURACIÓN ===============================================
+    // =========================================================================
+    const GITHUB_USER = 'cyberzona'; 
+    const GITHUB_REPO = 'colmena';
+    const GITHUB_BRANCH = 'main';          
+    const IMAGES_PATH = 'images';          
+    const DOCS_PATH = 'data';          
+    
+    const ULTIMA_TENIDA_IMG_ELEMENT = document.getElementById('ultima-tenida-img');
+    const TENIDA_FILENAME_REGEX = /^tenida-(\d{4})(\d{2})(\d{2})\.(png|jpg|jpeg|gif|webp)$/i;
+    const IMAGE_API_URL = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${IMAGES_PATH}?ref=${GITHUB_BRANCH}`;
+    
+    const TRABAJOS_FILE = 'work-study.json';
+    const TRABAJOS_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${GITHUB_BRANCH}/${DOCS_PATH}/${TRABAJOS_FILE}`;
+    const TRABAJOS_LIST_ELEMENT = document.getElementById('trabajos-list');
+    
+    const CUADRO_FILE = 'cuadro-logial.json'; 
+    const CUADRO_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${GITHUB_BRANCH}/${DOCS_PATH}/${CUADRO_FILE}`;
+    
+    const CALENDAR_API_KEY = 'AIzaSyB2ObZTbhXwsFKnQLm73XTcdCNW7aqQEPo';
+    const CALENDAR_ID = '9d46fca8679c56e5d9dd7a0800eb446f8a06697c8c3233e162d053b15c9b8dc4@group.calendar.google.com';
+
+    // Función para el acceso al foro sin errores de conexión
+    function cargarForoInvisible() {
+        const URL_FORO = 'https://colmena8.com'; 
+        // Usamos redirección directa en la misma pestaña para evitar el bloqueo del servidor
+        window.location.href = URL_FORO;
+    }
 
     // =========================================================================
-    // === ZONA DE CONFIGURACIÓN OBLIGATORIA ===================================
-    // =========================================================================
-    const CONFIG = {
-        github: {
-            user: 'cyberzona',
-            repo: 'colmena',
-            branch: 'main',
-            paths: { images: 'images', docs: 'data' }
-        },
-        calendar: {
-            key: 'AIzaSyB2ObZTbhXwsFKnQLm73XTcdCNW7aqQEPo',
-            id: '9d46fca8679c56e5d9dd7a0800eb446f8a06697c8c3233e162d053b15c9b8dc4@group.calendar.google.com'
-        },
-        forum: { url: 'https://colmena8.com' },
-        regex: { tenida: /^tenida-(\d{4})(\d{2})(\d{2})\.(png|jpg|jpeg|gif|webp)$/i }
-    };
-
-    // Referencias DOM Globales
-    const DOM = {
-        tenidaImg: document.getElementById('ultima-tenida-img'),
-        trabajosList: document.getElementById('trabajos-list'),
-        docModal: document.getElementById('document-modal'),
-        docIframe: document.getElementById('doc-iframe'),
-        docTitle: document.getElementById('doc-title'),
-        lightbox: document.getElementById('lightbox'),
-        lbImg: document.getElementById('lb-img'),
-        lbRitualButtons: document.getElementById('lb-ritual-buttons')
-    };
-
-    // =========================================================================
-    // === 0. OPERACIÓN: CAL-SYNC (Calendario) =================================
+    // === 0. LÓGICA DE CARGA DE CALENDARIO (OPERACIÓN: CAL-SYNC) ===
     // =========================================================================
     async function cargarProximoEvento() {
         const elFecha = document.getElementById('tenida-fecha');
         const elLugar = document.getElementById('tenida-lugar');
         const now = new Date().toISOString();
-        const url = `https://www.googleapis.com/calendar/v3/calendars/${CONFIG.calendar.id}/events?key=${CONFIG.calendar.key}&timeMin=${now}&maxResults=1&singleEvents=true&orderBy=startTime`;
+        const url = `https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?key=${CALENDAR_API_KEY}&timeMin=${now}&maxResults=1&singleEvents=true&orderBy=startTime`;
 
         try {
             const response = await fetch(url);
@@ -423,208 +418,216 @@
                     }).toUpperCase();
                 }
                 if (elLugar) {
-                    elLugar.textContent = (evento.location || "Al Oriente de la Montaña del Águila").toUpperCase();
+                    elLugar.textContent = (evento.location || "AL ORIENTE DE LA MONTAÑA DEL ÁGUILA").toUpperCase();
                 }
             }
-        } catch (error) { console.error("[ERR-CAL]:", error); }
+        } catch (error) {
+            console.error("Error en Operación [CAL-SYNC]:", error);
+        }
     }
 
     // =========================================================================
-    // === 1. OPERACIÓN: GITHUB-LOAD (Trabajos y Cuadro) =======================
+    // === 1. LÓGICA DE CARGA DE TRABAJOS ======================================
     // =========================================================================
     async function loadTrabajos() {
-        if (!DOM.trabajosList) return;
-        const url = `https://raw.githubusercontent.com/${CONFIG.github.user}/${CONFIG.github.repo}/${CONFIG.github.branch}/${CONFIG.github.paths.docs}/work-study.json`;
-        
+        if (!TRABAJOS_LIST_ELEMENT) return;          
         try {
-            const response = await fetch(url);
-            if (!response.ok) throw new Error(response.status);
+            const response = await fetch(TRABAJOS_URL);          
+            if (!response.ok) throw new Error(`Error ${response.status}`);          
             const trabajos = await response.json();
-            
-            DOM.trabajosList.innerHTML = trabajos.length ? '' : '<li style="text-align:center;color:#6a4f3e;">No hay trabajos publicados aún.</li>';
-            
-            trabajos.forEach(t => {
-                const li = document.createElement('li');
-                li.innerHTML = `<a href="#" onclick="openDocumentModal(event)" data-url="${t.url}" data-titulo="${t.titulo}">
-                                    ${t.titulo} <span>${t.descripcion}</span>
-                                </a>`;
-                DOM.trabajosList.appendChild(li);
-            });
-        } catch (error) { 
-            DOM.trabajosList.innerHTML = '<li style="color:#d9534f;text-align:center;">Error al cargar documentos.</li>';
-        }
-    }
-
-    async function cargarCuadroLogial() {
-        const url = `https://raw.githubusercontent.com/${CONFIG.github.user}/${CONFIG.github.repo}/${CONFIG.github.branch}/${CONFIG.github.paths.docs}/cuadro-logial.json`;
-        try {
-            const response = await fetch(url);
-            const d = await response.json();
-            const set = (id, val) => { if(document.getElementById(id)) document.getElementById(id).textContent = val; };
-            set('vm-nombre', d.venerable_maestro.nombre);
-            set('pv-nombre', d.primer_vigilante.nombre);
-            set('sv-nombre', d.segundo_vigilante.nombre);
-            set('ms-nombre', d.secretario.nombre);
-        } catch (e) { console.error("[ERR-CUADRO]:", e); }
-    }
-
-    // =========================================================================
-    // === 2. OPERACIÓN: MEDIA-SYNC (Imagen de Tenida) =========================
-    // =========================================================================
-    async function fetchLatestTenidaImage() {
-        if (!DOM.tenidaImg) return;
-        DOM.tenidaImg.classList.add('loading');
-        const url = `https://api.github.com/repos/${CONFIG.github.user}/${CONFIG.github.repo}/contents/${CONFIG.github.paths.images}?ref=${CONFIG.github.branch}`;
-        
-        try {
-            const res = await fetch(url);
-            const files = await res.json();
-            let latest = { date: 0, data: null };
-
-            files.forEach(f => {
-                const m = f.name.match(CONFIG.regex.tenida);
-                if (m) {
-                    const d = new Date(m[1], m[2]-1, m[3]).getTime();
-                    if (d > latest.date) {
-                        latest = { date: d, data: { src: f.download_url, alt: `Tenida ${m[3]}/${m[2]}/${m[1]}` }};
-                    }
-                }
-            });
-
-            if (latest.data) {
-                DOM.tenidaImg.src = latest.data.src;
-                DOM.tenidaImg.alt = latest.data.alt;
+            TRABAJOS_LIST_ELEMENT.innerHTML = '';
+            if (!Array.isArray(trabajos) || trabajos.length === 0) {
+                TRABAJOS_LIST_ELEMENT.innerHTML = '<li style="text-align:center;color:#6a4f3e;">No hay trabajos publicados aún.</li>';
+                return;
             }
-        } catch (e) { console.error("[ERR-IMG]:", e); }
-        DOM.tenidaImg.classList.remove('loading');
+            trabajos.forEach(trabajo => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <a href="#" data-url="${trabajo.url}" data-titulo="${trabajo.titulo}">
+                        ${trabajo.titulo}
+                        <span>${trabajo.descripcion}</span>
+                    </a>
+                `;
+                li.querySelector('a').addEventListener('click', openDocumentModal);
+                TRABAJOS_LIST_ELEMENT.appendChild(li);
+            });
+        } catch (error) {
+            console.error("Fallo al cargar los trabajos:", error);
+            TRABAJOS_LIST_ELEMENT.innerHTML = '<li style="color:#d9534f;text-align:center;">Error al cargar documentos.</li>';
+        }
     }
 
     // =========================================================================
-    // === 3. OPERACIÓN: UI-MODALS (Documentos y Lightbox) =====================
+    // === 2. LÓGICA DE CARGA DEL CUADRO LOGIAL ================================
     // =========================================================================
+    async function cargarCuadroLogial() {
+        try {
+            const response = await fetch(CUADRO_URL);
+            if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+            const datosCuadro = await response.json();
+            if (document.getElementById('vm-nombre')) document.getElementById('vm-nombre').textContent = datosCuadro.venerable_maestro.nombre;
+            if (document.getElementById('pv-nombre')) document.getElementById('pv-nombre').textContent = datosCuadro.primer_vigilante.nombre;
+            if (document.getElementById('sv-nombre')) document.getElementById('sv-nombre').textContent = datosCuadro.segundo_vigilante.nombre;
+            if (document.getElementById('ms-nombre')) document.getElementById('ms-nombre').textContent = datosCuadro.secretario.nombre;
+        } catch (error) { console.error("Fallo al cargar el Cuadro Logial:", error); }
+    }    
+
+    // =========================================================================
+    // === 3. LÓGICA DEL MODAL DE DOCUMENTOS ===================================
+    // =========================================================================
+    const docModal = document.getElementById('document-modal');
+    const docIframe = document.getElementById('doc-iframe');
+    const docTitle = document.getElementById('doc-title');
+    const docCloseButton = document.getElementById('doc-close');
+    
     function openDocumentInModal(url, titulo) {
-        if (url.includes('docs.google.com')) {
-            url = url.replace('/edit', url.includes('spreadsheets') ? '/pubhtml?widget=true' : '/preview');
+        if (url.includes('docs.google.com/document')) {
+            url = url.replace('/edit', '/preview');
+        } else if (url.includes('docs.google.com/spreadsheets')) {
+            url = url.replace('/edit', '/pubhtml?widget=true&headers=false');
         }
-        DOM.docTitle.textContent = `Documento: ${titulo}`;
-        DOM.docIframe.src = url;
-        DOM.docModal.classList.add('open');
-        DOM.docModal.setAttribute('aria-hidden', 'false');
+        docTitle.textContent = `Documento: ${titulo}`;
+        docIframe.src = url;
+        docModal.classList.add('open');
+        docModal.setAttribute('aria-hidden', 'false');
         closeLightbox();
     }
-
-    function openDocumentModal(e) {
-        e.preventDefault();
-        const el = e.currentTarget;
-        openDocumentInModal(el.getAttribute('data-url'), el.getAttribute('data-titulo'));
+    
+    function openDocumentModal(event) {
+        event.preventDefault(); 
+        const link = event.currentTarget;
+        const url = link.getAttribute('data-url');
+        const title = link.getAttribute('data-titulo');
+        openDocumentInModal(url, title);
     }
 
     function closeDocumentModal() {
-        if(!DOM.docModal) return;
-        DOM.docModal.classList.remove('open');
-        DOM.docModal.setAttribute('aria-hidden', 'true');
-        DOM.docIframe.src = "";
+        if(!docModal) return;
+        docModal.classList.remove('open');
+        docModal.setAttribute('aria-hidden', 'true');
+        docIframe.src = "";
+        docTitle.textContent = "Cargando Documento...";
     }
 
-   function initGalleryListeners() {
-        document.querySelectorAll('#image-gallery img').forEach(img => {
-            img.onclick = function() {
-                const altText = this.alt || "Imagen de la Colmena";
-                const lbCaption = document.getElementById('lb-caption');
-
-                // Sincronización de Imagen y Texto
-                DOM.lbImg.src = this.src;
-                DOM.lbImg.alt = altText;
-                
-                if (lbCaption) {
-                    lbCaption.textContent = altText;
-                    lbCaption.style.display = "block"; // Asegura que sea visible
-                }
-
-                DOM.lightbox.classList.add('open');
-                DOM.lightbox.setAttribute('aria-hidden', 'false');
-                DOM.lbRitualButtons.innerHTML = '';
-                
-                // Lógica de rituales adjuntos
-                const rituals = this.getAttribute('data-rituales');
-                if (rituals) {
-                    JSON.parse(rituals).forEach(r => {
-                        const b = document.createElement('button');
-                        b.textContent = `📖 Ver ${r.titulo}`;
-                        b.className = "btn-ritual-lightbox";
-                        b.style.cssText = "background:var(--gold); color:#fff; border:0; padding:10px 20px; border-radius:20px; font-weight:bold; cursor:pointer; margin:5px; width:90%; max-width:300px;";
-                        b.onclick = () => openDocumentInModal(r.url, r.titulo);
-                        DOM.lbRitualButtons.appendChild(b);
-                    });
-                }
-            };
-        });
-    }
-
-    function closeLightbox() {
-        if(!DOM.lightbox) return;
-        const lbCaption = document.getElementById('lb-caption');
-        
-        DOM.lightbox.classList.remove('open');
-        DOM.lightbox.setAttribute('aria-hidden', 'true');
-        DOM.lbImg.src = '';
-        
-        if (lbCaption) {
-            lbCaption.style.display = "none";
-            lbCaption.textContent = '';
-        }
-        DOM.lbRitualButtons.innerHTML = '';
-    }
+    if(docCloseButton) docCloseButton.addEventListener('click', closeDocumentModal);
+    if(docModal) docModal.addEventListener('click', (e) => { if (e.target === docModal) closeDocumentModal(); });
 
     // =========================================================================
-    // === 4. OPERACIÓN: FORO-MASK (Integración Invisible) =====================
+    // === 4. LÓGICA DE CARGA DE IMAGEN DE TENIDA =============================
     // =========================================================================
- 
-function cargarForoInvisible() {
-    const URL_FORO = 'https://colmena8.com'; 
+    async function fetchLatestTenidaImage() {
+        if (!ULTIMA_TENIDA_IMG_ELEMENT) return;
+        ULTIMA_TENIDA_IMG_ELEMENT.classList.add('loading'); 
+        try {
+            const response = await fetch(IMAGE_API_URL);
+            if (!response.ok) throw new Error(`Error: ${response.statusText}`);
+            const files = await response.json();
+            let latestTenidaImage = null;
+            let latestTenidaDate = null;
+            files.forEach(file => {
+                if (file.type === 'file') {
+                    const match = file.name.match(TENIDA_FILENAME_REGEX);
+                    if (match) {
+                        const date = new Date(parseInt(match[1]), parseInt(match[2]) - 1, parseInt(match[3])); 
+                        if (!latestTenidaDate || date.getTime() > latestTenidaDate.getTime()) {
+                            latestTenidaDate = date;
+                            latestTenidaImage = { src: file.download_url, alt: `Tenida ${match[3]}/${match[2]}/${match[1]}` };
+                        }
+                    }
+                }
+            });
+            if (latestTenidaImage) {
+                ULTIMA_TENIDA_IMG_ELEMENT.src = latestTenidaImage.src;
+                ULTIMA_TENIDA_IMG_ELEMENT.alt = latestTenidaImage.alt;
+            }
+            ULTIMA_TENIDA_IMG_ELEMENT.classList.remove('loading');
+        } catch (error) { console.error("Error Imagen:", error); ULTIMA_TENIDA_IMG_ELEMENT.classList.remove('loading'); }
+    }
     
-    // Mostramos un breve mensaje de transición con la estética de la Logia
-    document.body.style.backgroundColor = 'var(--dark)';
-    document.body.innerHTML = `
-        <div style="display:flex; justify-content:center; align-items:center; height:100vh; flex-direction:column; font-family:var(--ff-medieval); color:var(--gold);">
-            <div class="spinner" style="border:4px solid var(--brown); border-top:4px solid var(--gold); border-radius:50%; width:40px; height:40px; animation: spin 1s linear infinite;"></div>
-            <p style="margin-top:20px; letter-spacing:2px;">INGRESANDO AL FORO PRIVADO...</p>
-        </div>
-        <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
-    `;
-
-    // Redirección inmediata en la misma pestaña
-    setTimeout(() => {
-        window.location.replace(URL_FORO);
-    }, 500);
-}
     // =========================================================================
-    // === 5. INICIALIZACIÓN GLOBAL ============================================
+    // === 5. LÓGICA DEL LIGHTBOX (Galería) ====================================
+    // =========================================================================
+    const lightbox = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lb-img');
+    const lbCaption = document.getElementById('lb-caption');
+    const lbRitualButtons = document.getElementById('lb-ritual-buttons');
+
+    function initGalleryListeners() {
+         const galleryImgs = document.querySelectorAll('#image-gallery img');
+         galleryImgs.forEach(img => {
+             img.addEventListener('click', openLightboxHandler);
+        });
+        
+        const ritualesImg = document.getElementById('rituales-img');
+        if (ritualesImg) {
+            ritualesImg.setAttribute('data-rituales', JSON.stringify([
+            { titulo: 'Ritual de Aprendiz', url: 'rituales.html?num=1' },
+            { titulo: 'Ritual de Compañero', url: 'rituales.html?num=2' },
+            { titulo: 'Ritual de Maestro', url: 'rituales.html?num=3' }
+            ]));
+        }
+    }
+    
+    function openLightboxHandler() {
+        const full = this.src;
+        const altText = this.alt || "Imagen";
+        const ritualesData = this.getAttribute('data-rituales');
+
+        lbImg.src = full;
+        lbImg.alt = altText;
+        lightbox.classList.add('open');
+        lightbox.setAttribute('aria-hidden', 'false');
+        
+        // Restauración de Títulos (Caption)
+        if (lbCaption) {
+            lbCaption.textContent = altText;
+            lbCaption.style.display = "block";
+        }
+
+        lbRitualButtons.innerHTML = '';
+        if (ritualesData) {
+            const rituales = JSON.parse(ritualesData);
+            rituales.forEach(ritual => {
+                const btn = document.createElement('button');
+                btn.textContent = `📖 Ver ${ritual.titulo}`;
+                btn.style.cssText = `background:var(--gold);color:#fff;border:0;padding:10px 20px;border-radius:20px;font-weight:bold;cursor:pointer;font-family:var(--ff-sans);font-size:0.9rem;width:100%;max-width:300px;margin-bottom:5px;`;
+                btn.onclick = () => openDocumentInModal(ritual.url, ritual.titulo);
+                lbRitualButtons.appendChild(btn);
+            });
+        }
+    }
+
+    function closeLightbox(){
+        if(!lightbox) return;
+        lightbox.classList.remove('open');
+        lightbox.setAttribute('aria-hidden','true');
+        lbImg.src = '';
+        if (lbCaption) lbCaption.style.display = "none";
+        lbRitualButtons.innerHTML = '';
+    }
+    
+    if(document.getElementById('lb-close')) document.getElementById('lb-close').addEventListener('click', closeLightbox);
+    if(lightbox) lightbox.addEventListener('click', (e)=>{ if(e.target === lightbox) closeLightbox(); });
+
+    // =========================================================================
+    // === 6. INICIALIZACIÓN GLOBAL ============================================
     // =========================================================================
     document.addEventListener('DOMContentLoaded', () => {
-        cargarProximoEvento();
-        loadTrabajos();
-        cargarCuadroLogial();
-        fetchLatestTenidaImage();
-        initGalleryListeners();
-
-        // Eventos de Cierre y Foro
-        const btnForo = document.getElementById('btn-foro-invisible');
-        if (btnForo) btnForo.onclick = cargarForoInvisible;
-
-        const btnCloseDoc = document.getElementById('doc-close');
-        if (btnCloseDoc) btnCloseDoc.onclick = closeDocumentModal;
-
-        const btnCloseLb = document.getElementById('lb-close');
-        if (btnCloseLb) btnCloseLb.onclick = closeLightbox;
-
-        window.onclick = (e) => {
-            if (e.target === DOM.docModal) closeDocumentModal();
-            if (e.target === DOM.lightbox) closeLightbox();
-        };
+         cargarProximoEvento(); 
+         loadTrabajos();       
+         cargarCuadroLogial(); 
+         fetchLatestTenidaImage(); 
+         initGalleryListeners(); 
+         
+         const btnForo = document.getElementById('btn-foro-invisible');
+         if (btnForo) {
+             btnForo.onclick = cargarForoInvisible;
+         }
     });
 
-    document.onkeydown = (e) => { if (e.key === 'Escape') { closeLightbox(); closeDocumentModal(); } };
+    document.addEventListener('keydown', (e) => { 
+        if (e.key === 'Escape') { closeLightbox(); closeDocumentModal(); }
+    });
 </script>
 </body>
 </html>
