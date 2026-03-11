@@ -389,6 +389,27 @@
         const CALENDAR_API_KEY = 'AIzaSyB2ObZTbhXwsFKnQLm73XTcdCNW7aqQEPo';
         const CALENDAR_ID = '9d46fca8679c56e5d9dd7a0800eb446f8a06697c8c3233e162d053b15c9b8dc4@group.calendar.google.com';
 
+      function cargarForoInvisible() {
+            const URL_FORO = 'https://colmena8.com'; // La dirección real del foro
+    
+        // Limpiamos el cuerpo de la página madre
+            document.body.style.margin = '0';
+            document.body.style.padding = '0';
+            document.body.style.overflow = 'hidden'; // Evita doble scroll
+            document.body.innerHTML = ''; 
+
+            // Creamos el marco que cubrirá toda la ventana
+            const iframe = document.createElement('iframe');
+            iframe.src = URL_FORO;
+            iframe.style.width = '100vw';
+            iframe.style.height = '100vh';
+            iframe.style.border = 'none';
+            iframe.style.display = 'block';
+            iframe.style.backgroundColor = 'var(--dark)'; // Fondo de la Colmena mientras carga
+
+            document.body.appendChild(iframe);
+        }
+
         // =========================================================================
         // === 0. LÓGICA DE CARGA DE CALENDARIO (OPERACIÓN: CAL-SYNC) ===
         // =========================================================================
@@ -605,6 +626,10 @@
              cargarCuadroLogial(); // Oficiales
              fetchLatestTenidaImage(); 
              initGalleryListeners(); 
+            const btnForo = document.getElementById('btn-foro-invisible');
+    if (btnForo) {
+        btnForo.onclick = cargarForoInvisible;
+    }
         });
 
         document.addEventListener('keydown', (e) => { 
