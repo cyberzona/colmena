@@ -567,14 +567,34 @@
     // =========================================================================
     // === 4. OPERACIÓN: FORO-MASK (Integración Invisible) =====================
     // =========================================================================
-    function cargarForoInvisible() {
-        document.body.style.cssText = "margin:0; padding:0; overflow:hidden;";
+    // OPERACIÓN: FORO-ACCESO (Mejorada)
+function cargarForoInvisible() {
+    const URL_FORO = 'https://colmena8.com'; 
+    
+    // Intentamos la máscara invisible
+    try {
+        // Opción A: Redirección directa en la misma ventana (Más fiable si el dominio falla)
+        window.location.href = URL_FORO;
+        
+        /* Opción B: Si prefieres seguir intentando el Iframe invisible, 
+           comenta la línea de arriba y usa esta:
+        */
+        /*
+        document.body.style.cssText = "margin:0; padding:0; overflow:hidden; background:var(--dark);";
         document.body.innerHTML = ''; 
         const iframe = document.createElement('iframe');
-        iframe.src = CONFIG.forum.url;
-        iframe.style.cssText = "width:100vw; height:100vh; border:none; display:block; background:var(--dark);";
+        iframe.src = URL_FORO;
+        iframe.style.cssText = "width:100vw; height:100vh; border:none; display:block;";
+        iframe.onerror = function() {
+            // Si el iframe falla, redirigimos directamente
+            window.location.href = URL_FORO;
+        };
         document.body.appendChild(iframe);
+        */
+    } catch (e) {
+        window.location.href = URL_FORO;
     }
+}
 
     // =========================================================================
     // === 5. INICIALIZACIÓN GLOBAL ============================================
