@@ -544,7 +544,7 @@
         } catch (error) { console.error("Error Imagen:", error); ULTIMA_TENIDA_IMG_ELEMENT.classList.remove('loading'); }
     }
     
-    // =========================================================================
+  // =========================================================================
     // === 5. LÓGICA DEL LIGHTBOX (Galería) ====================================
     // =========================================================================
     const lightbox = document.getElementById('lightbox');
@@ -578,7 +578,6 @@
         lightbox.classList.add('open');
         lightbox.setAttribute('aria-hidden', 'false');
         
-        // Restauración de Títulos (Caption)
         if (lbCaption) {
             lbCaption.textContent = altText;
             lbCaption.style.display = "block";
@@ -591,12 +590,16 @@
                 const btn = document.createElement('button');
                 btn.textContent = `📖 Ver ${ritual.titulo}`;
                 btn.style.cssText = `background:var(--gold);color:#fff;border:0;padding:10px 20px;border-radius:20px;font-weight:bold;cursor:pointer;font-family:var(--ff-sans);font-size:0.9rem;width:100%;max-width:300px;margin-bottom:5px;`;
-                btn.onclick = () => openDocumentInModal(ritual.url, ritual.titulo);
+                btn.onclick = (e) => {
+                    e.stopPropagation(); 
+                    openDocumentInModal(ritual.url, ritual.titulo);
+                };
                 lbRitualButtons.appendChild(btn);
             });
         }
     }
 
+    // --- FUNCIÓN DE CIERRE DEL LIGHTBOX ---
     function closeLightbox(){
         if(!lightbox) return;
         lightbox.classList.remove('open');
@@ -606,6 +609,7 @@
         lbRitualButtons.innerHTML = '';
     }
     
+    // Eventos de cierre para el Lightbox
     if(document.getElementById('lb-close')) document.getElementById('lb-close').addEventListener('click', closeLightbox);
     if(lightbox) lightbox.addEventListener('click', (e)=>{ if(e.target === lightbox) closeLightbox(); });
 
@@ -625,8 +629,12 @@
          }
     });
 
+    // Cierre universal con tecla Escape
     document.addEventListener('keydown', (e) => { 
-        if (e.key === 'Escape') { closeLightbox(); closeDocumentModal(); }
+        if (e.key === 'Escape') { 
+            closeLightbox(); 
+            if (typeof closeDocumentModal === 'function') closeDocumentModal(); 
+        }
     });
 </script>
 </body>
