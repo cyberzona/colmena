@@ -567,35 +567,25 @@
     // =========================================================================
     // === 4. OPERACIÓN: FORO-MASK (Integración Invisible) =====================
     // =========================================================================
-    // OPERACIÓN: FORO-ACCESO (Mejorada)
+ 
 function cargarForoInvisible() {
     const URL_FORO = 'https://colmena8.com'; 
     
-    // Intentamos la máscara invisible
-    try {
-        // Opción A: Redirección directa en la misma ventana (Más fiable si el dominio falla)
-        window.location.href = URL_FORO;
-        
-        /* Opción B: Si prefieres seguir intentando el Iframe invisible, 
-           comenta la línea de arriba y usa esta:
-        */
-        /*
-        document.body.style.cssText = "margin:0; padding:0; overflow:hidden; background:var(--dark);";
-        document.body.innerHTML = ''; 
-        const iframe = document.createElement('iframe');
-        iframe.src = URL_FORO;
-        iframe.style.cssText = "width:100vw; height:100vh; border:none; display:block;";
-        iframe.onerror = function() {
-            // Si el iframe falla, redirigimos directamente
-            window.location.href = URL_FORO;
-        };
-        document.body.appendChild(iframe);
-        */
-    } catch (e) {
-        window.location.href = URL_FORO;
-    }
-}
+    // Mostramos un breve mensaje de transición con la estética de la Logia
+    document.body.style.backgroundColor = 'var(--dark)';
+    document.body.innerHTML = `
+        <div style="display:flex; justify-content:center; align-items:center; height:100vh; flex-direction:column; font-family:var(--ff-medieval); color:var(--gold);">
+            <div class="spinner" style="border:4px solid var(--brown); border-top:4px solid var(--gold); border-radius:50%; width:40px; height:40px; animation: spin 1s linear infinite;"></div>
+            <p style="margin-top:20px; letter-spacing:2px;">INGRESANDO AL FORO PRIVADO...</p>
+        </div>
+        <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
+    `;
 
+    // Redirección inmediata en la misma pestaña
+    setTimeout(() => {
+        window.location.replace(URL_FORO);
+    }, 500);
+}
     // =========================================================================
     // === 5. INICIALIZACIÓN GLOBAL ============================================
     // =========================================================================
