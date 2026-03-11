@@ -526,42 +526,54 @@
         DOM.docIframe.src = "";
     }
 
-    function initGalleryListeners() {
+   function initGalleryListeners() {
         document.querySelectorAll('#image-gallery img').forEach(img => {
             img.onclick = function() {
+                const altText = this.alt || "Imagen de la Colmena";
+                const lbCaption = document.getElementById('lb-caption');
+
+                // Sincronización de Imagen y Texto
                 DOM.lbImg.src = this.src;
-                DOM.lbImg.alt = this.alt;
+                DOM.lbImg.alt = altText;
+                
+                if (lbCaption) {
+                    lbCaption.textContent = altText;
+                    lbCaption.style.display = "block"; // Asegura que sea visible
+                }
+
                 DOM.lightbox.classList.add('open');
                 DOM.lightbox.setAttribute('aria-hidden', 'false');
                 DOM.lbRitualButtons.innerHTML = '';
                 
+                // Lógica de rituales adjuntos
                 const rituals = this.getAttribute('data-rituales');
                 if (rituals) {
                     JSON.parse(rituals).forEach(r => {
                         const b = document.createElement('button');
                         b.textContent = `📖 Ver ${r.titulo}`;
-                        b.className = "btn-ritual-lightbox"; // Usar clase CSS en lugar de inline largo
+                        b.className = "btn-ritual-lightbox";
+                        b.style.cssText = "background:var(--gold); color:#fff; border:0; padding:10px 20px; border-radius:20px; font-weight:bold; cursor:pointer; margin:5px; width:90%; max-width:300px;";
                         b.onclick = () => openDocumentInModal(r.url, r.titulo);
                         DOM.lbRitualButtons.appendChild(b);
                     });
                 }
             };
         });
-        
-        // Data inyectada para rituales (ejemplo)
-        const ritImg = document.getElementById('rituales-img');
-        if(ritImg) ritImg.setAttribute('data-rituales', JSON.stringify([
-            { titulo: 'Grado 1', url: 'rituales.html?num=1' },
-            { titulo: 'Grado 2', url: 'rituales.html?num=2' },
-            { titulo: 'Grado 3', url: 'rituales.html?num=3' }
-        ]));
     }
 
     function closeLightbox() {
         if(!DOM.lightbox) return;
+        const lbCaption = document.getElementById('lb-caption');
+        
         DOM.lightbox.classList.remove('open');
         DOM.lightbox.setAttribute('aria-hidden', 'true');
         DOM.lbImg.src = '';
+        
+        if (lbCaption) {
+            lbCaption.style.display = "none";
+            lbCaption.textContent = '';
+        }
+        DOM.lbRitualButtons.innerHTML = '';
     }
 
     // =========================================================================
