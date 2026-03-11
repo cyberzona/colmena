@@ -411,15 +411,16 @@
 
             if (data.items && data.items.length > 0) {
                 const evento = data.items[0];
-                if (elFecha) {
-                    const fecha = new Date(evento.start.dateTime || evento.start.date);
-                    elFecha.textContent = d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
-                    .replace(/(^\w|\s\w)/g, m => m.toUpperCase());
-                }
-                if (elLugar) {
-                    elLugar.textContent = (evento.location || "Al Oriente de la Montaña del Águila");
-                }
+               if (elFecha) {
+                const d = new Date(evento.start.dateTime || evento.start.date);
+                // Fecha con iniciales en mayúscula
+                elFecha.textContent = d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).replace(/(^\w|\s\w)/g, m => m.toUpperCase());
             }
+            if (elLugar) {
+                // Lugar sin forzar mayúsculas
+                elLugar.textContent = (evento.location || "Al Oriente de la Montaña del Águila");
+            }
+            
         } catch (error) {
             console.error("Error en Operación [CAL-SYNC]:", error);
         }
