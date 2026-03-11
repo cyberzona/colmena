@@ -413,12 +413,11 @@
                 const evento = data.items[0];
                 if (elFecha) {
                     const fecha = new Date(evento.start.dateTime || evento.start.date);
-                    elFecha.textContent = fecha.toLocaleDateString('es-ES', { 
-                        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
-                    }).toUpperCase();
+                    elFecha.textContent = d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+                    .replace(/(^\w|\s\w)/g, m => m.toUpperCase());
                 }
                 if (elLugar) {
-                    elLugar.textContent = (evento.location || "AL ORIENTE DE LA MONTAÑA DEL ÁGUILA").toUpperCase();
+                    elLugar.textContent = (evento.location || "Al Oriente de la Montaña del Águila");
                 }
             }
         } catch (error) {
