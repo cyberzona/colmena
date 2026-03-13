@@ -537,9 +537,13 @@
                     }
                 }
             });
-            if (latestTenidaImage) {
+           if (latestTenidaImage) {
                 ULTIMA_TENIDA_IMG_ELEMENT.src = latestTenidaImage.src;
                 ULTIMA_TENIDA_IMG_ELEMENT.alt = latestTenidaImage.alt;
+                
+                // --- NUEVO: Marcamos que esta imagen debe mostrar el botón del foro ---
+                ULTIMA_TENIDA_IMG_ELEMENT.setAttribute('data-foro', 'true');
+                // ---------------------------------------------------------------------
             }
             ULTIMA_TENIDA_IMG_ELEMENT.classList.remove('loading');
         } catch (error) { console.error("Error Imagen:", error); ULTIMA_TENIDA_IMG_ELEMENT.classList.remove('loading'); }
@@ -597,6 +601,18 @@
                 };
                 lbRitualButtons.appendChild(btn);
             });
+        }
+        // NUEVA LÓGICA: Botón para el Foro en la Tenida
+        if (esForo === 'true') {
+            const btn = document.createElement('button');
+            btn.textContent = `💬 Ir al Foro`;
+            btn.style.cssText = `background:var(--gold);color:#fff;border:0;padding:10px 20px;border-radius:20px;font-weight:bold;cursor:pointer;font-family:var(--ff-sans);font-size:0.9rem;width:100%;max-width:300px;margin-top:10px;`;
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                closeLightbox(); // Cerramos el lightbox antes de abrir el foro
+                abrirForo();     // Llamamos a tu función existente
+            };
+            lbRitualButtons.appendChild(btn);
         }
     }
 
