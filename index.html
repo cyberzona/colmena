@@ -614,15 +614,16 @@
             });
         }
 
-        // Botón del Foro
+        // Botón del Foro (Actualizado para abrir en Modal)
         if (target.getAttribute('data-foro') === 'true') {
             const btn = document.createElement('button');
             btn.textContent = `💬 Ir al Foro`;
             btn.style.cssText = `background:var(--gold);color:#fff;border:0;padding:10px 20px;border-radius:20px;font-weight:bold;cursor:pointer;width:100%;max-width:300px;margin-top:10px;display:block;margin-left:auto;margin-right:auto;`;
             btn.onclick = (e) => {
                 e.stopPropagation();
-                closeLightbox(); 
-                abrirForo();
+                closeLightbox(); // Cierra el visor de imagen
+                // En lugar de abrirForo(), usamos la función del modal:
+                openDocumentInModal("https://colmena8.com", "Foro Colmena No. 8");
             };
             lbRitualButtons.appendChild(btn);
         }
@@ -635,6 +636,13 @@
         lbImg.src = '';
         lbRitualButtons.innerHTML = '';
     }
+    // --- ASIGNACIÓN DE EVENTOS DE CIERRE ---
+    // Esto es lo que activa la "X" del Lightbox
+    const lbCloseBtn = document.getElementById('lb-close');
+    if (lbCloseBtn) {
+        lbCloseBtn.addEventListener('click', closeLightbox);
+    }
+     
     // =========================================================================
     // === 6. INICIALIZACIÓN GLOBAL ============================================
     // =========================================================================
