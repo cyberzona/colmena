@@ -629,6 +629,7 @@
         }
     }
 
+    // --- FUNCIÓN DE CIERRE DEL LIGHTBOX ---
     function closeLightbox(){
         if(!lightbox) return;
         lightbox.classList.remove('open');
@@ -636,30 +637,33 @@
         lbImg.src = '';
         lbRitualButtons.innerHTML = '';
     }
+
     // --- ASIGNACIÓN DE EVENTOS DE CIERRE ---
     // Esto es lo que activa la "X" del Lightbox
     const lbCloseBtn = document.getElementById('lb-close');
     if (lbCloseBtn) {
         lbCloseBtn.addEventListener('click', closeLightbox);
     }
-     
+
+    // Cerrar al hacer clic fuera de la imagen
+    if (lightbox) {
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) closeLightbox();
+        });
+    }
+
     // =========================================================================
     // === 6. INICIALIZACIÓN GLOBAL ============================================
     // =========================================================================
     document.addEventListener('DOMContentLoaded', () => {
-         cargarProximoEvento(); 
-         loadTrabajos();       
-         cargarCuadroLogial(); 
-         fetchLatestTenidaImage(); 
-         initGalleryListeners(); 
-         
-         const btnForo = document.getElementById('btn-foro-invisible');
-         if (btnForo) {
-             btnForo.onclick = cargarForoInvisible;
-         }
+        cargarProximoEvento(); 
+        loadTrabajos();       
+        cargarCuadroLogial(); 
+        fetchLatestTenidaImage(); 
+        initGalleryListeners(); 
     });
 
-    // Cierre universal con tecla Escape
+    // Cierre universal con tecla Escape (Lightbox y Modales)
     document.addEventListener('keydown', (e) => { 
         if (e.key === 'Escape') { 
             closeLightbox(); 
