@@ -541,9 +541,11 @@
                 ULTIMA_TENIDA_IMG_ELEMENT.src = latestTenidaImage.src;
                 ULTIMA_TENIDA_IMG_ELEMENT.alt = latestTenidaImage.alt;
                 
-                // --- NUEVO: Marcamos que esta imagen debe mostrar el botón del foro ---
+                // 1. Marcamos la imagen
                 ULTIMA_TENIDA_IMG_ELEMENT.setAttribute('data-foro', 'true');
-                // ---------------------------------------------------------------------
+
+                // 2. FORZAMOS el evento de clic aquí mismo para asegurar que funcione
+                ULTIMA_TENIDA_IMG_ELEMENT.onclick = openLightboxHandler;
             }
             ULTIMA_TENIDA_IMG_ELEMENT.classList.remove('loading');
         } catch (error) { console.error("Error Imagen:", error); ULTIMA_TENIDA_IMG_ELEMENT.classList.remove('loading'); }
