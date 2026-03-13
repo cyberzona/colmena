@@ -541,13 +541,15 @@
                 ULTIMA_TENIDA_IMG_ELEMENT.src = latestTenidaImage.src;
                 ULTIMA_TENIDA_IMG_ELEMENT.alt = latestTenidaImage.alt;
                 
-                // 1. Marcamos la imagen
+                // 1. Marcamos que es la imagen de la Tenida
                 ULTIMA_TENIDA_IMG_ELEMENT.setAttribute('data-foro', 'true');
 
-                // 2. FORZAMOS el evento de clic aquí mismo para asegurar que funcione
-                ULTIMA_TENIDA_IMG_ELEMENT.onclick = openLightboxHandler;
+                // 2. IMPORTANTE: Conectamos manualmente la función para abrir el visor
+                ULTIMA_TENIDA_IMG_ELEMENT.addEventListener('click', openLightboxHandler);
+                
+                // 3. Opcional: Cambiamos el cursor para que el usuario sepa que es clickable
+                ULTIMA_TENIDA_IMG_ELEMENT.style.cursor = 'pointer';
             }
-            ULTIMA_TENIDA_IMG_ELEMENT.classList.remove('loading');
         } catch (error) { console.error("Error Imagen:", error); ULTIMA_TENIDA_IMG_ELEMENT.classList.remove('loading'); }
     }
     
