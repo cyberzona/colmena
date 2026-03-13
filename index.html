@@ -560,12 +560,39 @@
   // =========================================================================
     // === 5. LÓGICA DEL LIGHTBOX (Galería) ====================================
     // =========================================================================
+    const lightbox = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lb-img');
+    const lbCaption = document.getElementById('lb-caption');
+    const lbRitualButtons = document.getElementById('lb-ritual-buttons');
+
+    function initGalleryListeners() {
+        const galleryImgs = document.querySelectorAll('#image-gallery img');
+        galleryImgs.forEach(img => {
+            img.addEventListener('click', openLightboxHandler);
+            img.style.cursor = 'pointer';
+        });
+        
+        // Configuramos la imagen de rituales estática
+        const ritualesImg = document.getElementById('rituales-img');
+        if (ritualesImg) {
+            ritualesImg.setAttribute('data-rituales', JSON.stringify([
+                { titulo: 'Ritual de Aprendiz', url: 'rituales.html?num=1' },
+                { titulo: 'Ritual de Compañero', url: 'rituales.html?num=2' },
+                { titulo: 'Ritual de Maestro', url: 'rituales.html?num=3' }
+            ]));
+            ritualesImg.addEventListener('click', openLightboxHandler);
+        }
+    }
     
-    function openLightboxHandler() {
-        const full = this.src;
-        const altText = this.alt || "Imagen";
-        const ritualesData = this.getAttribute('data-rituales');
-        const esForo = this.getAttribute('data-foro'); // <--- Detecta si es la imagen de Tenida
+    function openLightboxHandler(event) {
+        // Obtenemos la imagen sin importar si el evento viene de addEventListener o .onclick
+        const target = event.currentTarget || this; 
+        const full = target.src;
+        const altText = target.alt || "Imagen";
+        const ritualesData = target.getAttribute('data-rituales');
+        const esForo = target.getAttribute('data-foro');
+
+        if (!lightbox || !lbImg) return;
 
         lbImg.src = full;
         lbImg.alt = altText;
@@ -577,15 +604,16 @@
             lbCaption.style.display = "block";
         }
 
+        // Limpiamos botones anteriores
         lbRitualButtons.innerHTML = '';
 
-        // Si la imagen tiene datos de Rituales (Aprendiz, Compañero, Maestro)
+        // Caso 1: Si tiene botones de Rituales
         if (ritualesData) {
             const rituales = JSON.parse(ritualesData);
             rituales.forEach(ritual => {
                 const btn = document.createElement('button');
                 btn.textContent = `📖 ${ritual.titulo}`;
-                btn.style.cssText = `background:var(--gold);color:#fff;border:0;padding:10px 20px;border-radius:20px;font-weight:bold;cursor:pointer;font-family:var(--ff-sans);font-size:0.9rem;width:100%;max-width:300px;margin-bottom:5px;`;
+                btn.style.cssText = `background:var(--gold);color:#fff;border:0;padding:10px 20px;border-radius:20px;font-weight:bold;cursor:pointer;font-family:var(--ff-sans);font-size:0.9rem;width:100%;max-width:300px;margin-bottom:8px;display:block;margin-left:auto;margin-right:auto;`;
                 btn.onclick = (e) => {
                     e.stopPropagation(); 
                     openDocumentInModal(ritual.url, ritual.titulo);
@@ -594,27 +622,18 @@
             });
         }
 
-        // NUEVO: Si la imagen es de la Tenida, muestra el botón del Foro
+        // Caso 2: Si es la imagen de Tenida, ponemos el botón del Foro
         if (esForo === 'true') {
             const btn = document.createElement('button');
             btn.textContent = `💬 Ir al Foro`;
-            btn.style.cssText = `background:var(--gold);color:#fff;border:0;padding:10px 20px;border-radius:20px;font-weight:bold;cursor:pointer;font-family:var(--ff-sans);font-size:0.9rem;width:100%;max-width:300px;margin-top:10px;`;
+            btn.style.cssText = `background:var(--gold);color:#fff;border:0;padding:10px 20px;border-radius:20px;font-weight:bold;cursor:pointer;font-family:var(--ff-sans);font-size:0.9rem;width:100%;max-width:300px;margin-top:10px;display:block;margin-left:auto;margin-right:auto;`;
             btn.onclick = (e) => {
                 e.stopPropagation();
-                closeLightbox(); // Cierra el visor de imagen
-                abrirForo();     // Ejecuta tu función de abrir el foro
+                closeLightbox(); 
+                if (typeof abrirForo === 'function') abrirForo();
             };
             lbRitualButtons.appendChild(btn);
         }
-    }
-    // --- FUNCIÓN DE CIERRE DEL LIGHTBOX ---
-    function closeLightbox(){
-        if(!lightbox) return;
-        lightbox.classList.remove('open');
-        lightbox.setAttribute('aria-hidden','true');
-        lbImg.src = '';
-        if (lbCaption) lbCaption.style.display = "none";
-        lbRitualButtons.innerHTML = '';
     }
     
     // Eventos de cierre para el Lightbox
