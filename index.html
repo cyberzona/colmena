@@ -366,101 +366,310 @@
     </div>
 
  <script>
- // =========================================================================
-// === CONFIGURACIÓN GLOBAL (Verifica que estos datos sean correctos) ===
-// =========================================================================
-const GITHUB_USER = 'cyberzona'; 
-const GITHUB_REPO = 'colmena';
-const GITHUB_BRANCH = 'main';          
-const IMAGES_PATH = 'images';          
-const DOCS_PATH = 'data';          
+   // =========================================================================
+    // === ZONA DE CONFIGURACIÓN ===============================================
+    // =========================================================================
+    const GITHUB_USER = 'cyberzona'; 
+    const GITHUB_REPO = 'colmena';
+    const GITHUB_BRANCH = 'main';          
+    const IMAGES_PATH = 'images';          
+    const DOCS_PATH = 'data';          
+    
+    const ULTIMA_TENIDA_IMG_ELEMENT = document.getElementById('ultima-tenida-img');
+    const TENIDA_FILENAME_REGEX = /^tenida-(\d{4})(\d{2})(\d{2})\.(png|jpg|jpeg|gif|webp)$/i;
+    const IMAGE_API_URL = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${IMAGES_PATH}?ref=${GITHUB_BRANCH}`;
+    
+    const TRABAJOS_FILE = 'work-study.json';
+    const TRABAJOS_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${GITHUB_BRANCH}/${DOCS_PATH}/${TRABAJOS_FILE}`;
+    const TRABAJOS_LIST_ELEMENT = document.getElementById('trabajos-list');
+    
+    const CUADRO_FILE = 'cuadro-logial.json'; 
+    const CUADRO_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${GITHUB_BRANCH}/${DOCS_PATH}/${CUADRO_FILE}`;
+    
+    const CALENDAR_API_KEY = 'AIzaSyB2ObZTbhXwsFKnQLm73XTcdCNW7aqQEPo';
+    const CALENDAR_ID = '9d46fca8679c56e5d9dd7a0800eb446f8a06697c8c3233e162d053b15c9b8dc4@group.calendar.google.com';
 
-const CALENDAR_API_KEY = 'AIzaSyB2ObZTbhXwsFKnQLm73XTcdCNW7aqQEPo';
-const CALENDAR_ID = '9d46fca8679c56e5d9dd7a0800eb446f8a06697c8c3233e162d053b15c9b8dc4@group.calendar.google.com';
+    // Función para el acceso al foro sin errores de conexión
+   
+    function abrirForo() {
+        var iframe = document.getElementById('foro-container');
+        // Aquí pones la URL de tu foro en DigitalOcean
+        iframe.src = "https://colmena8.com"; 
+        iframe.style.display = "block";    
+        // Opcional: Desplazar la vista suavemente hacia el foro
+        iframe.scrollIntoView({ behavior: 'smooth' });
+    }
 
-// =========================================================================
-// === 1. LÓGICA DE CALENDARIO (OPERACIÓN: CAL-SYNC) ===
-// =========================================================================
-async function cargarProximoEvento() {
-    const elFecha = document.getElementById('tenida-fecha');
-    const elLugar = document.getElementById('tenida-lugar');
-    const now = new Date().toISOString();
-    const url = `https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?key=${CALENDAR_API_KEY}&timeMin=${now}&maxResults=1&singleEvents=true&orderBy=startTime`;
 
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
-        if (data.items && data.items.length > 0) {
-            const evento = data.items[0];
-            if (elFecha) {
-                const d = new Date(evento.start.dateTime || evento.start.date);
-                elFecha.textContent = d.toLocaleDateString('es-ES', { 
-                    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
-                }).replace(/(^\w|\s\w)/g, m => m.toUpperCase());
-            }
-            if (elLugar) {
-                elLugar.textContent = (evento.location || "Al Oriente de la Montaña del Águila");
-            }
+    // =========================================================================
+    // === 0. LÓGICA DE CARGA DE CALENDARIO (OPERACIÓN: CAL-SYNC) ===
+    // =========================================================================
+    async function cargarProximoEvento() {
+        const elFecha = document.getElementById('tenida-fecha');
+        const elLugar = document.getElementById('tenida-lugar');
+        const now = new Date().toISOString();
+        const url = `https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?key=${CALENDAR_API_KEY}&timeMin=${now}&maxResults=1&singleEvents=true&orderBy=startTime`;
+
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            if (data.items && data.items.length > 0) {
+                const evento = data.items[0];
+                if (elFecha) {
+                    const d = new Date(evento.start.dateTime || evento.start.date);
+                    elFecha.textContent = d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).replace(/(^\w|\s\w)/g, m => m.toUpperCase());
+                }
+                if (elLugar) {
+                    elLugar.textContent = (evento.location || "Al Oriente de la Montaña del Águila");
+                }
+            } // <--- Esta es la llave que faltaba para cerrar el "if (data.items...)"
+        } catch (error) {
+            console.error("Error en Operación [CAL-SYNC]:", error);
         }
-    } catch (error) {
-        console.error("Error en [CAL-SYNC]:", error);
     }
-}
-
-// =========================================================================
-// === 2. LÓGICA DEL MODAL DE DOCUMENTOS ===
-// =========================================================================
-const docModal = document.getElementById('document-modal');
-const docIframe = document.getElementById('doc-iframe');
-const docTitle = document.getElementById('doc-title');
-
-function openDocumentInModal(url, titulo) {
-    if (!docModal || !docIframe) return;
-
-    let finalUrl = url;
-    // Ajuste automático para visualización de Google Docs/Sheets
-    if (url.includes('docs.google.com/document')) {
-        finalUrl = url.replace('/edit', '/preview');
-    } else if (url.includes('docs.google.com/spreadsheets')) {
-        finalUrl = url.replace('/edit', '/pubhtml?widget=true&headers=false');
+    // =========================================================================
+    // === 1. LÓGICA DE CARGA DE TRABAJOS ======================================
+    // =========================================================================
+    async function loadTrabajos() {
+        if (!TRABAJOS_LIST_ELEMENT) return;          
+        try {
+            const response = await fetch(TRABAJOS_URL);          
+            if (!response.ok) throw new Error(`Error ${response.status}`);          
+            const trabajos = await response.json();
+            TRABAJOS_LIST_ELEMENT.innerHTML = '';
+            if (!Array.isArray(trabajos) || trabajos.length === 0) {
+                TRABAJOS_LIST_ELEMENT.innerHTML = '<li style="text-align:center;color:#6a4f3e;">No hay trabajos publicados aún.</li>';
+                return;
+            }
+            trabajos.forEach(trabajo => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <a href="#" data-url="${trabajo.url}" data-titulo="${trabajo.titulo}">
+                        ${trabajo.titulo}
+                        <span>${trabajo.descripcion}</span>
+                    </a>
+                `;
+                li.querySelector('a').addEventListener('click', openDocumentModal);
+                TRABAJOS_LIST_ELEMENT.appendChild(li);
+            });
+        } catch (error) {
+            console.error("Fallo al cargar los trabajos:", error);
+            TRABAJOS_LIST_ELEMENT.innerHTML = '<li style="color:#d9534f;text-align:center;">Error al cargar documentos.</li>';
+        }
     }
 
-    docTitle.textContent = `Documento: ${titulo}`;
-    docIframe.src = finalUrl;
-    docModal.classList.add('open');
-    docModal.setAttribute('aria-hidden', 'false');
+    // =========================================================================
+    // === 2. LÓGICA DE CARGA DEL CUADRO LOGIAL ================================
+    // =========================================================================
+    async function cargarCuadroLogial() {
+        try {
+            const response = await fetch(CUADRO_URL);
+            if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+            const datosCuadro = await response.json();
+            if (document.getElementById('vm-nombre')) document.getElementById('vm-nombre').textContent = datosCuadro.venerable_maestro.nombre;
+            if (document.getElementById('pv-nombre')) document.getElementById('pv-nombre').textContent = datosCuadro.primer_vigilante.nombre;
+            if (document.getElementById('sv-nombre')) document.getElementById('sv-nombre').textContent = datosCuadro.segundo_vigilante.nombre;
+            if (document.getElementById('ms-nombre')) document.getElementById('ms-nombre').textContent = datosCuadro.secretario.nombre;
+        } catch (error) { console.error("Fallo al cargar el Cuadro Logial:", error); }
+    }    
+
+    // =========================================================================
+    // === 3. LÓGICA DEL MODAL DE DOCUMENTOS ===================================
+    // =========================================================================
+    const docModal = document.getElementById('document-modal');
+    const docIframe = document.getElementById('doc-iframe');
+    const docTitle = document.getElementById('doc-title');
+    const docCloseButton = document.getElementById('doc-close');
     
-    // Si el lightbox está abierto, lo cerramos para no encimar ventanas
-    if (typeof closeLightbox === 'function') closeLightbox();
-}
-
-function closeDocumentModal() {
-    if (!docModal) return;
-    docModal.classList.remove('open');
-    docModal.setAttribute('aria-hidden', 'true');
-    docIframe.src = "";
-}
-
-// =========================================================================
-// === 3. INICIALIZACIÓN Y EVENTOS ===
-// =========================================================================
-document.addEventListener('DOMContentLoaded', () => {
-    // Ejecutamos las cargas principales
-    cargarProximoEvento();
-    
-    // Si tienes las funciones de imágenes y cuadros, llámalas aquí:
-    if (typeof loadTrabajos === 'function') loadTrabajos();
-    if (typeof cargarCuadroLogial === 'function') cargarCuadroLogial();
-    if (typeof fetchLatestTenidaImage === 'function') fetchLatestTenidaImage();
-    if (typeof initGalleryListeners === 'function') initGalleryListeners();
-});
-
-// Cerrar con Escape
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-        closeDocumentModal();
-        if (typeof closeLightbox === 'function') closeLightbox();
+    function openDocumentInModal(url, titulo) {
+        if (url.includes('docs.google.com/document')) {
+            url = url.replace('/edit', '/preview');
+        } else if (url.includes('docs.google.com/spreadsheets')) {
+            url = url.replace('/edit', '/pubhtml?widget=true&headers=false');
+        }
+        docTitle.textContent = `Documento: ${titulo}`;
+        docIframe.src = url;
+        docModal.classList.add('open');
+        docModal.setAttribute('aria-hidden', 'false');
+        closeLightbox();
     }
-});</script>
+    
+    function openDocumentModal(event) {
+        event.preventDefault(); 
+        const link = event.currentTarget;
+        const url = link.getAttribute('data-url');
+        const title = link.getAttribute('data-titulo');
+        openDocumentInModal(url, title);
+    }
+
+    function closeDocumentModal() {
+        if(!docModal) return;
+        docModal.classList.remove('open');
+        docModal.setAttribute('aria-hidden', 'true');
+        docIframe.src = "";
+        docTitle.textContent = "Cargando Documento...";
+    }
+
+    if(docCloseButton) docCloseButton.addEventListener('click', closeDocumentModal);
+    if(docModal) docModal.addEventListener('click', (e) => { if (e.target === docModal) closeDocumentModal(); });
+
+   // =========================================================================
+    // === 4. LÓGICA DE CARGA DE IMAGEN DE TENIDA =============================
+    // =========================================================================
+    async function fetchLatestTenidaImage() {
+        if (!ULTIMA_TENIDA_IMG_ELEMENT) return;
+        ULTIMA_TENIDA_IMG_ELEMENT.classList.add('loading'); 
+        try {
+            const response = await fetch(IMAGE_API_URL);
+            if (!response.ok) throw new Error(`Error: ${response.statusText}`);
+            const files = await response.json();
+            let latestTenidaImage = null;
+            let latestTenidaDate = null;
+            
+            files.forEach(file => {
+                if (file.type === 'file') {
+                    const match = file.name.match(TENIDA_FILENAME_REGEX);
+                    if (match) {
+                        const date = new Date(parseInt(match[1]), parseInt(match[2]) - 1, parseInt(match[3])); 
+                        if (!latestTenidaDate || date.getTime() > latestTenidaDate.getTime()) {
+                            latestTenidaDate = date;
+                            latestTenidaImage = { src: file.download_url, alt: `Tenida ${match[3]}/${match[2]}/${match[1]}` };
+                        }
+                    }
+                }
+            });
+
+            if (latestTenidaImage) {
+                ULTIMA_TENIDA_IMG_ELEMENT.src = latestTenidaImage.src;
+                ULTIMA_TENIDA_IMG_ELEMENT.alt = latestTenidaImage.alt;
+                ULTIMA_TENIDA_IMG_ELEMENT.setAttribute('data-foro', 'true');
+                // Conectamos el evento
+                ULTIMA_TENIDA_IMG_ELEMENT.onclick = openLightboxHandler;
+                ULTIMA_TENIDA_IMG_ELEMENT.style.cursor = 'pointer';
+            }
+            ULTIMA_TENIDA_IMG_ELEMENT.classList.remove('loading');
+        } catch (error) { 
+            console.error("Error Imagen:", error); 
+            ULTIMA_TENIDA_IMG_ELEMENT.classList.remove('loading'); 
+        }
+    }
+
+    // =========================================================================
+    // === 5. LÓGICA DEL LIGHTBOX (Galería) ====================================
+    // =========================================================================
+    const lightbox = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lb-img');
+    const lbCaption = document.getElementById('lb-caption');
+    const lbRitualButtons = document.getElementById('lb-ritual-buttons');
+
+    function initGalleryListeners() {
+        const galleryImgs = document.querySelectorAll('#image-gallery img');
+        galleryImgs.forEach(img => {
+            img.addEventListener('click', openLightboxHandler);
+            img.style.cursor = 'pointer';
+        });
+        
+        const ritualesImg = document.getElementById('rituales-img');
+        if (ritualesImg) {
+            ritualesImg.setAttribute('data-rituales', JSON.stringify([
+                { titulo: 'Ritual de Aprendiz', url: 'rituales.html?num=1' },
+                { titulo: 'Ritual de Compañero', url: 'rituales.html?num=2' },
+                { titulo: 'Ritual de Maestro', url: 'rituales.html?num=3' }
+            ]));
+            ritualesImg.onclick = openLightboxHandler;
+        }
+    }
+    
+    function openLightboxHandler(event) {
+        // Esta línea previene errores si el evento es manual
+        const target = (event && event.currentTarget) ? event.currentTarget : this;
+        
+        if (!target || !lightbox || !lbImg) return;
+
+        lbImg.src = target.src;
+        lbImg.alt = target.alt || "Imagen";
+        lightbox.classList.add('open');
+        lightbox.setAttribute('aria-hidden', 'false');
+        
+        if (lbCaption) {
+            lbCaption.textContent = lbImg.alt;
+            lbCaption.style.display = "block";
+        }
+
+        lbRitualButtons.innerHTML = '';
+
+        // Botones de Rituales
+        const ritualesData = target.getAttribute('data-rituales');
+        if (ritualesData) {
+            const rituales = JSON.parse(ritualesData);
+            rituales.forEach(ritual => {
+                const btn = document.createElement('button');
+                btn.textContent = `📖 ${ritual.titulo}`;
+                btn.style.cssText = `background:var(--gold);color:#fff;border:0;padding:10px 20px;border-radius:20px;font-weight:bold;cursor:pointer;width:100%;max-width:300px;margin-bottom:8px;display:block;margin-left:auto;margin-right:auto;`;
+                btn.onclick = (e) => {
+                    e.stopPropagation(); 
+                    openDocumentInModal(ritual.url, ritual.titulo);
+                };
+                lbRitualButtons.appendChild(btn);
+            });
+        }
+
+        // Botón del Foro (Actualizado para abrir en Modal)
+        if (target.getAttribute('data-foro') === 'true') {
+            const btn = document.createElement('button');
+            btn.textContent = `💬 Ir al Foro`;
+            btn.style.cssText = `background:var(--gold);color:#fff;border:0;padding:10px 20px;border-radius:20px;font-weight:bold;cursor:pointer;width:100%;max-width:300px;margin-top:10px;display:block;margin-left:auto;margin-right:auto;`;
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                closeLightbox(); // Cierra el visor de imagen
+                // En lugar de abrirForo(), usamos la función del modal:
+                openDocumentInModal("https://colmena8.com", "Foro Colmena No. 8");
+            };
+            lbRitualButtons.appendChild(btn);
+        }
+    }
+
+    // --- FUNCIÓN DE CIERRE DEL LIGHTBOX ---
+    function closeLightbox(){
+        if(!lightbox) return;
+        lightbox.classList.remove('open');
+        lightbox.setAttribute('aria-hidden','true');
+        lbImg.src = '';
+        lbRitualButtons.innerHTML = '';
+    }
+
+    // --- ASIGNACIÓN DE EVENTOS DE CIERRE ---
+    // Esto es lo que activa la "X" del Lightbox
+    const lbCloseBtn = document.getElementById('lb-close');
+    if (lbCloseBtn) {
+        lbCloseBtn.addEventListener('click', closeLightbox);
+    }
+
+    // Cerrar al hacer clic fuera de la imagen
+    if (lightbox) {
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) closeLightbox();
+        });
+    }
+
+    // =========================================================================
+    // === 6. INICIALIZACIÓN GLOBAL ============================================
+    // =========================================================================
+    document.addEventListener('DOMContentLoaded', () => {
+        cargarProximoEvento(); 
+        loadTrabajos();       
+        cargarCuadroLogial(); 
+        fetchLatestTenidaImage(); 
+        initGalleryListeners(); 
+    });
+
+    // Cierre universal con tecla Escape (Lightbox y Modales)
+    document.addEventListener('keydown', (e) => { 
+        if (e.key === 'Escape') { 
+            closeLightbox(); 
+            if (typeof closeDocumentModal === 'function') closeDocumentModal(); 
+        }
+    });
+    </script>
 </body>
 </html>
