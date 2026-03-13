@@ -516,7 +516,7 @@
     // =========================================================================
     // === 4. LÓGICA DE CARGA DE IMAGEN DE TENIDA =============================
     // =========================================================================
-    async function fetchLatestTenidaImage() {
+   async function fetchLatestTenidaImage() {
         if (!ULTIMA_TENIDA_IMG_ELEMENT) return;
         ULTIMA_TENIDA_IMG_ELEMENT.classList.add('loading'); 
         try {
@@ -525,6 +525,7 @@
             const files = await response.json();
             let latestTenidaImage = null;
             let latestTenidaDate = null;
+            
             files.forEach(file => {
                 if (file.type === 'file') {
                     const match = file.name.match(TENIDA_FILENAME_REGEX);
@@ -537,20 +538,23 @@
                     }
                 }
             });
-           if (latestTenidaImage) {
+
+            if (latestTenidaImage) {
                 ULTIMA_TENIDA_IMG_ELEMENT.src = latestTenidaImage.src;
                 ULTIMA_TENIDA_IMG_ELEMENT.alt = latestTenidaImage.alt;
                 
-                // 1. Marcamos que es la imagen de la Tenida
+                // Marcamos la imagen para el foro
                 ULTIMA_TENIDA_IMG_ELEMENT.setAttribute('data-foro', 'true');
 
-                // 2. IMPORTANTE: Conectamos manualmente la función para abrir el visor
-                ULTIMA_TENIDA_IMG_ELEMENT.addEventListener('click', openLightboxHandler);
-                
-                // 3. Opcional: Cambiamos el cursor para que el usuario sepa que es clickable
+                // ESTA LÍNEA ES LA QUE ACTIVA EL CLIC
+                ULTIMA_TENIDA_IMG_ELEMENT.onclick = openLightboxHandler;
                 ULTIMA_TENIDA_IMG_ELEMENT.style.cursor = 'pointer';
             }
-        } catch (error) { console.error("Error Imagen:", error); ULTIMA_TENIDA_IMG_ELEMENT.classList.remove('loading'); }
+            ULTIMA_TENIDA_IMG_ELEMENT.classList.remove('loading');
+        } catch (error) { 
+            console.error("Error Imagen:", error); 
+            ULTIMA_TENIDA_IMG_ELEMENT.classList.remove('loading'); 
+        }
     }
     
   // =========================================================================
