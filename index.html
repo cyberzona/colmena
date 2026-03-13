@@ -366,160 +366,101 @@
     </div>
 
  <script>
-    /**
- * SISTEMA DE GESTIÓN DIGITAL - COLMENA No. 8
- * Versión mejorada: Optimización de fetch, seguridad de API y manejo de errores.
- */
+ // =========================================================================
+// === CONFIGURACIÓN GLOBAL (Verifica que estos datos sean correctos) ===
+// =========================================================================
+const GITHUB_USER = 'cyberzona'; 
+const GITHUB_REPO = 'colmena';
+const GITHUB_BRANCH = 'main';          
+const IMAGES_PATH = 'images';          
+const DOCS_PATH = 'data';          
 
-const CONFIG = {
-    GITHUB: {
-        USER: 'cyberzona',
-        REPO: 'colmena',
-        BRANCH: 'main',
-        PATHS: { IMAGES: 'images', DOCS: 'data' }
-    },
-    CALENDAR: {
-        ID: '9d46fca8679c56e5d9dd7a0800eb446f8a06697c8c3233e162d053b15c9b8dc4@group.calendar.google.com',
-        // Nota: En producción, considera mover la KEY a un entorno seguro o restringirla por dominio.
-        KEY: 'AIzaSyB2ObZTbhXwsFKnQLm73XTcdCNW7aqQEPo'
-    }
-};
-
-// Selectores de Elementos (Caché de DOM)
-const DOM = {
-    ultimaTenidaImg: document.getElementById('ultima-tenida-img'),
-    trabajosList: document.getElementById('trabajos-list'),
-    docModal: document.getElementById('document-modal'),
-    docIframe: document.getElementById('doc-iframe'),
-    docTitle: document.getElementById('doc-title'),
-    lightbox: document.getElementById('lightbox'),
-    lbImg: document.getElementById('lb-img'),
-    lbRitualButtons: document.getElementById('lb-ritual-buttons')
-};
-
-// Regex para validación de archivos de imagen
-const TENIDA_FILENAME_REGEX = /^tenida-(\d{4})(\d{2})(\d{2})\.(png|jpg|jpeg|gif|webp)$/i;
+const CALENDAR_API_KEY = 'AIzaSyB2ObZTbhXwsFKnQLm73XTcdCNW7aqQEPo';
+const CALENDAR_ID = '9d46fca8679c56e5d9dd7a0800eb446f8a06697c8c3233e162d053b15c9b8dc4@group.calendar.google.com';
 
 // =========================================================================
-// === UTILIDADES GENERALES ===
+// === 1. LÓGICA DE CALENDARIO (OPERACIÓN: CAL-SYNC) ===
 // =========================================================================
+async function cargarProximoEvento() {
+    const elFecha = document.getElementById('tenida-fecha');
+    const elLugar = document.getElementById('tenida-lugar');
+    const now = new Date().toISOString();
+    const url = `https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?key=${CALENDAR_API_KEY}&timeMin=${now}&maxResults=1&singleEvents=true&orderBy=startTime`;
 
-async function fetchData(url) {
     try {
         const response = await fetch(url);
-        if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
-        return await response.json();
-    } catch (error) {
-        console.error(`Error al obtener datos de ${url}:`, error);
-        return null;
-    }
-}
-
-// =========================================================================
-// === LÓGICA DE CARGA (OPERACIONES) ===
-// =========================================================================
-
-async function cargarProximoEvento() {
-    const now = new Date().toISOString();
-    const url = `https://www.googleapis.com/calendar/v3/calendars/${CONFIG.CALENDAR.ID}/events?key=${CONFIG.CALENDAR.KEY}&timeMin=${now}&maxResults=1&singleEvents=true&orderBy=startTime`;
-
-    const data = await fetchData(url);
-    if (data?.items?.length > 0) {
-        const evento = data.items[0];
-        const elFecha = document.getElementById('tenida-fecha');
-        const elLugar = document.getElementById('tenida-lugar');
-
-        if (elFecha) {
-            const d = new Date(evento.start.dateTime || evento.start.date);
-            const fechaFormateada = d.toLocaleDateString('es-ES', { 
-                weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
-            });
-            elFecha.textContent = fechaFormateada.replace(/(^\w|\s\w)/g, m => m.toUpperCase());
+        const data = await response.json();
+        if (data.items && data.items.length > 0) {
+            const evento = data.items[0];
+            if (elFecha) {
+                const d = new Date(evento.start.dateTime || evento.start.date);
+                elFecha.textContent = d.toLocaleDateString('es-ES', { 
+                    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
+                }).replace(/(^\w|\s\w)/g, m => m.toUpperCase());
+            }
+            if (elLugar) {
+                elLugar.textContent = (evento.location || "Al Oriente de la Montaña del Águila");
+            }
         }
-        if (elLugar) elLugar.textContent = evento.location || "Al Oriente de la Montaña del Águila";
+    } catch (error) {
+        console.error("Error en [CAL-SYNC]:", error);
     }
 }
 
-async function loadTrabajos() {
-    if (!DOM.trabajosList) return;
-    const url = `https://raw.githubusercontent.com/${CONFIG.GITHUB.USER}/${CONFIG.GITHUB.REPO}/${CONFIG.GITHUB.BRANCH}/${CONFIG.GITHUB.PATHS.DOCS}/work-study.json`;
-    
-    const trabajos = await fetchData(url);
-    DOM.trabajosList.innerHTML = '';
-
-    if (!Array.isArray(trabajos) || trabajos.length === 0) {
-        DOM.trabajosList.innerHTML = '<li class="msg-empty">No hay trabajos publicados aún.</li>';
-        return;
-    }
-
-    const fragment = document.createDocumentFragment();
-    trabajos.forEach(trabajo => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-            <a href="#" class="item-trabajo">
-                ${trabajo.titulo}
-                <span>${trabajo.descripcion}</span>
-            </a>
-        `;
-        li.querySelector('a').onclick = (e) => {
-            e.preventDefault();
-            openDocumentInModal(trabajo.url, trabajo.titulo);
-        };
-        fragment.appendChild(li);
-    });
-    DOM.trabajosList.appendChild(fragment);
-}
-
 // =========================================================================
-// === GESTIÓN DE MODALES Y LIGHTBOX ===
+// === 2. LÓGICA DEL MODAL DE DOCUMENTOS ===
 // =========================================================================
+const docModal = document.getElementById('document-modal');
+const docIframe = document.getElementById('doc-iframe');
+const docTitle = document.getElementById('doc-title');
 
 function openDocumentInModal(url, titulo) {
-    if (!DOM.docModal) return;
+    if (!docModal || !docIframe) return;
 
     let finalUrl = url;
-    if (url.includes('docs.google.com')) {
-        finalUrl = url.includes('/document') ? url.replace('/edit', '/preview') : url.replace('/edit', '/pubhtml?widget=true&headers=false');
+    // Ajuste automático para visualización de Google Docs/Sheets
+    if (url.includes('docs.google.com/document')) {
+        finalUrl = url.replace('/edit', '/preview');
+    } else if (url.includes('docs.google.com/spreadsheets')) {
+        finalUrl = url.replace('/edit', '/pubhtml?widget=true&headers=false');
     }
 
-    DOM.docTitle.textContent = `Documento: ${titulo}`;
-    DOM.docIframe.src = finalUrl;
-    DOM.docModal.classList.add('open');
-    DOM.docModal.setAttribute('aria-hidden', 'false');
-    closeLightbox();
+    docTitle.textContent = `Documento: ${titulo}`;
+    docIframe.src = finalUrl;
+    docModal.classList.add('open');
+    docModal.setAttribute('aria-hidden', 'false');
+    
+    // Si el lightbox está abierto, lo cerramos para no encimar ventanas
+    if (typeof closeLightbox === 'function') closeLightbox();
 }
 
 function closeDocumentModal() {
-    if (!DOM.docModal) return;
-    DOM.docModal.classList.remove('open');
-    DOM.docModal.setAttribute('aria-hidden', 'true');
-    DOM.docIframe.src = "";
-}
-
-function closeLightbox() {
-    if (!DOM.lightbox) return;
-    DOM.lightbox.classList.remove('open');
-    DOM.lightbox.setAttribute('aria-hidden', 'true');
-    DOM.lbImg.src = '';
-    DOM.lbRitualButtons.innerHTML = '';
+    if (!docModal) return;
+    docModal.classList.remove('open');
+    docModal.setAttribute('aria-hidden', 'true');
+    docIframe.src = "";
 }
 
 // =========================================================================
-// === INICIALIZACIÓN ===
+// === 3. INICIALIZACIÓN Y EVENTOS ===
 // =========================================================================
-
 document.addEventListener('DOMContentLoaded', () => {
+    // Ejecutamos las cargas principales
     cargarProximoEvento();
-    loadTrabajos();
-    // Aquí llamarías a cargarCuadroLogial y fetchLatestTenidaImage siguiendo el mismo patrón de fetchData
+    
+    // Si tienes las funciones de imágenes y cuadros, llámalas aquí:
+    if (typeof loadTrabajos === 'function') loadTrabajos();
+    if (typeof cargarCuadroLogial === 'function') cargarCuadroLogial();
+    if (typeof fetchLatestTenidaImage === 'function') fetchLatestTenidaImage();
+    if (typeof initGalleryListeners === 'function') initGalleryListeners();
 });
 
+// Cerrar con Escape
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-        closeLightbox();
         closeDocumentModal();
+        if (typeof closeLightbox === 'function') closeLightbox();
     }
-});
-</script>
+});</script>
 </body>
 </html>
