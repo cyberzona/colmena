@@ -552,31 +552,12 @@
   // =========================================================================
     // === 5. LÓGICA DEL LIGHTBOX (Galería) ====================================
     // =========================================================================
-    const lightbox = document.getElementById('lightbox');
-    const lbImg = document.getElementById('lb-img');
-    const lbCaption = document.getElementById('lb-caption');
-    const lbRitualButtons = document.getElementById('lb-ritual-buttons');
-
-    function initGalleryListeners() {
-         const galleryImgs = document.querySelectorAll('#image-gallery img');
-         galleryImgs.forEach(img => {
-             img.addEventListener('click', openLightboxHandler);
-        });
-        
-        const ritualesImg = document.getElementById('rituales-img');
-        if (ritualesImg) {
-            ritualesImg.setAttribute('data-rituales', JSON.stringify([
-            { titulo: 'Ritual de Aprendiz', url: 'rituales.html?num=1' },
-            { titulo: 'Ritual de Compañero', url: 'rituales.html?num=2' },
-            { titulo: 'Ritual de Maestro', url: 'rituales.html?num=3' }
-            ]));
-        }
-    }
     
     function openLightboxHandler() {
         const full = this.src;
         const altText = this.alt || "Imagen";
         const ritualesData = this.getAttribute('data-rituales');
+        const esForo = this.getAttribute('data-foro'); // <--- Detecta si es la imagen de Tenida
 
         lbImg.src = full;
         lbImg.alt = altText;
@@ -589,6 +570,8 @@
         }
 
         lbRitualButtons.innerHTML = '';
+
+        // Si la imagen tiene datos de Rituales (Aprendiz, Compañero, Maestro)
         if (ritualesData) {
             const rituales = JSON.parse(ritualesData);
             rituales.forEach(ritual => {
@@ -602,20 +585,20 @@
                 lbRitualButtons.appendChild(btn);
             });
         }
-        // NUEVA LÓGICA: Botón para el Foro en la Tenida
+
+        // NUEVO: Si la imagen es de la Tenida, muestra el botón del Foro
         if (esForo === 'true') {
             const btn = document.createElement('button');
             btn.textContent = `💬 Ir al Foro`;
             btn.style.cssText = `background:var(--gold);color:#fff;border:0;padding:10px 20px;border-radius:20px;font-weight:bold;cursor:pointer;font-family:var(--ff-sans);font-size:0.9rem;width:100%;max-width:300px;margin-top:10px;`;
             btn.onclick = (e) => {
                 e.stopPropagation();
-                closeLightbox(); // Cerramos el lightbox antes de abrir el foro
-                abrirForo();     // Llamamos a tu función existente
+                closeLightbox(); // Cierra el visor de imagen
+                abrirForo();     // Ejecuta tu función de abrir el foro
             };
             lbRitualButtons.appendChild(btn);
         }
     }
-
     // --- FUNCIÓN DE CIERRE DEL LIGHTBOX ---
     function closeLightbox(){
         if(!lightbox) return;
