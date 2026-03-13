@@ -516,7 +516,7 @@
     // =========================================================================
     // === 4. LÓGICA DE CARGA DE IMAGEN DE TENIDA =============================
     // =========================================================================
-   async function fetchLatestTenidaImage() {
+    async function fetchLatestTenidaImage() {
         if (!ULTIMA_TENIDA_IMG_ELEMENT) return;
         ULTIMA_TENIDA_IMG_ELEMENT.classList.add('loading'); 
         try {
@@ -542,11 +542,8 @@
             if (latestTenidaImage) {
                 ULTIMA_TENIDA_IMG_ELEMENT.src = latestTenidaImage.src;
                 ULTIMA_TENIDA_IMG_ELEMENT.alt = latestTenidaImage.alt;
-                
-                // Marcamos la imagen para el foro
                 ULTIMA_TENIDA_IMG_ELEMENT.setAttribute('data-foro', 'true');
-
-                // ESTA LÍNEA ES LA QUE ACTIVA EL CLIC
+                // Conectamos el evento
                 ULTIMA_TENIDA_IMG_ELEMENT.onclick = openLightboxHandler;
                 ULTIMA_TENIDA_IMG_ELEMENT.style.cursor = 'pointer';
             }
@@ -556,8 +553,8 @@
             ULTIMA_TENIDA_IMG_ELEMENT.classList.remove('loading'); 
         }
     }
-    
-  // =========================================================================
+
+    // =========================================================================
     // === 5. LÓGICA DEL LIGHTBOX (Galería) ====================================
     // =========================================================================
     const lightbox = document.getElementById('lightbox');
@@ -572,7 +569,6 @@
             img.style.cursor = 'pointer';
         });
         
-        // Configuramos la imagen de rituales estática
         const ritualesImg = document.getElementById('rituales-img');
         if (ritualesImg) {
             ritualesImg.setAttribute('data-rituales', JSON.stringify([
@@ -580,40 +576,36 @@
                 { titulo: 'Ritual de Compañero', url: 'rituales.html?num=2' },
                 { titulo: 'Ritual de Maestro', url: 'rituales.html?num=3' }
             ]));
-            ritualesImg.addEventListener('click', openLightboxHandler);
+            ritualesImg.onclick = openLightboxHandler;
         }
     }
     
     function openLightboxHandler(event) {
-        // Obtenemos la imagen sin importar si el evento viene de addEventListener o .onclick
-        const target = event.currentTarget || this; 
-        const full = target.src;
-        const altText = target.alt || "Imagen";
-        const ritualesData = target.getAttribute('data-rituales');
-        const esForo = target.getAttribute('data-foro');
+        // Esta línea previene errores si el evento es manual
+        const target = (event && event.currentTarget) ? event.currentTarget : this;
+        
+        if (!target || !lightbox || !lbImg) return;
 
-        if (!lightbox || !lbImg) return;
-
-        lbImg.src = full;
-        lbImg.alt = altText;
+        lbImg.src = target.src;
+        lbImg.alt = target.alt || "Imagen";
         lightbox.classList.add('open');
         lightbox.setAttribute('aria-hidden', 'false');
         
         if (lbCaption) {
-            lbCaption.textContent = altText;
+            lbCaption.textContent = lbImg.alt;
             lbCaption.style.display = "block";
         }
 
-        // Limpiamos botones anteriores
         lbRitualButtons.innerHTML = '';
 
-        // Caso 1: Si tiene botones de Rituales
+        // Botones de Rituales
+        const ritualesData = target.getAttribute('data-rituales');
         if (ritualesData) {
             const rituales = JSON.parse(ritualesData);
             rituales.forEach(ritual => {
                 const btn = document.createElement('button');
                 btn.textContent = `📖 ${ritual.titulo}`;
-                btn.style.cssText = `background:var(--gold);color:#fff;border:0;padding:10px 20px;border-radius:20px;font-weight:bold;cursor:pointer;font-family:var(--ff-sans);font-size:0.9rem;width:100%;max-width:300px;margin-bottom:8px;display:block;margin-left:auto;margin-right:auto;`;
+                btn.style.cssText = `background:var(--gold);color:#fff;border:0;padding:10px 20px;border-radius:20px;font-weight:bold;cursor:pointer;width:100%;max-width:300px;margin-bottom:8px;display:block;margin-left:auto;margin-right:auto;`;
                 btn.onclick = (e) => {
                     e.stopPropagation(); 
                     openDocumentInModal(ritual.url, ritual.titulo);
@@ -622,23 +614,27 @@
             });
         }
 
-        // Caso 2: Si es la imagen de Tenida, ponemos el botón del Foro
-        if (esForo === 'true') {
+        // Botón del Foro
+        if (target.getAttribute('data-foro') === 'true') {
             const btn = document.createElement('button');
             btn.textContent = `💬 Ir al Foro`;
-            btn.style.cssText = `background:var(--gold);color:#fff;border:0;padding:10px 20px;border-radius:20px;font-weight:bold;cursor:pointer;font-family:var(--ff-sans);font-size:0.9rem;width:100%;max-width:300px;margin-top:10px;display:block;margin-left:auto;margin-right:auto;`;
+            btn.style.cssText = `background:var(--gold);color:#fff;border:0;padding:10px 20px;border-radius:20px;font-weight:bold;cursor:pointer;width:100%;max-width:300px;margin-top:10px;display:block;margin-left:auto;margin-right:auto;`;
             btn.onclick = (e) => {
                 e.stopPropagation();
                 closeLightbox(); 
-                if (typeof abrirForo === 'function') abrirForo();
+                abrirForo();
             };
             lbRitualButtons.appendChild(btn);
         }
     }
-    
-    // Eventos de cierre para el Lightbox
-    if(document.getElementById('lb-close')) document.getElementById('lb-close').addEventListener('click', closeLightbox);
-    if(lightbox) lightbox.addEventListener('click', (e)=>{ if(e.target === lightbox) closeLightbox(); });
+
+    function closeLightbox(){
+        if(!lightbox) return;
+        lightbox.classList.remove('open');
+        lightbox.setAttribute('aria-hidden','true');
+        lbImg.src = '';
+        lbRitualButtons.innerHTML = '';
+    }
 
     // =========================================================================
     // === 6. INICIALIZACIÓN GLOBAL ============================================
