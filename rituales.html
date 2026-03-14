@@ -6,12 +6,15 @@
     <title>Ritual - Colmena No. 8</title>
     <style>
         body { font-family: 'Palatino Linotype', serif; line-height: 1.4; color: #2c2c2c; margin: 0; padding: 10px; background-color: #fdfaf3; }
+        
+        /* HEADER */
         .header-container { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; border-bottom: 2px solid #5d4037; padding-bottom: 15px; }
         .logia-info { display: flex; flex-direction: column; text-align: left; }
         .logia-linea1 { font-size: 0.75rem; color: #8d6e63; letter-spacing: 0.5px; }
         #titulo-ritual-header { font-size: 0.85rem; color: #795548; text-transform: uppercase; letter-spacing: 1.5px; font-weight: bold; }
         .logo-mini { width: 75px; height: auto; flex-shrink: 0; }
         
+        /* PANEL DE CONTROL */
         #control-panel { background: #efebe9; padding: 10px; border-radius: 8px; border: 1px solid #d7ccc8; position: sticky; top: 0; z-index: 1000; text-align: center; }
         .container-select { display: inline-block; margin: 5px; text-align: left; }
         #container-parte { width: 55%; }
@@ -19,14 +22,15 @@
         .select-label { display: block; font-size: 0.7em; color: #795548; font-weight: bold; text-transform: uppercase; }
         select { padding: 8px; font-size: 0.9em; width: 100%; border-radius: 4px; border: 1px solid #ccc; background: white; }
 
+        /* ESTILOS DE TEXTO */
         .sigla-texto-azul { color: #0277bd; font-weight: bold; }
         dt { font-weight: bold; color: #5d4037; margin-top: 15px; font-size: 0.95em; }
-        .parte-ritual { counter-reset: line-counter; }
         dd { 
             margin-left: 50px; border-left: 3px solid #d7ccc8; padding-left: 12px; 
             font-size: 1em; position: relative; margin-bottom: 10px; 
             counter-increment: line-counter; min-height: 1.2em;
         }
+        .parte-ritual { counter-reset: line-counter; }
         dd::before { 
             content: counter(line-counter); position: absolute; left: -45px; 
             color: #5d4037; font-size: 1.2em; font-weight: 800; width: 35px; 
@@ -38,10 +42,12 @@
         .apartado-header { font-weight: bold; color: #795548; font-size: 0.95em; border-bottom: 1px solid #d7ccc8; text-align: right; margin-top: 25px; padding-bottom: 5px; }
         .accion-texto { font-style: italic; color: #5d4037; }
 
+        /* BOTONES DE BIFURCACIÓN */
         .btn-link, .btn-volver { 
-            background: #5d4037; color: #fff; border: none; padding: 6px 14px; 
-            border-radius: 15px; cursor: pointer; font-size: 0.8em; margin-top: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background: #5d4037; color: #fff; border: none; padding: 8px 16px; 
+            border-radius: 15px; cursor: pointer; font-size: 0.85em; margin-top: 10px;
+            margin-right: 8px; display: inline-block;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
         .btn-volver { background: #8d6e63; }
     </style>
@@ -52,7 +58,7 @@
         <img src="./images/logo-mini.png" alt="Logo" class="logo-mini">
         <div class="logia-info">
             <span class="logia-linea1">Resp∴ Log∴ Simb∴ Colmena Nº 8</span>
-            <span id="titulo-ritual-header">...</span>
+            <span id="titulo-ritual-header">Cargando...</span>
         </div>
     </div>
 
@@ -73,11 +79,10 @@
         let xmlDoc = null;
         let glosarioDoc = null;
         let ritualActivo = null;
-        let tituloGradoBase = ""; // Guardará "Ritual de Aprendiz", etc.
+        let tituloGradoBase = "";
 
         async function inicializar() {
             try {
-                // CAPTURA DEL PARÁMETRO DESDE INDEX.HTML
                 const urlParams = new URLSearchParams(window.location.search);
                 const numGrado = urlParams.get('num') || '1';
 
@@ -113,7 +118,6 @@
             const partes = ritualActivo.getElementsByTagName("parte");
             for (let p of partes) {
                 const id = p.getAttribute("id");
-                // Solo 1, 2 y 3 van al menú
                 if (["1", "2", "3"].includes(id)) {
                     pSel.add(new Option(p.getAttribute("titulo"), id));
                 }
@@ -157,13 +161,9 @@
             
             if (!parteActiva) return;
 
-            // ACTUALIZACIÓN DE TÍTULO DINÁMICO
+            // ACTUALIZACIÓN DE TÍTULO EN HEADER
             const headerTitulo = document.getElementById("titulo-ritual-header");
-            if (["1", "2", "3"].includes(pId)) {
-                headerTitulo.textContent = tituloGradoBase;
-            } else {
-                headerTitulo.textContent = parteActiva.getAttribute("titulo");
-            }
+            headerTitulo.textContent = (["1", "2", "3"].includes(pId)) ? tituloGradoBase : parteActiva.getAttribute("titulo");
 
             let htmlAcumulado = "";
             const apartados = parteActiva.getElementsByTagName("apartado");
@@ -179,24 +179,38 @@
                     let texto = paso.getAttribute("texto") || "";
                     const idAncla = `linea-${pId}-${globalStepIdx}`;
 
-                    // Procesamiento de texto y enlaces
+                    // 1. Siglas en Azul
                     texto = texto.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
-                    texto = texto.replace(/\[\[LINK:(\d+)\]\]/g, (m, id) => `<br><button class="btn-link" onclick="irA('${id}', '${idAncla}')">Ver Desarrollo ➜</button>`);
-                    texto = texto.replace(/\[\[VOLVER:(\d+)\]\]/g, (m, id) => `<br><button class="btn-volver" onclick="irA('${id}')">⬅ Volver</button>`);
                     
-                    if (texto.startsWith('[') && texto.endsWith(']')) texto = `<span class="accion-texto">${texto}</span>`;
+                    // 2. Links con títulos personalizados [[LINK:ID|Título]]
+                    texto = texto.replace(/\[\[LINK:(\d+)(?:\|([^\]]+))?\]\]/g, (m, id, nombre) => {
+                        const tituloBoton = nombre ? nombre : "Ver Desarrollo";
+                        return `<br><button class="btn-link" onclick="irA('${id}', '${idAncla}')">${tituloBoton} ➜</button>`;
+                    });
+
+                    // 3. Botón Volver [[VOLVER:ID|Título]]
+                    texto = texto.replace(/\[\[VOLVER:(\d+)(?:\|([^\]]+))?\]\]/g, (m, id, nombre) => {
+                        const tituloVolver = nombre ? nombre : "Volver";
+                        return `<br><button class="btn-volver" onclick="irA('${id}')">⬅ ${tituloVolver}</button>`;
+                    });
+
+                    if (texto.startsWith('[') && texto.endsWith(']')) {
+                        texto = `<span class="accion-texto">${texto}</span>`;
+                    }
 
                     const oficialLimpio = ofiOriginal.trim().toLowerCase();
                     const claseResaltado = (fOfi !== "todos" && oficialLimpio === fOfi) ? "class='resaltado'" : "";
                     
                     pasosHtml += `<dt>${ofiOriginal.trim()}∴</dt><dd ${claseResaltado} id="${idAncla}">${texto}</dd>`;
                 }
-                htmlAcumulado += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>` + pasosHtml;
+                if (pasosHtml !== "") {
+                    htmlAcumulado += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>` + pasosHtml;
+                }
             }
 
             contenedor.innerHTML = `<div class="parte-ritual"><div class="section-header">${parteActiva.getAttribute("titulo")}</div>${htmlAcumulado}</div>`;
             
-            // Scroll para el filtro de oficial
+            // Scroll para oficiales
             if (fOfi !== "todos") {
                 setTimeout(() => {
                     const target = document.querySelector('.resaltado');
