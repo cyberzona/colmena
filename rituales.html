@@ -7,42 +7,52 @@
     <style>
         body { font-family: 'Palatino Linotype', serif; line-height: 1.6; color: #2c2c2c; margin: 0; padding: 10px; background-color: #fdfaf3; }
         
-        /* Header Institucional */
+        /* Encabezado */
         .header-container { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; border-bottom: 2px solid #5d4037; padding-bottom: 10px; }
         .logia-info { display: flex; flex-direction: column; }
         .logia-linea1 { font-size: 0.75rem; color: #8d6e63; font-weight: bold; }
         #titulo-ritual-header { font-size: 0.9rem; color: #795548; text-transform: uppercase; font-weight: bold; }
         .logo-mini { width: 60px; height: auto; }
 
-        /* Panel de Control */
-        #control-panel { background: #efebe9; padding: 10px; border-radius: 8px; border: 1px solid #d7ccc8; position: sticky; top: 0; z-index: 1000; display: flex; gap: 10px; }
+        /* Panel de Control de Botones/Selectores */
+        #control-panel { background: #efebe9; padding: 12px; border-radius: 8px; border: 1px solid #d7ccc8; position: sticky; top: 0; z-index: 1000; display: flex; gap: 10px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .container-select { flex: 1; display: flex; flex-direction: column; }
-        .select-label { font-size: 0.7em; color: #795548; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; }
-        select { padding: 8px; font-size: 0.9em; border-radius: 4px; border: 1px solid #ccc; }
+        .select-label { font-size: 0.7em; color: #795548; font-weight: bold; text-transform: uppercase; margin-bottom: 4px; }
+        select { padding: 10px; font-size: 0.95em; border-radius: 4px; border: 1px solid #b8860b; background: white; color: #5d4037; }
 
-        /* Título Interactivo (Selector Alternativo) */
+        /* Estructura del Ritual y Numeración */
+        .parte-ritual { counter-reset: line-counter; } /* Reinicia el contador en cada parte */
         .section-header { background: #5d4037; color: white; padding: 15px; text-align: center; border-radius: 4px; margin: 15px 0; text-transform: uppercase; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; }
-        .section-header::after { content: ' ▼'; font-size: 0.7em; opacity: 0.7; }
-
-        /* Numeración y Texto del Ritual */
-        .parte-ritual { counter-reset: line-counter; }
-        dt { font-weight: bold; color: #5d4037; margin-top: 15px; font-size: 0.9em; text-transform: uppercase; }
-        dd { margin: 0 0 10px 50px; border-left: 3px solid #d7ccc8; padding: 0 10px; font-size: 1.05em; position: relative; text-align: justify; }
-        dd::before { counter-increment: line-counter; content: counter(line-counter); position: absolute; left: -40px; color: #8d6e63; font-size: 0.9em; font-weight: bold; width: 30px; text-align: right; }
         
+        dt { font-weight: bold; color: #5d4037; margin-top: 15px; font-size: 0.9em; text-transform: uppercase; }
+        dd { margin: 0 0 10px 50px; border-left: 3px solid #d7ccc8; padding: 0 12px; font-size: 1.05em; position: relative; text-align: justify; min-height: 1.5em; }
+        
+        /* El mecanismo de la numeración */
+        dd::before { 
+            counter-increment: line-counter; 
+            content: counter(line-counter); 
+            position: absolute; 
+            left: -42px; 
+            color: #8d6e63; 
+            font-size: 0.9em; 
+            font-weight: bold; 
+            width: 30px; 
+            text-align: right; 
+        }
+        
+        .apartado-titulo { font-weight: bold; color: #795548; border-bottom: 1px solid #d7ccc8; margin-top: 25px; padding-bottom: 5px; font-size: 0.9em; text-align: right; text-transform: uppercase; }
         .sigla-azul { color: #0277bd; font-weight: bold; }
-        .accion-texto { font-style: italic; color: #5d4037; background: #f5f5f5; padding: 2px 5px; border-radius: 3px; }
-        .resaltado { background: rgba(180, 255, 100, 0.3) !important; border-left: 5px solid #2e7d32 !important; }
+        .accion-texto { font-style: italic; color: #5d4037; background: #f0f0f0; padding: 2px 6px; border-radius: 4px; border-left: 3px solid #795548; }
+        .resaltado { background: rgba(180, 255, 100, 0.35) !important; border-left: 5px solid #2e7d32 !important; }
 
         /* Botones de Gestión (Memos) */
-        .btn-link { background: #1b5e20; color: white; border: 2px solid #b8860b; padding: 12px; border-radius: 8px; font-weight: bold; width: 100%; margin: 10px 0; cursor: pointer; }
-        .btn-doc { background: #8d6e63; color: white; border: none; padding: 10px; border-radius: 6px; width: 100%; margin: 5px 0; text-align: left; cursor: pointer; }
-        .apartado-titulo { font-weight: bold; color: #795548; border-bottom: 1px solid #d7ccc8; margin-top: 20px; font-size: 0.9em; }
+        .btn-link { background: #1b5e20; color: white; border: 2px solid #b8860b; padding: 14px; border-radius: 8px; font-weight: bold; width: 100%; margin: 12px 0; cursor: pointer; font-size: 0.9em; }
+        .btn-doc { background: #8d6e63; color: white; border: none; padding: 12px; border-radius: 6px; width: 100%; margin: 6px 0; text-align: left; cursor: pointer; display: flex; align-items: center; gap: 10px; }
 
         /* Visor Modal */
-        #modal-visor { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; display: flex; flex-direction: column; }
-        .modal-header { background: #5d4037; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .btn-cerrar { background: #b71c1c; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; }
+        #modal-visor { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 9999; display: flex; flex-direction: column; }
+        .modal-header { background: #5d4037; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #b8860b; }
+        .btn-cerrar { background: #b71c1c; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body onload="inicializar()">
@@ -51,7 +61,7 @@
         <img src="./images/logo-mini.png" alt="Logo" class="logo-mini">
         <div class="logia-info">
             <span class="logia-linea1">Resp∴ Log∴ Simb∴ Colmena Nº 8</span>
-            <span id="titulo-ritual-header">Cargando...</span>
+            <span id="titulo-ritual-header">Cargando Grado...</span>
         </div>
     </div>
 
@@ -88,14 +98,9 @@
                 xmlDoc = parser.parseFromString(resLiturgia, "text/xml");
                 if (resTenidas) tenidasXml = parser.parseFromString(resTenidas, "text/xml");
 
-                // Filtro estricto por GRADO
-                const rituales = xmlDoc.getElementsByTagName("ritual");
-                for (let r of rituales) {
-                    if (r.getAttribute("grado") === numGradoGlobal) { 
-                        ritualActivo = r; 
-                        break; 
-                    }
-                }
+                // Filtro estricto: Solo cargamos el ritual que coincida con el grado de la URL
+                const rituales = Array.from(xmlDoc.getElementsByTagName("ritual"));
+                ritualActivo = rituales.find(r => r.getAttribute("grado") === numGradoGlobal);
 
                 if (ritualActivo) {
                     const nombres = { "1": "Aprendiz", "2": "Compañero", "3": "Maestro" };
@@ -103,13 +108,12 @@
                     poblarPartesDelGrado();
                     cambioDeParte();
                 }
-            } catch (e) { console.error("Error inicializando:", e); }
+            } catch (e) { console.error("Error en inicialización:", e); }
         }
 
         function poblarPartesDelGrado() {
             const pSel = document.getElementById("parteFilter");
             pSel.innerHTML = "";
-            // Solo toma las partes que pertenecen al ritualActivo (el grado filtrado)
             const partes = ritualActivo.getElementsByTagName("parte");
             for (let p of partes) {
                 pSel.add(new Option(p.getAttribute("titulo"), p.getAttribute("id")));
@@ -124,11 +128,11 @@
         function poblarOficiales() {
             const pId = document.getElementById("parteFilter").value;
             const oSel = document.getElementById("oficialFilter");
-            const parte = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") === pId);
+            const parteActual = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") === pId);
             const oficialesSet = new Set();
 
-            if (parte) {
-                const pasos = parte.getElementsByTagName("paso");
+            if (parteActual) {
+                const pasos = parteActual.getElementsByTagName("paso");
                 for (let ps of pasos) {
                     if (ps.getAttribute("oficial")) oficialesSet.add(ps.getAttribute("oficial").trim().toLowerCase());
                 }
@@ -161,15 +165,13 @@
                     const ofi = ps.getAttribute("oficial");
                     let txt = ps.getAttribute("texto") || "";
                     
-                    // Procesar Siglas
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-azul">$1</span>');
                     
-                    // Procesar Gestión Secretaría (MEMOS)
+                    // Inyección de Memos
                     if (txt.includes('[[GESTION_SECRETARIA]]')) {
                         txt = txt.replace('[[GESTION_SECRETARIA]]', procesarMemos());
                     }
 
-                    // Formatear acciones [Texto]
                     if (txt.startsWith('[') && txt.endsWith(']')) txt = `<span class="accion-texto">${txt}</span>`;
 
                     const resaltado = (fOfi !== "todos" && ofi.toLowerCase() === fOfi) ? "class='resaltado'" : "";
@@ -186,24 +188,21 @@
             const hoy = new Date().toISOString().split('T')[0];
             const sesiones = Array.from(tenidasXml.getElementsByTagName("tenida"));
             
-            // Buscar sesión de hoy y la última anterior
             const hoySesion = sesiones.find(s => s.getAttribute("fecha") === hoy);
             const pasadaSesion = sesiones.filter(s => s.getAttribute("fecha") < hoy)
                                          .sort((a,b) => b.getAttribute("fecha").localeCompare(a.getAttribute("fecha")))[0];
 
             let res = "";
             
-            // 1. Mostrar Balaustre de la sesión pasada
             if (pasadaSesion) {
                 const items = Array.from(pasadaSesion.getElementsByTagName("item")).filter(i => i.getAttribute("acto") === "balaustre");
-                if (items.length > 0) res += `<div style="font-size:0.8em; color:#795548; margin-top:10px;">MEMORIA HISTÓRICA:</div>`;
+                if (items.length > 0) res += `<div class="apartado-titulo" style="text-align:left">Memoria Histórica</div>`;
                 items.forEach(i => res += `<button class="btn-doc" onclick="abrirVisor('${i.getAttribute("url")}','${i.getAttribute("titulo")}')">📜 ${i.getAttribute("titulo")}</button>`);
             }
 
-            // 2. Mostrar Actos de hoy
             if (hoySesion) {
                 const items = Array.from(hoySesion.getElementsByTagName("item"));
-                if (items.length > 0) res += `<div style="font-size:0.8em; color:#795548; margin-top:10px;">TRABAJOS NACIENTES:</div>`;
+                if (items.length > 0) res += `<div class="apartado-titulo" style="text-align:left">Trabajos de Hoy</div>`;
                 items.forEach(i => {
                     const acto = i.getAttribute("acto");
                     if (acto === "nuevo_grado") {
