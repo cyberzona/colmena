@@ -69,7 +69,7 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 numGradoActual = urlParams.get('num') || '1';
                 await cargarDatos();
-            } catch (e) { console.error("Error al inicializar:", e); }
+            } catch (e) { console.error("Error inicializar:", e); }
         }
 
         async function cargarDatos() {
@@ -95,12 +95,9 @@
                 }
             }
             if (ritualActivo) {
-                // Título fijo del Grado en el encabezado
                 const nombresGrados = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Ritual de Maestro" };
                 document.getElementById("titulo-ritual-header").textContent = nombresGrados[numGradoActual] || "Ritual";
-                
                 poblarPartes();
-                cambioDeParte(); 
             }
         }
 
@@ -108,16 +105,22 @@
             const pSel = document.getElementById("parteFilter");
             if (!pSel || !ritualActivo) return;
             pSel.innerHTML = "";
+            
+            // LÓGICA DINÁMICA: Tomamos las partes disponibles en el XML
             const partes = Array.from(ritualActivo.getElementsByTagName("parte"));
             
-            // Filtro estricto para las 3 partes principales
             partes.forEach(p => {
-                const id = p.getAttribute("id").trim();
+                const id = p.getAttribute("id");
                 const titulo = p.getAttribute("titulo");
-                if (["1", "2", "3"].includes(id)) {
-                    pSel.add(new Option(titulo, id));
-                }
+                // Agregamos cualquier parte que exista, confiando en tu estructura de 3 partes
+                pSel.add(new Option(titulo, id));
             });
+
+            // Una vez poblado, activamos la primera parte por defecto
+            if (pSel.options.length > 0) {
+                pSel.selectedIndex = 0;
+                cambioDeParte();
+            }
         }
 
         function cambioDeParte() {
@@ -129,7 +132,7 @@
         function poblarOficialesDeEstaParte(idManual = null, oficialPreseleccionado = "") {
             const pId = idManual || document.getElementById("parteFilter").value;
             const oSel = document.getElementById("oficialFilter");
-            const parteActual = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") === pId.toString());
+            const parteActual = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") == pId);
             const oficialesActivos = new Set();
             
             if (parteActual) {
@@ -147,16 +150,14 @@
                     oSel.add(new Option(siglaG.trim() + "∴", siglaG.trim().toLowerCase()));
                 }
             }
-            if (oficialPreseleccionado && oficialesActivos.has(oficialPreseleccionado)) {
-                oSel.value = oficialPreseleccionado;
-            } else { oSel.value = ""; }
+            oSel.value = oficialesActivos.has(oficialPreseleccionado) ? oficialPreseleccionado : "";
         }
 
         function renderizarLiturgia(idManual = null) {
             const pId = idManual || document.getElementById("parteFilter").value;
             const fOfi = document.getElementById("oficialFilter").value.trim().toLowerCase(); 
             const contenedor = document.getElementById('rituales-content');
-            const parteActiva = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") === pId.toString());
+            const parteActiva = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") == pId);
             
             if (!parteActiva) return;
 
@@ -173,17 +174,15 @@
                     let texto = paso.getAttribute("texto") || "";
                     const idAncla = `linea-${pId}-${stepIdx}`;
 
-                    // Inyección de Balaustres y Proposiciones
                     if (texto.includes('[[GESTION_SECRETARIA]]')) {
                         texto = texto.replace('[[GESTION_SECRETARIA]]', procesarOrdenDelDia(tituloApa));
                     }
 
-                    // Links con nombre automático de sección recuperado del XML
                     texto = texto.replace(/\[\[LINK:(\d{3})\]\]/g, (m, coords) => {
                         const g = coords.substring(0, 1);
                         const pDestId = parseInt(coords.substring(1)).toString();
                         const rDest = Array.from(xmlDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("grado") === g);
-                        const pDest = rDest ? Array.from(rDest.getElementsByTagName("parte")).find(pt => pt.getAttribute("id") === pDestId) : null;
+                        const pDest = rDest ? Array.from(rDest.getElementsByTagName("parte")).find(pt => pt.getAttribute("id") == pDestId) : null;
                         const nombreSeccion = pDest ? pDest.getAttribute("titulo") : "Siguiente Sección";
                         return `<br><button class="btn-link" onclick="irA('${coords}', '${idAncla}')">Ir a: ${nombreSeccion} ➜</button>`;
                     });
@@ -239,7 +238,7 @@
             const modal = `<div id="modal-visor" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:9999;display:flex;flex-direction:column;">
                 <div style="background:#d7ccc8;padding:15px;display:flex;justify-content:space-between;align-items:center;">
                     <span style="font-weight:bold;">${titulo}</span>
-                    <button style="background:#b71c1c;color:white;border:none;padding:5px 12px;border-radius:4px;cursor:pointer;" onclick="this.parentElement.parentElement.remove()">✕ Cerrar</button>
+                    <button style="background:#b71c1c;color:white;border:none;padding:5px 12px;border-radius:4px;" onclick="this.parentElement.parentElement.remove()">✕ Cerrar</button>
                 </div>
                 <iframe src="${url.replace('/view', '/preview')}" style="flex-grow:1;border:none;background:white;"></iframe>
             </div>`;
@@ -250,22 +249,10 @@
             if (idRegreso) localStorage.setItem('puntoRegreso', idRegreso);
             let g = codigo.substring(0, 1);
             let p = parseInt(codigo.substring(1)).toString();
-            
             const oficialActual = document.getElementById("oficialFilter").value;
-            
             if (g !== numGradoActual) { cargarRitualPorGrado(g); return; }
-
             document.getElementById("parteFilter").value = p;
-            poblarOficialesDeEstaParte(p, oficialActual);
-            renderizarLiturgia(p);
-
-            setTimeout(() => {
-                const r = localStorage.getItem('puntoRegreso');
-                if (r) {
-                    const el = document.getElementById(r);
-                    if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); el.classList.add('resaltado'); }
-                }
-            }, 300);
+            cambioDeParte();
         }
     </script>
 </body>
