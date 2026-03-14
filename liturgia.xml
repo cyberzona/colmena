@@ -68,7 +68,7 @@
             <paso tipo="dialogo" oficial="1V" texto="Reina el silencio en ambas CCol∴, VM∴."/>
             <paso tipo="dialogo" oficial="VM" texto="QH∴ OF∴ ¿Queréis darnos vuestras conclusiones respecto a la plancha trazada por nuestro H∴ Sec∴ de nuestros últimos trabajos? [El H∴Ora∴ da las conclusiones]"/>
             <paso tipo="dialogo" oficial="VM" texto="Después de las conclusiones del H∴ Ora∴, los HH∴ que estén de acuerdo se servirán de hacer la señal de aprobación al primer golpe de Mall∴."/>
-            <paso tipo="dialogo" oficial="VM" texto="[Da a conocer el resultado de la votación].[[LINK:4|Simbolismo de las Luces]] [[LINK:4|Simbolismo de las Luces]]"/>
+            <paso tipo="dialogo" oficial="VM" texto="[Da a conocer el resultado de la votación].[[LINK:4|Simbolismo de las Luces]] [[LINK:5|Logia de San Juan]]"/>
         </apartado>
         <apartado id="2" titulo="De las Proposiciones por Escrito">
             <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ como yo lo hago en el Or∴ que nuestro Q∴H∴ M∴ de Cer∴ va a circular el saco de proposiciones. [El MC∴ cumple con su deber y se coloca entre CCol∴.]"/>
@@ -132,11 +132,18 @@
         </apartado>
     </parte>
    <parte id="4" titulo="Instrucción: Simbolismo">
-    <apartado id="1" titulo="Estudio Profundo">
-        <paso tipo="dialogo" oficial="Ora" texto="La Piedra Bruta representa el estado de imperfección..."/>
-        <paso tipo="dialogo" oficial="Ora" texto="Es cuanto, VM∴. [[VOLVER:2]]"/>
-    </apartado>
-</parte>
+        <apartado id="1" titulo="Estudio Profundo">
+            <paso tipo="dialogo" oficial="Ora" texto="La Piedra Bruta representa el estado de imperfección..."/>
+            <paso tipo="dialogo" oficial="Ora" texto="Es cuanto, VM∴. [[VOLVER:2]]"/>
+        </apartado>
+    </parte>
+    <parte id="5" titulo="Logia de San Juan">
+        <apartado id="1" titulo="Estudio Profundo">
+            <paso tipo="dialogo" oficial="Ora" texto="La Piedra Bruta representa el estado de imperfección..."/>
+            <paso tipo="dialogo" oficial="Ora" texto="Es cuanto, VM∴. [[VOLVER:2]]"/>
+        </apartado>
+    </parte>
+
 </ritual>
 <ritual taller="Colmena No. 8" grado="2">
 </ritual>
