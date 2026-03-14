@@ -13,7 +13,7 @@
         .logo-mini { width: 65px; height: auto; }
         #control-panel { background: #d7ccc8; padding: 12px; border-radius: 8px; border: 1px solid #a1887f; position: sticky; top: 0; z-index: 1000; display: flex; justify-content: space-between; }
         .container-select { display: flex; flex-direction: column; width: 48%; }
-        select { padding: 8px; font-size: 0.9em; border-radius: 4px; border: 1px solid #8d6e63; background: #fff; font-weight: bold; width: 100%; }
+        select { padding: 8px; font-size: 0.9em; border-radius: 4px; border: 1px solid #8d6e63; background: #fff; font-weight: bold; width: 100%; outline: none; }
         .select-label { font-size: 0.7rem; color: #4e342e; font-weight: 800; text-transform: uppercase; margin-bottom: 4px; }
         .sigla-texto-azul { color: #0277bd; font-weight: bold; }
         dt { font-weight: bold; color: #5d4037; margin-top: 15px; }
@@ -32,7 +32,7 @@
         <img src="./images/logo-mini.png" alt="Logo" class="logo-mini">
         <div class="logia-info">
             <span class="logia-linea1">Resp∴ Log∴ Simb∴ Colmena Nº 8</span>
-            <span id="titulo-ritual-header">Iniciando sistema...</span>
+            <span id="titulo-ritual-header">Cargando...</span>
         </div>
     </div>
 
@@ -55,24 +55,23 @@
 
         async function inicializar() {
             try {
-                const loaded = await cargarDatos();
-                if (!loaded) return;
+                const exito = await cargarDatos();
+                if (!exito) return;
 
                 const urlParams = new URLSearchParams(window.location.search);
                 
-                // 1. Grado
-                let g = urlParams.get('num');
-                if (g) numGradoActual = g.toString();
+                // Grado: se asegura de tratarlo como texto
+                let g = urlParams.get('num') || "1";
+                numGradoActual = g.toString();
                 
-                // 2. Sección (Limpia "01" a "1")
-                let s = urlParams.get('sec');
-                if (s) s = s.replace(/^0+/, "") || "1";
+                // Sección: Limpia ceros a la izquierda (ej: 01 -> 1)
+                let s = urlParams.get('sec') || "1";
+                s = s.replace(/^0+/, "") || "1";
 
-                console.log("Buscando Grado:", numGradoActual, "Sección:", s);
                 ejecutarCargaRitual(numGradoActual, s);
             } catch (e) { 
-                console.error(e);
-                document.getElementById("titulo-ritual-header").textContent = "Error de carga";
+                console.error("Error:", e);
+                document.getElementById("titulo-ritual-header").textContent = "Error de Sistema";
             }
         }
 
@@ -95,9 +94,14 @@
         }
 
         function ejecutarCargaRitual(grado, seccionID) {
+            // Búsqueda global de todos los nodos <ritual>
             const rituales = Array.from(xmlDoc.getElementsByTagName("ritual"));
-            // Buscamos ignorando tipos de datos
-            ritualActivo = rituales.find(r => String(r.getAttribute("grado")) === String(grado));
+            
+            // Coincidencia exacta eliminando espacios accidentales
+            ritualActivo = rituales.find(r => {
+                const gAttr = r.getAttribute("grado");
+                return gAttr && gAttr.trim() === grado.trim();
+            });
 
             if (ritualActivo) {
                 const titulos = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Maestría" };
@@ -107,6 +111,7 @@
                 cambioDeSeccion();
             } else {
                 document.getElementById("titulo-ritual-header").textContent = "Grado " + grado + " no encontrado";
+                console.warn("Grados detectados:", rituales.map(r => r.getAttribute("grado")));
             }
         }
 
@@ -117,14 +122,13 @@
             
             secciones.forEach(sec => {
                 const id = sec.getAttribute("id");
-                // Forzamos que siempre aparezcan las básicas o la solicitada
+                // Muestra secciones base o la solicitada por LINK
                 if (["1", "2", "3"].includes(id) || id === idForzado) {
                     sSel.add(new Option(sec.getAttribute("titulo"), id));
                 }
             });
             
             if (idForzado) sSel.value = idForzado;
-            // Si el valor forzado no existe en el combo, seleccionamos el primero
             if (sSel.selectedIndex === -1) sSel.selectedIndex = 0;
         }
 
@@ -137,7 +141,7 @@
             if (seccion) {
                 Array.from(seccion.getElementsByTagName("paso")).forEach(p => {
                     const ofi = p.getAttribute("oficial");
-                    if (ofi) oficialesSet.add(ofi.trim().toLowerCase());
+                    if (oficialesSet && ofi) oficialesSet.add(ofi.trim().toLowerCase());
                 });
             }
 
@@ -170,12 +174,12 @@
                     let txt = paso.getAttribute("texto") || "";
                     const idL = `l-${sId}-${counter}`;
 
-                    // LINK
+                    // LINK: Navegación entre rituales
                     txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (m, cod, desc) => {
                         return `<button class="btn-ritual color-cafe" onclick="irA('${cod}', '${idL}')">${desc || 'Ir'} ➜</button>`;
                     });
 
-                    // Siglas y Estilos
+                    // Estilos de siglas y texto de acción
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     if (txt.startsWith('[')) txt = `<span class="accion-texto">${txt}</span>`;
 
