@@ -45,7 +45,7 @@
         }
         .btn-volver { background: #8d6e63; }
 
-        /* Estilos de Botones de Gestión (Memos) */
+        /* Estilos Memos */
         .btn-memo { background: #8d6e63; color: white; border: none; padding: 10px; border-radius: 6px; width: 100%; margin: 5px 0; text-align: left; cursor: pointer; font-size: 0.85em; display: block; }
         .btn-grado-accion { background: #1b5e20; color: white; border: 2px solid #b8860b; padding: 12px; border-radius: 8px; font-weight: bold; width: 100%; margin: 10px 0; cursor: pointer; display: block; text-align: center; }
         #modal-visor { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; display: flex; flex-direction: column; }
@@ -78,35 +78,44 @@
 
     <script>
         let xmlDoc, glosarioDoc, tenidasXml, ritualActivo, tituloGradoBase = "";
+        let numGradoActual = "1";
 
         async function inicializar() {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
-                const numGrado = urlParams.get('num') || '1';
-
-                const [resGlosario, resLiturgia, resTenidas] = await Promise.all([
-                    fetch('glosario.xml').then(r => r.text()),
-                    fetch('liturgia.xml').then(r => r.text()),
-                    fetch('tenidas.xml').then(r => r.text()).catch(() => null)
-                ]);
-
-                const parser = new DOMParser();
-                glosarioDoc = parser.parseFromString(resGlosario, "text/xml");
-                xmlDoc = parser.parseFromString(resLiturgia, "text/xml");
-                if (resTenidas) tenidasXml = parser.parseFromString(resTenidas, "text/xml");
-
-                const rituales = xmlDoc.getElementsByTagName("ritual");
-                for (let r of rituales) {
-                    if (r.getAttribute("grado") === numGrado) { ritualActivo = r; break; }
-                }
-
-                if (ritualActivo) {
-                    const nombres = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Ritual de Maestro" };
-                    tituloGradoBase = nombres[numGrado] || "Ritual";
-                    poblarPartes();
-                    cambioDeParte(); 
-                }
+                numGradoActual = urlParams.get('num') || '1';
+                await cargarDatos();
             } catch (e) { console.error(e); }
+        }
+
+        async function cargarDatos() {
+            const [resGlosario, resLiturgia, resTenidas] = await Promise.all([
+                fetch('glosario.xml').then(r => r.text()),
+                fetch('liturgia.xml').then(r => r.text()),
+                fetch('tenidas.xml').then(r => r.text()).catch(() => null)
+            ]);
+
+            const parser = new DOMParser();
+            glosarioDoc = parser.parseFromString(resGlosario, "text/xml");
+            xmlDoc = parser.parseFromString(resLiturgia, "text/xml");
+            if (resTenidas) tenidasXml = parser.parseFromString(resTenidas, "text/xml");
+
+            cargarRitualPorGrado(numGradoActual);
+        }
+
+        function cargarRitualPorGrado(grado) {
+            numGradoActual = grado.toString();
+            const rituales = xmlDoc.getElementsByTagName("ritual");
+            for (let r of rituales) {
+                if (r.getAttribute("grado") === numGradoActual) { ritualActivo = r; break; }
+            }
+
+            if (ritualActivo) {
+                const nombres = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Ritual de Maestro" };
+                tituloGradoBase = nombres[numGradoActual] || "Ritual";
+                poblarPartes();
+                cambioDeParte(); 
+            }
         }
 
         function poblarPartes() {
@@ -115,7 +124,8 @@
             const partes = ritualActivo.getElementsByTagName("parte");
             for (let p of partes) {
                 const id = p.getAttribute("id");
-                if (["1", "2", "3"].includes(id)) pSel.add(new Option(p.getAttribute("titulo"), id));
+                // Solo mostramos en el select las partes que corresponden al grado (ej: 1, 2, 3 para Apertura, Desarrollo, Cierre)
+                if (id.length === 1) pSel.add(new Option(p.getAttribute("titulo"), id));
             }
         }
 
@@ -127,7 +137,7 @@
         function poblarOficialesDeEstaParte(idManual = null) {
             const pId = idManual || document.getElementById("parteFilter").value;
             const oSel = document.getElementById("oficialFilter");
-            const parteActual = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") === pId);
+            const parteActual = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") === pId.toString());
             const oficialesActivos = new Set();
 
             if (parteActual) {
@@ -152,11 +162,11 @@
             const pId = idManual || document.getElementById("parteFilter").value;
             const fOfi = document.getElementById("oficialFilter").value.trim().toLowerCase(); 
             const contenedor = document.getElementById('rituales-content');
-            const parteActiva = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") === pId);
+            const parteActiva = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") === pId.toString());
             
             if (!parteActiva) return;
 
-            document.getElementById("titulo-ritual-header").textContent = ["1", "2", "3"].includes(pId) ? tituloGradoBase : parteActiva.getAttribute("titulo");
+            document.getElementById("titulo-ritual-header").textContent = pId.toString().length === 1 ? tituloGradoBase : parteActiva.getAttribute("titulo");
 
             let htmlAcumulado = "";
             const apartados = parteActiva.getElementsByTagName("apartado");
@@ -173,16 +183,20 @@
                     let texto = paso.getAttribute("texto") || "";
                     const idAncla = `linea-${pId}-${globalStepIdx}`;
 
-                    // LÓGICA DE SECRETARÍA SEGÚN EL ORDEN DEL DÍA
                     if (texto.includes('[[GESTION_SECRETARIA]]')) {
                         texto = texto.replace('[[GESTION_SECRETARIA]]', procesarMemos(tituloApartado));
                     }
 
                     texto = texto.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     
-                    texto = texto.replace(/\[\[LINK:(\d+)\]\]/g, (m, id) => {
-                        const destino = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") === id);
-                        return `<br><button class="btn-link" onclick="irA('${id}', '${idAncla}')">Ir a: ${destino ? destino.getAttribute("titulo") : "Desarrollo"} ➜</button>`;
+                    // LÓGICA DE 3 DÍGITOS (Ej: 102)
+                    texto = texto.replace(/\[\[LINK:(\d{3})\]\]/g, (m, coords) => {
+                        const g = coords.substring(0, 1);
+                        const p = parseInt(coords.substring(1)).toString(); // Quita ceros a la izquierda
+                        // Buscamos el título en el XML global
+                        const rDest = Array.from(xmlDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("grado") === g);
+                        const pDest = rDest ? Array.from(rDest.getElementsByTagName("parte")).find(pt => pt.getAttribute("id") === p) : null;
+                        return `<br><button class="btn-link" onclick="irA('${coords}', '${idAncla}')">Ir a: ${pDest ? pDest.getAttribute("titulo") : "Sección " + coords} ➜</button>`;
                     });
 
                     texto = texto.replace(/\[\[VOLVER:(\d+)\]\]/g, (m, id) => `<br><button class="btn-volver" onclick="irA('${id}')">⬅ Regresar</button>`);
@@ -209,16 +223,13 @@
             const pasSes = sesiones.filter(s => s.getAttribute("fecha") < hoy).sort((a,b) => b.getAttribute("fecha").localeCompare(a.getAttribute("fecha")))[0];
 
             let res = "";
-            // 1. Si estamos en el punto del Balaustre, solo mostramos el acta anterior
             if (seccionActual.includes("balaustre") || seccionActual.includes("acta")) {
                 if (pasSes) {
                     Array.from(pasSes.getElementsByTagName("item")).filter(i => i.getAttribute("acto") === "balaustre").forEach(i => {
                         res += `<button class="btn-memo" onclick="abrirVisor('${i.getAttribute("url")}','${i.getAttribute("titulo")}')">📜 ${i.getAttribute("titulo")}</button>`;
                     });
                 }
-            } 
-            // 2. Si estamos en Trabajos, mostramos planchas y acciones del día
-            else if (seccionActual.includes("trabajos") || seccionActual.includes("proposiciones")) {
+            } else if (seccionActual.includes("trabajos") || seccionActual.includes("proposiciones")) {
                 if (hoySes) {
                     Array.from(hoySes.getElementsByTagName("item")).forEach(i => {
                         const acto = i.getAttribute("acto");
@@ -241,18 +252,34 @@
             document.body.insertAdjacentHTML('beforeend', modal);
         }
 
-        function irA(idDestino, idRegreso = null) {
+        function irA(codigo, idRegreso = null) {
             if (idRegreso) localStorage.setItem('puntoRegreso', idRegreso);
-            const isPrincipal = ["1", "2", "3"].includes(idDestino);
-            if (isPrincipal) document.getElementById("parteFilter").value = idDestino;
-            poblarOficialesDeEstaParte(idDestino);
-            renderizarLiturgia(idDestino);
+            
+            let g, p;
+            if (codigo.length === 3) {
+                g = codigo.substring(0, 1);
+                p = parseInt(codigo.substring(1)).toString();
+            } else {
+                g = numGradoActual;
+                p = codigo;
+            }
+
+            // Si el grado es distinto al actual, recargamos ritual
+            if (g !== numGradoActual) {
+                cargarRitualPorGrado(g);
+            }
+            
+            poblarOficialesDeEstaParte(p);
+            renderizarLiturgia(p);
+
             setTimeout(() => {
-                const p = localStorage.getItem('puntoRegreso');
-                if (isPrincipal && p) {
-                    const el = document.getElementById(p);
+                const r = localStorage.getItem('puntoRegreso');
+                if (r && codigo.length !== 3) { // Solo vuelve si es un salto interno
+                    const el = document.getElementById(r);
                     if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); el.classList.add('resaltado'); setTimeout(() => localStorage.removeItem('puntoRegreso'), 2000); }
-                } else if (document.getElementById("oficialFilter").value === "todos") window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
             }, 300);
         }
     </script>
