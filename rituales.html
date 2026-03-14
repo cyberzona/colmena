@@ -22,11 +22,11 @@
         .resaltado { background: rgba(180, 255, 100, 0.4) !important; border-left: 5px solid #2e7d32 !important; }
         .apartado-header { font-weight: bold; color: #795548; font-size: 0.9em; border-bottom: 1px solid #d7ccc8; text-align: right; margin-top: 20px; }
         
-        /* BOTONES E INSTANCIA */
-        .btn-ritual { border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 0.85em; margin: 8px 0; font-weight: bold; display: inline-block; background: #5d4037; color: #ffffff !important; box-shadow: 0 2px 4px rgba(0,0,0,0.3); transition: all 0.2s ease; text-decoration: none; }
-        .btn-ritual:hover { background: #8d6e63; box-shadow: 0 4px 8px rgba(0,0,0,0.4); transform: scale(1.02); }
-        .btn-instancia-exec { background: #2e7d32; border: 2px solid #1b5e20; width: 100%; text-align: left; margin-bottom: 5px; color: white; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; }
-        .instancia-container { background: #fff9c4; border: 1px solid #fbc02d; padding: 10px; margin-top: 10px; border-radius: 6px; }
+        /* ESTILOS DE INSTANCIA */
+        .instancia-container { background: #fff9c4; border: 2px dashed #fbc02d; padding: 15px; margin: 15px 0; border-radius: 8px; font-family: 'Palatino Linotype', serif; }
+        .btn-ritual { border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 0.85em; margin: 5px 0; font-weight: bold; display: inline-block; background: #5d4037; color: #ffffff !important; box-shadow: 0 2px 4px rgba(0,0,0,0.3); transition: all 0.2s ease; text-decoration: none; }
+        .btn-instancia-exec { background: #2e7d32; border: 2px solid #1b5e20; width: 100%; text-align: left; margin-bottom: 8px; color: white; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .accion-texto { font-style: italic; color: #5d4037; }
     </style>
 </head>
 <body onload="inicializar()">
@@ -63,10 +63,7 @@
                 numGradoActual = (urlParams.get('num') || "1").toString();
                 let s = (urlParams.get('sec') || "1").replace(/^0+/, "") || "1";
                 ejecutarCargaRitual(numGradoActual, s);
-            } catch (e) {
-                console.error(e);
-                document.getElementById('rituales-content').innerHTML = "<div style='color:red; text-align:center; padding:20px;'>Error al cargar los datos. Verifica los archivos XML.</div>";
-            }
+            } catch (e) { console.error("Error en inicialización:", e); }
         }
 
         async function cargarDatos() {
@@ -88,8 +85,6 @@
                 document.getElementById("titulo-ritual-header").textContent = titulos[grado] || "Ritual";
                 actualizarSelectorSecciones(seccionID);
                 cambioDeSeccion();
-            } else {
-                document.getElementById('rituales-content').innerHTML = "<div style='color:red; text-align:center;'>Grado no encontrado en liturgia.xml</div>";
             }
         }
 
@@ -116,7 +111,6 @@
             }
 
             oSel.innerHTML = '<option value="">---</option>';
-            // Compatibilidad con glosario (item u oficial)
             const itemsGlosario = glosarioDoc.getElementsByTagName("item").length > 0 ? 
                                  glosarioDoc.getElementsByTagName("item") : 
                                  glosarioDoc.getElementsByTagName("oficial");
@@ -151,10 +145,10 @@
 
                     // LINK DINÁMICO
                     txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
-                        return `<button class="btn-ritual" onclick="irA('${cod}', '${idL}')">${(desc || "Ir").trim()} ➜</button>`;
+                        return `<button class="btn-ritual" onclick="window.location.href='rituales.html?num='+arguments[0][0]+'&sec='+parseInt(arguments[0].substring(1))">${(desc || "Ir").trim()} ➜</button>`;
                     });
 
-                    // INSTANCIA DINÁMICA
+                    // INSTANCIA: Diferenciación Sec vs VM/Otros
                     txt = txt.replace(/\[\[INSTANCIA\]\]/g, () => procesarInstancia(fOfi));
 
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
@@ -173,27 +167,34 @@
             if (!tenidasXml) return "";
             const hoy = new Date().toISOString().split('T')[0];
             const sesion = Array.from(tenidasXml.getElementsByTagName("tenida")).find(s => s.getAttribute("fecha") === hoy);
-            if (!sesion) return "<div class='accion-texto'>(Sin actos grabados hoy)</div>";
+            
+            if (!sesion) return "<div class='accion-texto'>(Sin trabajos grabados hoy)</div>";
 
             let res = "<div class='instancia-container'>";
-            Array.from(sesion.getElementsByTagName("item")).forEach(i => {
-                const acto = i.getAttribute("acto");
-                const tit = i.getAttribute("titulo");
-                const url = i.getAttribute("url");
-                if (acto === "balaustre" && fOfi !== "sec") return;
 
-                if (["nuevo_grado", "elevacion", "iniciacion"].includes(acto)) {
-                    res += `<button class="btn-instancia-exec" onclick="window.location.href='${url}'">⚖️ EJECUTAR: ${tit}</button>`;
-                } else {
-                    res += `<button class="btn-ritual" style="width:100%; text-align:left; background:#8d6e63;" onclick="window.open('${url}', '_blank')">${tit}</button>`;
-                }
-            });
-            return res + "</div>";
-        }
+            // LÓGICA SECRETARIO: Acceso a Balaustrada
+            if (fOfi === "sec") {
+                const balaustrada = sesion.getElementsByTagName("balaustrada")[0]?.textContent || "No hay memo (balaustrada) registrado.";
+                res += `<strong>📜 BALAUSTRADA (MEMO):</strong><br><br><div style="font-style: italic; white-space: pre-wrap;">${balaustrada.trim()}</div>`;
+            } 
+            // LÓGICA OTROS (VM): Ejecución de Actos
+            else {
+                Array.from(sesion.getElementsByTagName("item")).forEach(i => {
+                    const acto = i.getAttribute("acto");
+                    const tit = i.getAttribute("titulo");
+                    const url = i.getAttribute("url");
+                    if (acto === "balaustre") return; // El VM no necesita el botón del acta anterior aquí
 
-        function irA(codigo, regreso) {
-            const g = codigo[0], s = parseInt(codigo.substring(1), 10).toString();
-            window.location.href = `rituales.html?num=${g}&sec=${s}`;
+                    if (["nuevo_grado", "elevacion", "iniciacion"].includes(acto)) {
+                        res += `<button class="btn-instancia-exec" onclick="window.location.href='${url}'">⚖️ EJECUTAR: ${tit}</button>`;
+                    } else {
+                        res += `<button class="btn-ritual" style="width:100%; text-align:left; background:#8d6e63;" onclick="window.open('${url}', '_blank')">${tit}</button>`;
+                    }
+                });
+            }
+
+            res += "</div>";
+            return res;
         }
     </script>
 </body>
