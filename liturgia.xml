@@ -89,7 +89,7 @@
         </apartado>
         <apartado id="3" titulo="De los Asuntos Familiares y Otros">
             <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ como yo lo hago en el Or∴ que vamos a tratar asuntos familiares."/>
-            <paso tipo="dialogo" oficial="VM" texto="Invitad al MC∴.. a que dé un paseo al salón de pasos perdidos a ver si hay algún visitante."/>
+            <paso tipo="dialogo" oficial="VM" texto="Invitad al MC∴.. a que dé un paseo al salón de pasos perdidos a ver si hay algún visitante.[[LINK:103]]"/>
         </apartado>
     </parte>
     <parte id="3" titulo="Clausura de Trabajos">
