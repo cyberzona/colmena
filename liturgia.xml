@@ -55,7 +55,7 @@
     <parte id="2" titulo="Desarrollo de Trabajos">        
         <apartado id="1" titulo="Del Balaustre del la Sesión Anterior">
             <paso tipo="dialogo" oficial="VM" texto="QQHH∴, habiéndose cumplido con las formalidades de la apertura, entramos ahora en el Desarrollo de Trabajos."/>
-            <paso tipo="dialogo" oficial="VM" texto="QH∴ Secretario (Sec∴), servíos dar lectura del último Trazado de este Taller.[[ULTIMA_TENIDA]]"/>
+            <paso tipo="dialogo" oficial="VM" texto="QH∴ Secretario (Sec∴), servíos dar lectura del último Trazado de este Taller. [[ULTIMA_TENIDA]]"/>
             <paso tipo="dialogo" oficial="Sec" texto="[QH∴ Sec∴ procede con la lectura.]"/>
             <paso tipo="dialogo" oficial="1V" texto="Reina el silencio en ambas CCol∴, VM∴."/>
             <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴, anunciad en vuestras respectivas columnas que el memo está en discusión. Si algún hermano desea hacer una observación, tiene la palabra"/>
