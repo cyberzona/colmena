@@ -20,10 +20,10 @@
             position: sticky; 
             top: 0; 
             z-index: 1000; 
-            text-align: center; 
             display: flex; 
             justify-content: space-between; 
             align-items: flex-end; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
         .container-select { display: flex; flex-direction: column; text-align: left; }
         #container-parte { width: 65%; } 
@@ -48,8 +48,6 @@
         dd::before { content: counter(line-counter); position: absolute; left: -45px; color: #5d4037; font-size: 1.2em; font-weight: 800; width: 35px; text-align: right; top: -2px; }
         
         .resaltado { background: rgba(180, 255, 100, 0.4) !important; border-left: 5px solid #2e7d32 !important; }
-        
-        /* Apartados sin Uppercase */
         .apartado-header { font-weight: bold; color: #795548; font-size: 0.95em; border-bottom: 1px solid #d7ccc8; text-align: right; margin-top: 20px; padding-bottom: 5px; }
         
         .accion-texto { font-style: italic; color: #5d4037; }
@@ -133,15 +131,18 @@
         }
 
         function cambioDeParte() {
-            poblarOficialesDeEstaParte();
+            // Guardamos el oficial seleccionado antes de repoblar
+            const oficialSeleccionado = document.getElementById("oficialFilter").value;
+            poblarOficialesDeEstaParte(null, oficialSeleccionado);
             renderizarLiturgia();
         }
 
-        function poblarOficialesDeEstaParte(idManual = null) {
+        function poblarOficialesDeEstaParte(idManual = null, oficialPreseleccionado = "todos") {
             const pId = idManual || document.getElementById("parteFilter").value;
             const oSel = document.getElementById("oficialFilter");
             const parteActual = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") === pId.toString());
             const oficialesActivos = new Set();
+            
             if (parteActual) {
                 const pasos = parteActual.getElementsByTagName("paso");
                 for (let paso of pasos) {
@@ -149,6 +150,7 @@
                     if (idOfi) oficialesActivos.add(idOfi.trim().toLowerCase());
                 }
             }
+
             oSel.innerHTML = '<option value="todos">Todos</option>';
             const itemsG = glosarioDoc.getElementsByTagName("item");
             for (let item of itemsG) {
@@ -156,6 +158,11 @@
                 if (oficialesActivos.has(siglaG.trim().toLowerCase())) {
                     oSel.add(new Option(siglaG.trim() + "∴", siglaG.trim().toLowerCase()));
                 }
+            }
+
+            // Restauramos la selección si el oficial existe en esta parte
+            if (oficialPreseleccionado !== "todos") {
+                oSel.value = oficialPreseleccionado;
             }
         }
 
@@ -167,7 +174,6 @@
             
             if (!parteActiva) return;
 
-            // SINCRONIZACIÓN DE TÍTULO: Siempre muestra el título de la parte actual
             document.getElementById("titulo-ritual-header").textContent = parteActiva.getAttribute("titulo");
 
             let htmlAcumulado = "";
@@ -181,7 +187,7 @@
 
                 for (let paso of pasos) {
                     globalStepIdx++;
-                    const ofiOriginal = paso.getAttribute("oficial") || "";
+                    const ofiOriginal = (paso.getAttribute("oficial") || "").trim();
                     let texto = paso.getAttribute("texto") || "";
                     const idAncla = `linea-${pId}-${globalStepIdx}`;
 
@@ -202,8 +208,9 @@
                     texto = texto.replace(/\[\[VOLVER:(\d+)\]\]/g, (m, id) => `<br><button class="btn-volver" onclick="irA('${id}')">⬅ Regresar</button>`);
                     if (texto.startsWith('[') && texto.endsWith(']')) texto = `<span class="accion-texto">${texto}</span>`;
 
-                    const res = (fOfi !== "todos" && ofiOriginal.trim().toLowerCase() === fOfi) ? "class='resaltado'" : "";
-                    pasosHtml += `<dt>${ofiOriginal.trim()}∴</dt><dd ${res} id="${idAncla}">${texto}</dd>`;
+                    // Lógica de resaltado persistente
+                    const res = (fOfi !== "todos" && ofiOriginal.toLowerCase() === fOfi) ? "class='resaltado'" : "";
+                    pasosHtml += `<dt>${ofiOriginal}∴</dt><dd ${res} id="${idAncla}">${texto}</dd>`;
                 }
                 htmlAcumulado += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>` + pasosHtml;
             }
@@ -211,7 +218,10 @@
             contenedor.innerHTML = `<div class="parte-ritual" style="counter-reset: line-counter; margin-top:20px;">${htmlAcumulado}</div>`;
             
             if (fOfi !== "todos") {
-                setTimeout(() => { document.querySelector('.resaltado')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 150);
+                setTimeout(() => { 
+                    const firstEl = document.querySelector('.resaltado');
+                    if (firstEl) firstEl.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+                }, 150);
             }
         }
 
@@ -266,9 +276,16 @@
                 g = numGradoActual;
                 p = codigo;
             }
-            if (g !== numGradoActual) { cargarRitualPorGrado(g); return; }
+            
+            // Mantener el oficial seleccionado al cambiar de sección vía botón
+            const oficialActual = document.getElementById("oficialFilter").value;
 
-            poblarOficialesDeEstaParte(p);
+            if (g !== numGradoActual) { 
+                cargarRitualPorGrado(g); 
+                return; 
+            }
+
+            poblarOficialesDeEstaParte(p, oficialActual);
             renderizarLiturgia(p);
 
             setTimeout(() => {
@@ -276,7 +293,9 @@
                 if (r && codigo.length !== 3) {
                     const el = document.getElementById(r);
                     if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); el.classList.add('resaltado'); setTimeout(() => localStorage.removeItem('puntoRegreso'), 2000); }
-                } else { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+                } else { 
+                    if (oficialActual === "todos") window.scrollTo({ top: 0, behavior: 'smooth' }); 
+                }
             }, 300);
         }
     </script>
