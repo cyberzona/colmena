@@ -9,7 +9,7 @@
         .header-container { display: flex; align-items: center; gap: 20px; margin-bottom: 10px; border-bottom: 2px solid #5d4037; padding-bottom: 10px; }
         .logia-info { display: flex; flex-direction: column; text-align: left; }
         .logia-linea1 { font-size: 0.75rem; color: #8d6e63; letter-spacing: 0.5px; }
-        #titulo-ritual-header { font-size: 0.9rem; color: #5d4037; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
+        #titulo-ritual-header { font-size: 0.95rem; color: #5d4037; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
         .logo-mini { width: 65px; height: auto; flex-shrink: 0; }
         
         #control-panel { 
@@ -89,9 +89,16 @@
             numGradoActual = grado.toString();
             const rituales = xmlDoc.getElementsByTagName("ritual");
             for (let r of rituales) {
-                if (r.getAttribute("grado") === numGradoActual) { ritualActivo = r; break; }
+                if (r.getAttribute("grado") === numGradoActual) { 
+                    ritualActivo = r; 
+                    break; 
+                }
             }
             if (ritualActivo) {
+                // Título fijo del Grado en el encabezado
+                const nombresGrados = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Ritual de Maestro" };
+                document.getElementById("titulo-ritual-header").textContent = nombresGrados[numGradoActual] || "Ritual";
+                
                 poblarPartes();
                 cambioDeParte(); 
             }
@@ -103,7 +110,7 @@
             pSel.innerHTML = "";
             const partes = Array.from(ritualActivo.getElementsByTagName("parte"));
             
-            // Forzamos la aparición de las 3 partes (1: Apertura, 2: Desarrollo, 3: Clausura)
+            // Filtro estricto para las 3 partes principales
             partes.forEach(p => {
                 const id = p.getAttribute("id").trim();
                 const titulo = p.getAttribute("titulo");
@@ -152,7 +159,6 @@
             const parteActiva = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") === pId.toString());
             
             if (!parteActiva) return;
-            document.getElementById("titulo-ritual-header").textContent = parteActiva.getAttribute("titulo");
 
             let htmlAcumulado = "";
             let stepIdx = 0;
@@ -172,7 +178,7 @@
                         texto = texto.replace('[[GESTION_SECRETARIA]]', procesarOrdenDelDia(tituloApa));
                     }
 
-                    // Links con nombre automático de sección
+                    // Links con nombre automático de sección recuperado del XML
                     texto = texto.replace(/\[\[LINK:(\d{3})\]\]/g, (m, coords) => {
                         const g = coords.substring(0, 1);
                         const pDestId = parseInt(coords.substring(1)).toString();
