@@ -21,8 +21,26 @@
         dd::before { content: counter(line-counter); position: absolute; left: -45px; color: #5d4037; font-size: 1.1em; font-weight: 800; width: 35px; text-align: right; }
         .resaltado { background: rgba(180, 255, 100, 0.4) !important; border-left: 5px solid #2e7d32 !important; }
         .apartado-header { font-weight: bold; color: #795548; font-size: 0.9em; border-bottom: 1px solid #d7ccc8; text-align: right; margin-top: 20px; }
-        .btn-ritual { border: none; padding: 10px 15px; border-radius: 20px; cursor: pointer; font-size: 0.85em; margin: 10px 0; font-weight: bold; display: inline-block; background: #5d4037; color: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.2); text-decoration: none; }
+        
+        /* DISEÑO DE BOTONES (LINK E INSTANCIA) */
+        .btn-ritual { 
+            border: none; 
+            padding: 10px 18px; 
+            border-radius: 25px; 
+            cursor: pointer; 
+            font-size: 0.85em; 
+            margin: 10px 0; 
+            font-weight: bold; 
+            display: inline-block; 
+            background: #5d4037; 
+            color: #ffffff !important; 
+            box-shadow: 0 3px 6px rgba(0,0,0,0.16); 
+            text-decoration: none;
+            transition: background 0.3s;
+        }
         .btn-ritual:active { background: #3e2723; transform: translateY(1px); }
+        .btn-instancia { background: #2e7d32; } /* Color distintivo para Instancias */
+        
         .accion-texto { font-style: italic; color: #5d4037; }
     </style>
 </head>
@@ -159,7 +177,7 @@
                     let txt = paso.getAttribute("texto") || "";
                     const idL = `l-${sId}-${counter}`;
 
-                    // LÓGICA DE BOTONES CON BÚSQUEDA DE NOMBRE DE SECCIÓN
+                    // 1. LÓGICA DE BOTONES LINK (CON NOMBRE DINÁMICO)
                     txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
                         let nombreBoton = desc;
                         if (!nombreBoton) {
@@ -174,7 +192,12 @@
                                 nombreBoton = "Sección " + cod;
                             }
                         }
-                        return `<button class="btn-ritual" onclick="irA('${cod}', '${idL}')">${nombreBoton} ➜</button>`;
+                        return `<button class="btn-ritual" onclick="irA('${cod}', '${idL}')">${nombreBoton.trim()} ➜</button>`;
+                    });
+
+                    // 2. LÓGICA DE BOTONES INSTANCIA
+                    txt = txt.replace(/\[\[INSTANCIA\]\]/g, () => {
+                        return `<button class="btn-ritual btn-instancia" onclick="window.location.href='instancias.html'">Ver Instancia ➜</button>`;
                     });
 
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
@@ -189,6 +212,7 @@
             });
             contenedor.innerHTML = `<div style="counter-reset: line-counter;">${html}</div>`;
 
+            // Auto-scroll al oficial
             if (primeraID) {
                 const el = document.getElementById(primeraID);
                 if (el) {
