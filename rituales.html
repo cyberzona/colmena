@@ -35,7 +35,7 @@
         <img src="./images/logo-mini.png" alt="Logo" class="logo-mini">
         <div class="logia-info">
             <span class="logia-linea1">Resp∴ Log∴ Simb∴ Colmena Nº 8</span>
-            <span id="titulo-ritual-header">Cargando...</span>
+            <span id="titulo-ritual-header">...</span>
         </div>
     </div>
 
@@ -58,19 +58,13 @@
 
         async function inicializar() {
             try {
-                // 1. Cargamos todos los archivos primero
-                await cargarDatos();
-                
-                // 2. Después de cargar los datos, leemos el parámetro de la URL
                 const urlParams = new URLSearchParams(window.location.search);
+                // CORRECCIÓN: Captura y asignación explícita del grado desde la URL
                 const gradoUrl = urlParams.get('num');
-                
                 if (gradoUrl) {
                     numGradoActual = gradoUrl.toString();
                 }
-
-                // 3. Ahora sí, inicializamos el ritual con los datos ya en memoria
-                cargarRitualPorGrado(numGradoActual);
+                await cargarDatos();
             } catch (e) { console.error("Error en inicialización:", e); }
         }
 
@@ -84,26 +78,29 @@
             glosarioDoc = parser.parseFromString(resGlosario, "text/xml");
             xmlDoc = parser.parseFromString(resLiturgia, "text/xml");
             if (resTenidas) tenidasXml = parser.parseFromString(resTenidas, "text/xml");
+            
+            // Pasamos explícitamente el grado detectado
+            cargarRitualPorGrado(numGradoActual);
         }
 
         function cargarRitualPorGrado(grado) {
             const rituales = xmlDoc.getElementsByTagName("ritual");
             ritualActivo = null;
             
-            for (let i = 0; i < rituales.length; i++) {
-                if (rituales[i].getAttribute("grado") === grado.toString()) { 
-                    ritualActivo = rituales[i]; 
+            for (let r of rituales) {
+                if (r.getAttribute("grado") === grado.toString()) { 
+                    ritualActivo = r; 
                     break; 
                 }
             }
             
             if (ritualActivo) {
-                const nombresGrados = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Maestría" };
+                const nombresGrados = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Ritual de Maestro" };
                 document.getElementById("titulo-ritual-header").textContent = nombresGrados[grado] || "Ritual";
                 poblarPartes(true); 
                 cambioDeParte();
             } else {
-                document.getElementById("titulo-ritual-header").textContent = "Grado no encontrado";
+                console.error("No se encontró el ritual para el grado:", grado);
             }
         }
 
@@ -238,6 +235,7 @@
             if (idRegreso) localStorage.setItem('puntoRegreso', idRegreso);
             let g = codigo.substring(0, 1), pId = parseInt(codigo.substring(1)).toString();
             
+            // Si el grado cambia, redirigimos con el parámetro num en la URL
             if (g !== numGradoActual) { 
                 window.location.href = `?num=${g}`; 
                 return; 
