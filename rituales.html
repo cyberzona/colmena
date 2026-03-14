@@ -54,7 +54,6 @@
         .btn-link, .btn-volver { background: #5d4037; color: #fff; border: none; padding: 10px 18px; border-radius: 20px; cursor: pointer; font-size: 0.85em; margin-top: 10px; display: block; width: fit-content; font-weight: bold; }
         .btn-volver { background: #8d6e63; }
         .btn-memo { background: #455a64; color: white; border: 1px solid #607d8b; padding: 12px; border-radius: 6px; width: 100%; margin: 8px 0; text-align: left; cursor: pointer; font-size: 0.85em; display: flex; align-items: center; gap: 10px; }
-        .btn-grado-accion { background: #1b5e20; color: white; border: 2px solid #b8860b; padding: 14px; border-radius: 8px; font-weight: bold; width: 100%; margin: 12px 0; cursor: pointer; text-align: center; }
     </style>
 </head>
 <body onload="inicializar()">
@@ -131,13 +130,12 @@
         }
 
         function cambioDeParte() {
-            // Guardamos el oficial seleccionado antes de repoblar
             const oficialSeleccionado = document.getElementById("oficialFilter").value;
             poblarOficialesDeEstaParte(null, oficialSeleccionado);
             renderizarLiturgia();
         }
 
-        function poblarOficialesDeEstaParte(idManual = null, oficialPreseleccionado = "todos") {
+        function poblarOficialesDeEstaParte(idManual = null, oficialPreseleccionado = "") {
             const pId = idManual || document.getElementById("parteFilter").value;
             const oSel = document.getElementById("oficialFilter");
             const parteActual = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") === pId.toString());
@@ -151,7 +149,8 @@
                 }
             }
 
-            oSel.innerHTML = '<option value="todos">Todos</option>';
+            // Opción inicial en blanco
+            oSel.innerHTML = '<option value="">---</option>';
             const itemsG = glosarioDoc.getElementsByTagName("item");
             for (let item of itemsG) {
                 const siglaG = item.getAttribute("sigla");
@@ -160,9 +159,11 @@
                 }
             }
 
-            // Restauramos la selección si el oficial existe en esta parte
-            if (oficialPreseleccionado !== "todos") {
+            // Restaurar si el oficial existe en esta parte, sino dejar en blanco
+            if (oficialPreseleccionado && oficialesActivos.has(oficialPreseleccionado)) {
                 oSel.value = oficialPreseleccionado;
+            } else {
+                oSel.value = "";
             }
         }
 
@@ -208,8 +209,7 @@
                     texto = texto.replace(/\[\[VOLVER:(\d+)\]\]/g, (m, id) => `<br><button class="btn-volver" onclick="irA('${id}')">⬅ Regresar</button>`);
                     if (texto.startsWith('[') && texto.endsWith(']')) texto = `<span class="accion-texto">${texto}</span>`;
 
-                    // Lógica de resaltado persistente
-                    const res = (fOfi !== "todos" && ofiOriginal.toLowerCase() === fOfi) ? "class='resaltado'" : "";
+                    const res = (fOfi !== "" && ofiOriginal.toLowerCase() === fOfi) ? "class='resaltado'" : "";
                     pasosHtml += `<dt>${ofiOriginal}∴</dt><dd ${res} id="${idAncla}">${texto}</dd>`;
                 }
                 htmlAcumulado += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>` + pasosHtml;
@@ -217,7 +217,7 @@
 
             contenedor.innerHTML = `<div class="parte-ritual" style="counter-reset: line-counter; margin-top:20px;">${htmlAcumulado}</div>`;
             
-            if (fOfi !== "todos") {
+            if (fOfi !== "") {
                 setTimeout(() => { 
                     const firstEl = document.querySelector('.resaltado');
                     if (firstEl) firstEl.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
@@ -244,7 +244,7 @@
                     Array.from(hoySes.getElementsByTagName("item")).forEach(i => {
                         const acto = i.getAttribute("acto");
                         if (acto === "nuevo_grado") {
-                            res += `<button class="btn-grado-accion" onclick="window.location.href='${i.getAttribute("url")}'">⚖️ EJECUTAR: ${i.getAttribute("titulo")}</button>`;
+                            res += `<button class="btn-memo" style="background:#1b5e20" onclick="window.location.href='${i.getAttribute("url")}'">⚖️ EJECUTAR: ${i.getAttribute("titulo")}</button>`;
                         } else if (acto !== "balaustre") {
                             let icono = acto === "instruccion" ? "📖" : "📄";
                             res += `<button class="btn-memo" onclick="abrirVisor('${i.getAttribute("url")}','${i.getAttribute("titulo")}')">${icono} Plancha: ${i.getAttribute("titulo")}</button>`;
@@ -277,8 +277,13 @@
                 p = codigo;
             }
             
-            // Mantener el oficial seleccionado al cambiar de sección vía botón
             const oficialActual = document.getElementById("oficialFilter").value;
+
+            // Actualizar el selector de parte VISUALMENTE si la parte es raíz (1, 2, 3)
+            const pSel = document.getElementById("parteFilter");
+            if (["1", "2", "3"].includes(p)) {
+                pSel.value = p;
+            }
 
             if (g !== numGradoActual) { 
                 cargarRitualPorGrado(g); 
@@ -294,7 +299,7 @@
                     const el = document.getElementById(r);
                     if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); el.classList.add('resaltado'); setTimeout(() => localStorage.removeItem('puntoRegreso'), 2000); }
                 } else { 
-                    if (oficialActual === "todos") window.scrollTo({ top: 0, behavior: 'smooth' }); 
+                    if (!oficialActual) window.scrollTo({ top: 0, behavior: 'smooth' }); 
                 }
             }, 300);
         }
