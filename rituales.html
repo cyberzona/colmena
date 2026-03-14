@@ -38,7 +38,6 @@
         .apartado-header { font-weight: bold; color: #795548; font-size: 0.95em; border-bottom: 1px solid #d7ccc8; text-align: right; margin-top: 25px; padding-bottom: 5px; }
         .accion-texto { font-style: italic; color: #5d4037; }
 
-        /* Botones V14 */
         .btn-link, .btn-volver { 
             background: #5d4037; color: #fff; border: none; padding: 8px 16px; 
             border-radius: 15px; cursor: pointer; font-size: 0.85em; margin-top: 8px;
@@ -46,7 +45,7 @@
         }
         .btn-volver { background: #8d6e63; }
 
-        /* Estilos para Memos de Secretaría */
+        /* Estilos de Botones de Gestión (Memos) */
         .btn-memo { background: #8d6e63; color: white; border: none; padding: 10px; border-radius: 6px; width: 100%; margin: 5px 0; text-align: left; cursor: pointer; font-size: 0.85em; display: block; }
         .btn-grado-accion { background: #1b5e20; color: white; border: 2px solid #b8860b; padding: 12px; border-radius: 8px; font-weight: bold; width: 100%; margin: 10px 0; cursor: pointer; display: block; text-align: center; }
         #modal-visor { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; display: flex; flex-direction: column; }
@@ -78,11 +77,7 @@
     <div id="rituales-content"></div>
 
     <script>
-        let xmlDoc = null;
-        let glosarioDoc = null;
-        let tenidasXml = null;
-        let ritualActivo = null;
-        let tituloGradoBase = "";
+        let xmlDoc, glosarioDoc, tenidasXml, ritualActivo, tituloGradoBase = "";
 
         async function inicializar() {
             try {
@@ -102,19 +97,16 @@
 
                 const rituales = xmlDoc.getElementsByTagName("ritual");
                 for (let r of rituales) {
-                    if (r.getAttribute("grado") === numGrado) { 
-                        ritualActivo = r; 
-                        break; 
-                    }
+                    if (r.getAttribute("grado") === numGrado) { ritualActivo = r; break; }
                 }
 
                 if (ritualActivo) {
-                    const nombresGrados = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Ritual de Maestro" };
-                    tituloGradoBase = nombresGrados[numGrado] || "Ritual";
+                    const nombres = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Ritual de Maestro" };
+                    tituloGradoBase = nombres[numGrado] || "Ritual";
                     poblarPartes();
                     cambioDeParte(); 
                 }
-            } catch (e) { console.error("Error inicializando:", e); }
+            } catch (e) { console.error(e); }
         }
 
         function poblarPartes() {
@@ -123,9 +115,7 @@
             const partes = ritualActivo.getElementsByTagName("parte");
             for (let p of partes) {
                 const id = p.getAttribute("id");
-                if (["1", "2", "3"].includes(id)) {
-                    pSel.add(new Option(p.getAttribute("titulo"), id));
-                }
+                if (["1", "2", "3"].includes(id)) pSel.add(new Option(p.getAttribute("titulo"), id));
             }
         }
 
@@ -137,11 +127,11 @@
         function poblarOficialesDeEstaParte(idManual = null) {
             const pId = idManual || document.getElementById("parteFilter").value;
             const oSel = document.getElementById("oficialFilter");
-            const parteEnPantalla = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") === pId);
+            const parteActual = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") === pId);
             const oficialesActivos = new Set();
 
-            if (parteEnPantalla) {
-                const pasos = parteEnPantalla.getElementsByTagName("paso");
+            if (parteActual) {
+                const pasos = parteActual.getElementsByTagName("paso");
                 for (let paso of pasos) {
                     const idOfi = paso.getAttribute("oficial");
                     if (idOfi) oficialesActivos.add(idOfi.trim().toLowerCase());
@@ -149,8 +139,8 @@
             }
 
             oSel.innerHTML = '<option value="todos">Todos</option>';
-            const itemsGlosario = glosarioDoc.getElementsByTagName("item");
-            for (let item of itemsGlosario) {
+            const itemsG = glosarioDoc.getElementsByTagName("item");
+            for (let item of itemsG) {
                 const siglaG = item.getAttribute("sigla");
                 if (oficialesActivos.has(siglaG.trim().toLowerCase())) {
                     oSel.add(new Option(siglaG.trim() + "∴", siglaG.trim().toLowerCase()));
@@ -166,12 +156,7 @@
             
             if (!parteActiva) return;
 
-            const headerTitulo = document.getElementById("titulo-ritual-header");
-            if (["1", "2", "3"].includes(pId)) {
-                headerTitulo.textContent = tituloGradoBase;
-            } else {
-                headerTitulo.textContent = parteActiva.getAttribute("titulo");
-            }
+            document.getElementById("titulo-ritual-header").textContent = ["1", "2", "3"].includes(pId) ? tituloGradoBase : parteActiva.getAttribute("titulo");
 
             let htmlAcumulado = "";
             const apartados = parteActiva.getElementsByTagName("apartado");
@@ -180,6 +165,7 @@
             for (let apa of apartados) {
                 let pasosHtml = "";
                 const pasos = apa.getElementsByTagName("paso");
+                const tituloApartado = apa.getAttribute("titulo").toLowerCase();
 
                 for (let paso of pasos) {
                     globalStepIdx++;
@@ -187,63 +173,62 @@
                     let texto = paso.getAttribute("texto") || "";
                     const idAncla = `linea-${pId}-${globalStepIdx}`;
 
-                    // Inyección de Memos
+                    // LÓGICA DE SECRETARÍA SEGÚN EL ORDEN DEL DÍA
                     if (texto.includes('[[GESTION_SECRETARIA]]')) {
-                        texto = texto.replace('[[GESTION_SECRETARIA]]', procesarMemos());
+                        texto = texto.replace('[[GESTION_SECRETARIA]]', procesarMemos(tituloApartado));
                     }
 
                     texto = texto.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     
-                    // Lógica inteligente para títulos de botones LINK
                     texto = texto.replace(/\[\[LINK:(\d+)\]\]/g, (m, id) => {
                         const destino = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") === id);
-                        const label = destino ? destino.getAttribute("titulo") : "Desarrollo";
-                        return `<br><button class="btn-link" onclick="irA('${id}', '${idAncla}')">Ir a: ${label} ➜</button>`;
+                        return `<br><button class="btn-link" onclick="irA('${id}', '${idAncla}')">Ir a: ${destino ? destino.getAttribute("titulo") : "Desarrollo"} ➜</button>`;
                     });
 
                     texto = texto.replace(/\[\[VOLVER:(\d+)\]\]/g, (m, id) => `<br><button class="btn-volver" onclick="irA('${id}')">⬅ Regresar</button>`);
                     
                     if (texto.startsWith('[') && texto.endsWith(']')) texto = `<span class="accion-texto">${texto}</span>`;
 
-                    const oficialLimpio = ofiOriginal.trim().toLowerCase();
-                    const claseResaltado = (fOfi !== "todos" && oficialLimpio === fOfi) ? "class='resaltado'" : "";
-                    
-                    pasosHtml += `<dt>${ofiOriginal.trim()}∴</dt><dd ${claseResaltado} id="${idAncla}">${texto}</dd>`;
+                    const res = (fOfi !== "todos" && ofiOriginal.trim().toLowerCase() === fOfi) ? "class='resaltado'" : "";
+                    pasosHtml += `<dt>${ofiOriginal.trim()}∴</dt><dd ${res} id="${idAncla}">${texto}</dd>`;
                 }
                 htmlAcumulado += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>` + pasosHtml;
             }
 
             contenedor.innerHTML = `<div class="parte-ritual"><div class="section-header">${parteActiva.getAttribute("titulo")}</div>${htmlAcumulado}</div>`;
-            
             if (fOfi !== "todos") {
-                setTimeout(() => {
-                    const target = document.querySelector('.resaltado');
-                    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 100);
+                setTimeout(() => { document.querySelector('.resaltado')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 100);
             }
         }
 
-        function procesarMemos() {
+        function procesarMemos(seccionActual) {
             if (!tenidasXml) return "";
             const hoy = new Date().toISOString().split('T')[0];
             const sesiones = Array.from(tenidasXml.getElementsByTagName("tenida"));
-            const hoySesion = sesiones.find(s => s.getAttribute("fecha") === hoy);
-            const pasadaSesion = sesiones.filter(s => s.getAttribute("fecha") < hoy).sort((a,b) => b.getAttribute("fecha").localeCompare(a.getAttribute("fecha")))[0];
+            const hoySes = sesiones.find(s => s.getAttribute("fecha") === hoy);
+            const pasSes = sesiones.filter(s => s.getAttribute("fecha") < hoy).sort((a,b) => b.getAttribute("fecha").localeCompare(a.getAttribute("fecha")))[0];
 
             let res = "";
-            if (pasadaSesion) {
-                const items = Array.from(pasadaSesion.getElementsByTagName("item")).filter(i => i.getAttribute("acto") === "balaustre");
-                items.forEach(i => res += `<button class="btn-memo" onclick="abrirVisor('${i.getAttribute("url")}','${i.getAttribute("titulo")}')">📜 ${i.getAttribute("titulo")}</button>`);
-            }
-            if (hoySesion) {
-                Array.from(hoySesion.getElementsByTagName("item")).forEach(i => {
-                    const acto = i.getAttribute("acto");
-                    if (acto === "nuevo_grado") {
-                        res += `<button class="btn-grado-accion" onclick="window.location.href='${i.getAttribute("url")}'">⚖️ EJECUTAR: ${i.getAttribute("titulo")}</button>`;
-                    } else if (acto !== "balaustre") {
-                        res += `<button class="btn-memo" onclick="abrirVisor('${i.getAttribute("url")}','${i.getAttribute("titulo")}')">📄 ${i.getAttribute("titulo")}</button>`;
-                    }
-                });
+            // 1. Si estamos en el punto del Balaustre, solo mostramos el acta anterior
+            if (seccionActual.includes("balaustre") || seccionActual.includes("acta")) {
+                if (pasSes) {
+                    Array.from(pasSes.getElementsByTagName("item")).filter(i => i.getAttribute("acto") === "balaustre").forEach(i => {
+                        res += `<button class="btn-memo" onclick="abrirVisor('${i.getAttribute("url")}','${i.getAttribute("titulo")}')">📜 ${i.getAttribute("titulo")}</button>`;
+                    });
+                }
+            } 
+            // 2. Si estamos en Trabajos, mostramos planchas y acciones del día
+            else if (seccionActual.includes("trabajos") || seccionActual.includes("proposiciones")) {
+                if (hoySes) {
+                    Array.from(hoySes.getElementsByTagName("item")).forEach(i => {
+                        const acto = i.getAttribute("acto");
+                        if (acto === "nuevo_grado") {
+                            res += `<button class="btn-grado-accion" onclick="window.location.href='${i.getAttribute("url")}'">⚖️ EJECUTAR: ${i.getAttribute("titulo")}</button>`;
+                        } else if (acto !== "balaustre") {
+                            res += `<button class="btn-memo" onclick="abrirVisor('${i.getAttribute("url")}','${i.getAttribute("titulo")}')">📄 ${i.getAttribute("titulo")}</button>`;
+                        }
+                    });
+                }
             }
             return res;
         }
@@ -260,22 +245,14 @@
             if (idRegreso) localStorage.setItem('puntoRegreso', idRegreso);
             const isPrincipal = ["1", "2", "3"].includes(idDestino);
             if (isPrincipal) document.getElementById("parteFilter").value = idDestino;
-            
             poblarOficialesDeEstaParte(idDestino);
             renderizarLiturgia(idDestino);
-
             setTimeout(() => {
-                const puntoGuardado = localStorage.getItem('puntoRegreso');
-                if (isPrincipal && puntoGuardado) {
-                    const el = document.getElementById(puntoGuardado);
-                    if (el) {
-                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        el.classList.add('resaltado');
-                        setTimeout(() => localStorage.removeItem('puntoRegreso'), 2000);
-                    }
-                } else if (document.getElementById("oficialFilter").value === "todos") {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                }
+                const p = localStorage.getItem('puntoRegreso');
+                if (isPrincipal && p) {
+                    const el = document.getElementById(p);
+                    if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); el.classList.add('resaltado'); setTimeout(() => localStorage.removeItem('puntoRegreso'), 2000); }
+                } else if (document.getElementById("oficialFilter").value === "todos") window.scrollTo({ top: 0, behavior: 'smooth' });
             }, 300);
         }
     </script>
