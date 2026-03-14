@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bitacora>
-    <tenida fecha="2026-02-21" titulo="Tenida Ordinaria de Febrero">
-        <documento titulo="Balaustre Feb-27" url="https://drive.google.com/file/d/1Jr6xYTM6FAyYTWhSwrCJApxKhk3KelMA/preview" />
+    <tenida fecha="2026-02-21">
+        <item acto="balaustre" titulo="Balaustre de la Tenida Ordinaria (Feb-21)" url="https://drive.google.com/file/d/1Jr6xYTM6FAyYTWhSwrCJApxKhk3KelMA/preview" />
     </tenida>
-    <tenida fecha="2026-03-21" titulo="Tenida de Instrucción">
-        <documento titulo="Balaustre Mar-10" url="https://drive.google.com/file/d/1Jr6xYTM6FAyYTWhSwrCJApxKhk3KelMA/view?usp=sharing" />
-        <documento titulo="Edicto Alvearis" url="docs/edicto.pdf" />
+
+    <tenida fecha="2026-03-14">
+        <item acto="balaustre" titulo="Acta de la Sesión del 21 de Febrero" url="https://drive.google.com/file/d/ID_DOCUMENTO_1/preview" />
+        
+        <item acto="propuesta" titulo="Iniciación de Candidato" url="https://drive.google.com/file/d/ID_DOCUMENTO_2/preview" />
+        <item acto="nuevo_grado" titulo="PASAR A CÁMARA DE COMPAÑERO (GRADO 2)" url="rituales.html?num=2" />
+        
+        <item acto="plancha" titulo="Plancha: El Simbolismo de la Colmena" url="https://drive.google.com/file/d/ID_DOCUMENTO_3/preview" />
     </tenida>
 </bitacora>
