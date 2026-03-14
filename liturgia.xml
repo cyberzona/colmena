@@ -66,7 +66,7 @@
             <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴, anunciad en vuestras respectivas CCol∴, como yo lo hago en Ort∴ que está en consideración la plancha trazada por nuestro QH∴ Sec∴, en tal sentido, si algún H∴ desea hacer uso de la palabra podéis concedérsela."/>
             <paso tipo="dialogo" oficial="2V" texto="Reina el silencio en mi Columna Hermano 1V∴."/>
             <paso tipo="dialogo" oficial="1V" texto="Reina el silencio en ambas CCol∴, VM∴."/>
-            <paso tipo="dialogo" oficial="VM" texto="QH∴ Ora∴ ¿Queréis darnos vuestras conclusiones respecto a la plancha trazada por nuestro H∴ Sec∴ de nuestros últimos trabajos? [El H∴Ora∴ da las conclusiones]"/>
+            <paso tipo="dialogo" oficial="VM" texto="QH∴ OF∴ ¿Queréis darnos vuestras conclusiones respecto a la plancha trazada por nuestro H∴ Sec∴ de nuestros últimos trabajos? [El H∴Ora∴ da las conclusiones]"/>
             <paso tipo="dialogo" oficial="VM" texto="Después de las conclusiones del H∴ Ora∴, los HH∴ que estén de acuerdo se servirán de hacer la señal de aprobación al primer golpe de Mall∴."/>
             <paso tipo="dialogo" oficial="VM" texto="[Da a conocer el resultado de la votación].[[LINK:4]]"/>
         </apartado>
