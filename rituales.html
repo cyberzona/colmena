@@ -174,8 +174,8 @@
 
             let res = "";
             if (fOfi === "sec") {
-                const bal = sesion.getElementsByTagName("balaustrada")[0]?.textContent;
-                if (bal) res = `<div class="instancia-container"><strong>📜 BALAUSTRADA (MEMO):</strong><br><br><div style="font-style: italic; white-space: pre-wrap;">${bal.trim()}</div></div>`;
+                const bal = sesion.getElementsByTagName("balaustre")[0]?.textContent;
+                if (bal) res = `<div class="instancia-container"><strong>📜 BALAUSTRE:</strong><br><br><div style="font-style: italic; white-space: pre-wrap;">${bal.trim()}</div></div>`;
             } else if (fOfi === "vm") {
                 let btns = "";
                 Array.from(sesion.getElementsByTagName("item")).forEach(i => {
