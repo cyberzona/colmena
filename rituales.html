@@ -3,138 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Ritualístico - Colmena No. 8</title>
+    <title>Portal Colmena No. 8</title>
     <style>
-        :root {
-            --cafe-oscuro: #5d4037;
-            --cafe-claro: #8d6e63;
-            --crema: #fdfaf3;
-            --dorado: #b8860b;
-            --verde-accion: #1b5e20;
-        }
-
-        body {
-            font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
-            background-color: #efebe9;
-            color: #3e2723;
-            margin: 0;
-            padding: 0;
-        }
-
-        /* Panel de Control Superior */
-        #control-panel {
-            background: var(--crema);
-            padding: 10px;
-            border-bottom: 2px solid var(--dorado);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-        }
-
-        select {
-            padding: 8px;
-            border: 1px solid var(--cafe-claro);
-            border-radius: 4px;
-            background: white;
-        }
-
-        /* Título de la Parte (Interactiva) */
-        .section-header {
-            background: var(--cafe-oscuro);
-            color: var(--crema);
-            padding: 15px;
-            text-align: center;
-            border-radius: 4px;
-            margin: 10px;
-            text-transform: uppercase;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            transition: background 0.3s;
-        }
-        .section-header:hover { background: var(--cafe-claro); }
-        .section-header::after { content: ' ▼'; font-size: 0.7em; opacity: 0.7; }
-
-        /* Contenido del Ritual */
-        #ritual-content {
-            padding: 20px;
-            max-width: 800px;
-            margin: auto;
-            line-height: 1.6;
-        }
-
-        .paso-contenedor { margin-bottom: 20px; border-left: 3px solid var(--dorado); padding-left: 15px; }
-        .oficial-sigla { font-weight: bold; color: var(--cafe-oscuro); display: block; margin-bottom: 5px; }
-
-        /* Botones de Instancia y Documentos */
-        .contenedor-instancias { display: flex; flex-direction: column; gap: 10px; margin: 15px 0; }
+        :root { --cafe: #5d4037; --crema: #fdfaf3; --dorado: #b8860b; --verde: #1b5e20; }
+        body { font-family: 'Palatino Linotype', serif; background: #efebe9; margin: 0; }
         
-        .btn-doc {
-            background: white;
-            color: var(--cafe-oscuro);
-            border: 1px solid var(--cafe-claro);
-            padding: 12px;
-            text-align: left;
-            cursor: pointer;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        #control-panel { background: var(--crema); padding: 10px; border-bottom: 2px solid var(--dorado); position: sticky; top: 0; z-index: 100; display: flex; gap: 10px; justify-content: center; }
+        
+        .section-header { background: var(--cafe); color: var(--crema); padding: 15px; text-align: center; cursor: pointer; font-weight: bold; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        
+        #ritual-content { padding: 20px; max-width: 800px; margin: auto; }
+        .paso-contenedor { margin-bottom: 20px; border-left: 3px solid var(--dorado); padding-left: 15px; }
+        .oficial-sigla { font-weight: bold; color: var(--cafe); display: block; }
 
-        .btn-link-instancia {
-            background: var(--verde-accion);
-            color: white;
-            border: 2px solid var(--dorado);
-            padding: 18px;
-            font-weight: bold;
-            text-transform: uppercase;
-            cursor: pointer;
-            border-radius: 4px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-        }
+        /* Estilos de Botones de Instancia */
+        .contenedor-instancias { display: flex; flex-direction: column; gap: 10px; margin: 15px 0; }
+        .btn-doc { background: white; border: 1px solid #d7ccc8; padding: 12px; text-align: left; cursor: pointer; width: 100%; border-radius: 4px; }
+        .btn-instancia-exec { background: var(--verde); color: white; border: 2px solid var(--dorado); padding: 18px; font-weight: bold; cursor: pointer; width: 100%; border-radius: 4px; text-transform: uppercase; }
 
-        /* Visor de Documentos (Modal) */
-        #modal-visor {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 1000; display: flex; flex-direction: column;
-        }
-        .modal-header {
-            background: var(--cafe-oscuro); color: var(--crema);
-            padding: 15px; display: flex; justify-content: space-between; align-items: center;
-        }
+        /* Visor Modal */
+        #modal-visor { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; display: flex; flex-direction: column; }
+        .modal-header { background: var(--cafe); color: white; padding: 15px; display: flex; justify-content: space-between; }
     </style>
 </head>
 <body onload="inicializar()">
 
     <div id="control-panel">
-        <select id="parteFilter" onchange="cambioDeParte()">
-            <option value="">Cargando partes...</option>
-        </select>
-        <select id="oficialFilter" onchange="cambioDeParte()">
-            <option value="ALL">Todos los Oficiales</option>
-        </select>
+        <select id="parteFilter" onchange="cambioDeParte()"><option>Cargando...</option></select>
+        <select id="oficialFilter" onchange="cambioDeParte()"><option value="ALL">Todos los Oficiales</option></select>
     </div>
 
     <div id="ritual-content">
-        </div>
+        <p style="text-align:center;">Iniciando sistema...</p>
+    </div>
 
     <script>
         let xmlDoc, glosarioDoc, tenidasXml, ritualActivo;
-        let gradoActual = "1";
 
         async function inicializar() {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
-                gradoActual = urlParams.get('num') || '1';
-                const parteInicial = urlParams.get('p');
+                const grado = urlParams.get('num') || '1';
+                const pInicial = urlParams.get('p');
 
                 const [resGlosario, resLiturgia, resTenidas] = await Promise.all([
                     fetch('glosario.xml').then(r => r.text()),
@@ -149,117 +59,103 @@
 
                 const rituales = xmlDoc.getElementsByTagName("ritual");
                 for (let r of rituales) {
-                    if (r.getAttribute("grado") === gradoActual) { ritualActivo = r; break; }
+                    if (r.getAttribute("grado") === grado) { ritualActivo = r; break; }
                 }
 
                 if (ritualActivo) {
                     poblarSelectores();
-                    if (parteInicial) document.getElementById("parteFilter").value = parteInicial;
+                    if (pInicial) document.getElementById("parteFilter").value = pInicial;
                     cambioDeParte();
+                } else {
+                    throw new Error("Grado no encontrado");
                 }
             } catch (e) {
-                document.getElementById("ritual-content").innerHTML = "Error cargando el ritual.";
+                console.error(e);
+                document.getElementById("ritual-content").innerHTML = `<div style="color:red; text-align:center; padding:20px;"><b>Error Crítico:</b> No se pudo cargar el archivo de liturgia o el grado especificado.</div>`;
             }
         }
 
         function poblarSelectores() {
-            const pSelect = document.getElementById("parteFilter");
-            pSelect.innerHTML = "";
+            const pSel = document.getElementById("parteFilter");
+            pSel.innerHTML = "";
             const partes = ritualActivo.getElementsByTagName("parte");
             for (let p of partes) {
                 let opt = document.createElement("option");
                 opt.value = p.getAttribute("id");
                 opt.textContent = p.getAttribute("titulo");
-                pSelect.appendChild(opt);
+                pSel.appendChild(opt);
             }
 
-            // Oficiales del glosario
-            const oSelect = document.getElementById("oficialFilter");
+            const oSel = document.getElementById("oficialFilter");
             const oficiales = glosarioDoc.getElementsByTagName("oficial");
             for (let o of oficiales) {
                 let opt = document.createElement("option");
                 opt.value = o.getAttribute("sigla");
                 opt.textContent = o.textContent;
-                oSelect.appendChild(opt);
+                oSel.appendChild(opt);
             }
         }
 
         function cambioDeParte() {
             const parteId = document.getElementById("parteFilter").value;
-            const oficialSigla = document.getElementById("oficialFilter").value;
+            const filtro = document.getElementById("oficialFilter").value;
             const partes = ritualActivo.getElementsByTagName("parte");
-            let parteSeleccionada = partes[0];
-
-            for (let p of partes) {
-                if (p.getAttribute("id") === parteId) { parteSeleccionada = p; break; }
-            }
-
-            renderizarContenido(parteSeleccionada, oficialSigla);
+            let pActiva = partes[0];
+            for (let p of partes) { if (p.getAttribute("id") === parteId) { pActiva = p; break; } }
+            renderizar(pActiva, filtro);
         }
 
-        function renderizarContenido(parte, filtroOficial) {
-            const contenedor = document.getElementById("ritual-content");
-            let html = `<div class="section-header" onclick="document.getElementById('parteFilter').focus()">
-                            ${parte.getAttribute("titulo")}
-                        </div>`;
+        function renderizar(parte, filtro) {
+            const cont = document.getElementById("ritual-content");
+            let html = `<div class="section-header" onclick="document.getElementById('parteFilter').focus()">${parte.getAttribute("titulo")}</div>`;
 
             const pasos = parte.getElementsByTagName("paso");
             for (let p of pasos) {
                 const sigla = p.getAttribute("oficial");
-                if (filtroOficial !== "ALL" && filtroOficial !== sigla) continue;
+                if (filtro !== "ALL" && filtro !== sigla) continue;
 
-                let texto = p.getAttribute("texto") || p.textContent;
+                let texto = p.textContent || p.getAttribute("texto");
                 
-                // --- PROCESAMIENTO DE ETIQUETA [[INSTANCIA]] ---
-                texto = texto.replace(/\[\[INSTANCIA\]\]/g, () => generarContenidoInstancia());
+                // Procesar etiqueta [[INSTANCIA]] con seguridad
+                if (texto.includes("[[INSTANCIA]]")) {
+                    texto = texto.replace(/\[\[INSTANCIA\]\]/g, procesarInstancia());
+                }
 
-                html += `
-                    <div class="paso-contenedor">
-                        <span class="oficial-sigla">${sigla}</span>
-                        <div class="paso-texto">${texto}</div>
-                    </div>`;
+                html += `<div class="paso-contenedor"><span class="oficial-sigla">${sigla}</span><div>${texto}</div></div>`;
             }
-            contenedor.innerHTML = html;
+            cont.innerHTML = html;
         }
 
-        function generarContenidoInstancia() {
-            if (!tenidasXml) return " <span class='accion-texto'>(Bitácora no cargada)</span> ";
+        function procesarInstancia() {
+            if (!tenidasXml) return "<br><i>(Bitácora no cargada)</i>";
             
-            const hoyStr = new Date().toISOString().split('T')[0];
-            const sesion = Array.from(tenidasXml.getElementsByTagName("tenida"))
-                                .find(s => s.getAttribute("fecha") === hoyStr);
+            const hoy = new Date().toISOString().split('T')[0];
+            const sesiones = Array.from(tenidasXml.getElementsByTagName("tenida"));
+            const actual = sesiones.find(s => s.getAttribute("fecha") === hoy);
 
-            if (!sesion) return ` <span class='accion-texto'>(Sin trabajos para hoy: ${hoyStr})</span> `;
+            if (!actual) return `<br><small style="color:gray;">(Sin actos para hoy: ${hoy})</small>`;
 
-            const items = Array.from(sesion.getElementsByTagName("item"));
             let res = "<div class='contenedor-instancias'>";
+            const items = Array.from(actual.getElementsByTagName("item"));
             
-            items.forEach(item => {
-                const acto = item.getAttribute("acto");
-                const titulo = item.getAttribute("titulo");
-                const url = item.getAttribute("url");
+            items.forEach(i => {
+                const acto = i.getAttribute("acto");
+                const tit = i.getAttribute("titulo");
+                const url = i.getAttribute("url");
 
-                if (acto === "nuevo_grado") {
-                    res += `<button class="btn-link-instancia" onclick="window.location.href='${url}'">⚖️ EJECUTAR: ${titulo}</button>`;
+                if (acto === "nuevo_grado" || acto === "elevacion" || acto === "iniciacion") {
+                    res += `<button class="btn-instancia-exec" onclick="window.location.href='${url}'">⚖️ EJECUTAR: ${tit}</button>`;
                 } else {
-                    const icono = (acto === "balaustre") ? "📜" : "📄";
-                    res += `<button class="btn-doc" onclick="abrirVisorDocumento('${url}','${titulo}')">${icono} ${titulo}</button>`;
+                    const ico = (acto === "balaustre") ? "📜" : "📄";
+                    res += `<button class="btn-doc" onclick="abrirVisor('${url}','${tit}')">${ico} ${tit}</button>`;
                 }
             });
-
             return res + "</div>";
         }
 
-        function abrirVisorDocumento(url, titulo) {
-            const previewUrl = url.replace('/view', '/preview').replace('?usp=sharing', '');
-            const modal = `
-                <div id="modal-visor">
-                    <div class="modal-header">
-                        <span>${titulo}</span>
-                        <button style="background:var(--dorado); border:none; color:white; padding:5px 10px; cursor:pointer;" onclick="document.getElementById('modal-visor').remove()">CERRAR ✕</button>
-                    </div>
-                    <iframe src="${previewUrl}" style="width:100%; flex-grow:1; border:none; background:white;"></iframe>
-                </div>`;
+        function abrirVisor(url, tit) {
+            const pUrl = url.replace('/view', '/preview').split('?')[0];
+            const modal = `<div id="modal-visor"><div class="modal-header"><span>${tit}</span><button onclick="document.getElementById('modal-visor').remove()">CERRAR ✕</button></div><iframe src="${pUrl}" style="width:100%; flex-grow:1; border:none; background:white;"></iframe></div>`;
             document.body.insertAdjacentHTML('beforeend', modal);
         }
     </script>
