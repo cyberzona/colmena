@@ -131,6 +131,11 @@
             <paso tipo="dialogo" oficial="MC" texto="[Apaga la estrella de 2V∴ , Apaga la estrella del 1V∴ y Apaga la estrella del VM∴ Retira la Escuadra y el Compás, y cierra el Libro de la Ley]"/>
         </apartado>
     </parte>
+    <parte id="4" titulo="Clausura de Trabajos">
+         <apartado id="1" titulo="Del Tronco de Beneficencia">
+            <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴ anunciad en vuestras CCol∴ que el H∴ Hos∴ va a circular en tronco de beneficencia."/>
+         </apartado>
+    </parte>    
 </ritual>
 <ritual taller="Colmena No. 8" grado="2">
 </ritual>
