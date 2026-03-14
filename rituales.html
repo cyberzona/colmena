@@ -164,19 +164,16 @@
             if (!tenidasXml) return "";
             const listaTenidas = Array.from(tenidasXml.getElementsByTagName("tenida"));
             if (listaTenidas.length === 0) return "";
-
             if (fOfi === "sec") {
                 // Secretario: ÚNICAMENTE la balaustrada de la última sesión
                 const ultimaTenida = listaTenidas[listaTenidas.length - 1];
-                const bal = ultimaTenida.getElementsByTagName("balaustrada")[0]?.textContent;
-                return bal ? `<div class="instancia-container"><strong>📜 BALAUSTRADA (TENIDA ANTERIOR):</strong><br><br><div style="font-style: italic; white-space: pre-wrap;">${bal.trim()}</div></div>` : "";
-            } 
-            
+                const bal = ultimaTenida.getElementsByTagName("balaustre")[0]?.textContent;
+                return bal ? `<div class="instancia-container"><strong>📜 BALAUSTRE ANTERIOR):</strong><br><br><div style="font-style: italic; white-space: pre-wrap;">${bal.trim()}</div></div>` : "";
+            }             
             if (fOfi === "vm") {
                 // Venerable Maestro: ÚNICAMENTE los documentos/acciones de la sesión de HOY
                 const hoy = new Date().toISOString().split('T')[0];
-                const tenidaHoy = listaTenidas.find(t => t.getAttribute("fecha") === hoy);
-                
+                const tenidaHoy = listaTenidas.find(t => t.getAttribute("fecha") === hoy);                
                 if (tenidaHoy) {
                     let btns = "";
                     Array.from(tenidaHoy.getElementsByTagName("item")).forEach(i => {
