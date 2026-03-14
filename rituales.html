@@ -153,7 +153,7 @@
                     let texto = paso.getAttribute("texto") || "";
                     const idAncla = `linea-${pId}-${stepIdx}`;
 
-                    // LÓGICA DE LINK MEJORADA PARA BUSCAR TÍTULOS EN EL XML
+                    // LÓGICA DE LINK: Búsqueda profunda de Título de Apartado
                     texto = texto.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (m, coords, desc) => {
                         let label = desc;
                         if (!label) {
@@ -164,7 +164,11 @@
                             for (let r of rits) if (r.getAttribute("grado") === gDest) { rDest = r; break; }
                             if (rDest) {
                                 const pts = rDest.getElementsByTagName("parte");
-                                for (let p of pts) if (p.getAttribute("id") === pDestId) { label = p.getAttribute("titulo"); break; }
+                                for (let p of pts) if (p.getAttribute("id") === pDestId) {
+                                    const primerApa = p.getElementsByTagName("apartado")[0];
+                                    label = (primerApa && primerApa.getAttribute("titulo")) ? primerApa.getAttribute("titulo") : p.getAttribute("titulo");
+                                    break;
+                                }
                             }
                         }
                         return `<button class="btn-ritual color-cafe" onclick="irA('${coords}', '${idAncla}')">${label || "Ir a Sección"} ➜</button>`;
