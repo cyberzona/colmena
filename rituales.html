@@ -151,7 +151,6 @@
                     const ofiLower = ofiRaw.toLowerCase();
                     let texto = paso.getAttribute("texto") || "";
                     const idAncla = `linea-${pId}-${stepIdx}`;
-
                     // LINK
                     texto = texto.replace(/\[\[LINK:(\d{3})\]\]/g, (m, coords) => {
                         return `<button class="btn-ritual color-cafe" onclick="irA('${coords}', '${idAncla}')">Ir a Sección ➜</button>`;
@@ -165,7 +164,6 @@
                             texto = texto.replace(/\[\[INSTANCIA\]\]/gi, "");
                         }
                     }
-
                     texto = texto.replace(/\[\[VOLVER:(\d+)\]\]/g, (m, id) => `<button class="btn-ritual color-cafe" onclick="irA('${id}')">⬅ Regresar</button>`);
                     texto = texto.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     if (texto.startsWith('[') && texto.endsWith(']')) texto = `<span class="accion-texto">${texto}</span>`;
@@ -203,10 +201,8 @@
                 if (hoySes) {
                     Array.from(hoySes.getElementsByTagName("item")).forEach(i => {
                         const acto = i.getAttribute("acto").toLowerCase();
-                        const titulo = i.getAttribute("titulo");
-                        
+                        const titulo = i.getAttribute("titulo");                        
                         const destinos = { "iniciacion": "107", "elevacion": "201", "exaltacion": "301" };
-
                         if (destinos[acto]) {
                             res += `<button class="btn-ritual color-verde" onclick="irA('${destinos[acto]}')">⚖️ PROCEDER A ${acto.toUpperCase()}: ${titulo}</button>`;
                         } else {
