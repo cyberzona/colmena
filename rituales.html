@@ -3,32 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal de Rituales - Colmena No. 8</title>
+    <title>Portal Ritualístico - Colmena No. 8</title>
     <style>
         :root {
             --cafe-oscuro: #5d4037;
             --cafe-claro: #8d6e63;
             --crema: #fdfaf3;
             --dorado: #b8860b;
-            --verde-instancia: #1b5e20;
+            --verde-accion: #1b5e20;
         }
 
         body {
             font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
             background-color: #efebe9;
+            color: #3e2723;
             margin: 0;
-            padding: 20px;
-            color: #333;
+            padding: 0;
         }
 
-        /* Título Interactivo sugerido por los compañeros */
+        /* Panel de Control Superior */
+        #control-panel {
+            background: var(--crema);
+            padding: 10px;
+            border-bottom: 2px solid var(--dorado);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        select {
+            padding: 8px;
+            border: 1px solid var(--cafe-claro);
+            border-radius: 4px;
+            background: white;
+        }
+
+        /* Título de la Parte (Interactiva) */
         .section-header {
             background: var(--cafe-oscuro);
             color: var(--crema);
             padding: 15px;
             text-align: center;
             border-radius: 4px;
-            margin-bottom: 15px;
+            margin: 10px;
             text-transform: uppercase;
             font-weight: bold;
             cursor: pointer;
@@ -36,24 +57,25 @@
             justify-content: center;
             align-items: center;
             gap: 10px;
-            border-bottom: 3px solid var(--dorado);
             transition: background 0.3s;
         }
-
         .section-header:hover { background: var(--cafe-claro); }
         .section-header::after { content: ' ▼'; font-size: 0.7em; opacity: 0.7; }
 
-        /* Contenedor de Instancias (Balaustre/Propuestas) */
-        .contenedor-instancias {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin: 15px 0;
-            padding: 10px;
-            background: rgba(255,255,255,0.5);
-            border-radius: 5px;
+        /* Contenido del Ritual */
+        #ritual-content {
+            padding: 20px;
+            max-width: 800px;
+            margin: auto;
+            line-height: 1.6;
         }
 
+        .paso-contenedor { margin-bottom: 20px; border-left: 3px solid var(--dorado); padding-left: 15px; }
+        .oficial-sigla { font-weight: bold; color: var(--cafe-oscuro); display: block; margin-bottom: 5px; }
+
+        /* Botones de Instancia y Documentos */
+        .contenedor-instancias { display: flex; flex-direction: column; gap: 10px; margin: 15px 0; }
+        
         .btn-doc {
             background: white;
             color: var(--cafe-oscuro);
@@ -68,7 +90,7 @@
         }
 
         .btn-link-instancia {
-            background: var(--verde-instancia);
+            background: var(--verde-accion);
             color: white;
             border: 2px solid var(--dorado);
             padding: 18px;
@@ -79,136 +101,167 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.2);
         }
 
-        /* Visor de Documentos */
+        /* Visor de Documentos (Modal) */
         #modal-visor {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 9999; display: flex; flex-direction: column;
+            background: rgba(0,0,0,0.9); z-index: 1000; display: flex; flex-direction: column;
         }
         .modal-header {
-            background: var(--cafe-oscuro); color: white; padding: 15px;
-            display: flex; justify-content: space-between; align-items: center;
+            background: var(--cafe-oscuro); color: var(--crema);
+            padding: 15px; display: flex; justify-content: space-between; align-items: center;
         }
-
-        .accion-texto { font-style: italic; color: var(--cafe-claro); }
     </style>
 </head>
-<body>
+<body onload="inicializar()">
 
-    <div id="ritual-container">
+    <div id="control-panel">
+        <select id="parteFilter" onchange="cambioDeParte()">
+            <option value="">Cargando partes...</option>
+        </select>
+        <select id="oficialFilter" onchange="cambioDeParte()">
+            <option value="ALL">Todos los Oficiales</option>
+        </select>
+    </div>
+
+    <div id="ritual-content">
         </div>
 
     <script>
-        let xmlDoc, tenidasXml, ritualActivo;
+        let xmlDoc, glosarioDoc, tenidasXml, ritualActivo;
+        let gradoActual = "1";
 
         async function inicializar() {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
-                const numGrado = urlParams.get('num') || '1';
+                gradoActual = urlParams.get('num') || '1';
                 const parteInicial = urlParams.get('p');
 
-                const [resLiturgia, resTenidas] = await Promise.all([
+                const [resGlosario, resLiturgia, resTenidas] = await Promise.all([
+                    fetch('glosario.xml').then(r => r.text()),
                     fetch('liturgia.xml').then(r => r.text()),
                     fetch('tenidas.xml').then(r => r.text()).catch(() => null)
                 ]);
 
                 const parser = new DOMParser();
+                glosarioDoc = parser.parseFromString(resGlosario, "text/xml");
                 xmlDoc = parser.parseFromString(resLiturgia, "text/xml");
                 if (resTenidas) tenidasXml = parser.parseFromString(resTenidas, "text/xml");
 
                 const rituales = xmlDoc.getElementsByTagName("ritual");
                 for (let r of rituales) {
-                    if (r.getAttribute("grado") === numGrado) { ritualActivo = r; break; }
+                    if (r.getAttribute("grado") === gradoActual) { ritualActivo = r; break; }
                 }
 
                 if (ritualActivo) {
-                    // Si se pasó una instancia (parte) por URL, cargarla directamente
-                    renderizarParte(parteInicial || "1");
+                    poblarSelectores();
+                    if (parteInicial) document.getElementById("parteFilter").value = parteInicial;
+                    cambioDeParte();
                 }
-            } catch (e) { console.error("Error inicializando:", e); }
+            } catch (e) {
+                document.getElementById("ritual-content").innerHTML = "Error cargando el ritual.";
+            }
         }
 
-        function renderizarParte(parteId) {
+        function poblarSelectores() {
+            const pSelect = document.getElementById("parteFilter");
+            pSelect.innerHTML = "";
             const partes = ritualActivo.getElementsByTagName("parte");
-            let parteSeleccionada;
+            for (let p of partes) {
+                let opt = document.createElement("option");
+                opt.value = p.getAttribute("id");
+                opt.textContent = p.getAttribute("titulo");
+                pSelect.appendChild(opt);
+            }
+
+            // Oficiales del glosario
+            const oSelect = document.getElementById("oficialFilter");
+            const oficiales = glosarioDoc.getElementsByTagName("oficial");
+            for (let o of oficiales) {
+                let opt = document.createElement("option");
+                opt.value = o.getAttribute("sigla");
+                opt.textContent = o.textContent;
+                oSelect.appendChild(opt);
+            }
+        }
+
+        function cambioDeParte() {
+            const parteId = document.getElementById("parteFilter").value;
+            const oficialSigla = document.getElementById("oficialFilter").value;
+            const partes = ritualActivo.getElementsByTagName("parte");
+            let parteSeleccionada = partes[0];
+
             for (let p of partes) {
                 if (p.getAttribute("id") === parteId) { parteSeleccionada = p; break; }
             }
 
-            if (!parteSeleccionada) return;
-
-            const titulo = parteSeleccionada.getAttribute("titulo");
-            let html = `
-                <div class="section-header" onclick="abrirSelectorPartes()">
-                    ${titulo}
-                </div>
-                <div class="contenido-ritual">
-            `;
-
-            // Procesar pasos y la etiqueta de instancia
-            const pasos = parteSeleccionada.getElementsByTagName("paso");
-            for (let paso of pasos) {
-                let texto = paso.getAttribute("texto") || paso.textContent;
-                
-                // Inyectar Botón de Instancia
-                texto = texto.replace(/\[\[INSTANCIA\]\]/g, () => generarHtmlInstancia());
-                
-                html += `<p><strong>${paso.getAttribute("oficial")}:</strong> ${texto}</p>`;
-            }
-
-            html += `</div>`;
-            document.getElementById("ritual-container").innerHTML = html;
+            renderizarContenido(parteSeleccionada, oficialSigla);
         }
 
-        function generarHtmlInstancia() {
-            if (!tenidasXml) return "<span class='accion-texto'>(Bitácora no disponible)</span>";
+        function renderizarContenido(parte, filtroOficial) {
+            const contenedor = document.getElementById("ritual-content");
+            let html = `<div class="section-header" onclick="document.getElementById('parteFilter').focus()">
+                            ${parte.getAttribute("titulo")}
+                        </div>`;
+
+            const pasos = parte.getElementsByTagName("paso");
+            for (let p of pasos) {
+                const sigla = p.getAttribute("oficial");
+                if (filtroOficial !== "ALL" && filtroOficial !== sigla) continue;
+
+                let texto = p.getAttribute("texto") || p.textContent;
+                
+                // --- PROCESAMIENTO DE ETIQUETA [[INSTANCIA]] ---
+                texto = texto.replace(/\[\[INSTANCIA\]\]/g, () => generarContenidoInstancia());
+
+                html += `
+                    <div class="paso-contenedor">
+                        <span class="oficial-sigla">${sigla}</span>
+                        <div class="paso-texto">${texto}</div>
+                    </div>`;
+            }
+            contenedor.innerHTML = html;
+        }
+
+        function generarContenidoInstancia() {
+            if (!tenidasXml) return " <span class='accion-texto'>(Bitácora no cargada)</span> ";
             
             const hoyStr = new Date().toISOString().split('T')[0];
             const sesion = Array.from(tenidasXml.getElementsByTagName("tenida"))
                                 .find(s => s.getAttribute("fecha") === hoyStr);
-            
-            if (!sesion) return "<span class='accion-texto'>(No hay actos programados hoy)</span>";
+
+            if (!sesion) return ` <span class='accion-texto'>(Sin trabajos para hoy: ${hoyStr})</span> `;
 
             const items = Array.from(sesion.getElementsByTagName("item"));
-            let html = "<div class='contenedor-instancias'>";
-
+            let res = "<div class='contenedor-instancias'>";
+            
             items.forEach(item => {
                 const acto = item.getAttribute("acto");
                 const titulo = item.getAttribute("titulo");
                 const url = item.getAttribute("url");
 
-                if (acto === "balaustre") {
-                    html += `<button class="btn-doc" onclick="abrirVisor('${url}', '${titulo}')">📜 LEER: ${titulo}</button>`;
-                } else if (acto === "nuevo_grado") {
-                    html += `<button class="btn-link-instancia" onclick="window.location.href='${url}'">⚖️ EJECUTAR: ${titulo}</button>`;
+                if (acto === "nuevo_grado") {
+                    res += `<button class="btn-link-instancia" onclick="window.location.href='${url}'">⚖️ EJECUTAR: ${titulo}</button>`;
                 } else {
-                    html += `<button class="btn-doc" onclick="abrirVisor('${url}', '${titulo}')">📄 ${titulo}</button>`;
+                    const icono = (acto === "balaustre") ? "📜" : "📄";
+                    res += `<button class="btn-doc" onclick="abrirVisorDocumento('${url}','${titulo}')">${icono} ${titulo}</button>`;
                 }
             });
 
-            return html + "</div>";
+            return res + "</div>";
         }
 
-        function abrirVisor(url, titulo) {
-            const urlPreview = url.replace('/view', '/preview');
-            const visorHtml = `
+        function abrirVisorDocumento(url, titulo) {
+            const previewUrl = url.replace('/view', '/preview').replace('?usp=sharing', '');
+            const modal = `
                 <div id="modal-visor">
                     <div class="modal-header">
                         <span>${titulo}</span>
-                        <button onclick="document.getElementById('modal-visor').remove()">CERRAR ✕</button>
+                        <button style="background:var(--dorado); border:none; color:white; padding:5px 10px; cursor:pointer;" onclick="document.getElementById('modal-visor').remove()">CERRAR ✕</button>
                     </div>
-                    <iframe src="${urlPreview}" style="flex-grow:1; border:none; background:white;"></iframe>
-                </div>
-            `;
-            document.body.insertAdjacentHTML('beforeend', visorHtml);
+                    <iframe src="${previewUrl}" style="width:100%; flex-grow:1; border:none; background:white;"></iframe>
+                </div>`;
+            document.body.insertAdjacentHTML('beforeend', modal);
         }
-
-        function abrirSelectorPartes() {
-            // Aquí puedes llamar a tu selector existente o mostrar un menú simple
-            alert("Selecciona una nueva parte del ritual en el panel de control.");
-            window.scrollTo(0,0);
-        }
-
-        window.onload = inicializar;
     </script>
 </body>
 </html>
