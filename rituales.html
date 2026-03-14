@@ -22,7 +22,7 @@
         .resaltado { background: rgba(180, 255, 100, 0.4) !important; border-left: 5px solid #2e7d32 !important; }
         .apartado-header { font-weight: bold; color: #795548; font-size: 0.9em; border-bottom: 1px solid #d7ccc8; text-align: right; margin-top: 20px; }
         
-        /* BOTONES DINÁMICOS */
+        /* BOTONES DINÁMICOS Y EFECTOS */
         .btn-ritual { 
             border: 1px solid #3e2723; 
             padding: 8px 16px; 
@@ -37,15 +37,11 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.3); 
             transition: all 0.2s ease;
         }
-        .btn-ritual:hover { 
-            background: #8d6e63; 
-            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
-            transform: scale(1.02);
-        }
-        /* Estilo para Instancias (Traídas de tenidas.xml) */
+        .btn-ritual:hover { background: #8d6e63; box-shadow: 0 4px 8px rgba(0,0,0,0.4); transform: scale(1.02); }
         .btn-instancia { background: #2e7d32; border-color: #1b5e20; }
-        .btn-instancia:hover { background: #43a047; }
         
+        /* Contenedor de Balaustrada */
+        #balaustrada-box { background: #fff9c4; border: 2px dashed #fbc02d; padding: 15px; margin: 10px 0; display: none; border-radius: 8px; font-style: italic; }
         .accion-texto { font-style: italic; color: #5d4037; }
     </style>
 </head>
@@ -70,6 +66,7 @@
         </div>
     </div>
 
+    <div id="balaustrada-box"></div>
     <div id="rituales-content"></div>
 
     <script>
@@ -108,11 +105,7 @@
 
         function ejecutarCargaRitual(grado, seccionID) {
             const rituales = Array.from(xmlDoc.getElementsByTagName("ritual"));
-            ritualActivo = rituales.find(r => {
-                const gAttr = r.getAttribute("grado");
-                return gAttr && gAttr.trim() === grado.trim();
-            });
-
+            ritualActivo = rituales.find(r => r.getAttribute("grado") === grado);
             if (ritualActivo) {
                 const titulos = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Maestría" };
                 document.getElementById("titulo-ritual-header").textContent = titulos[grado] || "Ritual";
@@ -124,15 +117,13 @@
         function actualizarSelectorSecciones(idForzado) {
             const sSel = document.getElementById("seccionFilter");
             sSel.innerHTML = "";
-            const secciones = Array.from(ritualActivo.getElementsByTagName("seccion"));
-            secciones.forEach(sec => {
+            Array.from(ritualActivo.getElementsByTagName("seccion")).forEach(sec => {
                 const id = sec.getAttribute("id");
                 if (["1", "2", "3"].includes(id) || id === idForzado) {
                     sSel.add(new Option(sec.getAttribute("titulo"), id));
                 }
             });
             if (idForzado) sSel.value = idForzado;
-            if (sSel.selectedIndex === -1) sSel.selectedIndex = 0;
         }
 
         function cambioDeSeccion() {
@@ -145,7 +136,7 @@
             if (seccion) {
                 Array.from(seccion.getElementsByTagName("paso")).forEach(p => {
                     const ofi = p.getAttribute("oficial");
-                    if (oficialesSet && ofi) oficialesSet.add(ofi.trim().toLowerCase());
+                    if (ofi) oficialesSet.add(ofi.trim().toLowerCase());
                 });
             }
 
@@ -163,6 +154,8 @@
             const sId = document.getElementById("seccionFilter").value;
             const fOfi = document.getElementById("oficialFilter").value;
             const contenedor = document.getElementById('rituales-content');
+            const bBox = document.getElementById('balaustrada-box');
+            bBox.style.display = "none"; // Ocultar balaustrada al renderizar
             
             const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
             if (!seccion) return;
@@ -179,7 +172,7 @@
                     let txt = paso.getAttribute("texto") || "";
                     const idL = `l-${sId}-${counter}`;
 
-                    // REEMPLAZO DINÁMICO DE LINKS (Buscando título en el XML)
+                    // LINKs Dinámicos
                     txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
                         let n = desc;
                         if (!n) {
@@ -194,10 +187,11 @@
                         return `<button class="btn-ritual" onclick="irA('${cod}', '${idL}')">${n.trim()} ➜</button>`;
                     });
 
-                    // REEMPLAZO DE INSTANCIA (Traído de tenidas.xml)
+                    // INSTANCIA (Recuperando la lógica de la Balaustrada para el Secretario)
                     txt = txt.replace(/\[\[INSTANCIA\]\]/g, () => {
-                        // Aquí se asume que al hacer clic se gestionará la carga de tenidas.xml
-                        return `<button class="btn-ritual btn-instancia" onclick="cargarInstancia()">Cargar Instancia ➜</button>`;
+                        const esSecretario = (fOfi === "sec");
+                        const label = esSecretario ? "Leer Balaustrada" : "Ver Instancia";
+                        return `<button class="btn-ritual btn-instancia" onclick="ejecutarInstancia('${fOfi}')">${label} ➜</button>`;
                     });
 
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
@@ -215,21 +209,25 @@
             if (primeraID) {
                 const el = document.getElementById(primeraID);
                 if (el) {
-                    const offset = 160; 
-                    const bodyRect = document.body.getBoundingClientRect().top;
-                    const elementRect = el.getBoundingClientRect().top;
-                    window.scrollTo({ top: elementRect - bodyRect - offset, behavior: 'smooth' });
+                    window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 160, behavior: 'smooth' });
                 }
-            } else if (!window.location.hash) {
-                window.scrollTo(0, 0);
             }
         }
 
-        // Función para manejar el contenido de tenidas.xml
-        function cargarInstancia() {
-            // Lógica para alternar o mostrar el contenido de tenidasXml
-            console.log("Cargando instancia desde tenidas.xml...");
-            // Aquí puedes implementar la lógica específica para mostrar las tenidas
+        // FUNCIÓN RECUPERADA: Lógica de Balaustrada desde tenidas.xml
+        function ejecutarInstancia(oficial) {
+            const bBox = document.getElementById('balaustrada-box');
+            if (oficial === "sec") {
+                const ultimaTenida = tenidasXml.getElementsByTagName("tenida")[0]; // Toma la más reciente
+                if (ultimaTenida) {
+                    const balaustrada = ultimaTenida.getElementsByTagName("balaustrada")[0]?.textContent;
+                    bBox.innerHTML = `<strong>Balaustrada de la Tenida anterior:</strong><br><br>${balaustrada || "No hay registros pendientes."}`;
+                    bBox.style.display = "block";
+                    window.scrollTo({ top: bBox.offsetTop - 100, behavior: 'smooth' });
+                }
+            } else {
+                alert("Esta instancia requiere la lectura de documentos oficiales por parte del Secretario.");
+            }
         }
 
         function irA(codigo, regreso) {
