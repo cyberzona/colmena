@@ -111,17 +111,16 @@
             });
             if (pSel.options.length > 0) { 
                 pSel.selectedIndex = 0; 
-                // Iniciamos la población de oficiales y el primer renderizado
-                cambioDeParte();
+                cambioDeParte(); 
             }
         }
 
         function cambioDeParte() {
             const pId = document.getElementById("parteFilter").value;
             const oSel = document.getElementById("oficialFilter");
-            const oficialPrevio = oSel.value;
+            const oficialSeleccionado = oSel.value; // Guardar valor actual
             
-            poblarOficialesDeEstaParte(pId, oficialPrevio);
+            poblarOficialesDeEstaParte(pId, oficialSeleccionado);
             renderizarLiturgia();
         }
 
@@ -140,21 +139,21 @@
             oSel.innerHTML = '<option value="">---</option>';
             const itemsG = glosarioDoc.getElementsByTagName("item");
             for (let item of itemsG) {
-                const siglaG = item.getAttribute("sigla");
-                if (oficialesActivos.has(siglaG.trim().toLowerCase())) {
-                    oSel.add(new Option(siglaG.trim() + "∴", siglaG.trim().toLowerCase()));
+                const siglaG = (item.getAttribute("sigla") || "").trim();
+                if (oficialesActivos.has(siglaG.toLowerCase())) {
+                    oSel.add(new Option(siglaG + "∴", siglaG.toLowerCase()));
                 }
             }
             
-            if (oficialPreseleccionado && oficialesActivos.has(oficialPreseleccionado)) {
-                oSel.value = oficialPreseleccionado;
+            // Forzar la re-selección después de llenar el select
+            if (oficialPreseleccionado && oficialesActivos.has(oficialPreseleccionado.toLowerCase())) {
+                oSel.value = oficialPreseleccionado.toLowerCase();
             }
         }
 
         function renderizarLiturgia() {
             const pId = document.getElementById("parteFilter").value;
-            const oSel = document.getElementById("oficialFilter");
-            const fOfi = oSel.value.trim().toLowerCase(); 
+            const fOfi = document.getElementById("oficialFilter").value.trim().toLowerCase(); 
             const contenedor = document.getElementById('rituales-content');
             const parteActiva = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") == pId);
             
@@ -190,25 +189,21 @@
                     texto = texto.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     if (texto.startsWith('[') && texto.endsWith(']')) texto = `<span class="accion-texto">${texto}</span>`;
 
-                    // LÓGICA DE RESALTADO CRÍTICA
-                    const esOficialSeleccionado = (fOfi !== "" && ofi.toLowerCase() === fOfi);
-                    const claseResaltado = esOficialSeleccionado ? "class='resaltado'" : "";
+                    const esResaltado = (fOfi !== "" && ofi.toLowerCase() === fOfi);
+                    const claseCss = esResaltado ? 'class="resaltado"' : "";
                     
-                    pasosHtml += `<dt>${ofi}∴</dt><dd ${claseResaltado} id="${idAncla}">${texto}</dd>`;
+                    pasosHtml += `<dt>${ofi}∴</dt><dd ${claseCss} id="${idAncla}">${texto}</dd>`;
                 });
                 htmlAcumulado += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>` + pasosHtml;
             });
             
             contenedor.innerHTML = `<div class="parte-ritual" style="counter-reset: line-counter; margin-top:20px;">${htmlAcumulado}</div>`;
             
-            // Auto-scroll si hay oficial seleccionado
             if (fOfi !== "") {
-                const primerResaltado = contenedor.querySelector('.resaltado');
-                if (primerResaltado) {
-                    setTimeout(() => {
-                        primerResaltado.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }, 50);
-                }
+                requestAnimationFrame(() => {
+                    const el = contenedor.querySelector('.resaltado');
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                });
             }
         }
 
@@ -261,8 +256,7 @@
             if (g !== numGradoActual) { cargarRitualPorGrado(g); return; }
 
             const pSel = document.getElementById("parteFilter");
-            const oSel = document.getElementById("oficialFilter");
-            const oficialActual = oSel.value;
+            const oficialActual = document.getElementById("oficialFilter").value;
             
             let existeEnSelector = Array.from(pSel.options).some(opt => opt.value === pId);
             if (!existeEnSelector) {
