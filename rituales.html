@@ -35,7 +35,7 @@
         <img src="./images/logo-mini.png" alt="Logo" class="logo-mini">
         <div class="logia-info">
             <span class="logia-linea1">Resp∴ Log∴ Simb∴ Colmena Nº 8</span>
-            <span id="titulo-ritual-header">...</span>
+            <span id="titulo-ritual-header">Cargando...</span>
         </div>
     </div>
 
@@ -58,14 +58,12 @@
 
         async function inicializar() {
             try {
-                const urlParams = new URLSearchParams(window.location.search);
-                // CORRECCIÓN: Captura y asignación explícita del grado desde la URL
-                const gradoUrl = urlParams.get('num');
-                if (gradoUrl) {
-                    numGradoActual = gradoUrl.toString();
-                }
                 await cargarDatos();
-            } catch (e) { console.error("Error en inicialización:", e); }
+                const urlParams = new URLSearchParams(window.location.search);
+                const gradoUrl = urlParams.get('num');
+                if (gradoUrl) numGradoActual = gradoUrl.toString();
+                cargarRitualPorGrado(numGradoActual);
+            } catch (e) { console.error(e); }
         }
 
         async function cargarDatos() {
@@ -78,29 +76,19 @@
             glosarioDoc = parser.parseFromString(resGlosario, "text/xml");
             xmlDoc = parser.parseFromString(resLiturgia, "text/xml");
             if (resTenidas) tenidasXml = parser.parseFromString(resTenidas, "text/xml");
-            
-            // Pasamos explícitamente el grado detectado
-            cargarRitualPorGrado(numGradoActual);
         }
 
         function cargarRitualPorGrado(grado) {
             const rituales = xmlDoc.getElementsByTagName("ritual");
             ritualActivo = null;
-            
-            for (let r of rituales) {
-                if (r.getAttribute("grado") === grado.toString()) { 
-                    ritualActivo = r; 
-                    break; 
-                }
+            for (let i = 0; i < rituales.length; i++) {
+                if (rituales[i].getAttribute("grado") === grado.toString()) { ritualActivo = rituales[i]; break; }
             }
-            
             if (ritualActivo) {
-                const nombresGrados = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Ritual de Maestro" };
+                const nombresGrados = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Maestría" };
                 document.getElementById("titulo-ritual-header").textContent = nombresGrados[grado] || "Ritual";
                 poblarPartes(true); 
                 cambioDeParte();
-            } else {
-                console.error("No se encontró el ritual para el grado:", grado);
             }
         }
 
@@ -110,6 +98,7 @@
             const partes = Array.from(ritualActivo.getElementsByTagName("parte"));
             partes.forEach(p => {
                 const id = p.getAttribute("id");
+                // Si es forzado (por LINK), lo mostramos aunque sea Parte 4, 5, etc.
                 if (!restringido || ["1", "2", "3"].includes(id) || id === idForzado) {
                     pSel.add(new Option(p.getAttribute("titulo"), id));
                 }
@@ -149,7 +138,6 @@
             const fOfi = document.getElementById("oficialFilter").value.trim().toLowerCase(); 
             const contenedor = document.getElementById('rituales-content');
             if (!ritualActivo) return;
-            
             const parteActiva = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") == pId);
             if (!parteActiva) return;
 
@@ -166,11 +154,9 @@
                     const idAncla = `linea-${pId}-${stepIdx}`;
 
                     texto = texto.replace(/\[\[LINK:(\d{3})\]\]/g, (m, coords) => `<button class="btn-ritual color-cafe" onclick="irA('${coords}', '${idAncla}')">Ir a Sección ➜</button>`);
-
                     if (/\[\[INSTANCIA\]\]/i.test(texto)) {
                         texto = texto.replace(/\[\[INSTANCIA\]\]/gi, (fOfi === ofiLower && fOfi !== "") ? procesarInstancia(fOfi) : "");
                     }
-
                     texto = texto.replace(/\[\[VOLVER:(\d+)\]\]/g, (m, id) => `<button class="btn-ritual color-cafe" onclick="irA('${id}')">⬅ Regresar</button>`);
                     texto = texto.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     if (texto.startsWith('[') && texto.endsWith(']')) texto = `<span class="accion-texto">${texto}</span>`;
@@ -181,13 +167,6 @@
                 htmlAcumulado += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>` + pasosHtml;
             });
             contenedor.innerHTML = `<div class="parte-ritual" style="counter-reset: line-counter; margin-top:20px;">${htmlAcumulado}</div>`;
-            
-            if (fOfi !== "") {
-                requestAnimationFrame(() => {
-                    const el = contenedor.querySelector('.resaltado');
-                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                });
-            }
         }
 
         function procesarInstancia(oficial) {
@@ -208,14 +187,11 @@
                 if (hoySes) {
                     Array.from(hoySes.getElementsByTagName("item")).forEach(i => {
                         const acto = i.getAttribute("acto").toLowerCase();
-                        const titulo = i.getAttribute("titulo");
                         const destinos = { "iniciacion": "107", "elevacion": "201", "exaltacion": "301" };
-
-                        if (destinos[acto]) {
-                            res += `<button class="btn-ritual color-verde" onclick="irA('${destinos[acto]}')">⚖️ PROCEDER A ${acto.toUpperCase()}: ${titulo}</button>`;
-                        } else if (acto !== "balaustre") {
+                        if (destinos[acto]) res += `<button class="btn-ritual color-verde" onclick="irA('${destinos[acto]}')">⚖️ PROCEDER A ${acto.toUpperCase()}</button>`;
+                        else if (acto !== "balaustre") {
                             let icono = (acto === "instruccion" || acto === "trazado") ? "📖" : "✉️";
-                            res += `<button class="btn-ritual color-gold" onclick="abrirVisor('${i.getAttribute("url")}','${titulo}')">${icono} ${acto.toUpperCase()}: ${titulo} ➜</button>`;
+                            res += `<button class="btn-ritual color-gold" onclick="abrirVisor('${i.getAttribute("url")}','${i.getAttribute("titulo")}')">${icono} ${acto.toUpperCase()} ➜</button>`;
                         }
                     });
                 }
@@ -235,12 +211,12 @@
             if (idRegreso) localStorage.setItem('puntoRegreso', idRegreso);
             let g = codigo.substring(0, 1), pId = parseInt(codigo.substring(1)).toString();
             
-            // Si el grado cambia, redirigimos con el parámetro num en la URL
             if (g !== numGradoActual) { 
                 window.location.href = `?num=${g}`; 
                 return; 
             }
             
+            // CORRECCIÓN CLAVE: Inyectamos la parte destino en el menú antes de cambiar
             poblarPartes(true, pId); 
             cambioDeParte();
             
