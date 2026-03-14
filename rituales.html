@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ritual - Colmena No. 8</title>
     <style>
-        /* MANTENEMOS TU ESTILO EXACTO DE LA V14 */
         body { font-family: 'Palatino Linotype', serif; line-height: 1.4; color: #2c2c2c; margin: 0; padding: 10px; background-color: #fdfaf3; }
         .header-container { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; border-bottom: 2px solid #5d4037; padding-bottom: 15px; }
         .logia-info { display: flex; flex-direction: column; text-align: left; }
@@ -39,14 +38,15 @@
         .apartado-header { font-weight: bold; color: #795548; font-size: 0.95em; border-bottom: 1px solid #d7ccc8; text-align: right; margin-top: 25px; padding-bottom: 5px; }
         .accion-texto { font-style: italic; color: #5d4037; }
 
+        /* Botones V14 */
         .btn-link, .btn-volver { 
-            background: #5d4037; color: #fff; border: none; padding: 6px 14px; 
-            border-radius: 15px; cursor: pointer; font-size: 0.8em; margin-top: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background: #5d4037; color: #fff; border: none; padding: 8px 16px; 
+            border-radius: 15px; cursor: pointer; font-size: 0.85em; margin-top: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: block; width: auto;
         }
         .btn-volver { background: #8d6e63; }
 
-        /* NUEVOS ESTILOS PARA LOS MEMOS (Sin alterar los anteriores) */
+        /* Estilos para Memos de Secretaría */
         .btn-memo { background: #8d6e63; color: white; border: none; padding: 10px; border-radius: 6px; width: 100%; margin: 5px 0; text-align: left; cursor: pointer; font-size: 0.85em; display: block; }
         .btn-grado-accion { background: #1b5e20; color: white; border: 2px solid #b8860b; padding: 12px; border-radius: 8px; font-weight: bold; width: 100%; margin: 10px 0; cursor: pointer; display: block; text-align: center; }
         #modal-visor { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; display: flex; flex-direction: column; }
@@ -80,7 +80,7 @@
     <script>
         let xmlDoc = null;
         let glosarioDoc = null;
-        let tenidasXml = null; // Para el archivo de secretaría
+        let tenidasXml = null;
         let ritualActivo = null;
         let tituloGradoBase = "";
 
@@ -92,7 +92,7 @@
                 const [resGlosario, resLiturgia, resTenidas] = await Promise.all([
                     fetch('glosario.xml').then(r => r.text()),
                     fetch('liturgia.xml').then(r => r.text()),
-                    fetch('tenidas.xml').then(r => r.text()).catch(() => null) // Carga opcional
+                    fetch('tenidas.xml').then(r => r.text()).catch(() => null)
                 ]);
 
                 const parser = new DOMParser();
@@ -117,7 +117,6 @@
             } catch (e) { console.error("Error inicializando:", e); }
         }
 
-        // MANTENEMOS TU LÓGICA DE PARTES Y OFICIALES IGUAL
         function poblarPartes() {
             const pSel = document.getElementById("parteFilter");
             pSel.innerHTML = "";
@@ -188,14 +187,21 @@
                     let texto = paso.getAttribute("texto") || "";
                     const idAncla = `linea-${pId}-${globalStepIdx}`;
 
-                    // INTEGRACIÓN DE SECRETARÍA (Inyección de documentos)
+                    // Inyección de Memos
                     if (texto.includes('[[GESTION_SECRETARIA]]')) {
                         texto = texto.replace('[[GESTION_SECRETARIA]]', procesarMemos());
                     }
 
                     texto = texto.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
-                    texto = texto.replace(/\[\[LINK:(\d+)\]\]/g, (m, id) => `<br><button class="btn-link" onclick="irA('${id}', '${idAncla}')">Ver Desarrollo ➜</button>`);
-                    texto = texto.replace(/\[\[VOLVER:(\d+)\]\]/g, (m, id) => `<br><button class="btn-volver" onclick="irA('${id}')">⬅ Volver</button>`);
+                    
+                    // Lógica inteligente para títulos de botones LINK
+                    texto = texto.replace(/\[\[LINK:(\d+)\]\]/g, (m, id) => {
+                        const destino = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") === id);
+                        const label = destino ? destino.getAttribute("titulo") : "Desarrollo";
+                        return `<br><button class="btn-link" onclick="irA('${id}', '${idAncla}')">Ir a: ${label} ➜</button>`;
+                    });
+
+                    texto = texto.replace(/\[\[VOLVER:(\d+)\]\]/g, (m, id) => `<br><button class="btn-volver" onclick="irA('${id}')">⬅ Regresar</button>`);
                     
                     if (texto.startsWith('[') && texto.endsWith(']')) texto = `<span class="accion-texto">${texto}</span>`;
 
@@ -217,7 +223,6 @@
             }
         }
 
-        // FUNCIÓN PARA PROCESAR EL XML DE TENIDAS
         function procesarMemos() {
             if (!tenidasXml) return "";
             const hoy = new Date().toISOString().split('T')[0];
