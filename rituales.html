@@ -60,9 +60,13 @@
             try {
                 await cargarDatos();
                 const urlParams = new URLSearchParams(window.location.search);
+                
                 const gradoUrl = urlParams.get('num');
                 if (gradoUrl) numGradoActual = gradoUrl.toString();
-                cargarRitualPorGrado(numGradoActual);
+                
+                const seccionUrl = urlParams.get('sec'); // Captura sección destino tras cambio de grado
+                
+                cargarRitualPorGrado(numGradoActual, seccionUrl);
             } catch (e) { console.error(e); }
         }
 
@@ -78,7 +82,7 @@
             if (resTenidas) tenidasXml = parser.parseFromString(resTenidas, "text/xml");
         }
 
-        function cargarRitualPorGrado(grado) {
+        function cargarRitualPorGrado(grado, seccionInicial = null) {
             const rituales = xmlDoc.getElementsByTagName("ritual");
             ritualActivo = null;
             for (let r of rituales) {
@@ -87,7 +91,8 @@
             if (ritualActivo) {
                 const nombresGrados = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Maestría" };
                 document.getElementById("titulo-ritual-header").textContent = nombresGrados[grado] || "Ritual";
-                poblarSecciones(true); 
+                
+                poblarSecciones(true, seccionInicial); 
                 cambioDeSeccion();
             }
         }
@@ -152,7 +157,7 @@
                     let texto = paso.getAttribute("texto") || "";
                     const idAncla = `linea-${sId}-${stepIdx}`;
 
-                    // LÓGICA DE LINK: Busca el título de la SECCIÓN destino
+                    // LÓGICA DE LINK: Busca el título de la SECCIÓN destino en el XML
                     texto = texto.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (m, coords, desc) => {
                         let label = desc;
                         if (!label) {
@@ -227,13 +232,25 @@
 
         function irA(codigo, idRegreso = null) {
             if (idRegreso) localStorage.setItem('puntoRegreso', idRegreso);
-            let g = codigo.substring(0, 1), sId = parseInt(codigo.substring(1)).toString();
-            if (g !== numGradoActual) { window.location.href = `?num=${g}`; return; }
+            
+            let g = codigo.substring(0, 1);
+            let sId = parseInt(codigo.substring(1)).toString();
+            
+            if (g !== numGradoActual) { 
+                // Cambio de grado: Pasamos grado y sección por URL
+                window.location.href = `?num=${g}&sec=${sId}`; 
+                return; 
+            }
+            
             poblarSecciones(true, sId); 
             cambioDeSeccion();
+            
             setTimeout(() => {
                 const r = localStorage.getItem('puntoRegreso');
-                if (r) { const el = document.getElementById(r); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+                if (r) { 
+                    const el = document.getElementById(r); 
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+                }
             }, 400);
         }
     </script>
