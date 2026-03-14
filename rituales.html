@@ -42,14 +42,18 @@
         .apartado-header { font-weight: bold; color: #795548; font-size: 0.95em; border-bottom: 1px solid #d7ccc8; text-align: right; margin-top: 25px; padding-bottom: 5px; }
         .accion-texto { font-style: italic; color: #5d4037; }
 
-        /* BOTONES DE BIFURCACIÓN */
+        /* BOTONES CONTINUOS (Ajuste Clave) */
         .btn-link, .btn-volver { 
-            background: #5d4037; color: #fff; border: none; padding: 8px 16px; 
-            border-radius: 15px; cursor: pointer; font-size: 0.85em; margin-top: 10px;
-            margin-right: 8px; display: inline-block;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            background: #5d4037; color: #fff; border: none; padding: 8px 14px; 
+            border-radius: 15px; cursor: pointer; font-size: 0.85em; 
+            margin-top: 10px;
+            margin-right: 6px; /* Espacio horizontal entre botones */
+            display: inline-block; /* Permite que se pongan uno al lado del otro */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+            transition: background 0.3s;
         }
         .btn-volver { background: #8d6e63; }
+        .btn-link:hover { background: #795548; }
     </style>
 </head>
 <body onload="inicializar()">
@@ -58,7 +62,7 @@
         <img src="./images/logo-mini.png" alt="Logo" class="logo-mini">
         <div class="logia-info">
             <span class="logia-linea1">Resp∴ Log∴ Simb∴ Colmena Nº 8</span>
-            <span id="titulo-ritual-header">Cargando...</span>
+            <span id="titulo-ritual-header">...</span>
         </div>
     </div>
 
@@ -109,7 +113,7 @@
                     poblarPartes();
                     cambioDeParte(); 
                 }
-            } catch (e) { console.error("Error inicializando:", e); }
+            } catch (e) { console.error(e); }
         }
 
         function poblarPartes() {
@@ -118,9 +122,7 @@
             const partes = ritualActivo.getElementsByTagName("parte");
             for (let p of partes) {
                 const id = p.getAttribute("id");
-                if (["1", "2", "3"].includes(id)) {
-                    pSel.add(new Option(p.getAttribute("titulo"), id));
-                }
+                if (["1", "2", "3"].includes(id)) pSel.add(new Option(p.getAttribute("titulo"), id));
             }
         }
 
@@ -134,7 +136,6 @@
             const oSel = document.getElementById("oficialFilter");
             const parteEnPantalla = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") === pId);
             const oficialesActivos = new Set();
-
             if (parteEnPantalla) {
                 const pasos = parteEnPantalla.getElementsByTagName("paso");
                 for (let paso of pasos) {
@@ -142,14 +143,11 @@
                     if (idOfi) oficialesActivos.add(idOfi.trim().toLowerCase());
                 }
             }
-
             oSel.innerHTML = '<option value="todos">Todos</option>';
             const itemsGlosario = glosarioDoc.getElementsByTagName("item");
             for (let item of itemsGlosario) {
                 const siglaG = item.getAttribute("sigla");
-                if (oficialesActivos.has(siglaG.trim().toLowerCase())) {
-                    oSel.add(new Option(siglaG.trim() + "∴", siglaG.trim().toLowerCase()));
-                }
+                if (oficialesActivos.has(siglaG.trim().toLowerCase())) oSel.add(new Option(siglaG.trim() + "∴", siglaG.trim().toLowerCase()));
             }
         }
 
@@ -158,10 +156,8 @@
             const fOfi = document.getElementById("oficialFilter").value.trim().toLowerCase(); 
             const contenedor = document.getElementById('rituales-content');
             const parteActiva = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") === pId);
-            
             if (!parteActiva) return;
 
-            // ACTUALIZACIÓN DE TÍTULO EN HEADER
             const headerTitulo = document.getElementById("titulo-ritual-header");
             headerTitulo.textContent = (["1", "2", "3"].includes(pId)) ? tituloGradoBase : parteActiva.getAttribute("titulo");
 
@@ -179,38 +175,33 @@
                     let texto = paso.getAttribute("texto") || "";
                     const idAncla = `linea-${pId}-${globalStepIdx}`;
 
-                    // 1. Siglas en Azul
+                    // 1. Siglas
                     texto = texto.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     
-                    // 2. Links con títulos personalizados [[LINK:ID|Título]]
+                    // 2. Links Dinámicos (Sin <br> antes del botón para permitir continuidad)
                     texto = texto.replace(/\[\[LINK:(\d+)(?:\|([^\]]+))?\]\]/g, (m, id, nombre) => {
                         const tituloBoton = nombre ? nombre : "Ver Desarrollo";
-                        return `<br><button class="btn-link" onclick="irA('${id}', '${idAncla}')">${tituloBoton} ➜</button>`;
+                        return `<button class="btn-link" onclick="irA('${id}', '${idAncla}')">${tituloBoton} ➜</button>`;
                     });
 
-                    // 3. Botón Volver [[VOLVER:ID|Título]]
+                    // 3. Volver (Este sí suele ir solo abajo, pero quitamos el <br> por si acaso)
                     texto = texto.replace(/\[\[VOLVER:(\d+)(?:\|([^\]]+))?\]\]/g, (m, id, nombre) => {
                         const tituloVolver = nombre ? nombre : "Volver";
-                        return `<br><button class="btn-volver" onclick="irA('${id}')">⬅ ${tituloVolver}</button>`;
+                        return `<button class="btn-volver" onclick="irA('${id}')">⬅ ${tituloVolver}</button>`;
                     });
 
-                    if (texto.startsWith('[') && texto.endsWith(']')) {
-                        texto = `<span class="accion-texto">${texto}</span>`;
-                    }
+                    if (texto.startsWith('[') && texto.endsWith(']')) texto = `<span class="accion-texto">${texto}</span>`;
 
                     const oficialLimpio = ofiOriginal.trim().toLowerCase();
                     const claseResaltado = (fOfi !== "todos" && oficialLimpio === fOfi) ? "class='resaltado'" : "";
                     
                     pasosHtml += `<dt>${ofiOriginal.trim()}∴</dt><dd ${claseResaltado} id="${idAncla}">${texto}</dd>`;
                 }
-                if (pasosHtml !== "") {
-                    htmlAcumulado += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>` + pasosHtml;
-                }
+                htmlAcumulado += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>` + pasosHtml;
             }
 
             contenedor.innerHTML = `<div class="parte-ritual"><div class="section-header">${parteActiva.getAttribute("titulo")}</div>${htmlAcumulado}</div>`;
             
-            // Scroll para oficiales
             if (fOfi !== "todos") {
                 setTimeout(() => {
                     const target = document.querySelector('.resaltado');
