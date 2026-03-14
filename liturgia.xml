@@ -136,13 +136,13 @@
    <parte id="4" titulo="Instrucción: Simbolismo">
         <apartado id="1" titulo="Estudio Profundo">
             <paso tipo="dialogo" oficial="Ora" texto="La Piedra Bruta representa el estado de imperfección..."/>
-            <paso tipo="dialogo" oficial="Ora" texto="Es cuanto, VM∴. [[VOLVER:102]]"/>
+            <paso tipo="dialogo" oficial="Ora" texto="Es cuanto, VM∴. [[LINK:102]]"/>
         </apartado>
     </parte>
     <parte id="5" titulo="Logia de San Juan">
         <apartado id="1" titulo="Estudio Profundo">
             <paso tipo="dialogo" oficial="Ora" texto="La Piedra Bruta representa el estado de imperfección..."/>
-            <paso tipo="dialogo" oficial="Ora" texto="Es cuanto, VM∴. [[VOLVER:102]]"/>
+            <paso tipo="dialogo" oficial="Ora" texto="Es cuanto, VM∴. [[LINK:102]]"/>
         </apartado>
     </parte>
 
@@ -151,7 +151,7 @@
     <parte id="1" titulo="Logia de San Juan">
         <apartado id="1" titulo="Estudio Profundo">
             <paso tipo="dialogo" oficial="Ora" texto="La Piedra Bruta representa el estado de imperfección..."/>
-            <paso tipo="dialogo" oficial="Ora" texto="Es cuanto, VM∴. [[VOLVER:102]]"/>
+            <paso tipo="dialogo" oficial="Ora" texto="Es cuanto, VM∴. [[LINK:102]]"/>
         </apartado>
     </parte>
 </ritual>
