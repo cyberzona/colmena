@@ -29,33 +29,25 @@
         /* NUMERACIÓN EQUILIBRADA */
         .parte-ritual { counter-reset: line-counter; }
         dd { 
-            margin-left: 50px; 
-            border-left: 3px solid #d7ccc8; 
-            padding-left: 12px; 
-            font-size: 1em; 
-            position: relative; 
-            margin-bottom: 10px; 
-            counter-increment: line-counter; 
-            min-height: 1.2em;
+            margin-left: 50px; border-left: 3px solid #d7ccc8; padding-left: 12px; 
+            font-size: 1em; position: relative; margin-bottom: 10px; 
+            counter-increment: line-counter; min-height: 1.2em;
         }
         dd::before { 
-            content: counter(line-counter); 
-            position: absolute; 
-            left: -45px; 
-            color: #5d4037; 
-            font-size: 1.2em; 
-            font-weight: 800; 
-            width: 35px; 
-            text-align: right; 
-            top: -2px;
+            content: counter(line-counter); position: absolute; left: -45px; 
+            color: #5d4037; font-size: 1.2em; font-weight: 800; width: 35px; 
+            text-align: right; top: -2px;
         }
         
         /* RESALTADO DINÁMICO */
         .resaltado { background: rgba(180, 255, 100, 0.45) !important; border-left: 5px solid #2e7d32 !important; }
-        
         .section-header { background: #5d4037; color: white; padding: 10px; text-align: center; border-radius: 4px; margin-top: 10px; text-transform: uppercase; font-weight: bold; }
         .apartado-header { font-weight: bold; color: #795548; font-size: 0.95em; border-bottom: 1px solid #d7ccc8; text-align: right; margin-top: 25px; padding-bottom: 5px; }
         .accion-texto { font-style: italic; color: #5d4037; }
+
+        /* BOTONES DE BIFURCACIÓN */
+        .btn-link { background: #5d4037; color: #fff; border: none; padding: 5px 12px; border-radius: 15px; cursor: pointer; font-size: 0.85em; margin-top: 5px; }
+        .btn-volver { background: #8d6e63; color: #fff; border: none; padding: 5px 12px; border-radius: 15px; cursor: pointer; font-size: 0.85em; margin-top: 5px; }
     </style>
 </head>
 <body onload="inicializar()">
@@ -88,11 +80,9 @@
 
         async function inicializar() {
             try {
-                // 1. Obtener grado de la URL (Hoja Madre)
                 const urlParams = new URLSearchParams(window.location.search);
                 const numGrado = urlParams.get('num') || '1';
 
-                // 2. Carga paralela de archivos
                 const [resGlosario, resLiturgia] = await Promise.all([
                     fetch('glosario.xml').then(r => r.text()),
                     fetch('liturgia.xml').then(r => r.text())
@@ -102,7 +92,6 @@
                 glosarioDoc = parser.parseFromString(resGlosario, "text/xml");
                 xmlDoc = parser.parseFromString(resLiturgia, "text/xml");
 
-                // 3. Seleccionar ritual por grado
                 const rituales = xmlDoc.getElementsByTagName("ritual");
                 for (let r of rituales) {
                     if (r.getAttribute("grado") === numGrado) { 
@@ -112,7 +101,6 @@
                 }
 
                 if (ritualActivo) {
-                    // Actualizar Título dinámicamente
                     const nombresGrados = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Ritual de Maestro" };
                     document.getElementById("titulo-ritual-header").textContent = nombresGrados[numGrado] || "Ritual";
                     
@@ -122,12 +110,17 @@
             } catch (e) { console.error("Error inicializando:", e); }
         }
 
+        // EVITAMOS QUE SE DESPLIEGUEN PARTES > 3
         function poblarPartes() {
             const pSel = document.getElementById("parteFilter");
             pSel.innerHTML = "";
             const partes = ritualActivo.getElementsByTagName("parte");
             for (let p of partes) {
-                pSel.add(new Option(p.getAttribute("titulo"), p.getAttribute("id")));
+                const id = p.getAttribute("id");
+                // Solo permitimos partes 1, 2 y 3 en el selector visual
+                if (["1", "2", "3"].includes(id)) {
+                    pSel.add(new Option(p.getAttribute("titulo"), id));
+                }
             }
         }
 
@@ -136,8 +129,8 @@
             renderizarLiturgia();
         }
 
-        function poblarOficialesDeEstaParte() {
-            const pId = document.getElementById("parteFilter").value;
+        function poblarOficialesDeEstaParte(idManual = null) {
+            const pId = idManual || document.getElementById("parteFilter").value;
             const oSel = document.getElementById("oficialFilter");
             const parteEnPantalla = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") === pId);
             const oficialesActivos = new Set();
@@ -160,8 +153,9 @@
             }
         }
 
-        function renderizarLiturgia() {
-            const pId = document.getElementById("parteFilter").value;
+        // REUTILIZACIÓN DE CÓDIGO: acepta un idManual para las partes de desarrollo
+        function renderizarLiturgia(idManual = null) {
+            const pId = idManual || document.getElementById("parteFilter").value;
             const fOfi = document.getElementById("oficialFilter").value.trim().toLowerCase(); 
             const contenedor = document.getElementById('rituales-content');
             const parteActiva = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") === pId);
@@ -180,15 +174,22 @@
                     let texto = paso.getAttribute("texto") || "";
                     if (texto.trim() === "") continue;
 
-                    // Siglas en Azul (dentro del texto)
+                    // 1. Siglas en Azul
                     texto = texto.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     
-                    // Manejo de acciones para asegurar el resaltado
+                    // 2. Procesar Bifurcaciones: [[LINK:4]] o [[VOLVER:2]]
+                    texto = texto.replace(/\[\[LINK:(\d+)\]\]/g, (m, id) => {
+                        return `<br><button class="btn-link" onclick="irA('${id}')">Ver Desarrollo ➜</button>`;
+                    });
+                    texto = texto.replace(/\[\[VOLVER:(\d+)\]\]/g, (m, id) => {
+                        return `<br><button class="btn-volver" onclick="irA('${id}')">⬅ Volver al Trabajo</button>`;
+                    });
+
+                    // 3. Manejo de acciones
                     if (texto.startsWith('[') && texto.endsWith(']')) {
                         texto = `<span class="accion-texto">${texto}</span>`;
                     }
 
-                    // Comparación robusta para el resaltado verde
                     const oficialLimpio = ofiOriginal.trim().toLowerCase();
                     const claseResaltado = (fOfi !== "todos" && oficialLimpio === fOfi) ? "class='resaltado'" : "";
                     
@@ -205,6 +206,19 @@
                 const target = document.querySelector('.resaltado');
                 if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
+        }
+
+        // FUNCIÓN PUENTE PARA NAVEGACIÓN
+        function irA(idDestino) {
+            // Si es una parte principal, sincronizamos el selector visual
+            if (["1", "2", "3"].includes(idDestino)) {
+                document.getElementById("parteFilter").value = idDestino;
+            }
+            
+            // Re-poblamos oficiales para el nuevo contenido y renderizamos
+            poblarOficialesDeEstaParte(idDestino);
+            renderizarLiturgia(idDestino);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     </script>
 </body>
