@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ritual - Colmena No. 8</title>
     <style>
+        /* MANTENEMOS TU ESTILO EXACTO DE LA V14 */
         body { font-family: 'Palatino Linotype', serif; line-height: 1.4; color: #2c2c2c; margin: 0; padding: 10px; background-color: #fdfaf3; }
         .header-container { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; border-bottom: 2px solid #5d4037; padding-bottom: 15px; }
         .logia-info { display: flex; flex-direction: column; text-align: left; }
@@ -44,6 +45,13 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .btn-volver { background: #8d6e63; }
+
+        /* NUEVOS ESTILOS PARA LOS MEMOS (Sin alterar los anteriores) */
+        .btn-memo { background: #8d6e63; color: white; border: none; padding: 10px; border-radius: 6px; width: 100%; margin: 5px 0; text-align: left; cursor: pointer; font-size: 0.85em; display: block; }
+        .btn-grado-accion { background: #1b5e20; color: white; border: 2px solid #b8860b; padding: 12px; border-radius: 8px; font-weight: bold; width: 100%; margin: 10px 0; cursor: pointer; display: block; text-align: center; }
+        #modal-visor { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; display: flex; flex-direction: column; }
+        .modal-header { background: #5d4037; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .btn-cerrar-modal { background: #b71c1c; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body onload="inicializar()">
@@ -72,23 +80,25 @@
     <script>
         let xmlDoc = null;
         let glosarioDoc = null;
+        let tenidasXml = null; // Para el archivo de secretaría
         let ritualActivo = null;
-        let tituloGradoBase = ""; // Guardará "Ritual de Aprendiz", etc.
+        let tituloGradoBase = "";
 
         async function inicializar() {
             try {
-                // CAPTURA DEL PARÁMETRO DESDE INDEX.HTML
                 const urlParams = new URLSearchParams(window.location.search);
                 const numGrado = urlParams.get('num') || '1';
 
-                const [resGlosario, resLiturgia] = await Promise.all([
+                const [resGlosario, resLiturgia, resTenidas] = await Promise.all([
                     fetch('glosario.xml').then(r => r.text()),
-                    fetch('liturgia.xml').then(r => r.text())
+                    fetch('liturgia.xml').then(r => r.text()),
+                    fetch('tenidas.xml').then(r => r.text()).catch(() => null) // Carga opcional
                 ]);
 
                 const parser = new DOMParser();
                 glosarioDoc = parser.parseFromString(resGlosario, "text/xml");
                 xmlDoc = parser.parseFromString(resLiturgia, "text/xml");
+                if (resTenidas) tenidasXml = parser.parseFromString(resTenidas, "text/xml");
 
                 const rituales = xmlDoc.getElementsByTagName("ritual");
                 for (let r of rituales) {
@@ -107,13 +117,13 @@
             } catch (e) { console.error("Error inicializando:", e); }
         }
 
+        // MANTENEMOS TU LÓGICA DE PARTES Y OFICIALES IGUAL
         function poblarPartes() {
             const pSel = document.getElementById("parteFilter");
             pSel.innerHTML = "";
             const partes = ritualActivo.getElementsByTagName("parte");
             for (let p of partes) {
                 const id = p.getAttribute("id");
-                // Solo 1, 2 y 3 van al menú
                 if (["1", "2", "3"].includes(id)) {
                     pSel.add(new Option(p.getAttribute("titulo"), id));
                 }
@@ -157,7 +167,6 @@
             
             if (!parteActiva) return;
 
-            // ACTUALIZACIÓN DE TÍTULO DINÁMICO
             const headerTitulo = document.getElementById("titulo-ritual-header");
             if (["1", "2", "3"].includes(pId)) {
                 headerTitulo.textContent = tituloGradoBase;
@@ -179,7 +188,11 @@
                     let texto = paso.getAttribute("texto") || "";
                     const idAncla = `linea-${pId}-${globalStepIdx}`;
 
-                    // Procesamiento de texto y enlaces
+                    // INTEGRACIÓN DE SECRETARÍA (Inyección de documentos)
+                    if (texto.includes('[[GESTION_SECRETARIA]]')) {
+                        texto = texto.replace('[[GESTION_SECRETARIA]]', procesarMemos());
+                    }
+
                     texto = texto.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     texto = texto.replace(/\[\[LINK:(\d+)\]\]/g, (m, id) => `<br><button class="btn-link" onclick="irA('${id}', '${idAncla}')">Ver Desarrollo ➜</button>`);
                     texto = texto.replace(/\[\[VOLVER:(\d+)\]\]/g, (m, id) => `<br><button class="btn-volver" onclick="irA('${id}')">⬅ Volver</button>`);
@@ -196,13 +209,46 @@
 
             contenedor.innerHTML = `<div class="parte-ritual"><div class="section-header">${parteActiva.getAttribute("titulo")}</div>${htmlAcumulado}</div>`;
             
-            // Scroll para el filtro de oficial
             if (fOfi !== "todos") {
                 setTimeout(() => {
                     const target = document.querySelector('.resaltado');
                     if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }, 100);
             }
+        }
+
+        // FUNCIÓN PARA PROCESAR EL XML DE TENIDAS
+        function procesarMemos() {
+            if (!tenidasXml) return "";
+            const hoy = new Date().toISOString().split('T')[0];
+            const sesiones = Array.from(tenidasXml.getElementsByTagName("tenida"));
+            const hoySesion = sesiones.find(s => s.getAttribute("fecha") === hoy);
+            const pasadaSesion = sesiones.filter(s => s.getAttribute("fecha") < hoy).sort((a,b) => b.getAttribute("fecha").localeCompare(a.getAttribute("fecha")))[0];
+
+            let res = "";
+            if (pasadaSesion) {
+                const items = Array.from(pasadaSesion.getElementsByTagName("item")).filter(i => i.getAttribute("acto") === "balaustre");
+                items.forEach(i => res += `<button class="btn-memo" onclick="abrirVisor('${i.getAttribute("url")}','${i.getAttribute("titulo")}')">📜 ${i.getAttribute("titulo")}</button>`);
+            }
+            if (hoySesion) {
+                Array.from(hoySesion.getElementsByTagName("item")).forEach(i => {
+                    const acto = i.getAttribute("acto");
+                    if (acto === "nuevo_grado") {
+                        res += `<button class="btn-grado-accion" onclick="window.location.href='${i.getAttribute("url")}'">⚖️ EJECUTAR: ${i.getAttribute("titulo")}</button>`;
+                    } else if (acto !== "balaustre") {
+                        res += `<button class="btn-memo" onclick="abrirVisor('${i.getAttribute("url")}','${i.getAttribute("titulo")}')">📄 ${i.getAttribute("titulo")}</button>`;
+                    }
+                });
+            }
+            return res;
+        }
+
+        function abrirVisor(url, titulo) {
+            const modal = `<div id="modal-visor">
+                <div class="modal-header"><span>${titulo}</span><button class="btn-cerrar-modal" onclick="this.parentElement.parentElement.remove()">✕</button></div>
+                <iframe src="${url.replace('/view', '/preview')}" style="flex-grow:1; border:none; background:white;"></iframe>
+            </div>`;
+            document.body.insertAdjacentHTML('beforeend', modal);
         }
 
         function irA(idDestino, idRegreso = null) {
