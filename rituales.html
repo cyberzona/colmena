@@ -117,11 +117,11 @@
         function poblarPartes() {
             const pSel = document.getElementById("parteFilter");
             pSel.innerHTML = "";
-            const partes = ritualActivo.getElementsByTagName("parte");
+            const partes = ritualActivo.getElementsByTagName("parte");   
             for (let p of partes) {
-                if (["1", "2", "3"].includes(p.getAttribute("id"))) {
-                    pSel.add(new Option(p.getAttribute("titulo"), p.getAttribute("id")));
-                }
+                const idParte = p.getAttribute("id");
+                const tituloParte = p.getAttribute("titulo");
+                pSel.add(new Option(tituloParte, idParte));
             }
         }
 
