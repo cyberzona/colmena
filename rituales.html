@@ -105,6 +105,7 @@
             const partes = Array.from(ritualActivo.getElementsByTagName("parte"));
             partes.forEach(p => {
                 const id = p.getAttribute("id").trim();
+                // El selector solo muestra 1, 2 y 3 por orden jerárquico
                 if (["1", "2", "3"].includes(id)) {
                     pSel.add(new Option(p.getAttribute("titulo"), id));
                 }
@@ -194,7 +195,6 @@
             const pasSes = sesiones.filter(s => s.getAttribute("fecha") < hoy).sort((a,b) => b.getAttribute("fecha").localeCompare(a.getAttribute("fecha")))[0];
 
             let res = "";
-            // Lógica discriminatoria:
             if (seccion.includes("balaustre")) {
                 if (pasSes) {
                     Array.from(pasSes.getElementsByTagName("item")).filter(i => i.getAttribute("acto") === "balaustre").forEach(i => {
@@ -231,10 +231,26 @@
         function irA(codigo, idRegreso = null) {
             if (idRegreso) localStorage.setItem('puntoRegreso', idRegreso);
             let g = codigo.substring(0, 1);
-            let p = parseInt(codigo.substring(1)).toString();
+            let pId = parseInt(codigo.substring(1)).toString();
+            
             if (g !== numGradoActual) { cargarRitualPorGrado(g); return; }
-            document.getElementById("parteFilter").value = p;
-            cambioDeParte();
+
+            // CORRECCIÓN: Intentamos poner el selector en la parte pId.
+            // Si pId es "4" no estará en el selector, pero renderizamos la liturgia igual.
+            const pSel = document.getElementById("parteFilter");
+            pSel.value = pId; 
+            
+            const oficialActual = document.getElementById("oficialFilter").value;
+            poblarOficialesDeEstaParte(pId, oficialActual);
+            renderizarLiturgia(pId);
+
+            setTimeout(() => {
+                const r = localStorage.getItem('puntoRegreso');
+                if (r) {
+                    const el = document.getElementById(r);
+                    if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); el.classList.add('resaltado'); }
+                }
+            }, 300);
         }
     </script>
 </body>
