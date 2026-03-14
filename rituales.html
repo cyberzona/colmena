@@ -89,10 +89,7 @@
             numGradoActual = grado.toString();
             const rituales = xmlDoc.getElementsByTagName("ritual");
             for (let r of rituales) {
-                if (r.getAttribute("grado") === numGradoActual) { 
-                    ritualActivo = r; 
-                    break; 
-                }
+                if (r.getAttribute("grado") === numGradoActual) { ritualActivo = r; break; }
             }
             if (ritualActivo) {
                 const nombresGrados = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Ritual de Maestro" };
@@ -105,22 +102,14 @@
             const pSel = document.getElementById("parteFilter");
             if (!pSel || !ritualActivo) return;
             pSel.innerHTML = "";
-            
             const partes = Array.from(ritualActivo.getElementsByTagName("parte"));
-            
-            // Estricto: solo permitimos IDs 1, 2 y 3
             partes.forEach(p => {
                 const id = p.getAttribute("id").trim();
-                const titulo = p.getAttribute("titulo");
-                if (id === "1" || id === "2" || id === "3") {
-                    pSel.add(new Option(titulo, id));
+                if (["1", "2", "3"].includes(id)) {
+                    pSel.add(new Option(p.getAttribute("titulo"), id));
                 }
             });
-
-            if (pSel.options.length > 0) {
-                pSel.selectedIndex = 0;
-                cambioDeParte();
-            }
+            if (pSel.options.length > 0) { pSel.selectedIndex = 0; cambioDeParte(); }
         }
 
         function cambioDeParte() {
@@ -134,14 +123,12 @@
             const oSel = document.getElementById("oficialFilter");
             const parteActual = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") == pId);
             const oficialesActivos = new Set();
-            
             if (parteActual) {
                 Array.from(parteActual.getElementsByTagName("paso")).forEach(paso => {
                     const idOfi = paso.getAttribute("oficial");
                     if (idOfi) oficialesActivos.add(idOfi.trim().toLowerCase());
                 });
             }
-
             oSel.innerHTML = '<option value="">---</option>';
             const itemsG = glosarioDoc.getElementsByTagName("item");
             for (let item of itemsG) {
@@ -158,7 +145,6 @@
             const fOfi = document.getElementById("oficialFilter").value.trim().toLowerCase(); 
             const contenedor = document.getElementById('rituales-content');
             const parteActiva = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") == pId);
-            
             if (!parteActiva) return;
 
             let htmlAcumulado = "";
@@ -197,10 +183,7 @@
                 htmlAcumulado += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>` + pasosHtml;
             });
             contenedor.innerHTML = `<div class="parte-ritual" style="counter-reset: line-counter; margin-top:20px;">${htmlAcumulado}</div>`;
-            
-            if (fOfi !== "") {
-                setTimeout(() => { document.querySelector('.resaltado')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 150);
-            }
+            if (fOfi !== "") setTimeout(() => { document.querySelector('.resaltado')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 150);
         }
 
         function procesarOrdenDelDia(seccion) {
@@ -211,14 +194,14 @@
             const pasSes = sesiones.filter(s => s.getAttribute("fecha") < hoy).sort((a,b) => b.getAttribute("fecha").localeCompare(a.getAttribute("fecha")))[0];
 
             let res = "";
-            if (seccion.includes("balaustre") || seccion.includes("orden")) {
+            // Lógica discriminatoria:
+            if (seccion.includes("balaustre")) {
                 if (pasSes) {
                     Array.from(pasSes.getElementsByTagName("item")).filter(i => i.getAttribute("acto") === "balaustre").forEach(i => {
-                        res += `<button class="btn-balaustre" onclick="abrirVisor('${i.getAttribute("url")}','${i.getAttribute("titulo")}')">📜 Balaustre: ${i.getAttribute("titulo")}</button>`;
+                        res += `<button class="btn-balaustre" onclick="abrirVisor('${i.getAttribute("url")}','${i.getAttribute("titulo")}')">📜 Leer Balaustre: ${i.getAttribute("titulo")}</button>`;
                     });
                 }
-            } 
-            if (seccion.includes("trabajos") || seccion.includes("desarrollo") || seccion.includes("orden")) {
+            } else if (seccion.includes("trabajos") || seccion.includes("orden")) {
                 if (hoySes) {
                     Array.from(hoySes.getElementsByTagName("item")).forEach(i => {
                         const acto = i.getAttribute("acto");
