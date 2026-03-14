@@ -7,52 +7,53 @@
     <style>
         body { font-family: 'Palatino Linotype', serif; line-height: 1.6; color: #2c2c2c; margin: 0; padding: 10px; background-color: #fdfaf3; }
         
-        /* Encabezado */
+        /* Header */
         .header-container { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; border-bottom: 2px solid #5d4037; padding-bottom: 10px; }
         .logia-info { display: flex; flex-direction: column; }
         .logia-linea1 { font-size: 0.75rem; color: #8d6e63; font-weight: bold; }
         #titulo-ritual-header { font-size: 0.9rem; color: #795548; text-transform: uppercase; font-weight: bold; }
         .logo-mini { width: 60px; height: auto; }
 
-        /* Panel de Control de Botones/Selectores */
+        /* Panel de Control */
         #control-panel { background: #efebe9; padding: 12px; border-radius: 8px; border: 1px solid #d7ccc8; position: sticky; top: 0; z-index: 1000; display: flex; gap: 10px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .container-select { flex: 1; display: flex; flex-direction: column; }
         .select-label { font-size: 0.7em; color: #795548; font-weight: bold; text-transform: uppercase; margin-bottom: 4px; }
         select { padding: 10px; font-size: 0.95em; border-radius: 4px; border: 1px solid #b8860b; background: white; color: #5d4037; }
 
-        /* Estructura del Ritual y Numeración */
-        .parte-ritual { counter-reset: line-counter; } /* Reinicia el contador en cada parte */
+        /* Estructura y Numeración */
+        .parte-ritual { counter-reset: line-counter; }
         .section-header { background: #5d4037; color: white; padding: 15px; text-align: center; border-radius: 4px; margin: 15px 0; text-transform: uppercase; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .section-header::after { content: ' ▼'; font-size: 0.7em; opacity: 0.7; }
         
         dt { font-weight: bold; color: #5d4037; margin-top: 15px; font-size: 0.9em; text-transform: uppercase; }
-        dd { margin: 0 0 10px 50px; border-left: 3px solid #d7ccc8; padding: 0 12px; font-size: 1.05em; position: relative; text-align: justify; min-height: 1.5em; }
+        dd { margin: 0 0 10px 55px; border-left: 3px solid #d7ccc8; padding: 0 12px; font-size: 1.05em; position: relative; text-align: justify; min-height: 1.5em; }
         
-        /* El mecanismo de la numeración */
+        /* Numeración automática */
         dd::before { 
             counter-increment: line-counter; 
             content: counter(line-counter); 
             position: absolute; 
-            left: -42px; 
+            left: -45px; 
             color: #8d6e63; 
-            font-size: 0.9em; 
+            font-size: 1.1em; 
             font-weight: bold; 
-            width: 30px; 
+            width: 35px; 
             text-align: right; 
         }
         
-        .apartado-titulo { font-weight: bold; color: #795548; border-bottom: 1px solid #d7ccc8; margin-top: 25px; padding-bottom: 5px; font-size: 0.9em; text-align: right; text-transform: uppercase; }
+        .apartado-titulo { font-weight: bold; color: #795548; border-bottom: 1px solid #d7ccc8; margin-top: 25px; padding-bottom: 5px; font-size: 0.85em; text-align: right; text-transform: uppercase; }
         .sigla-azul { color: #0277bd; font-weight: bold; }
-        .accion-texto { font-style: italic; color: #5d4037; background: #f0f0f0; padding: 2px 6px; border-radius: 4px; border-left: 3px solid #795548; }
+        .accion-texto { font-style: italic; color: #5d4037; background: #f0f0f0; padding: 4px 8px; border-radius: 4px; border-left: 4px solid #795548; display: block; margin: 5px 0; }
         .resaltado { background: rgba(180, 255, 100, 0.35) !important; border-left: 5px solid #2e7d32 !important; }
 
-        /* Botones de Gestión (Memos) */
-        .btn-link { background: #1b5e20; color: white; border: 2px solid #b8860b; padding: 14px; border-radius: 8px; font-weight: bold; width: 100%; margin: 12px 0; cursor: pointer; font-size: 0.9em; }
-        .btn-doc { background: #8d6e63; color: white; border: none; padding: 12px; border-radius: 6px; width: 100%; margin: 6px 0; text-align: left; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+        /* Botones de Memos */
+        .btn-link { background: #1b5e20; color: white; border: 2px solid #b8860b; padding: 14px; border-radius: 8px; font-weight: bold; width: 100%; margin: 12px 0; cursor: pointer; }
+        .btn-doc { background: #8d6e63; color: white; border: none; padding: 12px; border-radius: 6px; width: 100%; margin: 6px 0; text-align: left; cursor: pointer; }
 
-        /* Visor Modal */
+        /* Visor */
         #modal-visor { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 9999; display: flex; flex-direction: column; }
-        .modal-header { background: #5d4037; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #b8860b; }
-        .btn-cerrar { background: #b71c1c; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .modal-header { background: #5d4037; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .btn-cerrar { background: #b71c1c; color: white; border: none; padding: 8px 15px; cursor: pointer; font-weight: bold; border-radius: 4px; }
     </style>
 </head>
 <body onload="inicializar()">
@@ -61,7 +62,7 @@
         <img src="./images/logo-mini.png" alt="Logo" class="logo-mini">
         <div class="logia-info">
             <span class="logia-linea1">Resp∴ Log∴ Simb∴ Colmena Nº 8</span>
-            <span id="titulo-ritual-header">Cargando Grado...</span>
+            <span id="titulo-ritual-header">...</span>
         </div>
     </div>
 
@@ -98,7 +99,6 @@
                 xmlDoc = parser.parseFromString(resLiturgia, "text/xml");
                 if (resTenidas) tenidasXml = parser.parseFromString(resTenidas, "text/xml");
 
-                // Filtro estricto: Solo cargamos el ritual que coincida con el grado de la URL
                 const rituales = Array.from(xmlDoc.getElementsByTagName("ritual"));
                 ritualActivo = rituales.find(r => r.getAttribute("grado") === numGradoGlobal);
 
@@ -108,29 +108,23 @@
                     poblarPartesDelGrado();
                     cambioDeParte();
                 }
-            } catch (e) { console.error("Error en inicialización:", e); }
+            } catch (e) { console.error(e); }
         }
 
         function poblarPartesDelGrado() {
             const pSel = document.getElementById("parteFilter");
             pSel.innerHTML = "";
-            const partes = ritualActivo.getElementsByTagName("parte");
-            for (let p of partes) {
-                pSel.add(new Option(p.getAttribute("titulo"), p.getAttribute("id")));
-            }
+            // FILTRO CLAVE: Solo hijos directos del ritualActivo
+            const partes = Array.from(ritualActivo.children).filter(c => c.tagName === "parte");
+            partes.forEach(p => pSel.add(new Option(p.getAttribute("titulo"), p.getAttribute("id"))));
         }
 
         function cambioDeParte() {
-            poblarOficiales();
-            renderizarLiturgia();
-        }
-
-        function poblarOficiales() {
             const pId = document.getElementById("parteFilter").value;
             const oSel = document.getElementById("oficialFilter");
-            const parteActual = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") === pId);
+            const parteActual = Array.from(ritualActivo.children).find(p => p.tagName === "parte" && p.getAttribute("id") === pId);
+            
             const oficialesSet = new Set();
-
             if (parteActual) {
                 const pasos = parteActual.getElementsByTagName("paso");
                 for (let ps of pasos) {
@@ -144,42 +138,42 @@
                 const sigla = i.getAttribute("sigla");
                 if (oficialesSet.has(sigla.toLowerCase())) oSel.add(new Option(sigla + "∴", sigla.toLowerCase()));
             }
+            renderizarLiturgia();
         }
 
         function renderizarLiturgia() {
             const pId = document.getElementById("parteFilter").value;
             const fOfi = document.getElementById("oficialFilter").value.toLowerCase();
             const contenedor = document.getElementById('rituales-content');
-            const parte = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") === pId);
+            const parte = Array.from(ritualActivo.children).find(p => p.tagName === "parte" && p.getAttribute("id") === pId);
             
             if (!parte) return;
 
             let html = `<div class="parte-ritual">
                 <div class="section-header" onclick="document.getElementById('parteFilter').focus()">${parte.getAttribute("titulo")}</div>`;
 
-            const apartados = parte.getElementsByTagName("apartado");
-            for (let apa of apartados) {
-                html += `<div class="apartado-titulo">${apa.getAttribute("titulo")}</div>`;
-                const pasos = apa.getElementsByTagName("paso");
-                for (let ps of pasos) {
-                    const ofi = ps.getAttribute("oficial");
-                    let txt = ps.getAttribute("texto") || "";
-                    
-                    txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-azul">$1</span>');
-                    
-                    // Inyección de Memos
-                    if (txt.includes('[[GESTION_SECRETARIA]]')) {
-                        txt = txt.replace('[[GESTION_SECRETARIA]]', procesarMemos());
+            const hijosParte = Array.from(parte.children);
+            for (let hijo of hijosParte) {
+                if (hijo.tagName === "apartado") {
+                    html += `<div class="apartado-titulo">${hijo.getAttribute("titulo")}</div>`;
+                    const pasos = hijo.getElementsByTagName("paso");
+                    for (let ps of pasos) {
+                        const ofi = ps.getAttribute("oficial");
+                        let txt = ps.getAttribute("texto") || "";
+                        txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-azul">$1</span>');
+                        
+                        if (txt.includes('[[GESTION_SECRETARIA]]')) {
+                            txt = txt.replace('[[GESTION_SECRETARIA]]', procesarMemos());
+                        }
+
+                        if (txt.startsWith('[') && txt.endsWith(']')) txt = `<span class="accion-texto">${txt}</span>`;
+
+                        const res = (fOfi !== "todos" && ofi.toLowerCase() === fOfi) ? "class='resaltado'" : "";
+                        html += `<dt>${ofi}∴</dt><dd ${res}>${txt}</dd>`;
                     }
-
-                    if (txt.startsWith('[') && txt.endsWith(']')) txt = `<span class="accion-texto">${txt}</span>`;
-
-                    const resaltado = (fOfi !== "todos" && ofi.toLowerCase() === fOfi) ? "class='resaltado'" : "";
-                    html += `<dt>${ofi}∴</dt><dd ${resaltado}>${txt}</dd>`;
                 }
             }
-            html += `</div>`;
-            contenedor.innerHTML = html;
+            contenedor.innerHTML = html + `</div>`;
             window.scrollTo(0,0);
         }
 
@@ -187,22 +181,19 @@
             if (!tenidasXml) return "";
             const hoy = new Date().toISOString().split('T')[0];
             const sesiones = Array.from(tenidasXml.getElementsByTagName("tenida"));
-            
             const hoySesion = sesiones.find(s => s.getAttribute("fecha") === hoy);
             const pasadaSesion = sesiones.filter(s => s.getAttribute("fecha") < hoy)
                                          .sort((a,b) => b.getAttribute("fecha").localeCompare(a.getAttribute("fecha")))[0];
 
             let res = "";
-            
             if (pasadaSesion) {
                 const items = Array.from(pasadaSesion.getElementsByTagName("item")).filter(i => i.getAttribute("acto") === "balaustre");
-                if (items.length > 0) res += `<div class="apartado-titulo" style="text-align:left">Memoria Histórica</div>`;
+                if (items.length > 0) res += `<div class="apartado-titulo" style="text-align:left">Balaustre Anterior</div>`;
                 items.forEach(i => res += `<button class="btn-doc" onclick="abrirVisor('${i.getAttribute("url")}','${i.getAttribute("titulo")}')">📜 ${i.getAttribute("titulo")}</button>`);
             }
-
             if (hoySesion) {
                 const items = Array.from(hoySesion.getElementsByTagName("item"));
-                if (items.length > 0) res += `<div class="apartado-titulo" style="text-align:left">Trabajos de Hoy</div>`;
+                if (items.length > 0) res += `<div class="apartado-titulo" style="text-align:left">Propuestas y Trabajos</div>`;
                 items.forEach(i => {
                     const acto = i.getAttribute("acto");
                     if (acto === "nuevo_grado") {
@@ -218,7 +209,7 @@
         function abrirVisor(url, titulo) {
             const urlP = url.replace('/view', '/preview');
             const modal = `<div id="modal-visor">
-                <div class="modal-header"><span>${titulo}</span><button class="btn-cerrar" onclick="this.parentElement.parentElement.remove()">CERRAR ✕</button></div>
+                <div class="modal-header"><span>${titulo}</span><button class="btn-cerrar" onclick="this.parentElement.parentElement.remove()">✕</button></div>
                 <iframe src="${urlP}" style="flex-grow:1; border:none; background:white;"></iframe>
             </div>`;
             document.body.insertAdjacentHTML('beforeend', modal);
