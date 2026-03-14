@@ -24,6 +24,7 @@
         .btn-ritual { border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 0.85em; margin: 5px 0; font-weight: bold; display: inline-block; background: #5d4037; color: #ffffff !important; box-shadow: 0 2px 4px rgba(0,0,0,0.3); text-decoration: none; }
         .btn-instancia-exec { background: #2e7d32; border: 2px solid #1b5e20; width: 100%; text-align: left; margin-bottom: 8px; color: white; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; }
         .instancia-container { background: #fff9c4; border: 2px dashed #fbc02d; padding: 15px; margin: 15px 0; border-radius: 8px; }
+        .accion-texto { font-style: italic; color: #5d4037; }
     </style>
 </head>
 <body onload="inicializar()">
@@ -53,7 +54,10 @@
                 let s = (urlParams.get('sec') || "1").replace(/^0+/, "");
                 if (parseInt(s) > 3) seccionesVisibles.add(s);
                 ejecutarCargaRitual(numGradoActual, s);
-            } catch (e) { console.error(e); }
+            } catch (e) { 
+                console.error(e);
+                document.getElementById('rituales-content').innerHTML = '<b style="color:red">Error cargando el ritual. Verifique los archivos XML.</b>';
+            }
         }
 
         async function cargarDatos() {
@@ -130,7 +134,6 @@
                     let txt = paso.getAttribute("texto") || paso.textContent || "";
                     const idL = `l-${sId}-${counter}`;
 
-                    // LINK CON TÍTULO AUTOMÁTICO DESDE XML
                     txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
                         let nombreLink = desc;
                         if (!nombreLink) {
@@ -155,32 +158,31 @@
         }
 
         function irA(codigo) {
-            const g = codigo[0];
-            const s = parseInt(codigo.substring(1), 10).toString();
-            if (g !== numGradoActual) {
-                window.location.href = `rituales.html?num=${g}&sec=${s}`;
-            } else {
-                seccionesVisibles.add(s);
-                actualizarSelectorSecciones(s);
-                cambioDeSeccion();
-            }
+            const g = codigo[0], s = parseInt(codigo.substring(1), 10).toString();
+            if (g !== numGradoActual) window.location.href = `rituales.html?num=${g}&sec=${s}`;
+            else { seccionesVisibles.add(s); actualizarSelectorSecciones(s); cambioDeSeccion(); }
         }
 
         function procesarInstancia(fOfi) {
             if (!tenidasXml) return "";
-            const hoy = new Date().toISOString().split('T')[0];
-            const sesion = Array.from(tenidasXml.getElementsByTagName("tenida")).find(s => s.getAttribute("fecha") === hoy);
-            if (!sesion) return "";
+            const tenidas = tenidasXml.getElementsByTagName("tenida");
+            if (tenidas.length === 0) return "";
+            
+            // Obtenemos siempre la última tenida registrada (la más reciente)
+            const sesion = tenidas[tenidas.length - 1];
 
             let res = "";
             if (fOfi === "sec") {
-                const bal = sesion.getElementsByTagName("balaustre")[0]?.textContent;
-                if (bal) res = `<div class="instancia-container"><strong>📜 BALAUSTRE:</strong><br><br><div style="font-style: italic; white-space: pre-wrap;">${bal.trim()}</div></div>`;
+                const bal = sesion.getElementsByTagName("balaustrada")[0]?.textContent;
+                if (bal) res = `<div class="instancia-container"><strong>📜 ÚLTIMA BALAUSTRADA (MEMO):</strong><br><br><div style="font-style: italic; white-space: pre-wrap;">${bal.trim()}</div></div>`;
             } else if (fOfi === "vm") {
                 let btns = "";
                 Array.from(sesion.getElementsByTagName("item")).forEach(i => {
-                    const esExec = ["nuevo_grado", "elevacion", "iniciacion"].includes(i.getAttribute("acto"));
-                    btns += `<button class="${esExec ? 'btn-instancia-exec' : 'btn-ritual'}" style="${esExec ? '' : 'width:100%; text-align:left; background:#8d6e63;'}" onclick="${esExec ? "window.location.href='" + i.getAttribute("url") + "'" : "window.open('" + i.getAttribute("url") + "', '_blank')"}">${i.getAttribute("titulo")}</button>`;
+                    const acto = i.getAttribute("acto");
+                    if (acto !== "balaustre") {
+                        const esExec = ["nuevo_grado", "elevacion", "iniciacion"].includes(acto);
+                        btns += `<button class="${esExec ? 'btn-instancia-exec' : 'btn-ritual'}" style="${esExec ? '' : 'width:100%; text-align:left; background:#8d6e63;'}" onclick="${esExec ? "window.location.href='" + i.getAttribute("url") + "'" : "window.open('" + i.getAttribute("url") + "', '_blank')"}">${i.getAttribute("titulo")}</button>`;
+                    }
                 });
                 if (btns) res = `<div class="instancia-container">${btns}</div>`;
             }
