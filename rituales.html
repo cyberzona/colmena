@@ -12,35 +12,28 @@
         #titulo-ritual-header { font-size: 0.9rem; color: #5d4037; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
         .logo-mini { width: 65px; height: auto; flex-shrink: 0; }
         
-        /* Resaltado del Panel de Control para evitar ambigüedad */
-        #control-panel { background: #d7ccc8; padding: 12px; border-radius: 8px; border: 1px solid #a1887f; position: sticky; top: 0; z-index: 1000; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .container-select { display: inline-block; margin: 5px; text-align: left; }
-        #container-parte { width: 55%; }
-        #container-oficial { width: 35%; }
-        .select-label { display: block; font-size: 0.75rem; color: #4e342e; font-weight: 800; text-transform: uppercase; margin-bottom: 2px; }
-        select { padding: 8px; font-size: 0.95em; width: 100%; border-radius: 4px; border: 1px solid #8d6e63; background: white; font-weight: bold; color: #2c2c2c; }
+        /* Barra Oscura y Estilizada */
+        #control-panel { background: #2c2c2c; padding: 12px; border-radius: 8px; position: sticky; top: 0; z-index: 1000; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); display: flex; justify-content: space-between; align-items: flex-end; }
+        .container-select { display: flex; flex-direction: column; text-align: left; }
+        #container-parte { width: 65%; } /* Más ancho para el Orden del Día */
+        #container-oficial { width: 28%; } /* Menos ancho para oficiales */
+        
+        .select-label { font-size: 0.65rem; color: #d7ccc8; font-weight: bold; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.5px; }
+        select { padding: 8px; font-size: 0.85em; border-radius: 4px; border: 1px solid #444; background: #3d3d3d; color: #ffffff; font-weight: bold; width: 100%; outline: none; }
 
         .sigla-texto-azul { color: #0277bd; font-weight: bold; }
         dt { font-weight: bold; color: #5d4037; margin-top: 15px; font-size: 0.95em; }
-        dd { 
-            margin-left: 50px; border-left: 3px solid #d7ccc8; padding-left: 12px; 
-            font-size: 1em; position: relative; margin-bottom: 10px; 
-            counter-increment: line-counter; min-height: 1.2em;
-        }
-        dd::before { 
-            content: counter(line-counter); position: absolute; left: -45px; 
-            color: #5d4037; font-size: 1.2em; font-weight: 800; width: 35px; 
-            text-align: right; top: -2px;
-        }
+        dd { margin-left: 50px; border-left: 3px solid #d7ccc8; padding-left: 12px; font-size: 1em; position: relative; margin-bottom: 10px; counter-increment: line-counter; min-height: 1.2em; }
+        dd::before { content: counter(line-counter); position: absolute; left: -45px; color: #5d4037; font-size: 1.2em; font-weight: 800; width: 35px; text-align: right; top: -2px; }
         
-        .resaltado { background: rgba(180, 255, 100, 0.45) !important; border-left: 5px solid #2e7d32 !important; }
-        .apartado-header { font-weight: bold; color: #795548; font-size: 0.95em; border-bottom: 1px solid #d7ccc8; text-align: right; margin-top: 20px; padding-bottom: 5px; }
+        .resaltado { background: rgba(180, 255, 100, 0.3) !important; border-left: 5px solid #2e7d32 !important; }
+        .apartado-header { font-weight: bold; color: #795548; font-size: 0.95em; border-bottom: 1px solid #d7ccc8; text-align: right; margin-top: 20px; padding-bottom: 5px; text-transform: uppercase; }
         .accion-texto { font-style: italic; color: #5d4037; }
 
+        /* Botones de Navegación y Orden del Día */
         .btn-link, .btn-volver { background: #5d4037; color: #fff; border: none; padding: 10px 18px; border-radius: 20px; cursor: pointer; font-size: 0.85em; margin-top: 10px; display: block; width: fit-content; }
-        .btn-volver { background: #8d6e63; }
-        .btn-memo { background: #8d6e63; color: white; border: none; padding: 10px; border-radius: 6px; width: 100%; margin: 5px 0; text-align: left; cursor: pointer; font-size: 0.85em; display: block; }
-        .btn-grado-accion { background: #1b5e20; color: white; border: 2px solid #b8860b; padding: 12px; border-radius: 8px; font-weight: bold; width: 100%; margin: 10px 0; cursor: pointer; display: block; text-align: center; }
+        .btn-memo { background: #455a64; color: white; border: 1px solid #607d8b; padding: 12px; border-radius: 6px; width: 100%; margin: 8px 0; text-align: left; cursor: pointer; font-size: 0.85em; display: flex; align-items: center; gap: 10px; }
+        .btn-grado-accion { background: #1b5e20; color: white; border: 2px solid #b8860b; padding: 14px; border-radius: 8px; font-weight: bold; width: 100%; margin: 12px 0; cursor: pointer; text-align: center; }
     </style>
 </head>
 <body onload="inicializar()">
@@ -55,11 +48,11 @@
 
     <div id="control-panel">
         <div class="container-select" id="container-parte">
-            <span class="select-label">Sección Actual</span>
+            <span class="select-label">Orden del Día</span>
             <select id="parteFilter" onchange="cambioDeParte()"></select>
         </div>
         <div class="container-select" id="container-oficial">
-            <span class="select-label">Filtrar Oficial</span>
+            <span class="select-label">Oficial</span>
             <select id="oficialFilter" onchange="renderizarLiturgia()"></select>
         </div>
     </div>
@@ -86,175 +79,4 @@
             ]);
             const parser = new DOMParser();
             glosarioDoc = parser.parseFromString(resGlosario, "text/xml");
-            xmlDoc = parser.parseFromString(resLiturgia, "text/xml");
-            if (resTenidas) tenidasXml = parser.parseFromString(resTenidas, "text/xml");
-            cargarRitualPorGrado(numGradoActual);
-        }
-
-        function cargarRitualPorGrado(grado) {
-            numGradoActual = grado.toString();
-            const rituales = xmlDoc.getElementsByTagName("ritual");
-            for (let r of rituales) {
-                if (r.getAttribute("grado") === numGradoActual) { ritualActivo = r; break; }
-            }
-            if (ritualActivo) {
-                const nombres = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Ritual de Maestro" };
-                tituloGradoBase = nombres[numGradoActual] || "Ritual";
-                poblarPartes();
-                cambioDeParte(); 
-            }
-        }
-
-        function poblarPartes() {
-            const pSel = document.getElementById("parteFilter");
-            pSel.innerHTML = "";
-            const partes = ritualActivo.getElementsByTagName("parte");
-            for (let p of partes) {
-                const id = p.getAttribute("id");
-                if (id.length === 1) pSel.add(new Option(p.getAttribute("titulo"), id));
-            }
-        }
-
-        function cambioDeParte() {
-            poblarOficialesDeEstaParte();
-            renderizarLiturgia();
-        }
-
-        function poblarOficialesDeEstaParte(idManual = null) {
-            const pId = idManual || document.getElementById("parteFilter").value;
-            const oSel = document.getElementById("oficialFilter");
-            const parteActual = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") === pId.toString());
-            const oficialesActivos = new Set();
-            if (parteActual) {
-                const pasos = parteActual.getElementsByTagName("paso");
-                for (let paso of pasos) {
-                    const idOfi = paso.getAttribute("oficial");
-                    if (idOfi) oficialesActivos.add(idOfi.trim().toLowerCase());
-                }
-            }
-            oSel.innerHTML = '<option value="todos">Todos</option>';
-            const itemsG = glosarioDoc.getElementsByTagName("item");
-            for (let item of itemsG) {
-                const siglaG = item.getAttribute("sigla");
-                if (oficialesActivos.has(siglaG.trim().toLowerCase())) {
-                    oSel.add(new Option(siglaG.trim() + "∴", siglaG.trim().toLowerCase()));
-                }
-            }
-        }
-
-        function renderizarLiturgia(idManual = null) {
-            const pId = idManual || document.getElementById("parteFilter").value;
-            const fOfi = document.getElementById("oficialFilter").value.trim().toLowerCase(); 
-            const contenedor = document.getElementById('rituales-content');
-            const parteActiva = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") === pId.toString());
-            if (!parteActiva) return;
-
-            // ELIMINADA BARRA CAFÉ: El título ahora va al Header si es subsección, o se mantiene el Grado si es principal.
-            document.getElementById("titulo-ritual-header").textContent = pId.toString().length === 1 ? tituloGradoBase : parteActiva.getAttribute("titulo");
-
-            let htmlAcumulado = "";
-            const apartados = parteActiva.getElementsByTagName("apartado");
-            let globalStepIdx = 0;
-
-            for (let apa of apartados) {
-                let pasosHtml = "";
-                const pasos = apa.getElementsByTagName("paso");
-                const tituloApartado = apa.getAttribute("titulo").toLowerCase();
-
-                for (let paso of pasos) {
-                    globalStepIdx++;
-                    const ofiOriginal = paso.getAttribute("oficial") || "";
-                    let texto = paso.getAttribute("texto") || "";
-                    const idAncla = `linea-${pId}-${globalStepIdx}`;
-
-                    if (texto.includes('[[GESTION_SECRETARIA]]')) {
-                        texto = texto.replace('[[GESTION_SECRETARIA]]', procesarMemos(tituloApartado));
-                    }
-
-                    texto = texto.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
-                    
-                    texto = texto.replace(/\[\[LINK:(\d{3})\]\]/g, (m, coords) => {
-                        const g = coords.substring(0, 1);
-                        const p = parseInt(coords.substring(1)).toString();
-                        const rDest = Array.from(xmlDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("grado") === g);
-                        const pDest = rDest ? Array.from(rDest.getElementsByTagName("parte")).find(pt => pt.getAttribute("id") === p) : null;
-                        return `<br><button class="btn-link" onclick="irA('${coords}', '${idAncla}')">Ir a: ${pDest ? pDest.getAttribute("titulo") : "Sección"} ➜</button>`;
-                    });
-
-                    texto = texto.replace(/\[\[VOLVER:(\d+)\]\]/g, (m, id) => `<br><button class="btn-volver" onclick="irA('${id}')">⬅ Regresar</button>`);
-                    if (texto.startsWith('[') && texto.endsWith(']')) texto = `<span class="accion-texto">${texto}</span>`;
-
-                    const res = (fOfi !== "todos" && ofiOriginal.trim().toLowerCase() === fOfi) ? "class='resaltado'" : "";
-                    pasosHtml += `<dt>${ofiOriginal.trim()}∴</dt><dd ${res} id="${idAncla}">${texto}</dd>`;
-                }
-                htmlAcumulado += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>` + pasosHtml;
-            }
-
-            contenedor.innerHTML = `<div class="parte-ritual" style="counter-reset: line-counter;">${htmlAcumulado}</div>`;
-            
-            if (fOfi !== "todos") {
-                setTimeout(() => { document.querySelector('.resaltado')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 100);
-            }
-        }
-
-        function procesarMemos(seccionActual) {
-            if (!tenidasXml) return "";
-            const hoy = new Date().toISOString().split('T')[0];
-            const sesiones = Array.from(tenidasXml.getElementsByTagName("tenida"));
-            const hoySes = sesiones.find(s => s.getAttribute("fecha") === hoy);
-            const pasSes = sesiones.filter(s => s.getAttribute("fecha") < hoy).sort((a,b) => b.getAttribute("fecha").localeCompare(a.getAttribute("fecha")))[0];
-
-            let res = "";
-            if (seccionActual.includes("balaustre") || seccionActual.includes("acta")) {
-                if (pasSes) {
-                    Array.from(pasSes.getElementsByTagName("item")).filter(i => i.getAttribute("acto") === "balaustre").forEach(i => {
-                        res += `<button class="btn-memo" onclick="abrirVisor('${i.getAttribute("url")}','${i.getAttribute("titulo")}')">📜 ${i.getAttribute("titulo")}</button>`;
-                    });
-                }
-            } else if (seccionActual.includes("trabajos") || seccionActual.includes("proposiciones")) {
-                if (hoySes) {
-                    Array.from(hoySes.getElementsByTagName("item")).forEach(i => {
-                        const acto = i.getAttribute("acto");
-                        if (acto === "nuevo_grado") {
-                            res += `<button class="btn-grado-accion" onclick="window.location.href='${i.getAttribute("url")}'">⚖️ EJECUTAR: ${i.getAttribute("titulo")}</button>`;
-                        } else if (acto !== "balaustre") {
-                            res += `<button class="btn-memo" onclick="abrirVisor('${i.getAttribute("url")}','${i.getAttribute("titulo")}')">📄 ${i.getAttribute("titulo")}</button>`;
-                        }
-                    });
-                }
-            }
-            return res;
-        }
-
-        function abrirVisor(url, titulo) {
-            const modal = `<div id="modal-visor" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:9999;display:flex;flex-direction:column;">
-                <div style="background:#5d4037;color:white;padding:15px;display:flex;justify-content:space-between;align-items:center;"><span>${titulo}</span><button style="background:#b71c1c;color:white;border:none;padding:5px 12px;border-radius:4px;cursor:pointer;" onclick="this.parentElement.parentElement.remove()">✕</button></div>
-                <iframe src="${url.replace('/view', '/preview')}" style="flex-grow:1;border:none;background:white;"></iframe>
-            </div>`;
-            document.body.insertAdjacentHTML('beforeend', modal);
-        }
-
-        function irA(codigo, idRegreso = null) {
-            if (idRegreso) localStorage.setItem('puntoRegreso', idRegreso);
-            let g, p;
-            if (codigo.length === 3) {
-                g = codigo.substring(0, 1);
-                p = parseInt(codigo.substring(1)).toString();
-            } else {
-                g = numGradoActual;
-                p = codigo;
-            }
-            if (g !== numGradoActual) cargarRitualPorGrado(g);
-            poblarOficialesDeEstaParte(p);
-            renderizarLiturgia(p);
-            setTimeout(() => {
-                const r = localStorage.getItem('puntoRegreso');
-                if (r && codigo.length !== 3) {
-                    const el = document.getElementById(r);
-                    if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); el.classList.add('resaltado'); setTimeout(() => localStorage.removeItem('puntoRegreso'), 2000); }
-                } else { window.scrollTo({ top: 0, behavior: 'smooth' }); }
-            }, 300);
-        }
-    </script>
-</body>
-</html>
+            xmlDoc = parser.parseFromString(resLiturgia
