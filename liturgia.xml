@@ -56,7 +56,7 @@
         <apartado id="1" titulo="Del Balaustre del la Sesión Anterior">
             <paso tipo="dialogo" oficial="VM" texto="QQHH∴, habiéndose cumplido con las formalidades de la apertura, entramos ahora en el Desarrollo de Trabajos."/>
             <paso tipo="dialogo" oficial="VM" texto="QH∴ Secretario (Sec∴), servíos dar lectura del último Trazado de este Taller."/>
-            <paso tipo="dialogo" oficial="Sec" texto="[QH∴ Sec∴ procede con la lectura.]   [[ULTIMA_TENIDA]]"/>
+            <paso tipo="dialogo" oficial="Sec" texto="[QH∴ Sec∴ procede con la lectura.]   [[GESTION_SECRETARIA]]"/>
             <paso tipo="dialogo" oficial="1V" texto="Reina el silencio en ambas CCol∴, VM∴."/>
             <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴, anunciad en vuestras respectivas columnas que el memo está en discusión. Si algún hermano desea hacer una observación, tiene la palabra"/>
             <paso tipo="dialogo" oficial="1V" texto="QH∴ 2V∴, HH∴ de la Col∴ del Norte, el trazado de la sesión anterior está en discusión por orden del VM∴."/>
@@ -68,7 +68,7 @@
             <paso tipo="dialogo" oficial="1V" texto="Reina el silencio en ambas CCol∴, VM∴."/>
             <paso tipo="dialogo" oficial="VM" texto="QH∴ OF∴ ¿Queréis darnos vuestras conclusiones respecto a la plancha trazada por nuestro H∴ Sec∴ de nuestros últimos trabajos? [El H∴Ora∴ da las conclusiones]"/>
             <paso tipo="dialogo" oficial="VM" texto="Después de las conclusiones del H∴ Ora∴, los HH∴ que estén de acuerdo se servirán de hacer la señal de aprobación al primer golpe de Mall∴."/>
-            <paso tipo="dialogo" oficial="VM" texto="[Da a conocer el resultado de la votación].[[LINK:4|Simbolismo de las Luces]] [[LINK:5|Logia de San Juan]]"/>
+            <paso tipo="dialogo" oficial="VM" texto="[Da a conocer el resultado de la votación].[[LINK:4]] [[LINK:5]]"/>
         </apartado>
         <apartado id="2" titulo="De las Proposiciones por Escrito">
             <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ como yo lo hago en el Or∴ que nuestro Q∴H∴ M∴ de Cer∴ va a circular el saco de proposiciones. [El MC∴ cumple con su deber y se coloca entre CCol∴.]"/>
