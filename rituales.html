@@ -174,13 +174,10 @@
                     const ofiOriginal = paso.getAttribute("oficial") || "";
                     let texto = paso.getAttribute("texto") || "";
                     const idAncla = `linea-${pId}-${globalStepIdx}`;
-
                     // 1. Siglas
-                    texto = texto.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
-                    
+                    texto = texto.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');                    
                     // 2. Etiqueta de Bitácora Dinámica
                     texto = texto.replace('[[ULTIMA_TENIDA]]', () => obtenerDocumentosUltimaTenida());
-
                     // 3. Links Internos
                     texto = texto.replace(/\[\[LINK:(\d+)(?:\|([^\]]+))?\]\]/g, (m, id, nombre) => {
                         const tituloBoton = nombre ? nombre : "Ver Desarrollo";
