@@ -141,7 +141,7 @@
             const parteActiva = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") == pId);
             if (!parteActiva) return;
 
-            let htmlAcumulado = `<div class="parte-titulo-principal">${parteActiva.getAttribute("titulo")}</div>`;
+            let htmlAcumulado = "";
             let stepIdx = 0;
 
             Array.from(parteActiva.getElementsByTagName("apartado")).forEach(apa => {
