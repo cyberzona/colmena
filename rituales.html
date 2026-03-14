@@ -166,9 +166,12 @@
                     let texto = paso.getAttribute("texto") || "";
                     const idAncla = `linea-${pId}-${stepIdx}`;
 
-                    // LÓGICA DE INSTANCIA (ANTES GESTIÓN)
-                    if (texto.includes('[[INSTANCIA]]')) {
-                        texto = (fOfi === ofiLower) ? texto.replace('[[INSTANCIA]]', procesarInstancia(ofiLower)) : texto.replace('[[INSTANCIA]]', '');
+                    // CORRECCIÓN: Buscamos [[INSTANCIA]] sin importar mayúsculas
+                    // Usamos un RegExp con flag 'gi' (global, case-insensitive)
+                    if (/\[\[INSTANCIA\]\]/i.test(texto)) {
+                        if (fOfi === ofiLower && fOfi !== "") {
+                           texto = texto.replace(/\[\[INSTANCIA\]\]/gi, procesarInstancia(ofiLower)); } 
+                        else { texto = texto.replace(/\[\[INSTANCIA\]\]/gi, ''); }
                     }
 
                     // LÓGICA DE LINK CON NOMBRE DE PARTE REAL
