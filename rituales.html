@@ -24,7 +24,6 @@
         .btn-ritual { border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 0.85em; margin: 5px 0; font-weight: bold; display: inline-block; background: #5d4037; color: #ffffff !important; box-shadow: 0 2px 4px rgba(0,0,0,0.3); text-decoration: none; }
         .btn-instancia-exec { background: #2e7d32; border: 2px solid #1b5e20; width: 100%; text-align: left; margin-bottom: 8px; color: white; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; }
         .instancia-container { background: #fff9c4; border: 2px dashed #fbc02d; padding: 15px; margin: 15px 0; border-radius: 8px; }
-        .accion-texto { font-style: italic; color: #5d4037; }
     </style>
 </head>
 <body onload="inicializar()">
@@ -131,8 +130,15 @@
                     let txt = paso.getAttribute("texto") || paso.textContent || "";
                     const idL = `l-${sId}-${counter}`;
 
+                    // LINK CON TÍTULO AUTOMÁTICO DESDE XML
                     txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
-                        return `<button class="btn-ritual" onclick="irA('${cod}')">${(desc || "Ir").trim()} ➜</button>`;
+                        let nombreLink = desc;
+                        if (!nombreLink) {
+                            const ritualDestino = Array.from(xmlDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("grado") == cod[0]);
+                            const secDestino = ritualDestino ? Array.from(ritualDestino.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == parseInt(cod.substring(1))) : null;
+                            nombreLink = secDestino ? secDestino.getAttribute("titulo") : "Ir";
+                        }
+                        return `<button class="btn-ritual" onclick="irA('${cod}')">${nombreLink.trim()} ➜</button>`;
                     });
 
                     txt = txt.replace(/\[\[INSTANCIA\]\]/g, () => fOfi ? procesarInstancia(fOfi) : "");
@@ -166,20 +172,19 @@
             const sesion = Array.from(tenidasXml.getElementsByTagName("tenida")).find(s => s.getAttribute("fecha") === hoy);
             if (!sesion) return "";
 
+            let res = "";
             if (fOfi === "sec") {
                 const bal = sesion.getElementsByTagName("balaustrada")[0]?.textContent;
-                return bal ? `<div class="instancia-container"><strong>📜 BALAUSTRADA (MEMO):</strong><br><br><div style="font-style: italic; white-space: pre-wrap;">${bal.trim()}</div></div>` : "";
+                if (bal) res = `<div class="instancia-container"><strong>📜 BALAUSTRADA (MEMO):</strong><br><br><div style="font-style: italic; white-space: pre-wrap;">${bal.trim()}</div></div>`;
             } else if (fOfi === "vm") {
                 let btns = "";
                 Array.from(sesion.getElementsByTagName("item")).forEach(i => {
-                    if (i.getAttribute("acto") !== "balaustre") {
-                        const esExec = ["nuevo_grado", "elevacion", "iniciacion"].includes(i.getAttribute("acto"));
-                        btns += `<button class="${esExec ? 'btn-instancia-exec' : 'btn-ritual'}" style="${esExec ? '' : 'width:100%; text-align:left; background:#8d6e63;'}" onclick="${esExec ? "window.location.href='" + i.getAttribute("url") + "'" : "window.open('" + i.getAttribute("url") + "', '_blank')"}">${i.getAttribute("titulo")}</button>`;
-                    }
+                    const esExec = ["nuevo_grado", "elevacion", "iniciacion"].includes(i.getAttribute("acto"));
+                    btns += `<button class="${esExec ? 'btn-instancia-exec' : 'btn-ritual'}" style="${esExec ? '' : 'width:100%; text-align:left; background:#8d6e63;'}" onclick="${esExec ? "window.location.href='" + i.getAttribute("url") + "'" : "window.open('" + i.getAttribute("url") + "', '_blank')"}">${i.getAttribute("titulo")}</button>`;
                 });
-                return btns ? `<div class="instancia-container">${btns}</div>` : "";
+                if (btns) res = `<div class="instancia-container">${btns}</div>`;
             }
-            return "";
+            return res;
         }
     </script>
 </body>
