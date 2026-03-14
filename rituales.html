@@ -21,8 +21,8 @@
         dd::before { content: counter(line-counter); position: absolute; left: -45px; color: #5d4037; font-size: 1.1em; font-weight: 800; width: 35px; text-align: right; }
         .resaltado { background: rgba(180, 255, 100, 0.4) !important; border-left: 5px solid #2e7d32 !important; }
         .apartado-header { font-weight: bold; color: #795548; font-size: 0.9em; border-bottom: 1px solid #d7ccc8; text-align: right; margin-top: 20px; }
-        .btn-ritual { border: none; padding: 10px; border-radius: 20px; cursor: pointer; font-size: 0.8em; margin-top: 10px; font-weight: bold; display: block; }
-        .color-cafe { background: #5d4037; color: #fff; }
+        .btn-ritual { border: none; padding: 10px 15px; border-radius: 20px; cursor: pointer; font-size: 0.85em; margin: 10px 0; font-weight: bold; display: inline-block; background: #5d4037; color: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.2); text-decoration: none; }
+        .btn-ritual:active { background: #3e2723; transform: translateY(1px); }
         .accion-texto { font-style: italic; color: #5d4037; }
     </style>
 </head>
@@ -159,9 +159,22 @@
                     let txt = paso.getAttribute("texto") || "";
                     const idL = `l-${sId}-${counter}`;
 
+                    // LÓGICA DE BOTONES CON BÚSQUEDA DE NOMBRE DE SECCIÓN
                     txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
-                        const etiqueta = desc ? desc : "Ir a paso " + cod;
-                        return `<button class="btn-ritual color-cafe" onclick="irA('${cod}', '${idL}')">${etiqueta} ➜</button>`;
+                        let nombreBoton = desc;
+                        if (!nombreBoton) {
+                            const secIdBuscada = parseInt(cod.substring(1), 10).toString();
+                            const ritualDondeBuscar = (cod[0] === numGradoActual) ? ritualActivo : 
+                                Array.from(xmlDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("grado") == cod[0]);
+                            
+                            if (ritualDondeBuscar) {
+                                const secObjetivo = Array.from(ritualDondeBuscar.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == secIdBuscada);
+                                nombreBoton = secObjetivo ? secObjetivo.getAttribute("titulo") : "Sección " + cod;
+                            } else {
+                                nombreBoton = "Sección " + cod;
+                            }
+                        }
+                        return `<button class="btn-ritual" onclick="irA('${cod}', '${idL}')">${nombreBoton} ➜</button>`;
                     });
 
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
@@ -179,13 +192,12 @@
             if (primeraID) {
                 const el = document.getElementById(primeraID);
                 if (el) {
-                    const offset = 150; 
+                    const offset = 160; 
                     const bodyRect = document.body.getBoundingClientRect().top;
                     const elementRect = el.getBoundingClientRect().top;
-                    const elementPosition = elementRect - bodyRect;
-                    window.scrollTo({ top: elementPosition - offset, behavior: 'smooth' });
+                    window.scrollTo({ top: elementRect - bodyRect - offset, behavior: 'smooth' });
                 }
-            } else {
+            } else if (!window.location.hash) {
                 window.scrollTo(0, 0);
             }
         }
