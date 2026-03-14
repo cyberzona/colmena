@@ -17,7 +17,6 @@
         .select-label { font-size: 0.7rem; color: #4e342e; font-weight: 800; text-transform: uppercase; margin-bottom: 4px; }
         select { padding: 8px; font-size: 0.9em; border-radius: 4px; border: 1px solid #8d6e63; background: #ffffff; color: #2c2c2c; font-weight: bold; width: 100%; outline: none; }
         
-        /* Estilo para la descripción de la Parte */
         .parte-titulo-principal { font-size: 1.2rem; color: #4e342e; text-align: center; margin: 20px 0; font-weight: bold; text-transform: uppercase; border-bottom: 3px double #d7ccc8; padding-bottom: 10px; }
         
         .sigla-texto-azul { color: #0277bd; font-weight: bold; }
@@ -141,4 +140,91 @@
             const fOfi = document.getElementById("oficialFilter").value.trim().toLowerCase(); 
             const contenedor = document.getElementById('rituales-content');
             if (!ritualActivo) return;
-            const parteActiva = Array.from(ritualActivo.getElementsByTagName("parte
+            const parteActiva = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") == pId);
+            if (!parteActiva) return;
+
+            let htmlAcumulado = `<div class="parte-titulo-principal">${parteActiva.getAttribute("titulo")}</div>`;
+            let stepIdx = 0;
+
+            Array.from(parteActiva.getElementsByTagName("apartado")).forEach(apa => {
+                let pasosHtml = "";
+                Array.from(apa.getElementsByTagName("paso")).forEach(paso => {
+                    stepIdx++;
+                    const ofiRaw = (paso.getAttribute("oficial") || "").trim();
+                    const ofiLower = ofiRaw.toLowerCase();
+                    let texto = paso.getAttribute("texto") || "";
+                    const idAncla = `linea-${pId}-${stepIdx}`;
+
+                    // CORRECCIÓN: Capturar código y descripción para el botón del LINK
+                    texto = texto.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (m, coords, desc) => {
+                        const label = desc ? desc : "Ir a Sección";
+                        return `<button class="btn-ritual color-cafe" onclick="irA('${coords}', '${idAncla}')">${label} ➜</button>`;
+                    });
+
+                    if (/\[\[INSTANCIA\]\]/i.test(texto)) {
+                        texto = texto.replace(/\[\[INSTANCIA\]\]/gi, (fOfi === ofiLower && fOfi !== "") ? procesarInstancia(fOfi) : "");
+                    }
+                    texto = texto.replace(/\[\[VOLVER:(\d+)\]\]/g, (m, id) => `<button class="btn-ritual color-cafe" onclick="irA('${id}')">⬅ Regresar</button>`);
+                    texto = texto.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
+                    if (texto.startsWith('[') && texto.endsWith(']')) texto = `<span class="accion-texto">${texto}</span>`;
+
+                    const res = (fOfi !== "" && ofiLower === fOfi) ? 'class="resaltado"' : "";
+                    pasosHtml += `<dt>${ofiRaw}∴</dt><dd ${res} id="${idAncla}">${texto}</dd>`;
+                });
+                htmlAcumulado += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>` + pasosHtml;
+            });
+            contenedor.innerHTML = `<div class="parte-ritual" style="counter-reset: line-counter; margin-top:20px;">${htmlAcumulado}</div>`;
+        }
+
+        function procesarInstancia(oficial) {
+            if (!tenidasXml) return "";
+            const hoy = new Date().toISOString().split('T')[0];
+            const sesiones = Array.from(tenidasXml.getElementsByTagName("tenida"));
+            const hoySes = sesiones.find(s => s.getAttribute("fecha") === hoy);
+            const pasSes = sesiones.filter(s => s.getAttribute("fecha") < hoy).sort((a,b) => b.getAttribute("fecha").localeCompare(a.getAttribute("fecha")))[0];
+
+            let res = "";
+            if (oficial === "sec") {
+                if (pasSes) {
+                    Array.from(pasSes.getElementsByTagName("item")).filter(i => i.getAttribute("acto") === "balaustre").forEach(i => {
+                        res += `<button class="btn-ritual color-gold" onclick="abrirVisor('${i.getAttribute("url")}','${i.getAttribute("titulo")}')">📜 Leer Balaustre: ${i.getAttribute("titulo")} ➜</button>`;
+                    });
+                }
+            } else if (oficial === "vm") {
+                if (hoySes) {
+                    Array.from(hoySes.getElementsByTagName("item")).forEach(i => {
+                        const acto = i.getAttribute("acto").toLowerCase();
+                        const destinos = { "iniciacion": "107", "elevacion": "201", "exaltacion": "301" };
+                        if (destinos[acto]) res += `<button class="btn-ritual color-verde" onclick="irA('${destinos[acto]}')">⚖️ PROCEDER A ${acto.toUpperCase()}</button>`;
+                        else if (acto !== "balaustre") {
+                            let icono = (acto === "instruccion" || acto === "trazado") ? "📖" : "✉️";
+                            res += `<button class="btn-ritual color-gold" onclick="abrirVisor('${i.getAttribute("url")}','${i.getAttribute("titulo")}')">${icono} ${acto.toUpperCase()} ➜</button>`;
+                        }
+                    });
+                }
+            }
+            return res;
+        }
+
+        function abrirVisor(url, titulo) {
+            const modal = `<div id="modal-visor" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:9999;display:flex;flex-direction:column;">
+                <div style="background:#d7ccc8;padding:15px;display:flex;justify-content:space-between;align-items:center;"><span style="font-weight:bold;">${titulo}</span>
+                <button style="background:#b71c1c;color:white;border:none;padding:5px 12px;border-radius:4px;" onclick="this.parentElement.parentElement.remove()">✕ Cerrar</button></div>
+                <iframe src="${url.replace('/view', '/preview')}" style="flex-grow:1;border:none;background:white;"></iframe></div>`;
+            document.body.insertAdjacentHTML('beforeend', modal);
+        }
+
+        function irA(codigo, idRegreso = null) {
+            if (idRegreso) localStorage.setItem('puntoRegreso', idRegreso);
+            let g = codigo.substring(0, 1), pId = parseInt(codigo.substring(1)).toString();
+            if (g !== numGradoActual) { window.location.href = `?num=${g}`; return; }
+            poblarPartes(true, pId); 
+            cambioDeParte();
+            setTimeout(() => {
+                const r = localStorage.getItem('puntoRegreso');
+                if (r) { const el = document.getElementById(r); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+            }, 400);
+        }
+    </script>
+</body>
+</html>
