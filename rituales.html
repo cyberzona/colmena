@@ -31,26 +31,19 @@
         .resaltado { background: rgba(180, 255, 100, 0.4) !important; border-left: 5px solid #2e7d32 !important; }
         .apartado-header { font-weight: bold; color: #795548; font-size: 0.95em; border-bottom: 1px solid #d7ccc8; text-align: right; margin-top: 20px; padding-bottom: 5px; }
         
-        /* BOTONES CAFÉ: Navegación Ritual */
-        .btn-link, .btn-volver { 
-            background: #5d4037; color: #fff; border: none; padding: 10px 18px; border-radius: 20px; 
-            cursor: pointer; font-size: 0.85em; margin-top: 10px; display: block; width: fit-content; font-weight: bold; 
+        /* ESTILO UNIFICADO DE BOTONES (TIPO PASTILLA) */
+        .btn-ritual { 
+            border: none; padding: 10px 18px; border-radius: 20px; cursor: pointer; 
+            font-size: 0.85em; margin-top: 10px; display: block; width: fit-content; 
+            font-weight: bold; text-decoration: none; text-align: left;
+            transition: opacity 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
+        .btn-ritual:active { opacity: 0.8; }
 
-        /* BOTONES GOLD: Gestión de Documentos y Orden del Día */
-        .btn-gestion { 
-            background: #D4AF37; color: #2c2c2c; border: none; padding: 10px 18px; border-radius: 20px; 
-            cursor: pointer; font-size: 0.85em; margin-top: 10px; display: block; width: fit-content; 
-            font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #b8860b;
-        }
+        .color-cafe { background: #5d4037; color: #ffffff; }
+        .color-gold { background: #D4AF37; color: #2c2c2c; border: 1px solid #b8860b; }
+        .color-verde { background: #1b5e20; color: #ffffff; border: 1px solid #b8860b; }
 
-        /* BOTONES ESPECIALES: Cambios de Grado / Cámaras */
-        .btn-acto-especial { 
-            background: #1b5e20; color: white; border: 2px solid #b8860b; padding: 14px; 
-            border-radius: 8px; font-weight: bold; width: 100%; margin: 12px 0; cursor: pointer; 
-            text-align: center; text-transform: uppercase; box-shadow: 0 4px 6px rgba(0,0,0,0.2); 
-        }
-        
         .accion-texto { font-style: italic; color: #5d4037; }
     </style>
 </head>
@@ -86,7 +79,7 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 numGradoActual = urlParams.get('num') || '1';
                 await cargarDatos();
-            } catch (e) { console.error("Error inicializar:", e); }
+            } catch (e) { console.error("Error:", e); }
         }
 
         async function cargarDatos() {
@@ -122,14 +115,9 @@
             const partes = Array.from(ritualActivo.getElementsByTagName("parte"));
             partes.forEach(p => {
                 const id = p.getAttribute("id").trim();
-                if (["1", "2", "3"].includes(id)) {
-                    pSel.add(new Option(p.getAttribute("titulo"), id));
-                }
+                if (["1", "2", "3"].includes(id)) pSel.add(new Option(p.getAttribute("titulo"), id));
             });
-            if (pSel.options.length > 0) { 
-                pSel.selectedIndex = 0; 
-                cambioDeParte(); 
-            }
+            if (pSel.options.length > 0) { pSel.selectedIndex = 0; cambioDeParte(); }
         }
 
         function cambioDeParte() {
@@ -154,13 +142,9 @@
             const itemsG = glosarioDoc.getElementsByTagName("item");
             for (let item of itemsG) {
                 const siglaG = (item.getAttribute("sigla") || "").trim();
-                if (oficialesActivos.has(siglaG.toLowerCase())) {
-                    oSel.add(new Option(siglaG + "∴", siglaG.toLowerCase()));
-                }
+                if (oficialesActivos.has(siglaG.toLowerCase())) oSel.add(new Option(siglaG + "∴", siglaG.toLowerCase()));
             }
-            if (oficialPreseleccionado && oficialesActivos.has(oficialPreseleccionado.toLowerCase())) {
-                oSel.value = oficialPreseleccionado.toLowerCase();
-            }
+            if (oficialPreseleccionado && oficialesActivos.has(oficialPreseleccionado.toLowerCase())) oSel.value = oficialPreseleccionado.toLowerCase();
         }
 
         function renderizarLiturgia() {
@@ -175,8 +159,6 @@
 
             Array.from(parteActiva.getElementsByTagName("apartado")).forEach(apa => {
                 let pasosHtml = "";
-                const tituloApa = (apa.getAttribute("titulo") || "").toLowerCase();
-
                 Array.from(apa.getElementsByTagName("paso")).forEach(paso => {
                     stepIdx++;
                     const ofi = (paso.getAttribute("oficial") || "").trim();
@@ -184,19 +166,22 @@
                     let texto = paso.getAttribute("texto") || "";
                     const idAncla = `linea-${pId}-${stepIdx}`;
 
-                    if (texto.includes('[[GESTION_SECRETARIA]]')) {
-                        if (fOfi === ofiLower) {
-                            texto = texto.replace('[[GESTION_SECRETARIA]]', procesarOrdenDelDia(tituloApa, ofiLower));
-                        } else {
-                            texto = texto.replace('[[GESTION_SECRETARIA]]', ''); 
-                        }
+                    // LÓGICA DE INSTANCIA (ANTES GESTIÓN)
+                    if (texto.includes('[[INSTANCIA]]')) {
+                        texto = (fOfi === ofiLower) ? texto.replace('[[INSTANCIA]]', procesarInstancia(ofiLower)) : texto.replace('[[INSTANCIA]]', '');
                     }
 
+                    // LÓGICA DE LINK CON NOMBRE DE PARTE REAL
                     texto = texto.replace(/\[\[LINK:(\d{3})\]\]/g, (m, coords) => {
-                        return `<br><button class="btn-link" onclick="irA('${coords}', '${idAncla}')">Ir a Sección ➜</button>`;
+                        const g = coords.substring(0, 1);
+                        const pDestId = parseInt(coords.substring(1)).toString();
+                        const rDest = Array.from(xmlDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("grado") === g);
+                        const pDest = rDest ? Array.from(rDest.getElementsByTagName("parte")).find(pt => pt.getAttribute("id") == pDestId) : null;
+                        const nombreSec = pDest ? pDest.getAttribute("titulo") : "Sección";
+                        return `<button class="btn-ritual color-cafe" onclick="irA('${coords}', '${idAncla}')">Ir a: ${nombreSec} ➜</button>`;
                     });
 
-                    texto = texto.replace(/\[\[VOLVER:(\d+)\]\]/g, (m, id) => `<br><button class="btn-volver" onclick="irA('${id}')">⬅ Regresar</button>`);
+                    texto = texto.replace(/\[\[VOLVER:(\d+)\]\]/g, (m, id) => `<button class="btn-ritual color-cafe" onclick="irA('${id}')">⬅ Regresar</button>`);
                     texto = texto.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     if (texto.startsWith('[') && texto.endsWith(']')) texto = `<span class="accion-texto">${texto}</span>`;
 
@@ -215,7 +200,7 @@
             }
         }
 
-        function procesarOrdenDelDia(seccion, oficial) {
+        function procesarInstancia(oficial) {
             if (!tenidasXml) return "";
             const hoy = new Date().toISOString().split('T')[0];
             const sesiones = Array.from(tenidasXml.getElementsByTagName("tenida"));
@@ -223,11 +208,10 @@
             const pasSes = sesiones.filter(s => s.getAttribute("fecha") < hoy).sort((a,b) => b.getAttribute("fecha").localeCompare(a.getAttribute("fecha")))[0];
 
             let res = "";
-
             if (oficial === "sec") {
                 if (pasSes) {
                     Array.from(pasSes.getElementsByTagName("item")).filter(i => i.getAttribute("acto") === "balaustre").forEach(i => {
-                        res += `<button class="btn-gestion" onclick="abrirVisor('${i.getAttribute("url")}','${i.getAttribute("titulo")}')">📜 Leer Balaustre: ${i.getAttribute("titulo")} ➜</button>`;
+                        res += `<button class="btn-ritual color-gold" onclick="abrirVisor('${i.getAttribute("url")}','${i.getAttribute("titulo")}')">📜 Leer Balaustre: ${i.getAttribute("titulo")} ➜</button>`;
                     });
                 }
             } else if (oficial === "vm") {
@@ -235,23 +219,12 @@
                     Array.from(hoySes.getElementsByTagName("item")).forEach(i => {
                         const acto = i.getAttribute("acto").toLowerCase();
                         const titulo = i.getAttribute("titulo");
-                        const url = i.getAttribute("url") || "";
                         const destinos = { "iniciacion": "107", "elevacion": "201", "exaltacion": "301" };
-
                         if (destinos[acto]) {
-                            res += `<button class="btn-acto-especial" onclick="irA('${destinos[acto]}')">⚖️ PROCEDER A ${acto.toUpperCase()}: ${titulo}</button>`;
+                            res += `<button class="btn-ritual color-verde" onclick="irA('${destinos[acto]}')">⚖️ PROCEDER A ${acto.toUpperCase()}: ${titulo}</button>`;
                         } else {
-                            switch (acto) {
-                                case "instruccion":
-                                    res += `<button class="btn-gestion" onclick="abrirVisor('${url}','${titulo}')">📖 Instrucción: ${titulo} ➜</button>`;
-                                    break;
-                                case "proposicion":
-                                    res += `<button class="btn-gestion" onclick="abrirVisor('${url}','${titulo}')">✉️ Proposición: ${titulo} ➜</button>`;
-                                    break;
-                                case "nuevo_grado":
-                                    res += `<button class="btn-acto-especial" style="background:#4a148c;" onclick="window.location.href='${url}'">⚒️ ABRIR CÁMARA DE: ${titulo}</button>`;
-                                    break;
-                            }
+                            let icono = acto === "instruccion" ? "📖" : "✉️";
+                            res += `<button class="btn-ritual color-gold" onclick="abrirVisor('${i.getAttribute("url")}','${titulo}')">${icono} ${acto.charAt(0).toUpperCase() + acto.slice(1)}: ${titulo} ➜</button>`;
                         }
                     });
                 }
@@ -261,37 +234,22 @@
 
         function abrirVisor(url, titulo) {
             const modal = `<div id="modal-visor" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:9999;display:flex;flex-direction:column;">
-                <div style="background:#d7ccc8;padding:15px;display:flex;justify-content:space-between;align-items:center;">
-                    <span style="font-weight:bold;">${titulo}</span>
-                    <button style="background:#b71c1c;color:white;border:none;padding:5px 12px;border-radius:4px;cursor:pointer;" onclick="this.parentElement.parentElement.remove()">✕ Cerrar</button>
-                </div>
-                <iframe src="${url.replace('/view', '/preview')}" style="flex-grow:1;border:none;background:white;"></iframe>
-            </div>`;
+                <div style="background:#d7ccc8;padding:15px;display:flex;justify-content:space-between;align-items:center;"><span style="font-weight:bold;">${titulo}</span>
+                <button style="background:#b71c1c;color:white;border:none;padding:5px 12px;border-radius:4px;" onclick="this.parentElement.parentElement.remove()">✕ Cerrar</button></div>
+                <iframe src="${url.replace('/view', '/preview')}" style="flex-grow:1;border:none;background:white;"></iframe></div>`;
             document.body.insertAdjacentHTML('beforeend', modal);
         }
 
         function irA(codigo, idRegreso = null) {
             if (idRegreso) localStorage.setItem('puntoRegreso', idRegreso);
-            let g = codigo.substring(0, 1);
-            let pId = parseInt(codigo.substring(1)).toString();
-            
-            if (g !== numGradoActual) { 
-                window.location.href = `?num=${g}`; 
-                return; 
-            }
-
+            let g = codigo.substring(0, 1), pId = parseInt(codigo.substring(1)).toString();
+            if (g !== numGradoActual) { window.location.href = `?num=${g}`; return; }
             const pSel = document.getElementById("parteFilter");
-            const oficialActual = document.getElementById("oficialFilter").value;
             pSel.value = pId; 
-            poblarOficialesDeEstaParte(pId, oficialActual);
-            renderizarLiturgia();
-
+            cambioDeParte();
             setTimeout(() => {
                 const r = localStorage.getItem('puntoRegreso');
-                if (r) {
-                    const el = document.getElementById(r);
-                    if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); el.classList.add('resaltado'); }
-                }
+                if (r) { const el = document.getElementById(r); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
             }, 300);
         }
     </script>
