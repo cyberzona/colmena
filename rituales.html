@@ -109,13 +109,18 @@
                     pSel.add(new Option(p.getAttribute("titulo"), id));
                 }
             });
-            if (pSel.options.length > 0) { pSel.selectedIndex = 0; cambioDeParte(); }
+            if (pSel.options.length > 0) { 
+                pSel.selectedIndex = 0; 
+                // Forzamos el cambio de parte para que el selector de oficiales se pueble de inmediato
+                cambioDeParte(); 
+            }
         }
 
         function cambioDeParte() {
-            const oficialSeleccionado = document.getElementById("oficialFilter").value;
+            const oSel = document.getElementById("oficialFilter");
             const pId = document.getElementById("parteFilter").value;
-            poblarOficialesDeEstaParte(pId, oficialSeleccionado);
+            const oficialPrevio = oSel.value;
+            poblarOficialesDeEstaParte(pId, oficialPrevio);
             renderizarLiturgia(pId);
         }
 
@@ -137,7 +142,10 @@
                     oSel.add(new Option(siglaG.trim() + "∴", siglaG.trim().toLowerCase()));
                 }
             }
-            oSel.value = oficialesActivos.has(oficialPreseleccionado) ? oficialPreseleccionado : "";
+            // Mantenemos la selección si el oficial existe en esta parte
+            if (oficialPreseleccionado && oficialesActivos.has(oficialPreseleccionado)) {
+                oSel.value = oficialPreseleccionado;
+            }
         }
 
         function renderizarLiturgia(pId) {
@@ -182,7 +190,14 @@
                 htmlAcumulado += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>` + pasosHtml;
             });
             contenedor.innerHTML = `<div class="parte-ritual" style="counter-reset: line-counter; margin-top:20px;">${htmlAcumulado}</div>`;
-            if (fOfi !== "") setTimeout(() => { document.querySelector('.resaltado')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 150);
+            
+            // Reforzamos el scroll si hay un oficial seleccionado al inicio
+            if (fOfi !== "") {
+                setTimeout(() => { 
+                    const item = document.querySelector('.resaltado');
+                    if (item) item.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+                }, 100);
+            }
         }
 
         function procesarOrdenDelDia(seccion) {
@@ -230,22 +245,15 @@
             if (idRegreso) localStorage.setItem('puntoRegreso', idRegreso);
             let g = codigo.substring(0, 1);
             let pId = parseInt(codigo.substring(1)).toString();
-            
             if (g !== numGradoActual) { cargarRitualPorGrado(g); return; }
 
             const pSel = document.getElementById("parteFilter");
             const oficialActual = document.getElementById("oficialFilter").value;
-
-            // LÓGICA DE SELECTOR INTELIGENTE
             let existeEnSelector = Array.from(pSel.options).some(opt => opt.value === pId);
             
             if (!existeEnSelector) {
-                // Si es la Parte 4 o superior, la inyectamos dinámicamente
                 const parteXml = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") == pId);
-                if (parteXml) {
-                    const nuevoOpt = new Option(parteXml.getAttribute("titulo"), pId);
-                    pSel.add(nuevoOpt);
-                }
+                if (parteXml) pSel.add(new Option(parteXml.getAttribute("titulo"), pId));
             }
             
             pSel.value = pId; 
