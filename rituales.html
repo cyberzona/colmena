@@ -165,16 +165,15 @@
             const listaTenidas = Array.from(tenidasXml.getElementsByTagName("tenida"));
             if (listaTenidas.length === 0) return "";
 
-            let res = "";
-
             if (fOfi === "sec") {
-                // El Secretario siempre trae la última balaustrada registrada (tenida anterior)
+                // Secretario: ÚNICAMENTE la balaustrada de la última sesión
                 const ultimaTenida = listaTenidas[listaTenidas.length - 1];
                 const bal = ultimaTenida.getElementsByTagName("balaustrada")[0]?.textContent;
-                if (bal) res = `<div class="instancia-container"><strong>📜 BALAUSTRADA (TENIDA ANTERIOR):</strong><br><br><div style="font-style: italic; white-space: pre-wrap;">${bal.trim()}</div></div>`;
+                return bal ? `<div class="instancia-container"><strong>📜 BALAUSTRADA (TENIDA ANTERIOR):</strong><br><br><div style="font-style: italic; white-space: pre-wrap;">${bal.trim()}</div></div>` : "";
             } 
-            else if (fOfi === "vm") {
-                // El Venerable Maestro solo activa botones si hay una tenida con fecha de HOY
+            
+            if (fOfi === "vm") {
+                // Venerable Maestro: ÚNICAMENTE los documentos/acciones de la sesión de HOY
                 const hoy = new Date().toISOString().split('T')[0];
                 const tenidaHoy = listaTenidas.find(t => t.getAttribute("fecha") === hoy);
                 
@@ -182,15 +181,16 @@
                     let btns = "";
                     Array.from(tenidaHoy.getElementsByTagName("item")).forEach(i => {
                         const acto = i.getAttribute("acto");
+                        // Excluimos la balaustrada de los botones del VM
                         if (acto !== "balaustre") {
                             const esExec = ["nuevo_grado", "elevacion", "iniciacion"].includes(acto);
                             btns += `<button class="${esExec ? 'btn-instancia-exec' : 'btn-ritual'}" style="${esExec ? '' : 'width:100%; text-align:left; background:#8d6e63;'}" onclick="${esExec ? "window.location.href='" + i.getAttribute("url") + "'" : "window.open('" + i.getAttribute("url") + "', '_blank')"}">${i.getAttribute("titulo")}</button>`;
                         }
                     });
-                    if (btns) res = `<div class="instancia-container">${btns}</div>`;
+                    return btns ? `<div class="instancia-container">${btns}</div>` : "";
                 }
             }
-            return res;
+            return "";
         }
     </script>
 </body>
