@@ -57,17 +57,11 @@
             try {
                 const exito = await cargarDatos();
                 if (!exito) return;
-
                 const urlParams = new URLSearchParams(window.location.search);
-                
-                // Grado: se asegura de tratarlo como texto
                 let g = urlParams.get('num') || "1";
                 numGradoActual = g.toString();
-                
-                // Sección: Limpia ceros a la izquierda (ej: 01 -> 1)
                 let s = urlParams.get('sec') || "1";
                 s = s.replace(/^0+/, "") || "1";
-
                 ejecutarCargaRitual(numGradoActual, s);
             } catch (e) { 
                 console.error("Error:", e);
@@ -87,17 +81,11 @@
                 xmlDoc = parser.parseFromString(liturgia, "text/xml");
                 if (tenidas) tenidasXml = parser.parseFromString(tenidas, "text/xml");
                 return true;
-            } catch (err) {
-                console.error("Error archivos:", err);
-                return false;
-            }
+            } catch (err) { return false; }
         }
 
         function ejecutarCargaRitual(grado, seccionID) {
-            // Búsqueda global de todos los nodos <ritual>
             const rituales = Array.from(xmlDoc.getElementsByTagName("ritual"));
-            
-            // Coincidencia exacta eliminando espacios accidentales
             ritualActivo = rituales.find(r => {
                 const gAttr = r.getAttribute("grado");
                 return gAttr && gAttr.trim() === grado.trim();
@@ -106,12 +94,10 @@
             if (ritualActivo) {
                 const titulos = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Maestría" };
                 document.getElementById("titulo-ritual-header").textContent = titulos[grado] || "Ritual";
-                
                 actualizarSelectorSecciones(seccionID);
                 cambioDeSeccion();
             } else {
                 document.getElementById("titulo-ritual-header").textContent = "Grado " + grado + " no encontrado";
-                console.warn("Grados detectados:", rituales.map(r => r.getAttribute("grado")));
             }
         }
 
@@ -119,15 +105,12 @@
             const sSel = document.getElementById("seccionFilter");
             sSel.innerHTML = "";
             const secciones = Array.from(ritualActivo.getElementsByTagName("seccion"));
-            
             secciones.forEach(sec => {
                 const id = sec.getAttribute("id");
-                // Muestra secciones base o la solicitada por LINK
                 if (["1", "2", "3"].includes(id) || id === idForzado) {
                     sSel.add(new Option(sec.getAttribute("titulo"), id));
                 }
             });
-            
             if (idForzado) sSel.value = idForzado;
             if (sSel.selectedIndex === -1) sSel.selectedIndex = 0;
         }
@@ -135,13 +118,14 @@
         function cambioDeSeccion() {
             const sId = document.getElementById("seccionFilter").value;
             const oSel = document.getElementById("oficialFilter");
+            const ofiPrevio = oSel.value; // Guardar oficial seleccionado
             
             const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
             const oficialesSet = new Set();
             if (seccion) {
                 Array.from(seccion.getElementsByTagName("paso")).forEach(p => {
                     const ofi = p.getAttribute("oficial");
-                    if (oficialesSet && ofi) oficialesSet.add(ofi.trim().toLowerCase());
+                    if (ofi) oficialesSet.add(ofi.trim().toLowerCase());
                 });
             }
 
@@ -151,6 +135,8 @@
                 if (oficialesSet.has(sigla)) oSel.add(new Option(item.getAttribute("sigla") + "∴", sigla));
             });
             
+            // Restaurar oficial si existe en la nueva sección
+            oSel.value = ofiPrevio;
             renderizarLiturgia();
             window.scrollTo(0, 0);
         }
@@ -174,16 +160,16 @@
                     let txt = paso.getAttribute("texto") || "";
                     const idL = `l-${sId}-${counter}`;
 
-                    // LINK: Navegación entre rituales
-                    txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (m, cod, desc) => {
-                        return `<button class="btn-ritual color-cafe" onclick="irA('${cod}', '${idL}')">${desc || 'Ir'} ➜</button>`;
+                    // CORRECCIÓN: Botones con título visible
+                    txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
+                        const etiqueta = desc ? desc : "Ir a paso " + cod;
+                        return `<button class="btn-ritual color-cafe" onclick="irA('${cod}', '${idL}')">${etiqueta} ➜</button>`;
                     });
 
-                    // Estilos de siglas y texto de acción
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     if (txt.startsWith('[')) txt = `<span class="accion-texto">${txt}</span>`;
 
-                    const res = (fOfi && ofi.toLowerCase() === fOfi) ? 'class="resaltado"' : "";
+                    const res = (fOfi && ofi.toLowerCase() === fOfi.toLowerCase()) ? 'class="resaltado"' : "";
                     html += `<dt>${ofi}∴</dt><dd ${res} id="${idL}">${txt}</dd>`;
                 });
             });
@@ -194,7 +180,6 @@
             if (regreso) localStorage.setItem('regreso', regreso);
             const g = codigo[0];
             const s = parseInt(codigo.substring(1), 10).toString();
-            
             if (g !== numGradoActual) {
                 window.location.href = "rituales.html?num=" + g + "&sec=" + s;
             } else {
