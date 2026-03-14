@@ -5,44 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ritual - Colmena No. 8</title>
     <style>
-        body { font-family: 'Palatino Linotype', serif; line-height: 1.4; color: #2c2c2c; margin: 0; padding: 10px; background-color: #fdfaf3; }
-        .header-container { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; border-bottom: 2px solid #5d4037; padding-bottom: 15px; }
-        .logia-info { display: flex; flex-direction: column; text-align: left; }
-        .logia-linea1 { font-size: 0.75rem; color: #8d6e63; letter-spacing: 0.5px; }
-        #titulo-ritual-header { font-size: 0.85rem; color: #795548; text-transform: uppercase; letter-spacing: 1.5px; font-weight: bold; }
-        .logo-mini { width: 75px; height: auto; flex-shrink: 0; }
+        body { font-family: 'Palatino Linotype', serif; line-height: 1.6; color: #2c2c2c; margin: 0; padding: 10px; background-color: #fdfaf3; }
         
-        #control-panel { background: #efebe9; padding: 10px; border-radius: 8px; border: 1px solid #d7ccc8; position: sticky; top: 0; z-index: 1000; text-align: center; }
-        .container-select { display: inline-block; margin: 5px; text-align: left; }
-        #container-parte { width: 55%; }
-        #container-oficial { width: 35%; }
-        .select-label { display: block; font-size: 0.7em; color: #795548; font-weight: bold; text-transform: uppercase; }
-        select { padding: 8px; font-size: 0.9em; width: 100%; border-radius: 4px; border: 1px solid #ccc; background: white; }
+        /* Header Institucional */
+        .header-container { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; border-bottom: 2px solid #5d4037; padding-bottom: 10px; }
+        .logia-info { display: flex; flex-direction: column; }
+        .logia-linea1 { font-size: 0.75rem; color: #8d6e63; font-weight: bold; }
+        #titulo-ritual-header { font-size: 0.9rem; color: #795548; text-transform: uppercase; font-weight: bold; }
+        .logo-mini { width: 60px; height: auto; }
 
-        /* Estilos del Ritual */
-        .sigla-texto-azul { color: #0277bd; font-weight: bold; }
-        dt { font-weight: bold; color: #5d4037; margin-top: 15px; font-size: 0.95em; text-transform: uppercase; }
-        dd { margin-left: 50px; border-left: 3px solid #d7ccc8; padding-left: 12px; padding-right: 5px; font-size: 1em; position: relative; margin-bottom: 10px; text-align: justify; }
-        dd::before { content: counter(line-counter); position: absolute; left: -45px; color: #5d4037; font-size: 1.2em; font-weight: 800; width: 35px; text-align: right; top: -2px; }
-        .parte-ritual { counter-reset: line-counter; }
-        .resaltado { background: rgba(180, 255, 100, 0.45) !important; border-left: 5px solid #2e7d32 !important; }
-        
-        /* Título Interactivo */
-        .section-header { background: #5d4037; color: white; padding: 15px; text-align: center; border-radius: 4px; margin-top: 10px; text-transform: uppercase; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        /* Panel de Control */
+        #control-panel { background: #efebe9; padding: 10px; border-radius: 8px; border: 1px solid #d7ccc8; position: sticky; top: 0; z-index: 1000; display: flex; gap: 10px; }
+        .container-select { flex: 1; display: flex; flex-direction: column; }
+        .select-label { font-size: 0.7em; color: #795548; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; }
+        select { padding: 8px; font-size: 0.9em; border-radius: 4px; border: 1px solid #ccc; }
+
+        /* Título Interactivo (Selector Alternativo) */
+        .section-header { background: #5d4037; color: white; padding: 15px; text-align: center; border-radius: 4px; margin: 15px 0; text-transform: uppercase; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; }
         .section-header::after { content: ' ▼'; font-size: 0.7em; opacity: 0.7; }
-        .apartado-header { font-weight: bold; color: #795548; font-size: 0.95em; border-bottom: 1px solid #d7ccc8; text-align: right; margin-top: 25px; padding-bottom: 5px; }
-        .accion-texto { font-style: italic; color: #5d4037; }
 
-        /* Botones de Gestión */
-        .btn-link, .btn-volver, .btn-doc { color: #fff; border: none; padding: 10px 14px; border-radius: 8px; cursor: pointer; font-size: 0.85em; margin: 5px 0; display: block; width: 100%; text-align: left; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-family: inherit; }
-        .btn-link { background: #1b5e20; border: 2px solid #b8860b; font-weight: bold; text-align: center; }
-        .btn-doc { background: #8d6e63; }
-        .btn-volver { background: #5d4037; text-align: center; }
+        /* Numeración y Texto del Ritual */
+        .parte-ritual { counter-reset: line-counter; }
+        dt { font-weight: bold; color: #5d4037; margin-top: 15px; font-size: 0.9em; text-transform: uppercase; }
+        dd { margin: 0 0 10px 50px; border-left: 3px solid #d7ccc8; padding: 0 10px; font-size: 1.05em; position: relative; text-align: justify; }
+        dd::before { counter-increment: line-counter; content: counter(line-counter); position: absolute; left: -40px; color: #8d6e63; font-size: 0.9em; font-weight: bold; width: 30px; text-align: right; }
+        
+        .sigla-azul { color: #0277bd; font-weight: bold; }
+        .accion-texto { font-style: italic; color: #5d4037; background: #f5f5f5; padding: 2px 5px; border-radius: 3px; }
+        .resaltado { background: rgba(180, 255, 100, 0.3) !important; border-left: 5px solid #2e7d32 !important; }
+
+        /* Botones de Gestión (Memos) */
+        .btn-link { background: #1b5e20; color: white; border: 2px solid #b8860b; padding: 12px; border-radius: 8px; font-weight: bold; width: 100%; margin: 10px 0; cursor: pointer; }
+        .btn-doc { background: #8d6e63; color: white; border: none; padding: 10px; border-radius: 6px; width: 100%; margin: 5px 0; text-align: left; cursor: pointer; }
+        .apartado-titulo { font-weight: bold; color: #795548; border-bottom: 1px solid #d7ccc8; margin-top: 20px; font-size: 0.9em; }
 
         /* Visor Modal */
         #modal-visor { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; display: flex; flex-direction: column; }
-        .modal-header { background: #5d4037; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #b8860b; }
-        .btn-cerrar { background: #b71c1c; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+        .modal-header { background: #5d4037; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .btn-cerrar { background: #b71c1c; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; }
     </style>
 </head>
 <body onload="inicializar()">
@@ -51,16 +51,16 @@
         <img src="./images/logo-mini.png" alt="Logo" class="logo-mini">
         <div class="logia-info">
             <span class="logia-linea1">Resp∴ Log∴ Simb∴ Colmena Nº 8</span>
-            <span id="titulo-ritual-header">...</span>
+            <span id="titulo-ritual-header">Cargando...</span>
         </div>
     </div>
 
     <div id="control-panel">
-        <div class="container-select" id="container-parte">
+        <div class="container-select">
             <span class="select-label">Parte</span>
             <select id="parteFilter" onchange="cambioDeParte()"></select>
         </div>
-        <div class="container-select" id="container-oficial">
+        <div class="container-select">
             <span class="select-label">Oficial</span>
             <select id="oficialFilter" onchange="renderizarLiturgia()"></select>
         </div>
@@ -70,12 +70,12 @@
 
     <script>
         let xmlDoc, glosarioDoc, tenidasXml, ritualActivo;
-        let tituloGradoBase = "";
+        let numGradoGlobal = "1";
 
         async function inicializar() {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
-                const numGrado = urlParams.get('num') || '1';
+                numGradoGlobal = urlParams.get('num') || '1';
 
                 const [resGlosario, resLiturgia, resTenidas] = await Promise.all([
                     fetch('glosario.xml').then(r => r.text()),
@@ -88,23 +88,28 @@
                 xmlDoc = parser.parseFromString(resLiturgia, "text/xml");
                 if (resTenidas) tenidasXml = parser.parseFromString(resTenidas, "text/xml");
 
+                // Filtro estricto por GRADO
                 const rituales = xmlDoc.getElementsByTagName("ritual");
                 for (let r of rituales) {
-                    if (r.getAttribute("grado") === numGrado) { ritualActivo = r; break; }
+                    if (r.getAttribute("grado") === numGradoGlobal) { 
+                        ritualActivo = r; 
+                        break; 
+                    }
                 }
 
                 if (ritualActivo) {
-                    const nombresGrados = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Ritual de Maestro" };
-                    tituloGradoBase = nombresGrados[numGrado] || "Ritual";
-                    poblarPartes();
-                    cambioDeParte(); 
+                    const nombres = { "1": "Aprendiz", "2": "Compañero", "3": "Maestro" };
+                    document.getElementById("titulo-ritual-header").textContent = "Ritual de " + nombres[numGradoGlobal];
+                    poblarPartesDelGrado();
+                    cambioDeParte();
                 }
-            } catch (e) { console.error(e); }
+            } catch (e) { console.error("Error inicializando:", e); }
         }
 
-        function poblarPartes() {
+        function poblarPartesDelGrado() {
             const pSel = document.getElementById("parteFilter");
             pSel.innerHTML = "";
+            // Solo toma las partes que pertenecen al ritualActivo (el grado filtrado)
             const partes = ritualActivo.getElementsByTagName("parte");
             for (let p of partes) {
                 pSel.add(new Option(p.getAttribute("titulo"), p.getAttribute("id")));
@@ -112,119 +117,111 @@
         }
 
         function cambioDeParte() {
-            poblarOficialesDeEstaParte();
+            poblarOficiales();
             renderizarLiturgia();
         }
 
-        function poblarOficialesDeEstaParte() {
+        function poblarOficiales() {
             const pId = document.getElementById("parteFilter").value;
             const oSel = document.getElementById("oficialFilter");
-            const parteEnPantalla = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") === pId);
-            const oficialesActivos = new Set();
-            if (parteEnPantalla) {
-                const pasos = parteEnPantalla.getElementsByTagName("paso");
-                for (let paso of pasos) {
-                    const idOfi = paso.getAttribute("oficial");
-                    if (idOfi) oficialesActivos.add(idOfi.trim().toLowerCase());
+            const parte = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") === pId);
+            const oficialesSet = new Set();
+
+            if (parte) {
+                const pasos = parte.getElementsByTagName("paso");
+                for (let ps of pasos) {
+                    if (ps.getAttribute("oficial")) oficialesSet.add(ps.getAttribute("oficial").trim().toLowerCase());
                 }
             }
+
             oSel.innerHTML = '<option value="todos">Todos</option>';
-            const itemsGlosario = glosarioDoc.getElementsByTagName("item");
-            for (let item of itemsGlosario) {
-                const siglaG = item.getAttribute("sigla");
-                if (oficialesActivos.has(siglaG.trim().toLowerCase())) oSel.add(new Option(siglaG.trim() + "∴", siglaG.trim().toLowerCase()));
+            const itemsG = glosarioDoc.getElementsByTagName("item");
+            for (let i of itemsG) {
+                const sigla = i.getAttribute("sigla");
+                if (oficialesSet.has(sigla.toLowerCase())) oSel.add(new Option(sigla + "∴", sigla.toLowerCase()));
             }
         }
 
         function renderizarLiturgia() {
             const pId = document.getElementById("parteFilter").value;
-            const fOfi = document.getElementById("oficialFilter").value.trim().toLowerCase(); 
+            const fOfi = document.getElementById("oficialFilter").value.toLowerCase();
             const contenedor = document.getElementById('rituales-content');
-            const parteActiva = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") === pId);
+            const parte = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") === pId);
             
-            document.getElementById("titulo-ritual-header").textContent = tituloGradoBase;
+            if (!parte) return;
 
-            let htmlAcumulado = "";
-            const apartados = parteActiva.getElementsByTagName("apartado");
-            let globalStepIdx = 0;
+            let html = `<div class="parte-ritual">
+                <div class="section-header" onclick="document.getElementById('parteFilter').focus()">${parte.getAttribute("titulo")}</div>`;
 
+            const apartados = parte.getElementsByTagName("apartado");
             for (let apa of apartados) {
-                let pasosHtml = "";
+                html += `<div class="apartado-titulo">${apa.getAttribute("titulo")}</div>`;
                 const pasos = apa.getElementsByTagName("paso");
-
-                for (let paso of pasos) {
-                    globalStepIdx++;
-                    const ofiOriginal = paso.getAttribute("oficial") || "";
-                    let texto = paso.getAttribute("texto") || "";
-                    const idAncla = `linea-${pId}-${globalStepIdx}`;
-
-                    texto = texto.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
-
-                    // Etiquetas Especiales
-                    if (texto.includes('[[GESTION_SECRETARIA]]')) {
-                        texto = texto.replace('[[GESTION_SECRETARIA]]', obtenerContenidoSecretaria());
+                for (let ps of pasos) {
+                    const ofi = ps.getAttribute("oficial");
+                    let txt = ps.getAttribute("texto") || "";
+                    
+                    // Procesar Siglas
+                    txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-azul">$1</span>');
+                    
+                    // Procesar Gestión Secretaría (MEMOS)
+                    if (txt.includes('[[GESTION_SECRETARIA]]')) {
+                        txt = txt.replace('[[GESTION_SECRETARIA]]', procesarMemos());
                     }
 
-                    if (texto.startsWith('[') && texto.endsWith(']')) texto = `<span class="accion-texto">${texto}</span>`;
+                    // Formatear acciones [Texto]
+                    if (txt.startsWith('[') && txt.endsWith(']')) txt = `<span class="accion-texto">${txt}</span>`;
 
-                    const oficialLimpio = ofiOriginal.trim().toLowerCase();
-                    const claseResaltado = (fOfi !== "todos" && oficialLimpio === fOfi) ? "class='resaltado'" : "";
-                    pasosHtml += `<dt>${ofiOriginal.trim()}∴</dt><dd ${claseResaltado} id="${idAncla}">${texto}</dd>`;
+                    const resaltado = (fOfi !== "todos" && ofi.toLowerCase() === fOfi) ? "class='resaltado'" : "";
+                    html += `<dt>${ofi}∴</dt><dd ${resaltado}>${txt}</dd>`;
                 }
-                htmlAcumulado += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>` + pasosHtml;
             }
-            contenedor.innerHTML = `<div class="parte-ritual"><div class="section-header" onclick="document.getElementById('parteFilter').focus()">${parteActiva.getAttribute("titulo")}</div>${htmlAcumulado}</div>`;
+            html += `</div>`;
+            contenedor.innerHTML = html;
             window.scrollTo(0,0);
         }
 
-        function obtenerContenidoSecretaria() {
-            if (!tenidasXml) return " (Error: Bitácora no cargada) ";
-            const hoyStr = new Date().toISOString().split('T')[0];
+        function procesarMemos() {
+            if (!tenidasXml) return "";
+            const hoy = new Date().toISOString().split('T')[0];
             const sesiones = Array.from(tenidasXml.getElementsByTagName("tenida"));
             
-            const sesionActual = sesiones.find(s => s.getAttribute("fecha") === hoyStr);
-            const sesionesPasadas = sesiones.filter(s => s.getAttribute("fecha") < hoyStr)
-                                            .sort((a, b) => b.getAttribute("fecha").localeCompare(a.getAttribute("fecha")));
+            // Buscar sesión de hoy y la última anterior
+            const hoySesion = sesiones.find(s => s.getAttribute("fecha") === hoy);
+            const pasadaSesion = sesiones.filter(s => s.getAttribute("fecha") < hoy)
+                                         .sort((a,b) => b.getAttribute("fecha").localeCompare(a.getAttribute("fecha")))[0];
 
-            let html = "";
-            if (sesionesPasadas.length > 0) {
-                html += `<div style="color:#795548; font-size:0.8em; margin-top:10px;">MEMORIA (BALAUSTRE)</div>`;
-                Array.from(sesionesPasadas[0].getElementsByTagName("item"))
-                     .filter(i => i.getAttribute("acto") === "balaustre")
-                     .forEach(i => html += generarBoton(i));
-            }
-
-            if (sesionActual) {
-                html += `<div style="color:#795548; font-size:0.8em; margin-top:10px;">TRABAJOS NACIENTES</div>`;
-                Array.from(sesionActual.getElementsByTagName("item"))
-                     .filter(i => i.getAttribute("acto") !== "balaustre")
-                     .forEach(i => html += generarBoton(i));
-            }
-            return html;
-        }
-
-        function generarBoton(i) {
-            const acto = i.getAttribute("acto");
-            const titulo = i.getAttribute("titulo");
-            const url = i.getAttribute("url");
+            let res = "";
             
-            if (acto === "nuevo_grado") {
-                return `<button class="btn-link" onclick="window.location.href='${url}'">⚖️ EJECUTAR: ${titulo}</button>`;
+            // 1. Mostrar Balaustre de la sesión pasada
+            if (pasadaSesion) {
+                const items = Array.from(pasadaSesion.getElementsByTagName("item")).filter(i => i.getAttribute("acto") === "balaustre");
+                if (items.length > 0) res += `<div style="font-size:0.8em; color:#795548; margin-top:10px;">MEMORIA HISTÓRICA:</div>`;
+                items.forEach(i => res += `<button class="btn-doc" onclick="abrirVisor('${i.getAttribute("url")}','${i.getAttribute("titulo")}')">📜 ${i.getAttribute("titulo")}</button>`);
             }
-            const icono = acto === "balaustre" ? "📜" : "📄";
-            return `<button class="btn-doc" onclick="abrirVisor('${url}', '${titulo}')">${icono} ${titulo}</button>`;
+
+            // 2. Mostrar Actos de hoy
+            if (hoySesion) {
+                const items = Array.from(hoySesion.getElementsByTagName("item"));
+                if (items.length > 0) res += `<div style="font-size:0.8em; color:#795548; margin-top:10px;">TRABAJOS NACIENTES:</div>`;
+                items.forEach(i => {
+                    const acto = i.getAttribute("acto");
+                    if (acto === "nuevo_grado") {
+                        res += `<button class="btn-link" onclick="window.location.href='${i.getAttribute("url")}'">⚖️ EJECUTAR: ${i.getAttribute("titulo")}</button>`;
+                    } else if (acto !== "balaustre") {
+                        res += `<button class="btn-doc" onclick="abrirVisor('${i.getAttribute("url")}','${i.getAttribute("titulo")}')">📄 ${i.getAttribute("titulo")}</button>`;
+                    }
+                });
+            }
+            return res;
         }
 
         function abrirVisor(url, titulo) {
-            const urlPreview = url.replace('/view', '/preview');
-            const modal = `
-                <div id="modal-visor">
-                    <div class="modal-header">
-                        <span>${titulo}</span>
-                        <button class="btn-cerrar" onclick="document.getElementById('modal-visor').remove()">✕</button>
-                    </div>
-                    <iframe src="${urlPreview}" style="flex-grow:1; border:none; background:white;"></iframe>
-                </div>`;
+            const urlP = url.replace('/view', '/preview');
+            const modal = `<div id="modal-visor">
+                <div class="modal-header"><span>${titulo}</span><button class="btn-cerrar" onclick="this.parentElement.parentElement.remove()">CERRAR ✕</button></div>
+                <iframe src="${urlP}" style="flex-grow:1; border:none; background:white;"></iframe>
+            </div>`;
             document.body.insertAdjacentHTML('beforeend', modal);
         }
     </script>
