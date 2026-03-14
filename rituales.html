@@ -18,8 +18,7 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
         .container-select { display: flex; flex-direction: column; text-align: left; }
-        #container-parte { width: 65%; } 
-        #container-oficial { width: 28%; } 
+        #container-parte { width: 65%; } #container-oficial { width: 28%; } 
         .select-label { font-size: 0.7rem; color: #4e342e; font-weight: 800; text-transform: uppercase; margin-bottom: 4px; }
         select { padding: 8px; font-size: 0.9em; border-radius: 4px; border: 1px solid #8d6e63; background: #ffffff; color: #2c2c2c; font-weight: bold; width: 100%; outline: none; }
 
@@ -87,30 +86,24 @@
         }
 
         function cargarRitualPorGrado(grado) {
-            numGradoActual = grado.toString();
             const rituales = xmlDoc.getElementsByTagName("ritual");
             for (let r of rituales) {
-                if (r.getAttribute("grado") === numGradoActual) { ritualActivo = r; break; }
+                if (r.getAttribute("grado") === grado.toString()) { ritualActivo = r; break; }
             }
             if (ritualActivo) {
                 const nombresGrados = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Ritual de Maestro" };
-                document.getElementById("titulo-ritual-header").textContent = nombresGrados[numGradoActual] || "Ritual";
+                document.getElementById("titulo-ritual-header").textContent = nombresGrados[grado] || "Ritual";
                 poblarPartes();
+                // FORZAR INICIO: Renderizamos la primera parte automáticamente
+                cambioDeParte(); 
             }
         }
 
         function poblarPartes() {
             const pSel = document.getElementById("parteFilter");
-            if (!pSel || !ritualActivo) return;
             pSel.innerHTML = "";
             const partes = Array.from(ritualActivo.getElementsByTagName("parte"));
-            partes.forEach(p => {
-                pSel.add(new Option(p.getAttribute("titulo"), p.getAttribute("id")));
-            });
-            if (pSel.options.length > 0) { 
-                // No forzamos renderizar aquí para permitir que irA() controle la selección
-                if (!pSel.value) pSel.selectedIndex = 0;
-            }
+            partes.forEach(p => pSel.add(new Option(p.getAttribute("titulo"), p.getAttribute("id"))));
         }
 
         function cambioDeParte() {
@@ -135,9 +128,10 @@
             const itemsG = glosarioDoc.getElementsByTagName("item");
             for (let item of itemsG) {
                 const siglaG = (item.getAttribute("sigla") || "").trim();
-                if (oficialesActivos.has(siglaG.toLowerCase())) oSel.add(new Option(siglaG + "∴", siglaG.toLowerCase()));
+                const siglaLower = siglaG.toLowerCase();
+                if (oficialesActivos.has(siglaLower)) oSel.add(new Option(siglaG + "∴", siglaLower));
             }
-            if (oficialPreseleccionado && oficialesActivos.has(oficialPreseleccionado.toLowerCase())) oSel.value = oficialPreseleccionado.toLowerCase();
+            if (oficialPreseleccionado && oficialesActivos.has(oficialPreseleccionado)) oSel.value = oficialPreseleccionado;
         }
 
         function renderizarLiturgia() {
@@ -159,20 +153,18 @@
                     let texto = paso.getAttribute("texto") || "";
                     const idAncla = `linea-${pId}-${stepIdx}`;
 
-                    // LINKS DINÁMICOS
+                    // LINKS
                     texto = texto.replace(/\[\[LINK:(\d{3})\]\]/g, (m, coords) => {
-                        const g = coords.substring(0, 1);
-                        const pDestId = parseInt(coords.substring(1)).toString();
+                        const g = coords.substring(0, 1), pDestId = parseInt(coords.substring(1)).toString();
                         const rDest = Array.from(xmlDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("grado") === g);
                         const pDest = rDest ? Array.from(rDest.getElementsByTagName("parte")).find(pt => pt.getAttribute("id") == pDestId) : null;
-                        const nombreSec = pDest ? pDest.getAttribute("titulo") : "Sección";
-                        return `<button class="btn-ritual color-cafe" onclick="irA('${coords}', '${idAncla}')">Ir a: ${nombreSec} ➜</button>`;
+                        return `<button class="btn-ritual color-cafe" onclick="irA('${coords}', '${idAncla}')">Ir a: ${pDest ? pDest.getAttribute("titulo") : "Sección"} ➜</button>`;
                     });
 
-                    // INSTANCIAS
+                    // INSTANCIAS (SOLO SI EL OFICIAL COINCIDE)
                     if (/\[\[INSTANCIA\]\]/i.test(texto)) {
-                        const contenido = (fOfi === ofiLower && fOfi !== "") ? procesarInstancia(ofiLower) : "";
-                        texto = texto.replace(/\[\[INSTANCIA\]\]/gi, contenido);
+                        const esOfiActivo = (fOfi === ofiLower && fOfi !== "");
+                        texto = texto.replace(/\[\[INSTANCIA\]\]/gi, esOfiActivo ? procesarInstancia(fOfi) : "");
                     }
 
                     texto = texto.replace(/\[\[VOLVER:(\d+)\]\]/g, (m, id) => `<button class="btn-ritual color-cafe" onclick="irA('${id}')">⬅ Regresar</button>`);
@@ -185,13 +177,6 @@
                 htmlAcumulado += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>` + pasosHtml;
             });
             contenedor.innerHTML = `<div class="parte-ritual" style="counter-reset: line-counter; margin-top:20px;">${htmlAcumulado}</div>`;
-            
-            if (fOfi !== "") {
-                requestAnimationFrame(() => {
-                    const el = contenedor.querySelector('.resaltado');
-                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                });
-            }
         }
 
         function procesarInstancia(oficial) {
@@ -211,15 +196,10 @@
             } else if (oficial === "vm") {
                 if (hoySes) {
                     Array.from(hoySes.getElementsByTagName("item")).forEach(i => {
-                        const acto = i.getAttribute("acto").toLowerCase();
-                        const titulo = i.getAttribute("titulo");
+                        const acto = i.getAttribute("acto").toLowerCase(), titulo = i.getAttribute("titulo");
                         const destinos = { "iniciacion": "107", "elevacion": "201", "exaltacion": "301" };
-                        if (destinos[acto]) {
-                            res += `<button class="btn-ritual color-verde" onclick="irA('${destinos[acto]}')">⚖️ PROCEDER A ${acto.toUpperCase()}: ${titulo}</button>`;
-                        } else {
-                            let icono = acto === "instruccion" ? "📖" : "✉️";
-                            res += `<button class="btn-ritual color-gold" onclick="abrirVisor('${i.getAttribute("url")}','${titulo}')">${icono} ${acto.toUpperCase()}: ${titulo} ➜</button>`;
-                        }
+                        if (destinos[acto]) res += `<button class="btn-ritual color-verde" onclick="irA('${destinos[acto]}')">⚖️ PROCEDER A ${acto.toUpperCase()}: ${titulo}</button>`;
+                        else res += `<button class="btn-ritual color-gold" onclick="abrirVisor('${i.getAttribute("url")}','${titulo}')">${acto === "instruccion" ? "📖" : "✉️"} ${acto.toUpperCase()}: ${titulo} ➜</button>`;
                     });
                 }
             }
@@ -237,24 +217,12 @@
         function irA(codigo, idRegreso = null) {
             if (idRegreso) localStorage.setItem('puntoRegreso', idRegreso);
             let g = codigo.substring(0, 1), pId = parseInt(codigo.substring(1)).toString();
-            
             if (g !== numGradoActual) { window.location.href = `?num=${g}`; return; }
-            
-            const pSel = document.getElementById("parteFilter");
-            if (pSel) {
-                pSel.value = pId; // Cambiamos el valor del select
-                cambioDeParte();  // Disparamos manualmente la actualización de oficiales y renderizado
-            }
-
+            document.getElementById("parteFilter").value = pId;
+            cambioDeParte();
             setTimeout(() => {
                 const r = localStorage.getItem('puntoRegreso');
-                if (r) {
-                    const el = document.getElementById(r);
-                    if (el) {
-                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        el.classList.add('resaltado');
-                    }
-                }
+                if (r) { const el = document.getElementById(r); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
             }, 400);
         }
     </script>
