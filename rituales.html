@@ -30,8 +30,12 @@
         
         .resaltado { background: rgba(180, 255, 100, 0.4) !important; border-left: 5px solid #2e7d32 !important; }
         .apartado-header { font-weight: bold; color: #795548; font-size: 0.95em; border-bottom: 1px solid #d7ccc8; text-align: right; margin-top: 20px; padding-bottom: 5px; }
+        
+        /* Botones */
+        .btn-link, .btn-volver { background: #5d4037; color: #fff; border: none; padding: 10px 18px; border-radius: 20px; cursor: pointer; font-size: 0.85em; margin-top: 10px; display: block; width: fit-content; font-weight: bold; }
         .btn-balaustre { background: #455a64; color: white; border: 1px solid #607d8b; padding: 12px; border-radius: 6px; width: 100%; margin: 8px 0; text-align: left; cursor: pointer; display: flex; align-items: center; gap: 10px; }
         .btn-acto-especial { background: #1b5e20; color: white; border: 2px solid #b8860b; padding: 14px; border-radius: 8px; font-weight: bold; width: 100%; margin: 12px 0; cursor: pointer; text-align: center; }
+        .accion-texto { font-style: italic; color: #5d4037; }
     </style>
 </head>
 <body onload="inicializar()">
@@ -98,7 +102,6 @@
             const pSel = document.getElementById("parteFilter");
             pSel.innerHTML = "";
             const partes = ritualActivo.getElementsByTagName("parte");
-            // Estrictamente 1, 2 y 3 (Apertura, Desarrollo, Clausura)
             for (let p of partes) {
                 const id = p.getAttribute("id");
                 if (["1", "2", "3"].includes(id)) {
@@ -164,12 +167,31 @@
                     let texto = paso.getAttribute("texto") || "";
                     const idAncla = `linea-${pId}-${stepIdx}`;
 
+                    // --- INICIO LÓGICA DE PROCESAMIENTO DE TEXTO ---
+                    
                     if (texto.includes('[[GESTION_SECRETARIA]]')) {
                         texto = texto.replace('[[GESTION_SECRETARIA]]', procesarOrdenDelDia(tituloApa));
                     }
 
+                    // RESTAURACIÓN DE LÓGICA DE LINKS CON NOMBRES DE SECCIÓN
+                    texto = texto.replace(/\[\[LINK:(\d{3})\]\]/g, (m, coords) => {
+                        const g = coords.substring(0, 1);
+                        const pDestId = parseInt(coords.substring(1)).toString();
+                        
+                        // Buscamos el título en el XML
+                        const rDest = Array.from(xmlDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("grado") === g);
+                        const pDest = rDest ? Array.from(rDest.getElementsByTagName("parte")).find(pt => pt.getAttribute("id") === pDestId) : null;
+                        const nombreSeccion = pDest ? pDest.getAttribute("titulo") : "Sección Destino";
+                        
+                        return `<br><button class="btn-link" onclick="irA('${coords}', '${idAncla}')">Ir a: ${nombreSeccion} ➜</button>`;
+                    });
+
+                    texto = texto.replace(/\[\[VOLVER:(\d+)\]\]/g, (m, id) => `<br><button class="btn-volver" onclick="irA('${id}')">⬅ Regresar</button>`);
+                    
                     texto = texto.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     if (texto.startsWith('[') && texto.endsWith(']')) texto = `<span class="accion-texto">${texto}</span>`;
+
+                    // --- FIN LÓGICA DE PROCESAMIENTO DE TEXTO ---
 
                     const res = (fOfi !== "" && ofi.toLowerCase() === fOfi) ? "class='resaltado'" : "";
                     pasosHtml += `<dt>${ofi}∴</dt><dd ${res} id="${idAncla}">${texto}</dd>`;
@@ -177,6 +199,10 @@
                 htmlAcumulado += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>` + pasosHtml;
             }
             contenedor.innerHTML = `<div class="parte-ritual" style="counter-reset: line-counter; margin-top:20px;">${htmlAcumulado}</div>`;
+            
+            if (fOfi !== "") {
+                setTimeout(() => { document.querySelector('.resaltado')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 150);
+            }
         }
 
         function procesarOrdenDelDia(seccion) {
@@ -187,7 +213,6 @@
             const pasSes = sesiones.filter(s => s.getAttribute("fecha") < hoy).sort((a,b) => b.getAttribute("fecha").localeCompare(a.getAttribute("fecha")))[0];
 
             let res = "";
-            // Balaustre administrativo
             if (seccion.includes("balaustre") || seccion.includes("orden")) {
                 if (pasSes) {
                     Array.from(pasSes.getElementsByTagName("item")).filter(i => i.getAttribute("acto") === "balaustre").forEach(i => {
@@ -195,7 +220,6 @@
                     });
                 }
             } 
-            // Proposiciones y Actos
             if (seccion.includes("trabajos") || seccion.includes("desarrollo") || seccion.includes("orden")) {
                 if (hoySes) {
                     Array.from(hoySes.getElementsByTagName("item")).forEach(i => {
@@ -214,9 +238,9 @@
 
         function abrirVisor(url, titulo) {
             const modal = `<div id="modal-visor" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:9999;display:flex;flex-direction:column;">
-                <div style="background:#d7ccc8;padding:15px;display:flex;justify-content:space-between;align-items:center;">
+                <div style="background:#d7ccc8;padding:15px;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #a1887f;">
                     <span style="font-weight:bold;">${titulo}</span>
-                    <button style="background:#b71c1c;color:white;border:none;padding:5px 12px;border-radius:4px;" onclick="this.parentElement.parentElement.remove()">✕ Cerrar</button>
+                    <button style="background:#b71c1c;color:white;border:none;padding:5px 12px;border-radius:4px;cursor:pointer;" onclick="this.parentElement.parentElement.remove()">✕ Cerrar</button>
                 </div>
                 <iframe src="${url.replace('/view', '/preview')}" style="flex-grow:1;border:none;background:white;"></iframe>
             </div>`;
@@ -224,9 +248,29 @@
         }
 
         function irA(codigo, idRegreso = null) {
-            let p = codigo.length === 3 ? parseInt(codigo.substring(1)).toString() : codigo;
-            document.getElementById("parteFilter").value = p;
-            cambioDeParte();
+            if (idRegreso) localStorage.setItem('puntoRegreso', idRegreso);
+            let g, p;
+            if (codigo.length === 3) {
+                g = codigo.substring(0, 1);
+                p = parseInt(codigo.substring(1)).toString();
+            } else { g = numGradoActual; p = codigo; }
+            
+            const oficialActual = document.getElementById("oficialFilter").value;
+            const pSel = document.getElementById("parteFilter");
+            if (["1", "2", "3"].includes(p)) pSel.value = p;
+
+            if (g !== numGradoActual) { cargarRitualPorGrado(g); return; }
+
+            poblarOficialesDeEstaParte(p, oficialActual);
+            renderizarLiturgia(p);
+
+            setTimeout(() => {
+                const r = localStorage.getItem('puntoRegreso');
+                if (r && codigo.length !== 3) {
+                    const el = document.getElementById(r);
+                    if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); el.classList.add('resaltado'); }
+                } else { if (!oficialActual) window.scrollTo({ top: 0, behavior: 'smooth' }); }
+            }, 300);
         }
     </script>
 </body>
