@@ -22,24 +22,29 @@
         .resaltado { background: rgba(180, 255, 100, 0.4) !important; border-left: 5px solid #2e7d32 !important; }
         .apartado-header { font-weight: bold; color: #795548; font-size: 0.9em; border-bottom: 1px solid #d7ccc8; text-align: right; margin-top: 20px; }
         
-        /* DISEÑO DE BOTONES (LINK E INSTANCIA) */
+        /* BOTONES DINÁMICOS */
         .btn-ritual { 
-            border: none; 
-            padding: 10px 18px; 
-            border-radius: 25px; 
+            border: 1px solid #3e2723; 
+            padding: 8px 16px; 
+            border-radius: 20px; 
             cursor: pointer; 
             font-size: 0.85em; 
-            margin: 10px 0; 
+            margin: 8px 0; 
             font-weight: bold; 
             display: inline-block; 
             background: #5d4037; 
             color: #ffffff !important; 
-            box-shadow: 0 3px 6px rgba(0,0,0,0.16); 
-            text-decoration: none;
-            transition: background 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3); 
+            transition: all 0.2s ease;
         }
-        .btn-ritual:active { background: #3e2723; transform: translateY(1px); }
-        .btn-instancia { background: #2e7d32; } /* Color distintivo para Instancias */
+        .btn-ritual:hover { 
+            background: #8d6e63; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+            transform: scale(1.02);
+        }
+        /* Estilo para Instancias (Traídas de tenidas.xml) */
+        .btn-instancia { background: #2e7d32; border-color: #1b5e20; }
+        .btn-instancia:hover { background: #43a047; }
         
         .accion-texto { font-style: italic; color: #5d4037; }
     </style>
@@ -82,7 +87,6 @@
                 s = s.replace(/^0+/, "") || "1";
                 ejecutarCargaRitual(numGradoActual, s);
             } catch (e) { 
-                console.error("Error:", e);
                 document.getElementById("titulo-ritual-header").textContent = "Error de Sistema";
             }
         }
@@ -92,12 +96,12 @@
                 const [glosario, liturgia, tenidas] = await Promise.all([
                     fetch('glosario.xml').then(r => r.text()),
                     fetch('liturgia.xml').then(r => r.text()),
-                    fetch('tenidas.xml').then(r => r.text()).catch(() => null)
+                    fetch('tenidas.xml').then(r => r.text())
                 ]);
                 const parser = new DOMParser();
                 glosarioDoc = parser.parseFromString(glosario, "text/xml");
                 xmlDoc = parser.parseFromString(liturgia, "text/xml");
-                if (tenidas) tenidasXml = parser.parseFromString(tenidas, "text/xml");
+                tenidasXml = parser.parseFromString(tenidas, "text/xml");
                 return true;
             } catch (err) { return false; }
         }
@@ -114,8 +118,6 @@
                 document.getElementById("titulo-ritual-header").textContent = titulos[grado] || "Ritual";
                 actualizarSelectorSecciones(seccionID);
                 cambioDeSeccion();
-            } else {
-                document.getElementById("titulo-ritual-header").textContent = "Grado " + grado + " no encontrado";
             }
         }
 
@@ -143,7 +145,7 @@
             if (seccion) {
                 Array.from(seccion.getElementsByTagName("paso")).forEach(p => {
                     const ofi = p.getAttribute("oficial");
-                    if (ofi) oficialesSet.add(ofi.trim().toLowerCase());
+                    if (oficialesSet && ofi) oficialesSet.add(ofi.trim().toLowerCase());
                 });
             }
 
@@ -177,27 +179,25 @@
                     let txt = paso.getAttribute("texto") || "";
                     const idL = `l-${sId}-${counter}`;
 
-                    // 1. LÓGICA DE BOTONES LINK (CON NOMBRE DINÁMICO)
+                    // REEMPLAZO DINÁMICO DE LINKS (Buscando título en el XML)
                     txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
-                        let nombreBoton = desc;
-                        if (!nombreBoton) {
-                            const secIdBuscada = parseInt(cod.substring(1), 10).toString();
-                            const ritualDondeBuscar = (cod[0] === numGradoActual) ? ritualActivo : 
+                        let n = desc;
+                        if (!n) {
+                            const sIdB = parseInt(cod.substring(1), 10).toString();
+                            const rB = (cod[0] === numGradoActual) ? ritualActivo : 
                                 Array.from(xmlDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("grado") == cod[0]);
-                            
-                            if (ritualDondeBuscar) {
-                                const secObjetivo = Array.from(ritualDondeBuscar.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == secIdBuscada);
-                                nombreBoton = secObjetivo ? secObjetivo.getAttribute("titulo") : "Sección " + cod;
-                            } else {
-                                nombreBoton = "Sección " + cod;
-                            }
+                            if (rB) {
+                                const sO = Array.from(rB.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sIdB);
+                                n = sO ? sO.getAttribute("titulo") : "Sección " + cod;
+                            } else { n = "Sección " + cod; }
                         }
-                        return `<button class="btn-ritual" onclick="irA('${cod}', '${idL}')">${nombreBoton.trim()} ➜</button>`;
+                        return `<button class="btn-ritual" onclick="irA('${cod}', '${idL}')">${n.trim()} ➜</button>`;
                     });
 
-                    // 2. LÓGICA DE BOTONES INSTANCIA
+                    // REEMPLAZO DE INSTANCIA (Traído de tenidas.xml)
                     txt = txt.replace(/\[\[INSTANCIA\]\]/g, () => {
-                        return `<button class="btn-ritual btn-instancia" onclick="window.location.href='instancias.html'">Ver Instancia ➜</button>`;
+                        // Aquí se asume que al hacer clic se gestionará la carga de tenidas.xml
+                        return `<button class="btn-ritual btn-instancia" onclick="cargarInstancia()">Cargar Instancia ➜</button>`;
                     });
 
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
@@ -212,7 +212,6 @@
             });
             contenedor.innerHTML = `<div style="counter-reset: line-counter;">${html}</div>`;
 
-            // Auto-scroll al oficial
             if (primeraID) {
                 const el = document.getElementById(primeraID);
                 if (el) {
@@ -224,6 +223,13 @@
             } else if (!window.location.hash) {
                 window.scrollTo(0, 0);
             }
+        }
+
+        // Función para manejar el contenido de tenidas.xml
+        function cargarInstancia() {
+            // Lógica para alternar o mostrar el contenido de tenidasXml
+            console.log("Cargando instancia desde tenidas.xml...");
+            // Aquí puedes implementar la lógica específica para mostrar las tenidas
         }
 
         function irA(codigo, regreso) {
