@@ -52,7 +52,7 @@
         }
         .btn-link { background: #5d4037; }
         .btn-volver { background: #8d6e63; }
-        .btn-doc { background: #b8860b; } /* Color ocre para documentos */
+        .btn-doc { background: #b8860b; }
         .btn-doc:hover { background: #9a7209; }
     </style>
 </head>
@@ -80,10 +80,7 @@
     <div id="rituales-content"></div>
 
     <script>
-        let xmlDoc = null;
-        let glosarioDoc = null;
-        let tenidasXml = null;
-        let ritualActivo = null;
+        let xmlDoc, glosarioDoc, tenidasXml, ritualActivo;
         let tituloGradoBase = "";
 
         async function inicializar() {
@@ -111,7 +108,7 @@
                     const nombresGrados = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Ritual de Maestro" };
                     tituloGradoBase = nombresGrados[numGrado] || "Ritual";
                     poblarPartes();
-                    cambioDeParte(); 
+                    renderizarLiturgia(); 
                 }
             } catch (e) { console.error("Error inicializando:", e); }
         }
@@ -129,6 +126,7 @@
         function cambioDeParte() {
             poblarOficialesDeEstaParte();
             renderizarLiturgia();
+            window.scrollTo(0,0);
         }
 
         function poblarOficialesDeEstaParte(idManual = null) {
@@ -151,15 +149,14 @@
             }
         }
 
-        function renderizarLiturgia(idManual = null) {
+        function renderizarLiturgia(idManual = null, anclaForzada = null) {
             const pId = idManual || document.getElementById("parteFilter").value;
             const fOfi = document.getElementById("oficialFilter").value.trim().toLowerCase(); 
             const contenedor = document.getElementById('rituales-content');
             const parteActiva = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") === pId);
             if (!parteActiva) return;
 
-            const headerTitulo = document.getElementById("titulo-ritual-header");
-            headerTitulo.textContent = (["1", "2", "3"].includes(pId)) ? tituloGradoBase : parteActiva.getAttribute("titulo");
+            document.getElementById("titulo-ritual-header").textContent = (["1", "2", "3"].includes(pId)) ? tituloGradoBase : parteActiva.getAttribute("titulo");
 
             let htmlAcumulado = "";
             const apartados = parteActiva.getElementsByTagName("apartado");
@@ -174,20 +171,19 @@
                     const ofiOriginal = paso.getAttribute("oficial") || "";
                     let texto = paso.getAttribute("texto") || "";
                     const idAncla = `linea-${pId}-${globalStepIdx}`;
-                    // 1. Siglas
-                    texto = texto.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');                    
-                    // 2. Etiqueta de Bitácora Dinámica
+
+                    texto = texto.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     texto = texto.replace('[[ULTIMA_TENIDA]]', () => obtenerDocumentosUltimaTenida());
-                    // 3. Links Internos
+                    
                     texto = texto.replace(/\[\[LINK:(\d+)(?:\|([^\]]+))?\]\]/g, (m, id, nombre) => {
                         const tituloBoton = nombre ? nombre : "Ver Desarrollo";
                         return `<button class="btn-link" onclick="irA('${id}', '${idAncla}')">${tituloBoton} ➜</button>`;
                     });
 
-                    // 4. Volver
                     texto = texto.replace(/\[\[VOLVER:(\d+)(?:\|([^\]]+))?\]\]/g, (m, id, nombre) => {
                         const tituloVolver = nombre ? nombre : "Volver";
-                        return `<button class="btn-volver" onclick="irA('${id}')">⬅ ${tituloVolver}</button>`;
+                        const destinoRegreso = localStorage.getItem('puntoRegreso');
+                        return `<button class="btn-volver" onclick="irA('${id}', null, '${destinoRegreso}')">⬅ ${tituloVolver}</button>`;
                     });
 
                     if (texto.startsWith('[') && texto.endsWith(']')) texto = `<span class="accion-texto">${texto}</span>`;
@@ -199,13 +195,18 @@
                 htmlAcumulado += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>` + pasosHtml;
             }
             contenedor.innerHTML = `<div class="parte-ritual"><div class="section-header">${parteActiva.getAttribute("titulo")}</div>${htmlAcumulado}</div>`;
+            
+            // POSICIONAMIENTO
+            setTimeout(() => {
+                let targetEl = (anclaForzada) ? document.getElementById(anclaForzada) : (fOfi !== "todos" ? document.querySelector('.resaltado') : null);
+                if (targetEl) targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 150);
         }
 
         function obtenerDocumentosUltimaTenida() {
-            if (!tenidasXml) return " <span class='accion-texto'>(Bitácora no disponible)</span> ";
+            if (!tenidasXml) return " (Bitácora no disponible) ";
             const hoy = new Date();
             const sesiones = Array.from(tenidasXml.getElementsByTagName("tenida"));
-            
             const pasadas = sesiones
                 .map(s => ({ el: s, fecha: new Date(s.getAttribute("fecha") + "T23:59:59") }))
                 .filter(s => s.fecha <= hoy)
@@ -219,16 +220,15 @@
                 }
                 return html;
             }
-            return " <span class='accion-texto'>(No hay registros previos)</span> ";
+            return " (No hay registros previos) ";
         }
 
-        function irA(idDestino, idRegreso = null) {
+        function irA(idDestino, idRegreso = null, anclaRetorno = null) {
             if (idRegreso) localStorage.setItem('puntoRegreso', idRegreso);
             const isPrincipal = ["1", "2", "3"].includes(idDestino);
             if (isPrincipal) document.getElementById("parteFilter").value = idDestino;
             poblarOficialesDeEstaParte(idDestino);
-            renderizarLiturgia(idDestino);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            renderizarLiturgia(idDestino, anclaRetorno);
         }
     </script>
 </body>
