@@ -67,12 +67,18 @@
                 await cargarDatos();
                 const urlParams = new URLSearchParams(window.location.search);
                 
-                // Carga grado desde URL o por defecto 1
+                // 1. Determinar Grado
                 const gradoUrl = urlParams.get('num');
                 if (gradoUrl) numGradoActual = gradoUrl.toString();
                 
-                // Captura sección específica para posicionar tras recarga de grado
-                const seccionUrl = urlParams.get('sec');
+                // 2. Determinar Sección (Limpia ceros y formatos largos)
+                let seccionUrl = urlParams.get('sec');
+                if (seccionUrl) {
+                    // Si viene como 201, extrae el 1. Si viene como 01, extrae el 1.
+                    seccionUrl = (seccionUrl.length >= 3) ? 
+                        parseInt(seccionUrl.substring(1), 10).toString() : 
+                        parseInt(seccionUrl, 10).toString();
+                }
                 
                 cargarRitualPorGrado(numGradoActual, seccionUrl);
             } catch (e) { console.error(e); }
@@ -94,8 +100,12 @@
             const rituales = xmlDoc.getElementsByTagName("ritual");
             ritualActivo = null;
             for (let r of rituales) {
-                if (r.getAttribute("grado") === grado.toString()) { ritualActivo = r; break; }
+                if (r.getAttribute("grado") === grado.toString()) { 
+                    ritualActivo = r; 
+                    break; 
+                }
             }
+            
             if (ritualActivo) {
                 const nombresGrados = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Maestría" };
                 document.getElementById("titulo-ritual-header").textContent = nombresGrados[grado] || "Ritual";
@@ -108,14 +118,16 @@
         function poblarSecciones(restringido = true, idForzado = null) {
             const sSel = document.getElementById("seccionFilter");
             sSel.innerHTML = "";
-            // Cambio masivo: Buscar etiqueta <seccion>
             const secciones = Array.from(ritualActivo.getElementsByTagName("seccion"));
+            
             secciones.forEach(s => {
                 const id = s.getAttribute("id");
+                // Permite secciones básicas (1,2,3) o la sección específica solicitada por URL/Botón
                 if (!restringido || ["1", "2", "3"].includes(id) || id === idForzado) {
                     sSel.add(new Option(s.getAttribute("titulo"), id));
                 }
             });
+            
             if (idForzado) sSel.value = idForzado;
         }
 
@@ -131,30 +143,37 @@
             const oSel = document.getElementById("oficialFilter");
             const seccionActual = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
             const oficialesActivos = new Set();
+            
             if (seccionActual) {
                 Array.from(seccionActual.getElementsByTagName("paso")).forEach(paso => {
                     const idOfi = paso.getAttribute("oficial");
                     if (idOfi) oficialesActivos.add(idOfi.trim().toLowerCase());
                 });
             }
+            
             oSel.innerHTML = '<option value="">---</option>';
             const itemsG = glosarioDoc.getElementsByTagName("item");
             for (let item of itemsG) {
                 const siglaG = (item.getAttribute("sigla") || "").trim().toLowerCase();
-                if (oficialesActivos.has(siglaG)) oSel.add(new Option(item.getAttribute("sigla") + "∴", siglaG));
+                if (oficialesActivos.has(siglaG)) {
+                    oSel.add(new Option(item.getAttribute("sigla") + "∴", siglaG));
+                }
             }
-            if (oficialPreseleccionado && oficialesActivos.has(oficialPreseleccionado)) oSel.value = oficialPreseleccionado;
+            if (oficialPreseleccionado && oficialesActivos.has(oficialPreseleccionado)) {
+                oSel.value = oficialPreseleccionado;
+            }
         }
 
         function renderizarLiturgia() {
             const sId = document.getElementById("seccionFilter").value;
             const fOfi = document.getElementById("oficialFilter").value.trim().toLowerCase(); 
             const contenedor = document.getElementById('rituales-content');
+            
             if (!ritualActivo) return;
             const seccionActiva = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
             if (!seccionActiva) return;
 
-            let htmlAcumulado = ""; // Título principal eliminado a petición
+            let htmlAcumulado = ""; 
             let stepIdx = 0;
 
             Array.from(seccionActiva.getElementsByTagName("apartado")).forEach(apa => {
@@ -166,12 +185,12 @@
                     let texto = paso.getAttribute("texto") || "";
                     const idAncla = `linea-${sId}-${stepIdx}`;
 
-                    // LÓGICA DE LINK: Muestra el título de la SECCIÓN destino
+                    // LINK: Navegación entre secciones/grados
                     texto = texto.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (m, coords, desc) => {
                         let label = desc;
                         if (!label) {
                             const gDest = coords.substring(0, 1);
-                            const sDestId = parseInt(coords.substring(1)).toString();
+                            const sDestId = parseInt(coords.substring(1), 10).toString();
                             const rits = xmlDoc.getElementsByTagName("ritual");
                             let rDest = null;
                             for (let r of rits) if (r.getAttribute("grado") === gDest) { rDest = r; break; }
@@ -243,9 +262,9 @@
             if (idRegreso) localStorage.setItem('puntoRegreso', idRegreso);
             
             let g = codigo.substring(0, 1);
-            let sId = parseInt(codigo.substring(1)).toString();
+            let sId = parseInt(codigo.substring(1), 10).toString();
             
-            // Solución: Inyectar ID de sección en URL para persistencia
+            // Si el grado es distinto, forzamos recarga con parámetros limpios
             if (g !== numGradoActual) { 
                 window.location.href = `?num=${g}&sec=${sId}`; 
                 return; 
