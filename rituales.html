@@ -11,17 +11,23 @@
         .logia-linea1 { font-size: 0.75rem; color: #8d6e63; letter-spacing: 0.5px; }
         #titulo-ritual-header { font-size: 0.95rem; color: #5d4037; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
         .logo-mini { width: 65px; height: auto; flex-shrink: 0; }
+        
         #control-panel { background: #d7ccc8; padding: 12px; border-radius: 8px; border: 1px solid #a1887f; position: sticky; top: 0; z-index: 1000; display: flex; justify-content: space-between; align-items: flex-end; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .container-select { display: flex; flex-direction: column; text-align: left; }
-        #container-seccion { width: 65%; } #container-oficial { width: 28%; } 
+        #container-seccion { width: 65%; } 
+        #container-oficial { width: 28%; } 
+        
         .select-label { font-size: 0.7rem; color: #4e342e; font-weight: 800; text-transform: uppercase; margin-bottom: 4px; }
         select { padding: 8px; font-size: 0.9em; border-radius: 4px; border: 1px solid #8d6e63; background: #ffffff; color: #2c2c2c; font-weight: bold; width: 100%; outline: none; }
+        
         .sigla-texto-azul { color: #0277bd; font-weight: bold; }
         dt { font-weight: bold; color: #5d4037; margin-top: 15px; font-size: 0.95em; }
         dd { margin-left: 50px; border-left: 3px solid #d7ccc8; padding-left: 12px; font-size: 1em; position: relative; margin-bottom: 10px; counter-increment: line-counter; min-height: 1.2em; }
         dd::before { content: counter(line-counter); position: absolute; left: -45px; color: #5d4037; font-size: 1.2em; font-weight: 800; width: 35px; text-align: right; top: -2px; }
+        
         .resaltado { background: rgba(180, 255, 100, 0.4) !important; border-left: 5px solid #2e7d32 !important; }
         .apartado-header { font-weight: bold; color: #795548; font-size: 0.95em; border-bottom: 1px solid #d7ccc8; text-align: right; margin-top: 20px; padding-bottom: 5px; }
+        
         .btn-ritual { border: none; padding: 10px 18px; border-radius: 20px; cursor: pointer; font-size: 0.85em; margin-top: 10px; display: block; width: fit-content; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .color-cafe { background: #5d4037; color: #ffffff; }
         .color-gold { background: #D4AF37; color: #2c2c2c; border: 1px solid #b8860b; }
@@ -61,10 +67,12 @@
                 await cargarDatos();
                 const urlParams = new URLSearchParams(window.location.search);
                 
+                // Carga grado desde URL o por defecto 1
                 const gradoUrl = urlParams.get('num');
                 if (gradoUrl) numGradoActual = gradoUrl.toString();
                 
-                const seccionUrl = urlParams.get('sec'); // Captura sección destino tras cambio de grado
+                // Captura sección específica para posicionar tras recarga de grado
+                const seccionUrl = urlParams.get('sec');
                 
                 cargarRitualPorGrado(numGradoActual, seccionUrl);
             } catch (e) { console.error(e); }
@@ -100,6 +108,7 @@
         function poblarSecciones(restringido = true, idForzado = null) {
             const sSel = document.getElementById("seccionFilter");
             sSel.innerHTML = "";
+            // Cambio masivo: Buscar etiqueta <seccion>
             const secciones = Array.from(ritualActivo.getElementsByTagName("seccion"));
             secciones.forEach(s => {
                 const id = s.getAttribute("id");
@@ -145,7 +154,7 @@
             const seccionActiva = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
             if (!seccionActiva) return;
 
-            let htmlAcumulado = ""; 
+            let htmlAcumulado = ""; // Título principal eliminado a petición
             let stepIdx = 0;
 
             Array.from(seccionActiva.getElementsByTagName("apartado")).forEach(apa => {
@@ -157,7 +166,7 @@
                     let texto = paso.getAttribute("texto") || "";
                     const idAncla = `linea-${sId}-${stepIdx}`;
 
-                    // LÓGICA DE LINK: Busca el título de la SECCIÓN destino en el XML
+                    // LÓGICA DE LINK: Muestra el título de la SECCIÓN destino
                     texto = texto.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (m, coords, desc) => {
                         let label = desc;
                         if (!label) {
@@ -189,7 +198,7 @@
                 });
                 htmlAcumulado += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>` + pasosHtml;
             });
-            contenedor.innerHTML = `<div class="parte-ritual" style="counter-reset: line-counter; margin-top:20px;">${htmlAcumulado}</div>`;
+            contenedor.innerHTML = `<div class="seccion-ritual" style="counter-reset: line-counter; margin-top:20px;">${htmlAcumulado}</div>`;
         }
 
         function procesarInstancia(oficial) {
@@ -236,8 +245,8 @@
             let g = codigo.substring(0, 1);
             let sId = parseInt(codigo.substring(1)).toString();
             
+            // Solución: Inyectar ID de sección en URL para persistencia
             if (g !== numGradoActual) { 
-                // Cambio de grado: Pasamos grado y sección por URL
                 window.location.href = `?num=${g}&sec=${sId}`; 
                 return; 
             }
