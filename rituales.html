@@ -69,7 +69,7 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 numGradoActual = urlParams.get('num') || '1';
                 await cargarDatos();
-            } catch (e) { console.error("Error:", e); }
+            } catch (e) { console.error("Error al inicializar:", e); }
         }
 
         async function cargarDatos() {
@@ -94,8 +94,7 @@
                 const nombresGrados = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Ritual de Maestro" };
                 document.getElementById("titulo-ritual-header").textContent = nombresGrados[grado] || "Ritual";
                 poblarPartes();
-                // FORZAR INICIO: Renderizamos la primera parte automáticamente
-                cambioDeParte(); 
+                cambioDeParte(); // Renderizado automático al cargar
             }
         }
 
@@ -107,6 +106,7 @@
         }
 
         function cambioDeParte() {
+            window.scrollTo(0, 0); // Reset de scroll al inicio de la parte
             const pId = document.getElementById("parteFilter").value;
             const oSel = document.getElementById("oficialFilter");
             const oficialPrevio = oSel.value;
@@ -148,12 +148,12 @@
                 let pasosHtml = "";
                 Array.from(apa.getElementsByTagName("paso")).forEach(paso => {
                     stepIdx++;
-                    const ofi = (paso.getAttribute("oficial") || "").trim();
-                    const ofiLower = ofi.toLowerCase();
+                    const ofiRaw = (paso.getAttribute("oficial") || "").trim();
+                    const ofiLower = ofiRaw.toLowerCase(); // Normalización clave para "Sec" vs "sec"
                     let texto = paso.getAttribute("texto") || "";
                     const idAncla = `linea-${pId}-${stepIdx}`;
 
-                    // LINKS
+                    // Procesar LINKS
                     texto = texto.replace(/\[\[LINK:(\d{3})\]\]/g, (m, coords) => {
                         const g = coords.substring(0, 1), pDestId = parseInt(coords.substring(1)).toString();
                         const rDest = Array.from(xmlDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("grado") === g);
@@ -161,7 +161,7 @@
                         return `<button class="btn-ritual color-cafe" onclick="irA('${coords}', '${idAncla}')">Ir a: ${pDest ? pDest.getAttribute("titulo") : "Sección"} ➜</button>`;
                     });
 
-                    // INSTANCIAS (SOLO SI EL OFICIAL COINCIDE)
+                    // Procesar INSTANCIAS (Agnóstico a mayúsculas)
                     if (/\[\[INSTANCIA\]\]/i.test(texto)) {
                         const esOfiActivo = (fOfi === ofiLower && fOfi !== "");
                         texto = texto.replace(/\[\[INSTANCIA\]\]/gi, esOfiActivo ? procesarInstancia(fOfi) : "");
@@ -172,11 +172,19 @@
                     if (texto.startsWith('[') && texto.endsWith(']')) texto = `<span class="accion-texto">${texto}</span>`;
 
                     const res = (fOfi !== "" && ofiLower === fOfi) ? 'class="resaltado"' : "";
-                    pasosHtml += `<dt>${ofi}∴</dt><dd ${res} id="${idAncla}">${texto}</dd>`;
+                    pasosHtml += `<dt>${ofiRaw}∴</dt><dd ${res} id="${idAncla}">${texto}</dd>`;
                 });
                 htmlAcumulado += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>` + pasosHtml;
             });
             contenedor.innerHTML = `<div class="parte-ritual" style="counter-reset: line-counter; margin-top:20px;">${htmlAcumulado}</div>`;
+            
+            // Auto-scroll si hay oficial seleccionado
+            if (fOfi !== "") {
+                requestAnimationFrame(() => {
+                    const el = contenedor.querySelector('.resaltado');
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                });
+            }
         }
 
         function procesarInstancia(oficial) {
@@ -187,13 +195,13 @@
             const pasSes = sesiones.filter(s => s.getAttribute("fecha") < hoy).sort((a,b) => b.getAttribute("fecha").localeCompare(a.getAttribute("fecha")))[0];
 
             let res = "";
-            if (oficial === "Sec") {
+            if (oficial === "sec") {
                 if (pasSes) {
                     Array.from(pasSes.getElementsByTagName("item")).filter(i => i.getAttribute("acto") === "balaustre").forEach(i => {
                         res += `<button class="btn-ritual color-gold" onclick="abrirVisor('${i.getAttribute("url")}','${i.getAttribute("titulo")}')">📜 Leer Balaustre: ${i.getAttribute("titulo")} ➜</button>`;
                     });
                 }
-            } else if (oficial === "VM") {
+            } else if (oficial === "vm") {
                 if (hoySes) {
                     Array.from(hoySes.getElementsByTagName("item")).forEach(i => {
                         const acto = i.getAttribute("acto").toLowerCase(), titulo = i.getAttribute("titulo");
