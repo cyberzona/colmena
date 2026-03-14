@@ -22,26 +22,13 @@
         .resaltado { background: rgba(180, 255, 100, 0.4) !important; border-left: 5px solid #2e7d32 !important; }
         .apartado-header { font-weight: bold; color: #795548; font-size: 0.9em; border-bottom: 1px solid #d7ccc8; text-align: right; margin-top: 20px; }
         
-        /* BOTONES DINÁMICOS Y EFECTOS */
-        .btn-ritual { 
-            border: 1px solid #3e2723; 
-            padding: 8px 16px; 
-            border-radius: 20px; 
-            cursor: pointer; 
-            font-size: 0.85em; 
-            margin: 8px 0; 
-            font-weight: bold; 
-            display: inline-block; 
-            background: #5d4037; 
-            color: #ffffff !important; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3); 
-            transition: all 0.2s ease;
-        }
+        /* BOTONES E INSTANCIA */
+        .btn-ritual { border: 1px solid #3e2723; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 0.85em; margin: 8px 0; font-weight: bold; display: inline-block; background: #5d4037; color: #ffffff !important; box-shadow: 0 2px 4px rgba(0,0,0,0.3); transition: all 0.2s ease; text-decoration: none; }
         .btn-ritual:hover { background: #8d6e63; box-shadow: 0 4px 8px rgba(0,0,0,0.4); transform: scale(1.02); }
         .btn-instancia { background: #2e7d32; border-color: #1b5e20; }
-        
-        /* Contenedor de Balaustrada */
-        #balaustrada-box { background: #fff9c4; border: 2px dashed #fbc02d; padding: 15px; margin: 10px 0; display: none; border-radius: 8px; font-style: italic; }
+
+        /* CUADRO DE LECTURA BALAUSTRADA */
+        #balaustrada-box { background: #fff9c4; border: 2px dashed #fbc02d; padding: 15px; margin: 15px 0; display: none; border-radius: 8px; font-family: 'Palatino Linotype', serif; color: #333; line-height: 1.6; }
         .accion-texto { font-style: italic; color: #5d4037; }
     </style>
 </head>
@@ -75,37 +62,28 @@
 
         async function inicializar() {
             try {
-                const exito = await cargarDatos();
-                if (!exito) return;
+                await cargarDatos();
                 const urlParams = new URLSearchParams(window.location.search);
-                let g = urlParams.get('num') || "1";
-                numGradoActual = g.toString();
-                let s = urlParams.get('sec') || "1";
-                s = s.replace(/^0+/, "") || "1";
+                numGradoActual = (urlParams.get('num') || "1").toString();
+                let s = (urlParams.get('sec') || "1").replace(/^0+/, "") || "1";
                 ejecutarCargaRitual(numGradoActual, s);
-            } catch (e) { 
-                document.getElementById("titulo-ritual-header").textContent = "Error de Sistema";
-            }
+            } catch (e) { console.error(e); }
         }
 
         async function cargarDatos() {
-            try {
-                const [glosario, liturgia, tenidas] = await Promise.all([
-                    fetch('glosario.xml').then(r => r.text()),
-                    fetch('liturgia.xml').then(r => r.text()),
-                    fetch('tenidas.xml').then(r => r.text())
-                ]);
-                const parser = new DOMParser();
-                glosarioDoc = parser.parseFromString(glosario, "text/xml");
-                xmlDoc = parser.parseFromString(liturgia, "text/xml");
-                tenidasXml = parser.parseFromString(tenidas, "text/xml");
-                return true;
-            } catch (err) { return false; }
+            const [glosario, liturgia, tenidas] = await Promise.all([
+                fetch('glosario.xml').then(r => r.text()),
+                fetch('liturgia.xml').then(r => r.text()),
+                fetch('tenidas.xml').then(r => r.text()).catch(() => '<tenidas><tenida><balaustrada>No disponible</balaustrada></tenida></tenidas>')
+            ]);
+            const parser = new DOMParser();
+            glosarioDoc = parser.parseFromString(glosario, "text/xml");
+            xmlDoc = parser.parseFromString(liturgia, "text/xml");
+            tenidasXml = parser.parseFromString(tenidas, "text/xml");
         }
 
         function ejecutarCargaRitual(grado, seccionID) {
-            const rituales = Array.from(xmlDoc.getElementsByTagName("ritual"));
-            ritualActivo = rituales.find(r => r.getAttribute("grado") === grado);
+            ritualActivo = Array.from(xmlDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("grado") === grado);
             if (ritualActivo) {
                 const titulos = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Maestría" };
                 document.getElementById("titulo-ritual-header").textContent = titulos[grado] || "Ritual";
@@ -118,10 +96,7 @@
             const sSel = document.getElementById("seccionFilter");
             sSel.innerHTML = "";
             Array.from(ritualActivo.getElementsByTagName("seccion")).forEach(sec => {
-                const id = sec.getAttribute("id");
-                if (["1", "2", "3"].includes(id) || id === idForzado) {
-                    sSel.add(new Option(sec.getAttribute("titulo"), id));
-                }
+                sSel.add(new Option(sec.getAttribute("titulo"), sec.getAttribute("id")));
             });
             if (idForzado) sSel.value = idForzado;
         }
@@ -129,14 +104,13 @@
         function cambioDeSeccion() {
             const sId = document.getElementById("seccionFilter").value;
             const oSel = document.getElementById("oficialFilter");
-            const ofiPrevio = oSel.value; 
-            
+            const ofiPrevio = oSel.value;
             const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
             const oficialesSet = new Set();
+            
             if (seccion) {
                 Array.from(seccion.getElementsByTagName("paso")).forEach(p => {
-                    const ofi = p.getAttribute("oficial");
-                    if (ofi) oficialesSet.add(ofi.trim().toLowerCase());
+                    if (p.getAttribute("oficial")) oficialesSet.add(p.getAttribute("oficial").trim().toLowerCase());
                 });
             }
 
@@ -145,7 +119,6 @@
                 const sigla = item.getAttribute("sigla").toLowerCase();
                 if (oficialesSet.has(sigla)) oSel.add(new Option(item.getAttribute("sigla") + "∴", sigla));
             });
-            
             oSel.value = ofiPrevio;
             renderizarLiturgia();
         }
@@ -155,8 +128,8 @@
             const fOfi = document.getElementById("oficialFilter").value;
             const contenedor = document.getElementById('rituales-content');
             const bBox = document.getElementById('balaustrada-box');
-            bBox.style.display = "none"; // Ocultar balaustrada al renderizar
-            
+            bBox.style.display = "none";
+
             const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
             if (!seccion) return;
 
@@ -172,26 +145,23 @@
                     let txt = paso.getAttribute("texto") || "";
                     const idL = `l-${sId}-${counter}`;
 
-                    // LINKs Dinámicos
+                    // LINK DINÁMICO: Busca el título en el XML
                     txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
                         let n = desc;
                         if (!n) {
                             const sIdB = parseInt(cod.substring(1), 10).toString();
                             const rB = (cod[0] === numGradoActual) ? ritualActivo : 
                                 Array.from(xmlDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("grado") == cod[0]);
-                            if (rB) {
-                                const sO = Array.from(rB.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sIdB);
-                                n = sO ? sO.getAttribute("titulo") : "Sección " + cod;
-                            } else { n = "Sección " + cod; }
+                            const sO = rB ? Array.from(rB.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sIdB) : null;
+                            n = sO ? sO.getAttribute("titulo") : "Ir a Sección con su nombre";
                         }
                         return `<button class="btn-ritual" onclick="irA('${cod}', '${idL}')">${n.trim()} ➜</button>`;
                     });
 
-                    // INSTANCIA (Recuperando la lógica de la Balaustrada para el Secretario)
+                    // INSTANCIA: Lectura de tenidas.xml para el Secretario
                     txt = txt.replace(/\[\[INSTANCIA\]\]/g, () => {
-                        const esSecretario = (fOfi === "sec");
-                        const label = esSecretario ? "Leer Balaustrada" : "Ver Instancia";
-                        return `<button class="btn-ritual btn-instancia" onclick="ejecutarInstancia('${fOfi}')">${label} ➜</button>`;
+                        const esSec = (fOfi === "sec");
+                        return `<button class="btn-ritual btn-instancia" onclick="abrirBalaustrada()">${esSec ? 'Leer Balaustrada (Memo)' : 'Ver Instancia'} ➜</button>`;
                     });
 
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
@@ -199,47 +169,32 @@
 
                     const esOficial = (fOfi && ofi.toLowerCase() === fOfi.toLowerCase());
                     if (esOficial && !primeraID) primeraID = idL;
-
-                    const res = esOficial ? 'class="resaltado"' : "";
-                    html += `<dt>${ofi}∴</dt><dd ${res} id="${idL}">${txt}</dd>`;
+                    html += `<dt>${ofi}∴</dt><dd class="${esOficial ? 'resaltado' : ''}" id="${idL}">${txt}</dd>`;
                 });
             });
             contenedor.innerHTML = `<div style="counter-reset: line-counter;">${html}</div>`;
-
-            if (primeraID) {
-                const el = document.getElementById(primeraID);
-                if (el) {
-                    window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 160, behavior: 'smooth' });
-                }
-            }
+            if (primeraID) document.getElementById(primeraID).scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
-        // FUNCIÓN RECUPERADA: Lógica de Balaustrada desde tenidas.xml
-        function ejecutarInstancia(oficial) {
+        function abrirBalaustrada() {
+            const fOfi = document.getElementById("oficialFilter").value;
             const bBox = document.getElementById('balaustrada-box');
-            if (oficial === "sec") {
-                const ultimaTenida = tenidasXml.getElementsByTagName("tenida")[0]; // Toma la más reciente
-                if (ultimaTenida) {
-                    const balaustrada = ultimaTenida.getElementsByTagName("balaustrada")[0]?.textContent;
-                    bBox.innerHTML = `<strong>Balaustrada de la Tenida anterior:</strong><br><br>${balaustrada || "No hay registros pendientes."}`;
-                    bBox.style.display = "block";
-                    window.scrollTo({ top: bBox.offsetTop - 100, behavior: 'smooth' });
-                }
+            
+            if (fOfi === "sec") {
+                const texto = tenidasXml.getElementsByTagName("balaustrada")[0]?.textContent || "No hay memo registrado.";
+                bBox.innerHTML = `<strong>📜 MEMO DE LA SESIÓN ANTERIOR:</strong><br><br>${texto.trim()}`;
+                bBox.style.display = "block";
+                bBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
             } else {
-                alert("Esta instancia requiere la lectura de documentos oficiales por parte del Secretario.");
+                alert("Esta instancia requiere la lectura del Secretario.");
             }
         }
 
         function irA(codigo, regreso) {
             if (regreso) localStorage.setItem('regreso', regreso);
-            const g = codigo[0];
-            const s = parseInt(codigo.substring(1), 10).toString();
-            if (g !== numGradoActual) {
-                window.location.href = "rituales.html?num=" + g + "&sec=" + s;
-            } else {
-                actualizarSelectorSecciones(s);
-                cambioDeSeccion();
-            }
+            const g = codigo[0], s = parseInt(codigo.substring(1), 10).toString();
+            if (g !== numGradoActual) window.location.href = `rituales.html?num=${g}&sec=${s}`;
+            else { actualizarSelectorSecciones(s); cambioDeSeccion(); }
         }
     </script>
 </body>
