@@ -61,7 +61,7 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 numGradoActual = urlParams.get('num') || '1';
                 await cargarDatos();
-            } catch (e) { console.error(e); }
+            } catch (e) { console.error("Error en inicialización:", e); }
         }
 
         async function cargarDatos() {
@@ -85,7 +85,7 @@
             if (ritualActivo) {
                 const nombresGrados = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Ritual de Maestro" };
                 document.getElementById("titulo-ritual-header").textContent = nombresGrados[grado] || "Ritual";
-                poblarPartes(true); // Carga inicial restringida
+                poblarPartes(true); 
                 cambioDeParte();
             }
         }
@@ -98,7 +98,6 @@
             
             partes.forEach(p => {
                 const id = p.getAttribute("id");
-                // Solo mostramos 1, 2, 3 O si es la parte que acabamos de invocar por LINK
                 if (!restringido || ["1", "2", "3"].includes(id) || id === idForzado) {
                     pSel.add(new Option(p.getAttribute("titulo"), id));
                 }
@@ -153,12 +152,12 @@
                     let texto = paso.getAttribute("texto") || "";
                     const idAncla = `linea-${pId}-${stepIdx}`;
 
-                    // LINKS
+                    // LINK
                     texto = texto.replace(/\[\[LINK:(\d{3})\]\]/g, (m, coords) => {
                         return `<button class="btn-ritual color-cafe" onclick="irA('${coords}', '${idAncla}')">Ir a Sección ➜</button>`;
                     });
 
-                    // INSTANCIAS (Corrección definitiva Sec/sec)
+                    // INSTANCIA
                     if (/\[\[INSTANCIA\]\]/i.test(texto)) {
                         if (fOfi === ofiLower && fOfi !== "") {
                             texto = texto.replace(/\[\[INSTANCIA\]\]/gi, procesarInstancia(fOfi));
@@ -166,6 +165,7 @@
                             texto = texto.replace(/\[\[INSTANCIA\]\]/gi, "");
                         }
                     }
+
                     texto = texto.replace(/\[\[VOLVER:(\d+)\]\]/g, (m, id) => `<button class="btn-ritual color-cafe" onclick="irA('${id}')">⬅ Regresar</button>`);
                     texto = texto.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     if (texto.startsWith('[') && texto.endsWith(']')) texto = `<span class="accion-texto">${texto}</span>`;
@@ -175,7 +175,8 @@
                 });
                 htmlAcumulado += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>` + pasosHtml;
             });
-            contenedor.innerHTML = `<div class="parte-ritual" style="counter-reset: line-counter; margin-top:20px;">${htmlAcumulado}</div>`;            
+            contenedor.innerHTML = `<div class="parte-ritual" style="counter-reset: line-counter; margin-top:20px;">${htmlAcumulado}</div>`;
+            
             if (fOfi !== "") {
                 requestAnimationFrame(() => {
                     const el = contenedor.querySelector('.resaltado');
@@ -190,6 +191,7 @@
             const sesiones = Array.from(tenidasXml.getElementsByTagName("tenida"));
             const hoySes = sesiones.find(s => s.getAttribute("fecha") === hoy);
             const pasSes = sesiones.filter(s => s.getAttribute("fecha") < hoy).sort((a,b) => b.getAttribute("fecha").localeCompare(a.getAttribute("fecha")))[0];
+
             let res = "";
             if (oficial === "sec") {
                 if (pasSes) {
@@ -200,10 +202,17 @@
             } else if (oficial === "vm") {
                 if (hoySes) {
                     Array.from(hoySes.getElementsByTagName("item")).forEach(i => {
-                        const acto = i.getAttribute("acto").toLowerCase(), titulo = i.getAttribute("titulo");
+                        const acto = i.getAttribute("acto").toLowerCase();
+                        const titulo = i.getAttribute("titulo");
+                        
                         const destinos = { "iniciacion": "107", "elevacion": "201", "exaltacion": "301" };
-                        if (destinos[acto]) res += `<button class="btn-ritual color-verde" onclick="irA('${destinos[acto]}')">⚖️ PROCEDER A ${acto.toUpperCase()}: ${titulo}</button>`;
-                        else res += `<button class="btn-ritual color-gold" onclick="abrirVisor('${i.getAttribute("url")}','${titulo}')">${acto === "instruccion" ? "📖" : "✉️"} ${acto.toUpperCase()}: ${titulo} ➜</button>`;
+
+                        if (destinos[acto]) {
+                            res += `<button class="btn-ritual color-verde" onclick="irA('${destinos[acto]}')">⚖️ PROCEDER A ${acto.toUpperCase()}: ${titulo}</button>`;
+                        } else {
+                            let icono = (acto === "instruccion" || acto === "trazado") ? "📖" : "✉️";
+                            res += `<button class="btn-ritual color-gold" onclick="abrirVisor('${i.getAttribute("url")}','${titulo}')">${icono} ${acto.toUpperCase()}: ${titulo} ➜</button>`;
+                        }
                     });
                 }
             }
@@ -221,14 +230,21 @@
         function irA(codigo, idRegreso = null) {
             if (idRegreso) localStorage.setItem('puntoRegreso', idRegreso);
             let g = codigo.substring(0, 1), pId = parseInt(codigo.substring(1)).toString();
-            if (g !== numGradoActual) { window.location.href = `?num=${g}`; return; }
             
-            poblarPartes(true, pId); // Forzamos la aparición de la parte destino
+            if (g !== numGradoActual) { 
+                window.location.href = `?num=${g}`; 
+                return; 
+            }
+            
+            poblarPartes(true, pId); 
             cambioDeParte();
             
             setTimeout(() => {
                 const r = localStorage.getItem('puntoRegreso');
-                if (r) { const el = document.getElementById(r); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+                if (r) { 
+                    const el = document.getElementById(r); 
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+                }
             }, 400);
         }
     </script>
