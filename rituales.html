@@ -59,9 +59,13 @@
         async function inicializar() {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
-                numGradoActual = urlParams.get('num') || '1';
+                // CORRECCIÓN: Captura y asignación explícita del grado desde la URL
+                const gradoUrl = urlParams.get('num');
+                if (gradoUrl) {
+                    numGradoActual = gradoUrl.toString();
+                }
                 await cargarDatos();
-            } catch (e) { console.error(e); }
+            } catch (e) { console.error("Error en inicialización:", e); }
         }
 
         async function cargarDatos() {
@@ -74,19 +78,29 @@
             glosarioDoc = parser.parseFromString(resGlosario, "text/xml");
             xmlDoc = parser.parseFromString(resLiturgia, "text/xml");
             if (resTenidas) tenidasXml = parser.parseFromString(resTenidas, "text/xml");
+            
+            // Pasamos explícitamente el grado detectado
             cargarRitualPorGrado(numGradoActual);
         }
 
         function cargarRitualPorGrado(grado) {
             const rituales = xmlDoc.getElementsByTagName("ritual");
+            ritualActivo = null;
+            
             for (let r of rituales) {
-                if (r.getAttribute("grado") === grado.toString()) { ritualActivo = r; break; }
+                if (r.getAttribute("grado") === grado.toString()) { 
+                    ritualActivo = r; 
+                    break; 
+                }
             }
+            
             if (ritualActivo) {
                 const nombresGrados = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Ritual de Maestro" };
                 document.getElementById("titulo-ritual-header").textContent = nombresGrados[grado] || "Ritual";
                 poblarPartes(true); 
                 cambioDeParte();
+            } else {
+                console.error("No se encontró el ritual para el grado:", grado);
             }
         }
 
@@ -134,6 +148,8 @@
             const pId = document.getElementById("parteFilter").value;
             const fOfi = document.getElementById("oficialFilter").value.trim().toLowerCase(); 
             const contenedor = document.getElementById('rituales-content');
+            if (!ritualActivo) return;
+            
             const parteActiva = Array.from(ritualActivo.getElementsByTagName("parte")).find(p => p.getAttribute("id") == pId);
             if (!parteActiva) return;
 
@@ -183,14 +199,12 @@
 
             let res = "";
             if (oficial === "sec") {
-                // El Secretario es el ÚNICO que ve Balaustres de sesiones pasadas
                 if (pasSes) {
                     Array.from(pasSes.getElementsByTagName("item")).filter(i => i.getAttribute("acto") === "balaustre").forEach(i => {
                         res += `<button class="btn-ritual color-gold" onclick="abrirVisor('${i.getAttribute("url")}','${i.getAttribute("titulo")}')">📜 Leer Balaustre: ${i.getAttribute("titulo")} ➜</button>`;
                     });
                 }
             } else if (oficial === "vm") {
-                // El VM ve Actos de Grado (verde) y Documentos Administrativos/Instrucción (oro)
                 if (hoySes) {
                     Array.from(hoySes.getElementsByTagName("item")).forEach(i => {
                         const acto = i.getAttribute("acto").toLowerCase();
@@ -199,7 +213,7 @@
 
                         if (destinos[acto]) {
                             res += `<button class="btn-ritual color-verde" onclick="irA('${destinos[acto]}')">⚖️ PROCEDER A ${acto.toUpperCase()}: ${titulo}</button>`;
-                        } else if (acto !== "balaustre") { // Filtro estricto: VM NO ve balaustres
+                        } else if (acto !== "balaustre") {
                             let icono = (acto === "instruccion" || acto === "trazado") ? "📖" : "✉️";
                             res += `<button class="btn-ritual color-gold" onclick="abrirVisor('${i.getAttribute("url")}','${titulo}')">${icono} ${acto.toUpperCase()}: ${titulo} ➜</button>`;
                         }
@@ -220,12 +234,22 @@
         function irA(codigo, idRegreso = null) {
             if (idRegreso) localStorage.setItem('puntoRegreso', idRegreso);
             let g = codigo.substring(0, 1), pId = parseInt(codigo.substring(1)).toString();
-            if (g !== numGradoActual) { window.location.href = `?num=${g}`; return; }
+            
+            // Si el grado cambia, redirigimos con el parámetro num en la URL
+            if (g !== numGradoActual) { 
+                window.location.href = `?num=${g}`; 
+                return; 
+            }
+            
             poblarPartes(true, pId); 
             cambioDeParte();
+            
             setTimeout(() => {
                 const r = localStorage.getItem('puntoRegreso');
-                if (r) { const el = document.getElementById(r); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+                if (r) { 
+                    const el = document.getElementById(r); 
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+                }
             }, 400);
         }
     </script>
