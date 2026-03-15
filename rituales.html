@@ -116,56 +116,56 @@
         }
 
         function renderizarLiturgia() {
-            const sId = document.getElementById("seccionFilter").value;
-            const fOfi = document.getElementById("oficialFilter").value.toLowerCase();
-            const contenedor = document.getElementById('rituales-content');
-            const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
-            if (!seccion) return;
+    const sId = document.getElementById("seccionFilter").value;
+    const fOfi = document.getElementById("oficialFilter").value.toLowerCase();
+    const contenedor = document.getElementById('rituales-content');
+    const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
+    if (!seccion) return;
 
-            let html = "";
-            let counter = 0;
-            let primeraID = null;
+    let html = "";
+    let counter = 0;
+    let primeraID = null;
 
-            Array.from(seccion.getElementsByTagName("apartado")).forEach(apa => {
-                html += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>`;
-                Array.from(apa.getElementsByTagName("paso")).forEach(paso => {
-                    counter++;
-                    const ofi = paso.getAttribute("oficial");
-                    const ofiLower = ofi.toLowerCase();
-                    let txt = paso.getAttribute("texto") || paso.textContent || "";
-                    const idL = `l-${sId}-${counter}`;
+    Array.from(seccion.getElementsByTagName("apartado")).forEach(apa => {
+        html += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>`;
+        Array.from(apa.getElementsByTagName("paso")).forEach(paso => {
+            counter++;
+            const ofi = paso.getAttribute("oficial");
+            const ofiLower = ofi.toLowerCase();
+            let txt = paso.getAttribute("texto") || paso.textContent || "";
+            const idL = `l-${sId}-${counter}`;
 
-                    // 1. PROCESAR LINKS CON TÍTULO AUTOMÁTICO
-                    txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
-                        const targetId = parseInt(cod.substring(1), 10).toString();
-                        let nombreLink = desc;
-                        if (!nombreLink) {
-                            const targetSec = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") === targetId);
-                            nombreLink = targetSec ? targetSec.getAttribute("titulo") : "Ir";
-                        }
-                        return `<button class="btn-ritual" onclick="irA('${cod}')">${nombreLink.trim()} ➜</button>`;
-                    });
-
-                    // 2. PROCESAR INSTANCIA (Corrección de duplicidad)
-                    if (txt.includes("[[INSTANCIA]]")) {
-                        // Solo inyectar si el oficial del paso es el oficial filtrado
-                        if (fOfi && ofiLower === fOfi) {
-                            txt = txt.replace("[[INSTANCIA]]", procesarInstancia(fOfi));
-                        } else {
-                            txt = txt.replace("[[INSTANCIA]]", "");
-                        }
-                    }
-
-                    txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
-                    
-                    const esOficialSeleccionado = (fOfi && ofiLower === fOfi);
-                    if (esOficialSeleccionado && !primeraID) primeraID = idL;
-                    html += `<dt>${ofi}∴</dt><dd class="${esOficialSeleccionado ? 'resaltado' : ''}" id="${idL}">${txt}</dd>`;
-                });
+            // 1. LINKS CON TÍTULO AUTOMÁTICO DESDE EL XML
+            txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
+                const targetId = parseInt(cod.substring(1), 10).toString();
+                let nombreLink = desc;
+                if (!nombreLink) {
+                    const targetSec = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") === targetId);
+                    nombreLink = targetSec ? targetSec.getAttribute("titulo") : "Sección " + targetId;
+                }
+                return `<button class="btn-ritual" onclick="irA('${cod}')">${nombreLink.trim()} ➜</button>`;
             });
-            contenedor.innerHTML = `<div style="counter-reset: line-counter;">${html}</div>`;
-            if (primeraID) document.getElementById(primeraID).scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+
+            // 2. INYECCIÓN EXCLUSIVA DE INSTANCIA
+            if (txt.includes("[[INSTANCIA]]")) {
+                // SOLO si el oficial del paso coincide con el filtro seleccionado
+                if (fOfi && ofiLower === fOfi) {
+                    txt = txt.replace("[[INSTANCIA]]", procesarInstancia(fOfi));
+                } else {
+                    txt = txt.replace("[[INSTANCIA]]", ""); // Se elimina si no es su turno
+                }
+            }
+
+            txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
+            
+            const esOficialSeleccionado = (fOfi && ofiLower === fOfi);
+            if (esOficialSeleccionado && !primeraID) primeraID = idL;
+            html += `<dt>${ofi}∴</dt><dd class="${esOficialSeleccionado ? 'resaltado' : ''}" id="${idL}">${txt}</dd>`;
+        });
+    });
+    contenedor.innerHTML = `<div style="counter-reset: line-counter;">${html}</div>`;
+    if (primeraID) document.getElementById(primeraID).scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
 
         function irA(codigo) {
             const g = codigo[0], s = parseInt(codigo.substring(1), 10).toString();
