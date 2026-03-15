@@ -114,7 +114,7 @@
 
         function renderizarLiturgia() {
             const sId = document.getElementById("seccionFilter").value;
-            const fOfi = document.getElementById("oficialFilter").value;
+            const fOfi = document.getElementById("oficialFilter").value.toLowerCase();
             const contenedor = document.getElementById('rituales-content');
             const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
             if (!seccion) return;
