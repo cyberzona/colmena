@@ -52,7 +52,6 @@
                 await cargarDatos();
                 const urlParams = new URLSearchParams(window.location.search);
                 
-                // Manejo del parámetro fecha
                 fechaTrabajo = urlParams.get('fecha');
                 if (!fechaTrabajo) {
                     const d = new Date();
@@ -171,7 +170,7 @@
 
         function abrirEnlace(url, titulo) {
             if (url.includes("ID_DOCUMENTO")) {
-                alert(`⚠️ Error: El documento "${titulo}" no tiene una URL válida configurada en tenidas.xml.`);
+                alert(`⚠️ Error: El documento "${titulo}" no tiene una URL válida en tenidas.xml.`);
                 return;
             }
             window.open(url, '_blank');
@@ -188,6 +187,7 @@
             let htmlInstancia = "";
 
             if (fOfi === "sec") {
+                // Secretario: ÚNICAMENTE ve el balaustre
                 const itemBal = items.find(i => i.getAttribute("acto") === "balaustre");
                 if (itemBal) {
                     htmlInstancia = `<div class="instancia-container">
@@ -200,6 +200,7 @@
             } 
             
             else if (fOfi === "vm") {
+                // Venerable Maestro: Ve TODO EXCEPTO el balaustre
                 let btns = "";
                 items.forEach(i => {
                     const acto = i.getAttribute("acto");
@@ -208,6 +209,7 @@
                         const url = i.getAttribute("url");
                         const esExec = ["nuevo_grado", "elevacion", "iniciacion"].includes(acto);
                         
+                        // Si es link de ritual, mantenemos la fecha en la URL
                         const accion = url.includes('rituales.html') ? 
                             `window.location.href='${url}&fecha=${fechaTrabajo}'` : `abrirEnlace('${url}', '${titulo}')`;
 
@@ -216,7 +218,7 @@
                                  onclick="${accion}">${titulo}</button>`;
                     }
                 });
-                if (btns) htmlInstancia = `<div class="instancia-container">${btns}</div>`;
+                if (btns) htmlInstancia = `<div class="instancia-container"><strong>🛠️ TRABAJOS DEL DÍA:</strong><br><br>${btns}</div>`;
             }
             return htmlInstancia;
         }
