@@ -11,20 +11,29 @@
         .logia-linea1 { font-size: 1.1rem; color: #5d4037; letter-spacing: 0.5px; font-weight: bold; }
         #titulo-ritual-header { font-size: 0.95rem; color: #5d4037; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
         .logo-mini { width: 65px; height: auto; }
+        
+        /* Panel de Control con anchos diferenciados */
         #control-panel { background: #d7ccc8; padding: 10px; border-radius: 8px; border: 1px solid #a1887f; position: sticky; top: 0; z-index: 1000; display: flex; justify-content: flex-start; gap: 10px; }
         .container-select { display: flex; flex-direction: column; width: auto; }
         .select-label { font-size: 0.65rem; color: #4e342e; font-weight: 800; text-transform: uppercase; margin-bottom: 2px; }
         .select-seccion { width: 220px; padding: 8px; font-size: 0.95rem; border-radius: 4px; border: 1px solid #8d6e63; background: #fff; font-weight: bold; outline: none; }
         .select-oficiales { width: 100px; padding: 8px; font-size: 0.95rem; border-radius: 4px; border: 1px solid #8d6e63; background: #fff; font-weight: bold; outline: none; }
+        
         .sigla-texto-azul { color: #0277bd; font-weight: bold; }
         dt { font-weight: bold; color: #5d4037; margin-top: 8px; }
-        dd { margin-left: 45px; border-left: 3px solid #d7ccc8; padding-left: 10px; position: relative; margin-bottom: 4px; counter-increment: line-counter; text-align: justify; }
+        
+        /* Diálogos Justificados */
+        dd { margin-left: 45px; border-left: 3px solid #d7ccc8; padding-left: 10px; padding-right: 10px; position: relative; margin-bottom: 4px; counter-increment: line-counter; text-align: justify; text-justify: inter-word; hyphens: auto; }
         dd::before { content: counter(line-counter); position: absolute; left: -40px; color: #5d4037; font-size: 1.0em; font-weight: 800; width: 30px; text-align: right; }
         .resaltado { background: rgba(180, 255, 100, 0.4) !important; border-left: 5px solid #2e7d32 !important; }
-        .apartado-header { font-weight: bold; color: #795548; font-size: 1.1rem; border-bottom: 1px solid #d7ccc8; text-align: right; margin-top: 12px; }
-        .btn-ritual, .btn-instancia-exec { border: none; padding: 8px 14px; border-radius: 20px; cursor: pointer; font-size: 0.85em; margin: 4px 0; font-weight: bold; display: table !important; background: #A87C00 !important; color: #ffffff !important; text-decoration: none; text-align: center; width: auto; box-sizing: border-box; }
-        .btn-instancia-exec { border-radius: 6px; width: 100%; }
+        
+        /* Título de Apartado Mayor */
+        .apartado-header { font-weight: bold; color: #795548; font-size: 1.1rem; border-bottom: 2px solid #d7ccc8; text-align: right; margin-top: 20px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        /* Botones Redondeados (Píldora) */
+        .btn-ritual, .btn-instancia-exec { border: none; padding: 8px 18px; border-radius: 50px; cursor: pointer; font-size: 0.85em; margin: 4px 0; font-weight: bold; display: table !important; background: #A87C00 !important; color: #ffffff !important; text-decoration: none; text-align: center; width: auto !important; max-width: fit-content; box-sizing: border-box; overflow: hidden; }
         .instancia-botones { margin-top: 10px; display: flex; flex-direction: column; gap: 5px; }
+        
         .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .visor-content { width: 95%; height: 90%; background: #fff; border-radius: 8px; overflow: hidden; position: relative; }
         .visor-close { position: absolute; top: 8px; right: 8px; background: #ff0000; color: #ffffff; border: 2px solid #ffffff; width: 32px; height: 32px; border-radius: 50%; font-weight: bold; font-size: 18px; cursor: pointer; z-index: 2001; display: flex; align-items: center; justify-content: center; }
@@ -54,9 +63,18 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 fechaTrabajo = urlParams.get('fecha') || new Date().toISOString().split('T')[0];
                 numGradoActual = (urlParams.get('num') || "1").toString();
+                const oficialUrl = urlParams.get('ofi') || "";
+                
                 let s = (urlParams.get('sec') || "1").replace(/^0+/, "");
                 if (parseInt(s) > 3) seccionesVisibles.add(s);
+                
                 ejecutarCargaRitual(numGradoActual, s);
+
+                if (oficialUrl) {
+                    const oSel = document.getElementById("oficialFilter");
+                    oSel.value = oficialUrl;
+                    renderizarLiturgia();
+                }
             } catch (e) { console.error(e); }
         }
 
@@ -106,7 +124,10 @@
                 const sigla = item.getAttribute("sigla");
                 if (oficialesSet.has(sigla)) oSel.add(new Option(sigla + "∴", sigla));
             });
-            oSel.value = ofiPrevio;
+            
+            // Mantiene al oficial si existe en la nueva sección
+            if (oficialesSet.has(ofiPrevio)) oSel.value = ofiPrevio;
+            
             renderizarLiturgia();
         }
 
@@ -140,7 +161,8 @@
 
         function irA(codigo) {
             const g = codigo[0], s = parseInt(codigo.substring(1), 10).toString();
-            window.location.href = `rituales.html?num=${g}&sec=${s}&fecha=${fechaTrabajo}`;
+            const ofiActual = document.getElementById("oficialFilter").value;
+            window.location.href = `rituales.html?num=${g}&sec=${s}&fecha=${fechaTrabajo}&ofi=${ofiActual}`;
         }
 
         function volver() { window.history.back(); }
