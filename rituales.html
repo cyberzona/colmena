@@ -8,26 +8,47 @@
         body { font-family: 'Palatino Linotype', serif; line-height: 1.4; color: #2c2c2c; margin: 0; padding: 10px; background-color: #fdfaf3; }
         .header-container { display: flex; align-items: center; gap: 20px; margin-bottom: 10px; border-bottom: 2px solid #5d4037; padding-bottom: 10px; }
         .logia-info { display: flex; flex-direction: column; }
-        .logia-linea1 { font-size: 0.75rem; color: #8d6e63; letter-spacing: 0.5px; }
-        #titulo-ritual-header { font-size: 0.95rem; color: #5d4037; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
+        /* Título de la Logia aumentado */
+        .logia-linea1 { font-size: 1.1rem; color: #5d4037; letter-spacing: 0.5px; font-weight: bold; }
+        #titulo-ritual-header { font-size: 0.95rem; color: #8d6e63; text-transform: uppercase; letter-spacing: 1px; }
         .logo-mini { width: 65px; height: auto; }
+        
         #control-panel { background: #d7ccc8; padding: 12px; border-radius: 8px; border: 1px solid #a1887f; position: sticky; top: 0; z-index: 1000; display: flex; justify-content: space-between; }
         .container-select { display: flex; flex-direction: column; width: 48%; }
         select { padding: 8px; font-size: 0.9em; border-radius: 4px; border: 1px solid #8d6e63; background: #fff; font-weight: bold; width: 100%; outline: none; }
         .select-label { font-size: 0.7rem; color: #4e342e; font-weight: 800; text-transform: uppercase; margin-bottom: 4px; }
+        
         .sigla-texto-azul { color: #0277bd; font-weight: bold; }
         dt { font-weight: bold; color: #5d4037; margin-top: 15px; }
         dd { margin-left: 50px; border-left: 3px solid #d7ccc8; padding-left: 12px; position: relative; margin-bottom: 10px; counter-increment: line-counter; }
         dd::before { content: counter(line-counter); position: absolute; left: -45px; color: #5d4037; font-size: 1.1em; font-weight: 800; width: 35px; text-align: right; }
+        
         .resaltado { background: rgba(180, 255, 100, 0.4) !important; border-left: 5px solid #2e7d32 !important; }
         .apartado-header { font-weight: bold; color: #795548; font-size: 0.9em; border-bottom: 1px solid #d7ccc8; text-align: right; margin-top: 20px; }
-        .btn-ritual { border: none; padding: 10px 16px; border-radius: 20px; cursor: pointer; font-size: 0.85em; margin: 8px 0; font-weight: bold; display: inline-block; background: #5d4037; color: #ffffff !important; box-shadow: 0 2px 4px rgba(0,0,0,0.3); text-decoration: none; text-align: center; }
-        .btn-instancia-exec { background: #2e7d32; border: 2px solid #1b5e20; width: 100%; text-align: left; margin-bottom: 8px; color: white; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; }
-        .instancia-botones { margin-top: 10px; display: flex; flex-direction: column; gap: 5px; }
         
+        /* Botones unificados al color #A87C00 y sin efectos de sobre-resalte */
+        .btn-ritual, .btn-instancia-exec { 
+            border: none; 
+            padding: 10px 16px; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-size: 0.85em; 
+            margin: 8px 0; 
+            font-weight: bold; 
+            display: inline-block; 
+            background: #A87C00 !important; 
+            color: #ffffff !important; 
+            text-decoration: none; 
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .btn-ritual { width: auto; border-radius: 20px; } /* Mantengo forma pill solo para links de navegación */
+        
+        .instancia-botones { margin-top: 10px; display: flex; flex-direction: column; gap: 5px; }
         .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .visor-content { width: 95%; height: 90%; background: #fff; border-radius: 8px; overflow: hidden; position: relative; }
-        .visor-close { position: absolute; top: 10px; right: 10px; background: #ff0000; color: #ffffff; border: 2px solid #ffffff; width: 35px; height: 35px; border-radius: 50%; font-weight: bold; font-size: 20px; cursor: pointer; z-index: 2001; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        .visor-close { position: absolute; top: 10px; right: 10px; background: #ff0000; color: #ffffff; border: 2px solid #ffffff; width: 35px; height: 35px; border-radius: 50%; font-weight: bold; font-size: 20px; cursor: pointer; z-index: 2001; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body onload="inicializar()">
@@ -136,7 +157,6 @@
                     let txt = paso.getAttribute("texto") || paso.textContent || "";
                     const idL = `l-${sId}-${counter}`;
 
-                    // 1. PROCESAR LINKS CON SALTO DE LÍNEA
                     txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
                         const targetId = parseInt(cod.substring(1), 10).toString();
                         let nombreLink = desc;
@@ -147,7 +167,6 @@
                         return `<br><button class="btn-ritual" onclick="irA('${cod}')">${nombreLink.trim()} ➜</button>`;
                     });
 
-                    // 2. PROCESAR INSTANCIA CON SALTO DE LÍNEA
                     if (txt.includes("[[INSTANCIA]]")) {
                         if (oficialSel && oficialTur === oficialSel) {
                             const botones = procesarInstancia(oficialSel.toLowerCase());
@@ -167,7 +186,6 @@
             });
 
             contenedor.innerHTML = `<div style="counter-reset: line-counter;">${html}</div>`;
-            
             if (primeraID) {
                 const el = document.getElementById(primeraID);
                 if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -182,12 +200,7 @@
         function abrirVisor(url) {
             const overlay = document.createElement('div');
             overlay.className = 'visor-overlay';
-            overlay.innerHTML = `
-                <div class="visor-content">
-                    <button class="visor-close" onclick="this.parentElement.parentElement.remove()">✕</button>
-                    <iframe src="${url}" style="width:100%; height:100%; border:none;"></iframe>
-                </div>
-            `;
+            overlay.innerHTML = `<div class="visor-content"><button class="visor-close" onclick="this.parentElement.parentElement.remove()">✕</button><iframe src="${url}" style="width:100%; height:100%; border:none;"></iframe></div>`;
             document.body.appendChild(overlay);
         }
 
@@ -207,9 +220,8 @@
                 Array.from(tenidaActiva.getElementsByTagName("item")).forEach(i => {
                     if (i.getAttribute("acto") !== "balaustre") {
                         const url = i.getAttribute("url");
-                        const esExec = ["nuevo_grado", "elevacion", "iniciacion"].includes(i.getAttribute("acto"));
                         const accion = url.includes('rituales.html') ? `window.location.href='${url}&fecha=${tenidaActiva.getAttribute("fecha")}'` : `abrirVisor('${url}')`;
-                        contenido += `<button class="${esExec ? 'btn-instancia-exec' : 'btn-ritual'}" style="${esExec ? '' : 'width:100%; text-align:left; background:#8d6e63;'}" onclick="${accion}">${i.getAttribute("titulo")}</button>`;
+                        contenido += `<button class="btn-instancia-exec" onclick="${accion}">${i.getAttribute("titulo")}</button>`;
                     }
                 });
             }
