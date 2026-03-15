@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ritual - Colmena No. 8</title>
     <style>
+        /* Estilos conservados según rituales (2).html y rituales (3).html */
         body { font-family: 'Palatino Linotype', serif; line-height: 1.4; color: #2c2c2c; margin: 0; padding: 10px; background-color: #fdfaf3; }
         .header-container { display: flex; align-items: center; gap: 20px; margin-bottom: 10px; border-bottom: 2px solid #5d4037; padding-bottom: 10px; }
         .logia-info { display: flex; flex-direction: column; }
@@ -114,7 +115,6 @@
 
         function renderizarLiturgia() {
             const sId = document.getElementById("seccionFilter").value;
-            // Normalizamos el oficial seleccionado a minúsculas
             const fOfi = document.getElementById("oficialFilter").value.toLowerCase();
             const contenedor = document.getElementById('rituales-content');
             const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
@@ -142,7 +142,6 @@
                         return `<button class="btn-ritual" onclick="irA('${cod}')">${nombreLink.trim()} ➜</button>`;
                     });
 
-                    // Procesamiento de la instancia dinámica (Balaustres/Documentos)
                     txt = txt.replace(/\[\[INSTANCIA\]\]/g, () => fOfi ? procesarInstancia(fOfi) : "");
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     if (txt.startsWith('[')) txt = `<span class="accion-texto">${txt}</span>`;
@@ -162,13 +161,20 @@
             else { seccionesVisibles.add(s); actualizarSelectorSecciones(s); cambioDeSeccion(); }
         }
 
+        function abrirEnlace(url, titulo) {
+            if (url.includes("ID_DOCUMENTO")) {
+                alert(`⚠️ Error: El enlace para "${titulo}" no está configurado correctamente en tenidas.xml (ID de ejemplo detectado).`);
+                return;
+            }
+            window.open(url, '_blank');
+        }
+
         function procesarInstancia(fOfi) {
             if (!tenidasXml) return "";
             const listaTenidas = Array.from(tenidasXml.getElementsByTagName("tenida"));
             if (listaTenidas.length === 0) return "";
 
             if (fOfi === "sec") {
-                // Secretario: Busca el item con acto="balaustre" en la última tenida disponible
                 const ultimaTenida = listaTenidas[listaTenidas.length - 1];
                 const itemBal = Array.from(ultimaTenida.getElementsByTagName("item"))
                                      .find(i => i.getAttribute("acto") === "balaustre");
@@ -176,7 +182,7 @@
                 if (itemBal) {
                     return `<div class="instancia-container">
                         <strong>📜 BALAUSTRE (SESIÓN ANTERIOR):</strong><br><br>
-                        <button class="btn-ritual" style="width:100%;" onclick="window.open('${itemBal.getAttribute("url")}', '_blank')">
+                        <button class="btn-ritual" style="width:100%;" onclick="abrirEnlace('${itemBal.getAttribute("url")}', '${itemBal.getAttribute("titulo")}')">
                             Abrir ${itemBal.getAttribute("titulo")} ➜
                         </button>
                     </div>`;
@@ -184,23 +190,23 @@
             } 
             
             if (fOfi === "vm") {
-                // Venerable Maestro: Busca documentos para la fecha actual
-                const hoy = new Date().toISOString().split('T')[0];
+                // Ajuste de fecha local para evitar errores de zona horaria
+                const d = new Date();
+                const hoy = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+                
                 const tenidaHoy = listaTenidas.find(t => t.getAttribute("fecha") === hoy);
                 
                 if (tenidaHoy) {
                     let btns = "";
                     Array.from(tenidaHoy.getElementsByTagName("item")).forEach(i => {
                         const acto = i.getAttribute("acto");
-                        // Excluimos el balaustre para el VM, solo acciones del día
                         if (acto !== "balaustre") {
                             const titulo = i.getAttribute("titulo");
                             const url = i.getAttribute("url");
                             const esExec = ["nuevo_grado", "elevacion", "iniciacion"].includes(acto);
                             
-                            // Diferenciamos links internos de rituales vs enlaces externos (Drive)
                             const accion = url.includes('rituales.html') ? 
-                                `window.location.href='${url}'` : `window.open('${url}', '_blank')`;
+                                `window.location.href='${url}'` : `abrirEnlace('${url}', '${titulo}')`;
 
                             btns += `<button class="${esExec ? 'btn-instancia-exec' : 'btn-ritual'}" 
                                      style="${esExec ? '' : 'width:100%; text-align:left; background:#8d6e63;'}" 
