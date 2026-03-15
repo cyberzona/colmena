@@ -25,10 +25,9 @@
         .btn-instancia-exec { background: #2e7d32; border: 2px solid #1b5e20; width: 100%; text-align: left; margin-bottom: 8px; color: white; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; }
         .instancia-container { background: #fff9c4; border: 2px dashed #fbc02d; padding: 15px; margin: 15px 0; border-radius: 8px; }
         
-        /* Estilos del Visor */
-        .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; align-items: center; justify-content: center; }
         .visor-content { width: 95%; height: 90%; background: #fff; border-radius: 8px; overflow: hidden; position: relative; }
-        .visor-close { position: absolute; top: 10px; right: 10px; background: #ff0000; color: #ffffff; border: 2px solid #ffffff; width: 35px; height: 35px; border-radius: 50%; font-weight: bold; font-size: 20px; cursor: pointer; z-index: 2001; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        .visor-close { position: absolute; top: 10px; right: 10px; background: #ff0000; color: #ffffff; border: 2px solid #ffffff; width: 35px; height: 35px; border-radius: 50%; font-weight: bold; font-size: 20px; cursor: pointer; z-index: 2001; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body onload="inicializar()">
@@ -136,19 +135,20 @@
                     let txt = paso.getAttribute("texto") || paso.textContent || "";
                     const idL = `l-${sId}-${counter}`;
 
-                    // 1. PROCESAR LINKS (Sin romperlos)
+                    // 1. PROCESAR LINKS (Saltos de sección)
                     txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
                         let nombreLink = desc || "Ir";
                         return `<button class="btn-ritual" onclick="irA('${cod}')">${nombreLink.trim()} ➜</button>`;
                     });
 
-                    // 2. PROCESAR INSTANCIA (Solo una vez)
+                    // 2. PROCESAR INSTANCIA (Balaustre/Documentos)
                     if (txt.includes("[[INSTANCIA]]")) {
-                        if (!instanciaYaColocada && fOfi) {
+                        // Verificamos si el oficial seleccionado es VM o SEC para inyectar
+                        if (!instanciaYaColocada && (fOfi === "vm" || fOfi === "sec")) {
                             txt = txt.replace("[[INSTANCIA]]", procesarInstancia(fOfi));
                             instanciaYaColocada = true;
                         } else {
-                            txt = txt.replace("[[INSTANCIA]]", "");
+                            txt = txt.replace("[[INSTANCIA]]", ""); 
                         }
                     }
 
@@ -182,32 +182,27 @@
 
         function procesarInstancia(fOfi) {
             if (!tenidasXml) return "";
-            const listaTenidas = Array.from(tenidasXml.getElementsByTagName("tenida"));
-            const tenidaHoy = listaTenidas.find(t => t.getAttribute("fecha") === fechaTrabajo);
+            const tenidaHoy = Array.from(tenidasXml.getElementsByTagName("tenida")).find(t => t.getAttribute("fecha") === fechaTrabajo);
             if (!tenidaHoy) return "";
 
+            const items = Array.from(tenidaHoy.getElementsByTagName("item"));
+
             if (fOfi === "sec") {
-                const itemBal = Array.from(tenidaHoy.getElementsByTagName("item")).find(i => i.getAttribute("acto") === "balaustre");
-                if (itemBal) {
-                    return `<div class="instancia-container">
-                        <strong>📜 BALAUSTRE:</strong><br><br>
-                        <button class="btn-ritual" style="width:100%;" onclick="abrirVisor('${itemBal.getAttribute("url")}')">
-                            Abrir ${itemBal.getAttribute("titulo")} ➜
-                        </button>
-                    </div>`;
-                }
+                const bal = items.find(i => i.getAttribute("acto") === "balaustre");
+                return bal ? `<div class="instancia-container"><strong>📜 BALAUSTRE:</strong><br><button class="btn-ritual" style="width:100%;" onclick="abrirVisor('${bal.getAttribute("url")}')">Abrir ${bal.getAttribute("titulo")} ➜</button></div>` : "";
             } 
+            
             if (fOfi === "vm") {
                 let btns = "";
-                Array.from(tenidaHoy.getElementsByTagName("item")).forEach(i => {
+                items.forEach(i => {
                     if (i.getAttribute("acto") !== "balaustre") {
                         const url = i.getAttribute("url");
                         const esExec = ["nuevo_grado", "elevacion", "iniciacion"].includes(i.getAttribute("acto"));
                         const accion = url.includes('rituales.html') ? `window.location.href='${url}&fecha=${fechaTrabajo}'` : `abrirVisor('${url}')`;
-                        btns += `<button class="${esExec ? 'btn-instancia-exec' : 'btn-ritual'}" style="${esExec ? '' : 'width:100%; text-align:left; background:#8d6e63;'}" onclick="${accion}">${i.getAttribute("titulo")}</button>`;
+                        btns += `<button class="${esExec ? 'btn-instancia-exec' : 'btn-ritual'}" style="width:100%; text-align:left;" onclick="${accion}">${i.getAttribute("titulo")}</button>`;
                     }
                 });
-                return btns ? `<div class="instancia-container">${btns}</div>` : "";
+                return btns ? `<div class="instancia-container"><strong>🛠️ DOCUMENTOS:</strong><br>${btns}</div>` : "";
             }
             return "";
         }
