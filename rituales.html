@@ -21,10 +21,23 @@
         dd::before { content: counter(line-counter); position: absolute; left: -45px; color: #5d4037; font-size: 1.1em; font-weight: 800; width: 35px; text-align: right; }
         .resaltado { background: rgba(180, 255, 100, 0.4) !important; border-left: 5px solid #2e7d32 !important; }
         .apartado-header { font-weight: bold; color: #795548; font-size: 0.9em; border-bottom: 1px solid #d7ccc8; text-align: right; margin-top: 20px; }
-        .btn-ritual { border: none; padding: 10px 16px; border-radius: 20px; cursor: pointer; font-size: 0.85em; margin: 8px 0; font-weight: bold; display: inline-block; background: #5d4037; color: #ffffff !important; box-shadow: 0 2px 4px rgba(0,0,0,0.3); text-decoration: none; text-align: center; width: 100%; }
-        .instancia-container { background: #fff9c4; border: 2px dashed #fbc02d; padding: 10px; margin: 10px 0; border-radius: 8px; }
-        .iframe-visor { width: 100%; height: 500px; border: 1px solid #8d6e63; border-radius: 4px; background: #fff; margin-top: 5px; }
+        .btn-ritual { border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 0.85em; margin: 5px 0; font-weight: bold; display: inline-block; background: #5d4037; color: #ffffff !important; box-shadow: 0 2px 4px rgba(0,0,0,0.3); text-decoration: none; text-align: center; }
+        .btn-instancia-exec { background: #2e7d32; border: 2px solid #1b5e20; width: 100%; text-align: left; margin-bottom: 8px; color: white; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .instancia-container { background: #fff9c4; border: 2px dashed #fbc02d; padding: 15px; margin: 15px 0; border-radius: 8px; }
         .accion-texto { font-style: italic; color: #5d4037; }
+
+        /* Estilos para el visor independiente */
+        .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .visor-content { width: 95%; height: 90%; background: #fff; border-radius: 8px; overflow: hidden; position: relative; }
+        .visor-close { 
+            position: absolute; top: 10px; right: 10px; 
+            background: #ff0000; color: #ffffff; 
+            border: 2px solid #ffffff; width: 35px; height: 35px; 
+            border-radius: 50%; font-weight: bold; font-size: 20px;
+            cursor: pointer; z-index: 2001; 
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
     </style>
 </head>
 <body onload="inicializar()">
@@ -54,7 +67,7 @@
                 let s = (urlParams.get('sec') || "1").replace(/^0+/, "");
                 if (parseInt(s) > 3) seccionesVisibles.add(s);
                 ejecutarCargaRitual(numGradoActual, s);
-            } catch (e) { console.error("Error inicial:", e); }
+            } catch (e) { console.error(e); }
         }
 
         async function cargarDatos() {
@@ -100,8 +113,7 @@
             const oficialesSet = new Set();
             if (seccion) {
                 Array.from(seccion.getElementsByTagName("paso")).forEach(p => {
-                    const ofiAttr = p.getAttribute("oficial");
-                    if (ofiAttr) oficialesSet.add(ofiAttr.trim().toLowerCase());
+                    if (p.getAttribute("oficial")) oficialesSet.add(p.getAttribute("oficial").trim().toLowerCase());
                 });
             }
             oSel.innerHTML = '<option value="">---</option>';
@@ -115,10 +127,8 @@
 
         function renderizarLiturgia() {
             const sId = document.getElementById("seccionFilter").value;
-            const fOfi = document.getElementById("oficialFilter").value.toLowerCase();
+            const fOfi = document.getElementById("oficialFilter").value;
             const contenedor = document.getElementById('rituales-content');
-            
-            contenedor.innerHTML = ""; 
             const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
             if (!seccion) return;
 
@@ -133,85 +143,97 @@
                     const ofi = paso.getAttribute("oficial");
                     let txt = paso.getAttribute("texto") || paso.textContent || "";
                     const idL = `l-${sId}-${counter}`;
-                    const esOficial = (fOfi && ofi.toLowerCase() === fOfi);
 
-                    // Reemplazo de links estándar
                     txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
-                        return `<button class="btn-ritual" style="width:auto;" onclick="irA('${cod}')">${desc || 'Ir'} ➜</button>`;
+                        let nombreLink = desc;
+                        if (!nombreLink) {
+                            const ritualDestino = Array.from(xmlDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("grado") == cod[0]);
+                            const secDestino = ritualDestino ? Array.from(ritualDestino.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == parseInt(cod.substring(1))) : null;
+                            nombreLink = secDestino ? secDestino.getAttribute("titulo") : "Ir";
+                        }
+                        return `<button class="btn-ritual" onclick="irA('${cod}')">${nombreLink.trim()} ➜</button>`;
                     });
 
-                    // Sistema de INSTANCIA por BOTÓN
-                    txt = txt.replace(/\[\[INSTANCIA\]\]/g, () => {
-                        if (!esOficial) return "";
-                        return `<div id="cont-instancia-${idL}">
-                                    <button class="btn-ritual" style="background:#2e7d32;" onclick="abrirDocumento('${fOfi}', '${idL}')">
-                                        📄 ABRIR DOCUMENTO ∴
-                                    </button>
-                                </div>`;
-                    });
-                    
+                    txt = txt.replace(/\[\[INSTANCIA\]\]/g, () => fOfi ? procesarInstancia(fOfi) : "");
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     if (txt.startsWith('[')) txt = `<span class="accion-texto">${txt}</span>`;
 
+                    const esOficial = (fOfi && ofi.toLowerCase() === fOfi.toLowerCase());
                     if (esOficial && !primeraID) primeraID = idL;
                     html += `<dt>${ofi}∴</dt><dd class="${esOficial ? 'resaltado' : ''}" id="${idL}">${txt}</dd>`;
                 });
             });
-            
             contenedor.innerHTML = `<div style="counter-reset: line-counter;">${html}</div>`;
             if (primeraID) document.getElementById(primeraID).scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-
-        function abrirDocumento(fOfi, idL) {
-            const cont = document.getElementById(`cont-instancia-${idL}`);
-            if (!tenidasXml) return;
-
-            const listaTenidas = Array.from(tenidasXml.getElementsByTagName("tenida"));
-            if (listaTenidas.length === 0) return;
-
-            let contenidoHtml = "";
-
-            if (fOfi === "sec") {
-                const ultimaTenida = listaTenidas[listaTenidas.length - 1];
-                const item = Array.from(ultimaTenida.getElementsByTagName("item")).find(i => i.getAttribute("acto") === "balaustre");
-                if (item) {
-                    contenidoHtml = `<div class="instancia-container">
-                        <strong>📜 BALAUSTRE (SESIÓN ANTERIOR)</strong>
-                        <iframe src="${item.getAttribute("url")}" class="iframe-visor"></iframe>
-                    </div>`;
-                }
-            } else if (fOfi === "vm") {
-                const hoy = new Date().toISOString().split('T')[0];
-                const tenidaHoy = listaTenidas.find(t => t.getAttribute("fecha") === hoy);
-                if (tenidaHoy) {
-                    Array.from(tenidaHoy.getElementsByTagName("item")).forEach(i => {
-                        if (i.getAttribute("acto") !== "balaustre") {
-                            const url = i.getAttribute("url");
-                            const titulo = i.getAttribute("titulo");
-                            if (url.includes('rituales.html')) {
-                                contenidoHtml += `<button class="btn-ritual" style="background:#c62828;" onclick="window.location.href='${url}'">${titulo}</button>`;
-                            } else {
-                                contenidoHtml += `<div class="instancia-container">
-                                    <strong>📄 ${titulo.toUpperCase()}</strong>
-                                    <iframe src="${url}" class="iframe-visor"></iframe>
-                                </div>`;
-                            }
-                        }
-                    });
-                }
-            }
-
-            if (contenidoHtml) {
-                cont.innerHTML = contenidoHtml; // Reemplaza el botón por el iFrame
-            } else {
-                cont.innerHTML = "<p style='font-size:0.8em; color:gray;'>No hay documentos disponibles.</p>";
-            }
         }
 
         function irA(codigo) {
             const g = codigo[0], s = parseInt(codigo.substring(1), 10).toString();
             if (g !== numGradoActual) window.location.href = `rituales.html?num=${g}&sec=${s}`;
             else { seccionesVisibles.add(s); actualizarSelectorSecciones(s); cambioDeSeccion(); }
+        }
+
+        function abrirVisor(url) {
+            const overlay = document.createElement('div');
+            overlay.className = 'visor-overlay';
+            overlay.innerHTML = `
+                <div class="visor-content">
+                    <button class="visor-close" onclick="this.parentElement.parentElement.remove()">✕</button>
+                    <iframe src="${url}" style="width:100%; height:100%; border:none;"></iframe>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }
+
+        function procesarInstancia(fOfi) {
+            if (!tenidasXml) return "";
+            const listaTenidas = Array.from(tenidasXml.getElementsByTagName("tenida"));
+            if (listaTenidas.length === 0) return "";
+
+            const fOfiLower = fOfi.toLowerCase();
+
+            if (fOfiLower === "sec") {
+                const ultimaTenida = listaTenidas[listaTenidas.length - 1];
+                const itemBal = Array.from(ultimaTenida.getElementsByTagName("item"))
+                                     .find(i => i.getAttribute("acto") === "balaustre");
+                
+                if (itemBal) {
+                    const url = itemBal.getAttribute("url");
+                    return `<div class="instancia-container">
+                        <strong>📜 BALAUSTRE (SESIÓN ANTERIOR):</strong><br><br>
+                        <button class="btn-ritual" style="width:100%;" onclick="abrirVisor('${url}')">
+                            Ver Balaustre ➜
+                        </button>
+                    </div>`;
+                }
+            } 
+            
+            if (fOfiLower === "vm") {
+                const hoy = new Date().toISOString().split('T')[0];
+                const tenidaHoy = listaTenidas.find(t => t.getAttribute("fecha") === hoy);
+                
+                if (tenidaHoy) {
+                    let btns = "";
+                    Array.from(tenidaHoy.getElementsByTagName("item")).forEach(i => {
+                        const acto = i.getAttribute("acto");
+                        if (acto !== "balaustre") {
+                            const url = i.getAttribute("url");
+                            const titulo = i.getAttribute("titulo");
+                            const esExec = ["nuevo_grado", "elevacion", "iniciacion"].includes(acto);
+                            
+                            if (url.includes('rituales.html')) {
+                                btns += `<button class="btn-instancia-exec" onclick="window.location.href='${url}'">${titulo}</button>`;
+                            } else {
+                                btns += `<button class="${esExec ? 'btn-instancia-exec' : 'btn-ritual'}" 
+                                         style="${esExec ? '' : 'width:100%; text-align:left; background:#8d6e63;'}" 
+                                         onclick="abrirVisor('${url}')">📄 ${titulo}</button>`;
+                            }
+                        }
+                    });
+                    return btns ? `<div class="instancia-container">${btns}</div>` : "";
+                }
+            }
+            return "";
         }
     </script>
 </body>
