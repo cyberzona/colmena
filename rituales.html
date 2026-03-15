@@ -25,6 +25,7 @@
         .btn-instancia-exec { background: #2e7d32; border: 2px solid #1b5e20; width: 100%; text-align: left; margin-bottom: 8px; color: white; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; }
         .instancia-container { background: #fff9c4; border: 2px dashed #fbc02d; padding: 15px; margin: 15px 0; border-radius: 8px; }
         
+        /* Estilos del Visor */
         .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .visor-content { width: 95%; height: 90%; background: #fff; border-radius: 8px; overflow: hidden; position: relative; }
         .visor-close { position: absolute; top: 10px; right: 10px; background: #ff0000; color: #ffffff; border: 2px solid #ffffff; width: 35px; height: 35px; border-radius: 50%; font-weight: bold; font-size: 20px; cursor: pointer; z-index: 2001; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
@@ -59,7 +60,7 @@
                 let s = (urlParams.get('sec') || "1").replace(/^0+/, "");
                 if (parseInt(s) > 3) seccionesVisibles.add(s);
                 ejecutarCargaRitual(numGradoActual, s);
-            } catch (e) { console.error(e); }
+            } catch (e) { console.error("Error en inicialización:", e); }
         }
 
         async function cargarDatos() {
@@ -103,7 +104,8 @@
             const oficialesSet = new Set();
             if (seccion) {
                 Array.from(seccion.getElementsByTagName("paso")).forEach(p => {
-                    if (p.getAttribute("oficial")) oficialesSet.add(p.getAttribute("oficial").trim());
+                    const ofi = p.getAttribute("oficial");
+                    if (ofi) oficialesSet.add(ofi.trim());
                 });
             }
             oSel.innerHTML = '<option value="">---</option>';
@@ -117,7 +119,7 @@
 
         function renderizarLiturgia() {
             const sId = document.getElementById("seccionFilter").value;
-            const oficialSel = document.getElementById("oficialFilter").value; 
+            const oficialSel = document.getElementById("oficialFilter").value; // Lo seleccionado en el filtro
             const contenedor = document.getElementById('rituales-content');
             const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
             
@@ -132,11 +134,11 @@
                 
                 Array.from(apa.getElementsByTagName("paso")).forEach(paso => {
                     counter++;
-                    const oficialTur = paso.getAttribute("oficial"); 
+                    const oficialTur = paso.getAttribute("oficial"); // El oficial del XML en este paso
                     let txt = paso.getAttribute("texto") || paso.textContent || "";
                     const idL = `l-${sId}-${counter}`;
 
-                    // 1. PROCESAR LINKS CON TÍTULO AUTOMÁTICO
+                    // 1. PROCESAR LINKS CON TÍTULO AUTOMÁTICO DESDE EL XML
                     txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
                         const targetId = parseInt(cod.substring(1), 10).toString();
                         let nombreLink = desc;
@@ -147,15 +149,18 @@
                         return `<button class="btn-ritual" onclick="irA('${cod}')">${nombreLink.trim()} ➜</button>`;
                     });
 
-                    // 2. PROCESAR INSTANCIA (Uso de oficialSel vs oficialTur)
+                    // 2. PROCESAR INSTANCIA (Lógica excluyente para evitar duplicidad)
                     if (txt.includes("[[INSTANCIA]]")) {
                         if (oficialSel && oficialTur === oficialSel) {
+                            // Solo inyectar si el oficial del paso es el seleccionado
                             txt = txt.replace("[[INSTANCIA]]", procesarInstancia(oficialSel.toLowerCase()));
                         } else {
+                            // Eliminar la etiqueta si no es su turno
                             txt = txt.replace("[[INSTANCIA]]", "");
                         }
                     }
 
+                    // Formato de siglas masónicas
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     
                     const esOficialSeleccionado = (oficialSel && oficialTur === oficialSel);
@@ -197,7 +202,14 @@
 
             if (ofi === "sec") {
                 const itemBal = Array.from(tenidaHoy.getElementsByTagName("item")).find(i => i.getAttribute("acto") === "balaustre");
-                return itemBal ? `<div class="instancia-container"><strong>📜 BALAUSTRE:</strong><br><br><button class="btn-ritual" style="width:100%;" onclick="abrirVisor('${itemBal.getAttribute("url")}')">Abrir ${itemBal.getAttribute("titulo")} ➜</button></div>` : "";
+                if (itemBal) {
+                    return `<div class="instancia-container">
+                        <strong>📜 BALAUSTRE:</strong><br><br>
+                        <button class="btn-ritual" style="width:100%;" onclick="abrirVisor('${itemBal.getAttribute("url")}')">
+                            Abrir ${itemBal.getAttribute("titulo")} ➜
+                        </button>
+                    </div>`;
+                }
             } 
             if (ofi === "vm") {
                 let btns = "";
