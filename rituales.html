@@ -197,22 +197,17 @@
                         </button>
                     </div>`;
                 }
-            } 
-            
-            else if (fOfi === "vm") {
-                // Venerable Maestro: Ve TODO EXCEPTO el balaustre
+            }            
+            if (fOfi === "vm") {             
                 let btns = "";
                 items.forEach(i => {
                     const acto = i.getAttribute("acto");
                     if (acto !== "balaustre") {
                         const titulo = i.getAttribute("titulo");
                         const url = i.getAttribute("url");
-                        const esExec = ["nuevo_grado", "elevacion", "iniciacion"].includes(acto);
-                        
-                        // Si es link de ritual, mantenemos la fecha en la URL
+                        const esExec = ["nuevo_grado", "elevacion", "iniciacion"].includes(acto);                       
                         const accion = url.includes('rituales.html') ? 
                             `window.location.href='${url}&fecha=${fechaTrabajo}'` : `abrirEnlace('${url}', '${titulo}')`;
-
                         btns += `<button class="${esExec ? 'btn-instancia-exec' : 'btn-ritual'}" 
                                  style="${esExec ? '' : 'width:100%; text-align:left; background:#8d6e63;'}" 
                                  onclick="${accion}">${titulo}</button>`;
