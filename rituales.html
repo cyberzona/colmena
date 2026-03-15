@@ -21,11 +21,9 @@
         dd::before { content: counter(line-counter); position: absolute; left: -45px; color: #5d4037; font-size: 1.1em; font-weight: 800; width: 35px; text-align: right; }
         .resaltado { background: rgba(180, 255, 100, 0.4) !important; border-left: 5px solid #2e7d32 !important; }
         .apartado-header { font-weight: bold; color: #795548; font-size: 0.9em; border-bottom: 1px solid #d7ccc8; text-align: right; margin-top: 20px; }
-        .btn-ritual { border: none; padding: 10px 16px; border-radius: 20px; cursor: pointer; font-size: 0.85em; margin: 5px 0; font-weight: bold; display: inline-block; background: #5d4037; color: #ffffff !important; box-shadow: 0 2px 4px rgba(0,0,0,0.3); text-decoration: none; text-align: center; }
+        .btn-ritual { border: none; padding: 10px 16px; border-radius: 20px; cursor: pointer; font-size: 0.85em; margin: 8px 0; font-weight: bold; display: inline-block; background: #5d4037; color: #ffffff !important; box-shadow: 0 2px 4px rgba(0,0,0,0.3); text-decoration: none; text-align: center; }
         .btn-instancia-exec { background: #2e7d32; border: 2px solid #1b5e20; width: 100%; text-align: left; margin-bottom: 8px; color: white; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; }
-        
-        /* Contenedor invisible para botones de instancia */
-        .instancia-botones { margin: 10px 0; display: flex; flex-direction: column; gap: 5px; }
+        .instancia-botones { margin-top: 10px; display: flex; flex-direction: column; gap: 5px; }
         
         .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .visor-content { width: 95%; height: 90%; background: #fff; border-radius: 8px; overflow: hidden; position: relative; }
@@ -138,6 +136,7 @@
                     let txt = paso.getAttribute("texto") || paso.textContent || "";
                     const idL = `l-${sId}-${counter}`;
 
+                    // 1. PROCESAR LINKS CON SALTO DE LÍNEA
                     txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
                         const targetId = parseInt(cod.substring(1), 10).toString();
                         let nombreLink = desc;
@@ -145,12 +144,14 @@
                             const targetSec = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") === targetId);
                             nombreLink = targetSec ? targetSec.getAttribute("titulo") : "Ir";
                         }
-                        return `<button class="btn-ritual" onclick="irA('${cod}')">${nombreLink.trim()} ➜</button>`;
+                        return `<br><button class="btn-ritual" onclick="irA('${cod}')">${nombreLink.trim()} ➜</button>`;
                     });
 
+                    // 2. PROCESAR INSTANCIA CON SALTO DE LÍNEA
                     if (txt.includes("[[INSTANCIA]]")) {
                         if (oficialSel && oficialTur === oficialSel) {
-                            txt = txt.replace("[[INSTANCIA]]", procesarInstancia(oficialSel.toLowerCase()));
+                            const botones = procesarInstancia(oficialSel.toLowerCase());
+                            txt = txt.replace("[[INSTANCIA]]", botones ? `<br>${botones}` : "");
                         } else {
                             txt = txt.replace("[[INSTANCIA]]", "");
                         }
@@ -193,7 +194,6 @@
         function procesarInstancia(ofi) {
             if (!tenidasXml) return "";
             const listaTenidas = Array.from(tenidasXml.getElementsByTagName("tenida"));
-            // Buscamos fecha exacta o la última disponible
             const tenidaActiva = listaTenidas.find(t => t.getAttribute("fecha") === fechaTrabajo) || listaTenidas[listaTenidas.length - 1];
             if (!tenidaActiva) return "";
 
