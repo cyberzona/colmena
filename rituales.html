@@ -164,22 +164,26 @@
             if (!tenidasXml) return "";
             const listaTenidas = Array.from(tenidasXml.getElementsByTagName("tenida"));
             if (listaTenidas.length === 0) return "";
+
             if (fOfi === "sec") {
-                // Secretario: ÚNICAMENTE la balaustrada de la última sesión
+                // Secretario: ÚNICAMENTE muestra el texto del Balaustre de la última sesión registrada
                 const ultimaTenida = listaTenidas[listaTenidas.length - 1];
-                const bal = ultimaTenida.getElementsByTagName("balaustre")[0]?.textContent;
-                return bal ? `<div class="instancia-container"><strong>📜 BALAUSTRE ANTERIOR):</strong><br><br><div style="font-style: italic; white-space: pre-wrap;">${bal.trim()}</div></div>` : "";
-            }             
+                const bal = ultimaTenida.getElementsByTagName("balaustre")[0]?.textContent || 
+                            ultimaTenida.getElementsByTagName("balaustrada")[0]?.textContent;
+                return bal ? `<div class="instancia-container"><strong>📜 BALAUSTRE (SESIÓN ANTERIOR):</strong><br><br><div style="font-style: italic; white-space: pre-wrap;">${bal.trim()}</div></div>` : "";
+            } 
+            
             if (fOfi === "vm") {
-                // Venerable Maestro: ÚNICAMENTE los documentos/acciones de la sesión de HOY
+                // Venerable Maestro: ÚNICAMENTE botones de documentos de la sesión con fecha de HOY
                 const hoy = new Date().toISOString().split('T')[0];
-                const tenidaHoy = listaTenidas.find(t => t.getAttribute("fecha") === hoy);                
+                const tenidaHoy = listaTenidas.find(t => t.getAttribute("fecha") === hoy);
+                
                 if (tenidaHoy) {
                     let btns = "";
                     Array.from(tenidaHoy.getElementsByTagName("item")).forEach(i => {
                         const acto = i.getAttribute("acto");
-                        // Excluimos la balaustrada de los botones del VM
-                        if (acto !== "balaustre") {
+                        // El VM no lee el balaustre, solo documentos de acción
+                        if (acto !== "balaustre" && acto !== "balaustrada") {
                             const esExec = ["nuevo_grado", "elevacion", "iniciacion"].includes(acto);
                             btns += `<button class="${esExec ? 'btn-instancia-exec' : 'btn-ritual'}" style="${esExec ? '' : 'width:100%; text-align:left; background:#8d6e63;'}" onclick="${esExec ? "window.location.href='" + i.getAttribute("url") + "'" : "window.open('" + i.getAttribute("url") + "', '_blank')"}">${i.getAttribute("titulo")}</button>`;
                         }
