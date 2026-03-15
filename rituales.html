@@ -183,7 +183,7 @@ mi<!DOCTYPE html>
                     Array.from(tenidaHoy.getElementsByTagName("item")).forEach(i => {
                         const acto = i.getAttribute("acto");
                         // El VM no lee el balaustre, solo documentos de acción
-                        if (acto !== "balaustre" && acto !== "balaustrada") {
+                        if (acto !== "balaustre" ) {
                             const esExec = ["nuevo_grado", "elevacion", "iniciacion"].includes(acto);
                             btns += `<button class="${esExec ? 'btn-instancia-exec' : 'btn-ritual'}" style="${esExec ? '' : 'width:100%; text-align:left; background:#8d6e63;'}" onclick="${esExec ? "window.location.href='" + i.getAttribute("url") + "'" : "window.open('" + i.getAttribute("url") + "', '_blank')"}">${i.getAttribute("titulo")}</button>`;
                         }
