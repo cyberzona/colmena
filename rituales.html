@@ -1,4 +1,4 @@
-mi<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -21,7 +21,7 @@ mi<!DOCTYPE html>
         dd::before { content: counter(line-counter); position: absolute; left: -45px; color: #5d4037; font-size: 1.1em; font-weight: 800; width: 35px; text-align: right; }
         .resaltado { background: rgba(180, 255, 100, 0.4) !important; border-left: 5px solid #2e7d32 !important; }
         .apartado-header { font-weight: bold; color: #795548; font-size: 0.9em; border-bottom: 1px solid #d7ccc8; text-align: right; margin-top: 20px; }
-        .btn-ritual { border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 0.85em; margin: 5px 0; font-weight: bold; display: inline-block; background: #5d4037; color: #ffffff !important; box-shadow: 0 2px 4px rgba(0,0,0,0.3); text-decoration: none; }
+        .btn-ritual { border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 0.85em; margin: 5px 0; font-weight: bold; display: inline-block; background: #5d4037; color: #ffffff !important; box-shadow: 0 2px 4px rgba(0,0,0,0.3); text-decoration: none; text-align: center; }
         .btn-instancia-exec { background: #2e7d32; border: 2px solid #1b5e20; width: 100%; text-align: left; margin-bottom: 8px; color: white; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; }
         .instancia-container { background: #fff9c4; border: 2px dashed #fbc02d; padding: 15px; margin: 15px 0; border-radius: 8px; }
         .accion-texto { font-style: italic; color: #5d4037; }
@@ -114,7 +114,8 @@ mi<!DOCTYPE html>
 
         function renderizarLiturgia() {
             const sId = document.getElementById("seccionFilter").value;
-            const fOfi = document.getElementById("oficialFilter").value;
+            // Normalizamos el oficial seleccionado a minúsculas
+            const fOfi = document.getElementById("oficialFilter").value.toLowerCase();
             const contenedor = document.getElementById('rituales-content');
             const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
             if (!seccion) return;
@@ -141,11 +142,12 @@ mi<!DOCTYPE html>
                         return `<button class="btn-ritual" onclick="irA('${cod}')">${nombreLink.trim()} ➜</button>`;
                     });
 
+                    // Procesamiento de la instancia dinámica (Balaustres/Documentos)
                     txt = txt.replace(/\[\[INSTANCIA\]\]/g, () => fOfi ? procesarInstancia(fOfi) : "");
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     if (txt.startsWith('[')) txt = `<span class="accion-texto">${txt}</span>`;
 
-                    const esOficial = (fOfi && ofi.toLowerCase() === fOfi.toLowerCase());
+                    const esOficial = (fOfi && ofi.toLowerCase() === fOfi);
                     if (esOficial && !primeraID) primeraID = idL;
                     html += `<dt>${ofi}∴</dt><dd class="${esOficial ? 'resaltado' : ''}" id="${idL}">${txt}</dd>`;
                 });
@@ -166,14 +168,23 @@ mi<!DOCTYPE html>
             if (listaTenidas.length === 0) return "";
 
             if (fOfi === "sec") {
-                // Secretario: ÚNICAMENTE muestra el texto del Balaustre de la última sesión registrada
+                // Secretario: Busca el item con acto="balaustre" en la última tenida disponible
                 const ultimaTenida = listaTenidas[listaTenidas.length - 1];
-                const bal = ultimaTenida.getElementsByTagName("item")[0]?.textContent;
-                return bal ? `<div class="instancia-container"><strong>📜 BALAUSTRE (SESIÓN ANTERIOR):</strong><br><br><div style="font-style: italic; white-space: pre-wrap;">${bal.trim()}</div></div>` : "";
+                const itemBal = Array.from(ultimaTenida.getElementsByTagName("item"))
+                                     .find(i => i.getAttribute("acto") === "balaustre");
+                
+                if (itemBal) {
+                    return `<div class="instancia-container">
+                        <strong>📜 BALAUSTRE (SESIÓN ANTERIOR):</strong><br><br>
+                        <button class="btn-ritual" style="width:100%;" onclick="window.open('${itemBal.getAttribute("url")}', '_blank')">
+                            Abrir ${itemBal.getAttribute("titulo")} ➜
+                        </button>
+                    </div>`;
+                }
             } 
             
             if (fOfi === "vm") {
-                // Venerable Maestro: ÚNICAMENTE botones de documentos de la sesión con fecha de HOY
+                // Venerable Maestro: Busca documentos para la fecha actual
                 const hoy = new Date().toISOString().split('T')[0];
                 const tenidaHoy = listaTenidas.find(t => t.getAttribute("fecha") === hoy);
                 
@@ -181,10 +192,19 @@ mi<!DOCTYPE html>
                     let btns = "";
                     Array.from(tenidaHoy.getElementsByTagName("item")).forEach(i => {
                         const acto = i.getAttribute("acto");
-                        // El VM no lee el balaustre, solo documentos de acción
-                        if (acto !== "balaustre" ) {
+                        // Excluimos el balaustre para el VM, solo acciones del día
+                        if (acto !== "balaustre") {
+                            const titulo = i.getAttribute("titulo");
+                            const url = i.getAttribute("url");
                             const esExec = ["nuevo_grado", "elevacion", "iniciacion"].includes(acto);
-                            btns += `<button class="${esExec ? 'btn-instancia-exec' : 'btn-ritual'}" style="${esExec ? '' : 'width:100%; text-align:left; background:#8d6e63;'}" onclick="${esExec ? "window.location.href='" + i.getAttribute("url") + "'" : "window.open('" + i.getAttribute("url") + "', '_blank')"}">${i.getAttribute("titulo")}</button>`;
+                            
+                            // Diferenciamos links internos de rituales vs enlaces externos (Drive)
+                            const accion = url.includes('rituales.html') ? 
+                                `window.location.href='${url}'` : `window.open('${url}', '_blank')`;
+
+                            btns += `<button class="${esExec ? 'btn-instancia-exec' : 'btn-ritual'}" 
+                                     style="${esExec ? '' : 'width:100%; text-align:left; background:#8d6e63;'}" 
+                                     onclick="${accion}">${titulo}</button>`;
                         }
                     });
                     return btns ? `<div class="instancia-container">${btns}</div>` : "";
