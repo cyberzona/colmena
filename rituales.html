@@ -45,11 +45,17 @@
         let xmlDoc, glosarioDoc, tenidasXml, ritualActivo;
         let numGradoActual = "1";
         let seccionesVisibles = new Set(["1", "2", "3"]);
+        let fechaTrabajo = "";
 
         async function inicializar() {
             try {
                 await cargarDatos();
                 const urlParams = new URLSearchParams(window.location.search);
+                fechaTrabajo = urlParams.get('fecha');
+                if (!fechaTrabajo) {
+                    const d = new Date();
+                    fechaTrabajo = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+                }
                 numGradoActual = (urlParams.get('num') || "1").toString();
                 let s = (urlParams.get('sec') || "1").replace(/^0+/, "");
                 if (parseInt(s) > 3) seccionesVisibles.add(s);
@@ -85,9 +91,7 @@
             sSel.innerHTML = "";
             Array.from(ritualActivo.getElementsByTagName("seccion")).forEach(sec => {
                 const id = sec.getAttribute("id");
-                if (seccionesVisibles.has(id)) {
-                    sSel.add(new Option(sec.getAttribute("titulo"), id));
-                }
+                if (seccionesVisibles.has(id)) sSel.add(new Option(sec.getAttribute("titulo"), id));
             });
             sSel.value = valAnterior;
         }
@@ -114,7 +118,6 @@
 
         function renderizarLiturgia() {
             const sId = document.getElementById("seccionFilter").value;
-            // Normalizamos el oficial seleccionado a minúsculas
             const fOfi = document.getElementById("oficialFilter").value.toLowerCase();
             const contenedor = document.getElementById('rituales-content');
             const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
@@ -123,6 +126,9 @@
             let html = "";
             let counter = 0;
             let primeraID = null;
+            
+            // Bandera de control para inyectar solo una vez por renderizado
+            let instanciaColocada = false;
 
             Array.from(seccion.getElementsByTagName("apartado")).forEach(apa => {
                 html += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>`;
@@ -132,24 +138,28 @@
                     let txt = paso.getAttribute("texto") || paso.textContent || "";
                     const idL = `l-${sId}-${counter}`;
 
+                    // Reemplazo de links
                     txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
-                        let nombreLink = desc;
-                        if (!nombreLink) {
-                            const ritualDestino = Array.from(xmlDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("grado") == cod[0]);
-                            const secDestino = ritualDestino ? Array.from(ritualDestino.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == parseInt(cod.substring(1))) : null;
-                            nombreLink = secDestino ? secDestino.getAttribute("titulo") : "Ir";
-                        }
+                        let nombreLink = desc || "Ir";
                         return `<button class="btn-ritual" onclick="irA('${cod}')">${nombreLink.trim()} ➜</button>`;
                     });
 
-                    // Procesamiento de la instancia dinámica (Balaustres/Documentos)
-                    txt = txt.replace(/\[\[INSTANCIA\]\]/g, () => fOfi ? procesarInstancia(fOfi) : "");
+                    // Lógica de Instancia: Si hay etiqueta y no se ha puesto aún, la inyectamos para el oficial activo
+                    if (txt.includes("[[INSTANCIA]]")) {
+                        if (!instanciaColocada && (fOfi === "sec" || fOfi === "vm")) {
+                            txt = txt.replace("[[INSTANCIA]]", procesarInstancia(fOfi));
+                            instanciaColocada = true;
+                        } else {
+                            txt = txt.replace("[[INSTANCIA]]", ""); // Limpiamos duplicados o etiquetas para otros oficiales
+                        }
+                    }
+
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     if (txt.startsWith('[')) txt = `<span class="accion-texto">${txt}</span>`;
 
-                    const esOficial = (fOfi && ofi.toLowerCase() === fOfi);
-                    if (esOficial && !primeraID) primeraID = idL;
-                    html += `<dt>${ofi}∴</dt><dd class="${esOficial ? 'resaltado' : ''}" id="${idL}">${txt}</dd>`;
+                    const esOficialSeleccionado = (fOfi && ofi.toLowerCase() === fOfi);
+                    if (esOficialSeleccionado && !primeraID) primeraID = idL;
+                    html += `<dt>${ofi}∴</dt><dd class="${esOficialSeleccionado ? 'resaltado' : ''}" id="${idL}">${txt}</dd>`;
                 });
             });
             contenedor.innerHTML = `<div style="counter-reset: line-counter;">${html}</div>`;
@@ -158,59 +168,53 @@
 
         function irA(codigo) {
             const g = codigo[0], s = parseInt(codigo.substring(1), 10).toString();
-            if (g !== numGradoActual) window.location.href = `rituales.html?num=${g}&sec=${s}`;
-            else { seccionesVisibles.add(s); actualizarSelectorSecciones(s); cambioDeSeccion(); }
+            window.location.href = `rituales.html?num=${g}&sec=${s}&fecha=${fechaTrabajo}`;
+        }
+
+        function abrirEnlace(url, titulo) {
+            if (url.includes("ID_DOCUMENTO")) {
+                alert(`⚠️ El documento "${titulo}" no tiene una URL válida.`);
+                return;
+            }
+            window.open(url, '_blank');
         }
 
         function procesarInstancia(fOfi) {
             if (!tenidasXml) return "";
-            const listaTenidas = Array.from(tenidasXml.getElementsByTagName("tenida"));
-            if (listaTenidas.length === 0) return "";
+            const tenidaHoy = Array.from(tenidasXml.getElementsByTagName("tenida")).find(t => t.getAttribute("fecha") === fechaTrabajo);
+            if (!tenidaHoy) return "";
+
+            const items = Array.from(tenidaHoy.getElementsByTagName("item"));
+            let htmlInstancia = "";
 
             if (fOfi === "sec") {
-                // Secretario: Busca el item con acto="balaustre" en la última tenida disponible
-                const ultimaTenida = listaTenidas[listaTenidas.length - 1];
-                const itemBal = Array.from(ultimaTenida.getElementsByTagName("item"))
-                                     .find(i => i.getAttribute("acto") === "balaustre");
-                
+                const itemBal = items.find(i => i.getAttribute("acto") === "balaustre");
                 if (itemBal) {
-                    return `<div class="instancia-container">
-                        <strong>📜 BALAUSTRE (SESIÓN ANTERIOR):</strong><br><br>
-                        <button class="btn-ritual" style="width:100%;" onclick="window.open('${itemBal.getAttribute("url")}', '_blank')">
+                    htmlInstancia = `<div class="instancia-container">
+                        <strong>📜 DESPACHO DEL SECRETARIO:</strong><br><br>
+                        <button class="btn-ritual" style="width:100%;" onclick="abrirEnlace('${itemBal.getAttribute("url")}', '${itemBal.getAttribute("titulo")}')">
                             Abrir ${itemBal.getAttribute("titulo")} ➜
                         </button>
                     </div>`;
                 }
             } 
-            
-            if (fOfi === "vm") {
-                // Venerable Maestro: Busca documentos para la fecha actual
-                const hoy = new Date().toISOString().split('T')[0];
-                const tenidaHoy = listaTenidas.find(t => t.getAttribute("fecha") === hoy);
-                
-                if (tenidaHoy) {
-                    let btns = "";
-                    Array.from(tenidaHoy.getElementsByTagName("item")).forEach(i => {
-                        const acto = i.getAttribute("acto");
-                        // Excluimos el balaustre para el VM, solo acciones del día
-                        if (acto !== "balaustre") {
-                            const titulo = i.getAttribute("titulo");
-                            const url = i.getAttribute("url");
-                            const esExec = ["nuevo_grado", "elevacion", "iniciacion"].includes(acto);
-                            
-                            // Diferenciamos links internos de rituales vs enlaces externos (Drive)
-                            const accion = url.includes('rituales.html') ? 
-                                `window.location.href='${url}'` : `window.open('${url}', '_blank')`;
+            else if (fOfi === "vm") {
+                let btns = "";
+                items.forEach(i => {
+                    if (i.getAttribute("acto") !== "balaustre") {
+                        const titulo = i.getAttribute("titulo");
+                        const url = i.getAttribute("url");
+                        const esExec = ["nuevo_grado", "elevacion", "iniciacion"].includes(i.getAttribute("acto"));
+                        const accion = url.includes('rituales.html') ? `window.location.href='${url}&fecha=${fechaTrabajo}'` : `abrirEnlace('${url}', '${titulo}')`;
 
-                            btns += `<button class="${esExec ? 'btn-instancia-exec' : 'btn-ritual'}" 
-                                     style="${esExec ? '' : 'width:100%; text-align:left; background:#8d6e63;'}" 
-                                     onclick="${accion}">${titulo}</button>`;
-                        }
-                    });
-                    return btns ? `<div class="instancia-container">${btns}</div>` : "";
-                }
+                        btns += `<button class="${esExec ? 'btn-instancia-exec' : 'btn-ritual'}" 
+                                 style="${esExec ? '' : 'width:100%; text-align:left; background:#8d6e63;'}" 
+                                 onclick="${accion}">${titulo}</button>`;
+                    }
+                });
+                if (btns) htmlInstancia = `<div class="instancia-container"><strong>🛠️ TRABAJOS DEL DÍA:</strong><br><br>${btns}</div>`;
             }
-            return "";
+            return htmlInstancia;
         }
     </script>
 </body>
