@@ -25,7 +25,6 @@
         .btn-instancia-exec { background: #2e7d32; border: 2px solid #1b5e20; width: 100%; text-align: left; margin-bottom: 8px; color: white; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; }
         .instancia-container { background: #fff9c4; border: 2px dashed #fbc02d; padding: 15px; margin: 15px 0; border-radius: 8px; }
         
-        /* Estilos del Visor */
         .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .visor-content { width: 95%; height: 90%; background: #fff; border-radius: 8px; overflow: hidden; position: relative; }
         .visor-close { position: absolute; top: 10px; right: 10px; background: #ff0000; color: #ffffff; border: 2px solid #ffffff; width: 35px; height: 35px; border-radius: 50%; font-weight: bold; font-size: 20px; cursor: pointer; z-index: 2001; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
@@ -136,20 +135,20 @@
                     let txt = paso.getAttribute("texto") || paso.textContent || "";
                     const idL = `l-${sId}-${counter}`;
 
-                    // 1. PROCESAR LINKS CON TÍTULO DE SECCIÓN
+                    // 1. PROCESAR LINKS CON TÍTULO AUTOMÁTICO
                     txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
-                        const targetSecId = parseInt(cod.substring(1), 10).toString();
+                        const targetId = parseInt(cod.substring(1), 10).toString();
                         let nombreLink = desc;
-                        
                         if (!nombreLink) {
-                            const targetSec = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") === targetSecId);
+                            const targetSec = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") === targetId);
                             nombreLink = targetSec ? targetSec.getAttribute("titulo") : "Ir";
                         }
                         return `<button class="btn-ritual" onclick="irA('${cod}')">${nombreLink.trim()} ➜</button>`;
                     });
 
-                    // 2. PROCESAR INSTANCIA (Validando que el oficial del turno sea el filtrado)
+                    // 2. PROCESAR INSTANCIA (Corrección de duplicidad)
                     if (txt.includes("[[INSTANCIA]]")) {
+                        // Solo inyectar si el oficial del paso es el oficial filtrado
                         if (fOfi && ofiLower === fOfi) {
                             txt = txt.replace("[[INSTANCIA]]", procesarInstancia(fOfi));
                         } else {
@@ -187,20 +186,12 @@
 
         function procesarInstancia(fOfi) {
             if (!tenidasXml) return "";
-            const listaTenidas = Array.from(tenidasXml.getElementsByTagName("tenida"));
-            const tenidaHoy = listaTenidas.find(t => t.getAttribute("fecha") === fechaTrabajo);
+            const tenidaHoy = Array.from(tenidasXml.getElementsByTagName("tenida")).find(t => t.getAttribute("fecha") === fechaTrabajo);
             if (!tenidaHoy) return "";
 
             if (fOfi === "sec") {
                 const itemBal = Array.from(tenidaHoy.getElementsByTagName("item")).find(i => i.getAttribute("acto") === "balaustre");
-                if (itemBal) {
-                    return `<div class="instancia-container">
-                        <strong>📜 BALAUSTRE:</strong><br><br>
-                        <button class="btn-ritual" style="width:100%;" onclick="abrirVisor('${itemBal.getAttribute("url")}')">
-                            Abrir ${itemBal.getAttribute("titulo")} ➜
-                        </button>
-                    </div>`;
-                }
+                return itemBal ? `<div class="instancia-container"><strong>📜 BALAUSTRE:</strong><br><br><button class="btn-ritual" style="width:100%;" onclick="abrirVisor('${itemBal.getAttribute("url")}')">Abrir ${itemBal.getAttribute("titulo")} ➜</button></div>` : "";
             } 
             if (fOfi === "vm") {
                 let btns = "";
