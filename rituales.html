@@ -165,7 +165,11 @@
             window.location.href = `rituales.html?num=${g}&sec=${s}&fecha=${fechaTrabajo}&ofi=${ofiActual}`;
         }
 
-        function volver() { window.history.back(); }
+        function volver() {
+            if (window.history.length > 1) { window.history.back();
+               setTimeout(() => { renderizarLiturgia(); }, 100);
+            } else { window.location.href = `rituales.html?num=${numGradoActual}&sec=1&fecha=${fechaTrabajo}`; }
+        }
 
         function abrirVisor(url) {
             const overlay = document.createElement('div');
