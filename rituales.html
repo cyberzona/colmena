@@ -51,13 +51,11 @@
             try {
                 await cargarDatos();
                 const urlParams = new URLSearchParams(window.location.search);
-                
                 fechaTrabajo = urlParams.get('fecha');
                 if (!fechaTrabajo) {
                     const d = new Date();
                     fechaTrabajo = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
                 }
-
                 numGradoActual = (urlParams.get('num') || "1").toString();
                 let s = (urlParams.get('sec') || "1").replace(/^0+/, "");
                 if (parseInt(s) > 3) seccionesVisibles.add(s);
@@ -93,9 +91,7 @@
             sSel.innerHTML = "";
             Array.from(ritualActivo.getElementsByTagName("seccion")).forEach(sec => {
                 const id = sec.getAttribute("id");
-                if (seccionesVisibles.has(id)) {
-                    sSel.add(new Option(sec.getAttribute("titulo"), id));
-                }
+                if (seccionesVisibles.has(id)) sSel.add(new Option(sec.getAttribute("titulo"), id));
             });
             sSel.value = valAnterior;
         }
@@ -130,6 +126,9 @@
             let html = "";
             let counter = 0;
             let primeraID = null;
+            
+            // BANDERA PARA EVITAR DUPLICADOS POR SECCIÓN
+            let instanciaYaRenderizada = false;
 
             Array.from(seccion.getElementsByTagName("apartado")).forEach(apa => {
                 html += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>`;
@@ -139,6 +138,7 @@
                     let txt = paso.getAttribute("texto") || paso.textContent || "";
                     const idL = `l-${sId}-${counter}`;
 
+                    // Reemplazo de links
                     txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
                         let nombreLink = desc;
                         if (!nombreLink) {
@@ -149,7 +149,15 @@
                         return `<button class="btn-ritual" onclick="irA('${cod}')">${nombreLink.trim()} ➜</button>`;
                     });
 
-                    txt = txt.replace(/\[\[INSTANCIA\]\]/g, () => fOfi ? procesarInstancia(fOfi) : "");
+                    // Lógica de Instancia con control de duplicados
+                    txt = txt.replace(/\[\[INSTANCIA\]\]/g, () => {
+                        if (!instanciaYaRenderizada && fOfi) {
+                            instanciaYaRenderizada = true; 
+                            return procesarInstancia(fOfi);
+                        }
+                        return "";
+                    });
+
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     if (txt.startsWith('[')) txt = `<span class="accion-texto">${txt}</span>`;
 
@@ -164,13 +172,12 @@
 
         function irA(codigo) {
             const g = codigo[0], s = parseInt(codigo.substring(1), 10).toString();
-            if (g !== numGradoActual) window.location.href = `rituales.html?num=${g}&sec=${s}&fecha=${fechaTrabajo}`;
-            else { seccionesVisibles.add(s); actualizarSelectorSecciones(s); cambioDeSeccion(); }
+            window.location.href = `rituales.html?num=${g}&sec=${s}&fecha=${fechaTrabajo}`;
         }
 
         function abrirEnlace(url, titulo) {
             if (url.includes("ID_DOCUMENTO")) {
-                alert(`⚠️ Error: El documento "${titulo}" no tiene una URL válida en tenidas.xml.`);
+                alert(`⚠️ El documento "${titulo}" no tiene una URL válida.`);
                 return;
             }
             window.open(url, '_blank');
@@ -178,33 +185,34 @@
 
         function procesarInstancia(fOfi) {
             if (!tenidasXml) return "";
-            const listaTenidas = Array.from(tenidasXml.getElementsByTagName("tenida"));
-            const tenidaHoy = listaTenidas.find(t => t.getAttribute("fecha") === fechaTrabajo);            
+            const tenidaHoy = Array.from(tenidasXml.getElementsByTagName("tenida")).find(t => t.getAttribute("fecha") === fechaTrabajo);
             if (!tenidaHoy) return "";
+
             const items = Array.from(tenidaHoy.getElementsByTagName("item"));
             let htmlInstancia = "";
+
             if (fOfi === "sec") {
-                // Secretario: ÚNICAMENTE ve el balaustre
+                // EXCLUSIVO SECRETARIO: Solo Acto Balaustre
                 const itemBal = items.find(i => i.getAttribute("acto") === "balaustre");
                 if (itemBal) {
                     htmlInstancia = `<div class="instancia-container">
-                        <strong>📜 LECTURA DEL BALAUSTRE:</strong><br><br>
+                        <strong>📜 DESPACHO DEL SECRETARIO:</strong><br><br>
                         <button class="btn-ritual" style="width:100%;" onclick="abrirEnlace('${itemBal.getAttribute("url")}', '${itemBal.getAttribute("titulo")}')">
                             Abrir ${itemBal.getAttribute("titulo")} ➜
                         </button>
                     </div>`;
                 }
-            }            
-            if (fOfi === "vm") {             
+            } 
+            else if (fOfi === "vm") {
+                // EXCLUSIVO VM: Todo lo que NO sea balaustre
                 let btns = "";
                 items.forEach(i => {
-                    const acto = i.getAttribute("acto");
-                    if (acto !== "balaustre") {
+                    if (i.getAttribute("acto") !== "balaustre") {
                         const titulo = i.getAttribute("titulo");
                         const url = i.getAttribute("url");
-                        const esExec = ["nuevo_grado", "elevacion", "iniciacion"].includes(acto);                       
-                        const accion = url.includes('rituales.html') ? 
-                            `window.location.href='${url}&fecha=${fechaTrabajo}'` : `abrirEnlace('${url}', '${titulo}')`;
+                        const esExec = ["nuevo_grado", "elevacion", "iniciacion"].includes(i.getAttribute("acto"));
+                        const accion = url.includes('rituales.html') ? `window.location.href='${url}&fecha=${fechaTrabajo}'` : `abrirEnlace('${url}', '${titulo}')`;
+
                         btns += `<button class="${esExec ? 'btn-instancia-exec' : 'btn-ritual'}" 
                                  style="${esExec ? '' : 'width:100%; text-align:left; background:#8d6e63;'}" 
                                  onclick="${accion}">${titulo}</button>`;
