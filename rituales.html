@@ -126,9 +126,6 @@
             let html = "";
             let counter = 0;
             let primeraID = null;
-            
-            // BANDERA PARA EVITAR DUPLICADOS POR SECCIÓN
-            let instanciaYaRenderizada = false;
 
             Array.from(seccion.getElementsByTagName("apartado")).forEach(apa => {
                 html += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>`;
@@ -138,32 +135,30 @@
                     let txt = paso.getAttribute("texto") || paso.textContent || "";
                     const idL = `l-${sId}-${counter}`;
 
-                    // Reemplazo de links
+                    // 1. Reemplazo de links normales
                     txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
-                        let nombreLink = desc;
-                        if (!nombreLink) {
-                            const ritualDestino = Array.from(xmlDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("grado") == cod[0]);
-                            const secDestino = ritualDestino ? Array.from(ritualDestino.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == parseInt(cod.substring(1))) : null;
-                            nombreLink = secDestino ? secDestino.getAttribute("titulo") : "Ir";
-                        }
+                        let nombreLink = desc || "Ir";
                         return `<button class="btn-ritual" onclick="irA('${cod}')">${nombreLink.trim()} ➜</button>`;
                     });
 
-                    // Lógica de Instancia con control de duplicados
-                    txt = txt.replace(/\[\[INSTANCIA\]\]/g, () => {
-                        if (!instanciaYaRenderizada && fOfi) {
-                            instanciaYaRenderizada = true; 
-                            return procesarInstancia(fOfi);
-                        }
-                        return "";
-                    });
+                    // 2. LÓGICA ANTI-DUPLICADOS:
+                    // Limpiamos siempre la etiqueta [[INSTANCIA]] para que no aparezca como texto
+                    const tieneEtiquetaInstancia = txt.includes("[[INSTANCIA]]");
+                    txt = txt.replace(/\[\[INSTANCIA\]\]/g, "");
 
+                    // 3. Formateo de siglas y acciones
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     if (txt.startsWith('[')) txt = `<span class="accion-texto">${txt}</span>`;
 
-                    const esOficial = (fOfi && ofi.toLowerCase() === fOfi);
-                    if (esOficial && !primeraID) primeraID = idL;
-                    html += `<dt>${ofi}∴</dt><dd class="${esOficial ? 'resaltado' : ''}" id="${idL}">${txt}</dd>`;
+                    const esOficialSeleccionado = (fOfi && ofi.toLowerCase() === fOfi);
+                    
+                    // Solo inyectamos los botones si es el oficial seleccionado Y el paso tiene la etiqueta
+                    if (esOficialSeleccionado && tieneEtiquetaInstancia) {
+                        txt += procesarInstancia(fOfi);
+                    }
+
+                    if (esOficialSeleccionado && !primeraID) primeraID = idL;
+                    html += `<dt>${ofi}∴</dt><dd class="${esOficialSeleccionado ? 'resaltado' : ''}" id="${idL}">${txt}</dd>`;
                 });
             });
             contenedor.innerHTML = `<div style="counter-reset: line-counter;">${html}</div>`;
@@ -192,7 +187,6 @@
             let htmlInstancia = "";
 
             if (fOfi === "sec") {
-                // EXCLUSIVO SECRETARIO: Solo Acto Balaustre
                 const itemBal = items.find(i => i.getAttribute("acto") === "balaustre");
                 if (itemBal) {
                     htmlInstancia = `<div class="instancia-container">
@@ -204,7 +198,6 @@
                 }
             } 
             else if (fOfi === "vm") {
-                // EXCLUSIVO VM: Todo lo que NO sea balaustre
                 let btns = "";
                 items.forEach(i => {
                     if (i.getAttribute("acto") !== "balaustre") {
