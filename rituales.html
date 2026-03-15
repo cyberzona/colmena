@@ -179,13 +179,10 @@
         function procesarInstancia(fOfi) {
             if (!tenidasXml) return "";
             const listaTenidas = Array.from(tenidasXml.getElementsByTagName("tenida"));
-            const tenidaHoy = listaTenidas.find(t => t.getAttribute("fecha") === fechaTrabajo);
-            
+            const tenidaHoy = listaTenidas.find(t => t.getAttribute("fecha") === fechaTrabajo);            
             if (!tenidaHoy) return "";
-
             const items = Array.from(tenidaHoy.getElementsByTagName("item"));
             let htmlInstancia = "";
-
             if (fOfi === "sec") {
                 // Secretario: ÚNICAMENTE ve el balaustre
                 const itemBal = items.find(i => i.getAttribute("acto") === "balaustre");
