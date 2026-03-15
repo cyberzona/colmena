@@ -23,7 +23,7 @@
         .apartado-header { font-weight: bold; color: #795548; font-size: 0.9em; border-bottom: 1px solid #d7ccc8; text-align: right; margin-top: 20px; }
         .btn-ritual { border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 0.85em; margin: 5px 0; font-weight: bold; display: inline-block; background: #5d4037; color: #ffffff !important; box-shadow: 0 2px 4px rgba(0,0,0,0.3); text-decoration: none; text-align: center; }
         .btn-instancia-exec { background: #2e7d32; border: 2px solid #1b5e20; width: 100%; text-align: left; margin-bottom: 8px; color: white; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; }
-        .instancia-container { background: #fff9c4; border: 2px dashed #fbc02d; padding: 15px; margin: 15px 0; border-radius: 8px; }
+        .instancia-container { background: #fff9c4; border: 2px dashed #fbc02d; padding: 15px; margin: 15px 0; border-radius: 8px; display: none; }
         .iframe-visor { width: 100%; height: 450px; border: 1px solid #8d6e63; border-radius: 4px; margin-top: 10px; background: #fff; }
         .accion-texto { font-style: italic; color: #5d4037; }
     </style>
@@ -119,7 +119,6 @@
             const fOfi = document.getElementById("oficialFilter").value.toLowerCase();
             const contenedor = document.getElementById('rituales-content');
             
-            // LIMPÌEZA CRÍTICA: Vaciar el contenedor antes de renderizar para evitar duplicados
             contenedor.innerHTML = ""; 
 
             const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
@@ -137,20 +136,22 @@
                     let txt = paso.getAttribute("texto") || paso.textContent || "";
                     const idL = `l-${sId}-${counter}`;
 
-                    // Reemplazo de links
+                    // Links
                     txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
-                        let nombreLink = desc;
-                        if (!nombreLink) {
-                            const ritualDestino = Array.from(xmlDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("grado") == cod[0]);
-                            const secDestino = ritualDestino ? Array.from(ritualDestino.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == parseInt(cod.substring(1))) : null;
-                            nombreLink = secDestino ? secDestino.getAttribute("titulo") : "Ir";
-                        }
-                        return `<button class="btn-ritual" onclick="irA('${cod}')">${nombreLink.trim()} ➜</button>`;
+                        return `<button class="btn-ritual" onclick="irA('${cod}')">${desc || 'Ir'} ➜</button>`;
                     });
 
-                    // Inserción de la instancia (SÓLO si el oficial coincide)
+                    // INSTANCIA con botón para evitar duplicidad y carga automática
                     const esOficial = (fOfi && ofi.toLowerCase() === fOfi);
-                    txt = txt.replace(/\[\[INSTANCIA\]\]/g, () => (esOficial ? procesarInstancia(fOfi) : ""));
+                    txt = txt.replace(/\[\[INSTANCIA\]\]/g, () => {
+                        if (!esOficial) return "";
+                        return `<div id="btn-trigger-${idL}">
+                                    <button class="btn-ritual" style="background:#2e7d32; width:100%;" onclick="activarInstancia('${fOfi}', '${idL}')">
+                                        📂 VER DOCUMENTOS Y MEMOS ∴
+                                    </button>
+                                </div>
+                                <div id="container-${idL}" class="instancia-container"></div>`;
+                    });
                     
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     if (txt.startsWith('[')) txt = `<span class="accion-texto">${txt}</span>`;
@@ -164,38 +165,45 @@
             if (primeraID) document.getElementById(primeraID).scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
-        function irA(codigo) {
-            const g = codigo[0], s = parseInt(codigo.substring(1), 10).toString();
-            if (g !== numGradoActual) window.location.href = `rituales.html?num=${g}&sec=${s}`;
-            else { seccionesVisibles.add(s); actualizarSelectorSecciones(s); cambioDeSeccion(); }
+        function activarInstancia(fOfi, idL) {
+            const btnTrigger = document.getElementById(`btn-trigger-${idL}`);
+            const container = document.getElementById(`container-${idL}`);
+            
+            // Si ya está visible, lo ocultamos
+            if (container.style.display === "block") {
+                container.style.display = "none";
+                return;
+            }
+
+            // Generamos el contenido solo una vez
+            const contenido = generarContenidoInstancia(fOfi);
+            if (contenido) {
+                container.innerHTML = contenido;
+                container.style.display = "block";
+                btnTrigger.style.display = "none"; // Ocultamos el botón inicial para que no se duplique la acción
+            }
         }
 
-        function procesarInstancia(fOfi) {
+        function generarContenidoInstancia(fOfi) {
             if (!tenidasXml) return "";
             const listaTenidas = Array.from(tenidasXml.getElementsByTagName("tenida"));
             if (listaTenidas.length === 0) return "";
-
             const iframeStyle = "width:100%; height:450px; border:1px solid #8d6e63; border-radius:4px; margin-top:10px; background:#fff;";
 
             if (fOfi === "sec") {
                 const ultimaTenida = listaTenidas[listaTenidas.length - 1];
-                const itemBal = Array.from(ultimaTenida.getElementsByTagName("item"))
-                                     .find(i => i.getAttribute("acto") === "balaustre");
-                
+                const itemBal = Array.from(ultimaTenida.getElementsByTagName("item")).find(i => i.getAttribute("acto") === "balaustre");
                 if (itemBal) {
                     const url = itemBal.getAttribute("url");
-                    return `<div class="instancia-container">
-                        <strong>📜 BALAUSTRE (SESIÓN ANTERIOR):</strong><br>
-                        <iframe src="${url}" style="${iframeStyle}"></iframe>
-                        <button class="btn-ritual" style="width:100%; margin-top:10px;" onclick="window.open('${url}', '_blank')">Ver en Pantalla Completa ➜</button>
-                    </div>`;
+                    return `<strong>📜 BALAUSTRE (SESIÓN ANTERIOR):</strong><br>
+                            <iframe src="${url}" style="${iframeStyle}"></iframe>
+                            <button class="btn-ritual" style="width:100%; margin-top:10px;" onclick="window.open('${url}', '_blank')">Pantalla Completa ➜</button>`;
                 }
             } 
             
             if (fOfi === "vm") {
                 const hoy = new Date().toISOString().split('T')[0];
                 const tenidaHoy = listaTenidas.find(t => t.getAttribute("fecha") === hoy);
-                
                 if (tenidaHoy) {
                     let contenido = "";
                     Array.from(tenidaHoy.getElementsByTagName("item")).forEach(i => {
@@ -203,7 +211,6 @@
                         if (acto !== "balaustre") {
                             const url = i.getAttribute("url");
                             const titulo = i.getAttribute("titulo");
-                            
                             if (url.includes('rituales.html')) {
                                 contenido += `<button class="btn-instancia-exec" onclick="window.location.href='${url}'">${titulo}</button>`;
                             } else {
@@ -214,10 +221,16 @@
                             }
                         }
                     });
-                    return contenido ? `<div class="instancia-container">${contenido}</div>` : "";
+                    return contenido;
                 }
             }
-            return "";
+            return "No hay documentos programados para hoy.";
+        }
+
+        function irA(codigo) {
+            const g = codigo[0], s = parseInt(codigo.substring(1), 10).toString();
+            if (g !== numGradoActual) window.location.href = `rituales.html?num=${g}&sec=${s}`;
+            else { seccionesVisibles.add(s); actualizarSelectorSecciones(s); cambioDeSeccion(); }
         }
     </script>
 </body>
