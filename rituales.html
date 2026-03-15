@@ -101,7 +101,8 @@
             const oficialesSet = new Set();
             if (seccion) {
                 Array.from(seccion.getElementsByTagName("paso")).forEach(p => {
-                    if (p.getAttribute("oficial")) oficialesSet.add(p.getAttribute("oficial").trim().toLowerCase());
+                    const ofiAttr = p.getAttribute("oficial");
+                    if (ofiAttr) oficialesSet.add(ofiAttr.trim().toLowerCase());
                 });
             }
             oSel.innerHTML = '<option value="">---</option>';
@@ -117,6 +118,10 @@
             const sId = document.getElementById("seccionFilter").value;
             const fOfi = document.getElementById("oficialFilter").value.toLowerCase();
             const contenedor = document.getElementById('rituales-content');
+            
+            // LIMPÌEZA CRÍTICA: Vaciar el contenedor antes de renderizar para evitar duplicados
+            contenedor.innerHTML = ""; 
+
             const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
             if (!seccion) return;
 
@@ -132,6 +137,7 @@
                     let txt = paso.getAttribute("texto") || paso.textContent || "";
                     const idL = `l-${sId}-${counter}`;
 
+                    // Reemplazo de links
                     txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
                         let nombreLink = desc;
                         if (!nombreLink) {
@@ -142,15 +148,18 @@
                         return `<button class="btn-ritual" onclick="irA('${cod}')">${nombreLink.trim()} ➜</button>`;
                     });
 
-                    txt = txt.replace(/\[\[INSTANCIA\]\]/g, () => fOfi ? procesarInstancia(fOfi) : "");
+                    // Inserción de la instancia (SÓLO si el oficial coincide)
+                    const esOficial = (fOfi && ofi.toLowerCase() === fOfi);
+                    txt = txt.replace(/\[\[INSTANCIA\]\]/g, () => (esOficial ? procesarInstancia(fOfi) : ""));
+                    
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     if (txt.startsWith('[')) txt = `<span class="accion-texto">${txt}</span>`;
 
-                    const esOficial = (fOfi && ofi.toLowerCase() === fOfi);
                     if (esOficial && !primeraID) primeraID = idL;
                     html += `<dt>${ofi}∴</dt><dd class="${esOficial ? 'resaltado' : ''}" id="${idL}">${txt}</dd>`;
                 });
             });
+            
             contenedor.innerHTML = `<div style="counter-reset: line-counter;">${html}</div>`;
             if (primeraID) document.getElementById(primeraID).scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
@@ -166,6 +175,8 @@
             const listaTenidas = Array.from(tenidasXml.getElementsByTagName("tenida"));
             if (listaTenidas.length === 0) return "";
 
+            const iframeStyle = "width:100%; height:450px; border:1px solid #8d6e63; border-radius:4px; margin-top:10px; background:#fff;";
+
             if (fOfi === "sec") {
                 const ultimaTenida = listaTenidas[listaTenidas.length - 1];
                 const itemBal = Array.from(ultimaTenida.getElementsByTagName("item"))
@@ -175,7 +186,7 @@
                     const url = itemBal.getAttribute("url");
                     return `<div class="instancia-container">
                         <strong>📜 BALAUSTRE (SESIÓN ANTERIOR):</strong><br>
-                        <iframe src="${url}" class="iframe-visor"></iframe>
+                        <iframe src="${url}" style="${iframeStyle}"></iframe>
                         <button class="btn-ritual" style="width:100%; margin-top:10px;" onclick="window.open('${url}', '_blank')">Ver en Pantalla Completa ➜</button>
                     </div>`;
                 }
@@ -198,7 +209,7 @@
                             } else {
                                 contenido += `<div style="margin-bottom:20px;">
                                     <strong style="font-size:0.8em; color:#5d4037;">📄 ${titulo.toUpperCase()}</strong>
-                                    <iframe src="${url}" class="iframe-visor"></iframe>
+                                    <iframe src="${url}" style="${iframeStyle}"></iframe>
                                 </div>`;
                             }
                         }
