@@ -24,11 +24,12 @@
         .btn-ritual { border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 0.85em; margin: 5px 0; font-weight: bold; display: inline-block; background: #5d4037; color: #ffffff !important; box-shadow: 0 2px 4px rgba(0,0,0,0.3); text-decoration: none; text-align: center; }
         .btn-instancia-exec { background: #2e7d32; border: 2px solid #1b5e20; width: 100%; text-align: left; margin-bottom: 8px; color: white; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; }
         .instancia-container { background: #fff9c4; border: 2px dashed #fbc02d; padding: 15px; margin: 15px 0; border-radius: 8px; }
+        .accion-texto { font-style: italic; color: #5d4037; }
 
-        /* Visor Overlay */
-        .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; align-items: center; justify-content: center; }
+        /* Estilos para el visor independiente */
+        .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .visor-content { width: 95%; height: 90%; background: #fff; border-radius: 8px; overflow: hidden; position: relative; }
-        .visor-close { position: absolute; top: 10px; right: 10px; background: #ff0000; color: #ffffff; border: 2px solid #ffffff; width: 35px; height: 35px; border-radius: 50%; font-weight: bold; font-size: 20px; cursor: pointer; z-index: 2001; display: flex; align-items: center; justify-content: center; }
+        .visor-close { position: absolute; top: 10px; right: 10px; background: #ff0000; color: #ffffff; border: 2px solid #ffffff; width: 35px; height: 35px; border-radius: 50%; font-weight: bold; font-size: 20px; cursor: pointer; z-index: 2001; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
     </style>
 </head>
 <body onload="inicializar()">
@@ -55,7 +56,11 @@
             try {
                 await cargarDatos();
                 const urlParams = new URLSearchParams(window.location.search);
-                fechaTrabajo = urlParams.get('fecha') || new Date().toISOString().split('T')[0];
+                fechaTrabajo = urlParams.get('fecha');
+                if (!fechaTrabajo) {
+                    const d = new Date();
+                    fechaTrabajo = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+                }
                 numGradoActual = (urlParams.get('num') || "1").toString();
                 let s = (urlParams.get('sec') || "1").replace(/^0+/, "");
                 if (parseInt(s) > 3) seccionesVisibles.add(s);
@@ -126,7 +131,10 @@
             let html = "";
             let counter = 0;
             let primeraID = null;
-            let instanciaYaInyectada = false;
+            
+            // Generar la instancia una sola vez fuera del bucle de pasos
+            const bloqueInstancia = (fOfi === "sec" || fOfi === "vm") ? procesarInstancia(fOfi) : "";
+            let instanciaAplicada = false;
 
             Array.from(seccion.getElementsByTagName("apartado")).forEach(apa => {
                 html += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>`;
@@ -136,26 +144,27 @@
                     let txt = paso.getAttribute("texto") || paso.textContent || "";
                     const idL = `l-${sId}-${counter}`;
 
-                    // 1. Procesar LINKS de navegación
                     txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
-                        return `<button class="btn-ritual" onclick="irA('${cod}')">${(desc || 'Ir').trim()} ➜</button>`;
+                        let nombreLink = desc || "Ir";
+                        return `<button class="btn-ritual" onclick="irA('${cod}')">${nombreLink.trim()} ➜</button>`;
                     });
 
-                    // 2. Procesar INSTANCIA de documentos
+                    // Inyectar el bloqueInstancia solo la primera vez que se encuentre la etiqueta
                     if (txt.includes("[[INSTANCIA]]")) {
-                        if (!instanciaYaInyectada && fOfi) {
-                            txt = txt.replace("[[INSTANCIA]]", procesarInstancia(fOfi));
-                            instanciaYaInyectada = true;
+                        if (!instanciaAplicada) {
+                            txt = txt.replace("[[INSTANCIA]]", bloqueInstancia);
+                            instanciaAplicada = true;
                         } else {
                             txt = txt.replace("[[INSTANCIA]]", "");
                         }
                     }
 
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
-                    
-                    const esOficial = (fOfi && ofi.toLowerCase() === fOfi);
-                    if (esOficial && !primeraID) primeraID = idL;
-                    html += `<dt>${ofi}∴</dt><dd class="${esOficial ? 'resaltado' : ''}" id="${idL}">${txt}</dd>`;
+                    if (txt.startsWith('[')) txt = `<span class="accion-texto">${txt}</span>`;
+
+                    const esOficialSeleccionado = (fOfi && ofi.toLowerCase() === fOfi);
+                    if (esOficialSeleccionado && !primeraID) primeraID = idL;
+                    html += `<dt>${ofi}∴</dt><dd class="${esOficialSeleccionado ? 'resaltado' : ''}" id="${idL}">${txt}</dd>`;
                 });
             });
             contenedor.innerHTML = `<div style="counter-reset: line-counter;">${html}</div>`;
@@ -168,6 +177,10 @@
         }
 
         function abrirVisor(url) {
+            if (url.includes("ID_DOCUMENTO")) {
+                alert("⚠️ Este documento no tiene una URL configurada.");
+                return;
+            }
             const overlay = document.createElement('div');
             overlay.className = 'visor-overlay';
             overlay.innerHTML = `
@@ -185,25 +198,36 @@
             if (!tenidaHoy) return "";
 
             const items = Array.from(tenidaHoy.getElementsByTagName("item"));
+            let htmlInstancia = "";
 
             if (fOfi === "sec") {
-                const bal = items.find(i => i.getAttribute("acto") === "balaustre");
-                return bal ? `<div class="instancia-container"><strong>📜 BALAUSTRE:</strong><br><button class="btn-ritual" style="width:100%;" onclick="abrirVisor('${bal.getAttribute("url")}')">Abrir ${bal.getAttribute("titulo")} ➜</button></div>` : "";
+                const itemBal = items.find(i => i.getAttribute("acto") === "balaustre");
+                if (itemBal) {
+                    htmlInstancia = `<div class="instancia-container">
+                        <strong>📜 DESPACHO DEL SECRETARIO:</strong><br><br>
+                        <button class="btn-ritual" style="width:100%;" onclick="abrirVisor('${itemBal.getAttribute("url")}')">
+                            Abrir ${itemBal.getAttribute("titulo")} ➜
+                        </button>
+                    </div>`;
+                }
             } 
-            
-            if (fOfi === "vm") {
+            else if (fOfi === "vm") {
                 let btns = "";
                 items.forEach(i => {
                     if (i.getAttribute("acto") !== "balaustre") {
+                        const titulo = i.getAttribute("titulo");
                         const url = i.getAttribute("url");
-                        const esRitual = url.includes('rituales.html');
-                        const accion = esRitual ? `window.location.href='${url}&fecha=${fechaTrabajo}'` : `abrirVisor('${url}')`;
-                        btns += `<button class="${i.getAttribute("acto")==='elevacion' ? 'btn-instancia-exec' : 'btn-ritual'}" style="width:100%; text-align:left;" onclick="${accion}">${i.getAttribute("titulo")}</button>`;
+                        const esExec = ["nuevo_grado", "elevacion", "iniciacion"].includes(i.getAttribute("acto"));
+                        const accion = url.includes('rituales.html') ? `window.location.href='${url}&fecha=${fechaTrabajo}'` : `abrirVisor('${url}')`;
+
+                        btns += `<button class="${esExec ? 'btn-instancia-exec' : 'btn-ritual'}" 
+                                 style="${esExec ? '' : 'width:100%; text-align:left; background:#8d6e63;'}" 
+                                 onclick="${accion}">${titulo}</button>`;
                     }
                 });
-                return btns ? `<div class="instancia-container"><strong>🛠️ DOCUMENTOS:</strong><br>${btns}</div>` : "";
+                if (btns) htmlInstancia = `<div class="instancia-container"><strong>🛠️ TRABAJOS DEL DÍA:</strong><br><br>${btns}</div>`;
             }
-            return "";
+            return htmlInstancia;
         }
     </script>
 </body>
