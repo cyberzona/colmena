@@ -160,7 +160,7 @@
             let contenido = "";
             if (ofi === "sec") {
                 const itemB = Array.from(tActiva.getElementsByTagName("item")).find(i => i.getAttribute("acto") === "balaustre");
-                if (itemB) contenido = `<button class="btn-ritual" onclick="abrirVisor('${itemB.getAttribute("url")}')">📜 ABRIR BALAUSTRE: ${itemB.getAttribute("titulo")} ➜</button>`;
+                if (itemB) contenido = `<button class="btn-ritual" onclick="abrirVisor('${itemB.getAttribute("url")}')">📜: ${itemB.getAttribute("titulo")} ➜</button>`;
             } else if (ofi === "vm") {
                 Array.from(tActiva.getElementsByTagName("item")).forEach(i => {
                     if (i.getAttribute("acto") !== "balaustre") {
