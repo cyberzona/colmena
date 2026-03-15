@@ -168,8 +168,7 @@ mi<!DOCTYPE html>
             if (fOfi === "sec") {
                 // Secretario: ÚNICAMENTE muestra el texto del Balaustre de la última sesión registrada
                 const ultimaTenida = listaTenidas[listaTenidas.length - 1];
-                const bal = ultimaTenida.getElementsByTagName("balaustre")[0]?.textContent || 
-                            ultimaTenida.getElementsByTagName("balaustrada")[0]?.textContent;
+                const bal = ultimaTenida.getElementsByTagName("item")[0]?.textContent;
                 return bal ? `<div class="instancia-container"><strong>📜 BALAUSTRE (SESIÓN ANTERIOR):</strong><br><br><div style="font-style: italic; white-space: pre-wrap;">${bal.trim()}</div></div>` : "";
             } 
             
