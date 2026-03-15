@@ -126,6 +126,9 @@
             let html = "";
             let counter = 0;
             let primeraID = null;
+            
+            // Bandera de control para inyectar solo una vez por renderizado
+            let instanciaColocada = false;
 
             Array.from(seccion.getElementsByTagName("apartado")).forEach(apa => {
                 html += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>`;
@@ -135,28 +138,26 @@
                     let txt = paso.getAttribute("texto") || paso.textContent || "";
                     const idL = `l-${sId}-${counter}`;
 
-                    // 1. Reemplazo de links normales
+                    // Reemplazo de links
                     txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
                         let nombreLink = desc || "Ir";
                         return `<button class="btn-ritual" onclick="irA('${cod}')">${nombreLink.trim()} ➜</button>`;
                     });
 
-                    // 2. LÓGICA ANTI-DUPLICADOS:
-                    // Limpiamos siempre la etiqueta [[INSTANCIA]] para que no aparezca como texto
-                    const tieneEtiquetaInstancia = txt.includes("[[INSTANCIA]]");
-                    txt = txt.replace(/\[\[INSTANCIA\]\]/g, "");
+                    // Lógica de Instancia: Si hay etiqueta y no se ha puesto aún, la inyectamos para el oficial activo
+                    if (txt.includes("[[INSTANCIA]]")) {
+                        if (!instanciaColocada && (fOfi === "sec" || fOfi === "vm")) {
+                            txt = txt.replace("[[INSTANCIA]]", procesarInstancia(fOfi));
+                            instanciaColocada = true;
+                        } else {
+                            txt = txt.replace("[[INSTANCIA]]", ""); // Limpiamos duplicados o etiquetas para otros oficiales
+                        }
+                    }
 
-                    // 3. Formateo de siglas y acciones
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     if (txt.startsWith('[')) txt = `<span class="accion-texto">${txt}</span>`;
 
                     const esOficialSeleccionado = (fOfi && ofi.toLowerCase() === fOfi);
-                    
-                    // Solo inyectamos los botones si es el oficial seleccionado Y el paso tiene la etiqueta
-                    if (esOficialSeleccionado && tieneEtiquetaInstancia) {
-                        txt += procesarInstancia(fOfi);
-                    }
-
                     if (esOficialSeleccionado && !primeraID) primeraID = idL;
                     html += `<dt>${ofi}∴</dt><dd class="${esOficialSeleccionado ? 'resaltado' : ''}" id="${idL}">${txt}</dd>`;
                 });
