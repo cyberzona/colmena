@@ -21,10 +21,9 @@
         dd::before { content: counter(line-counter); position: absolute; left: -45px; color: #5d4037; font-size: 1.1em; font-weight: 800; width: 35px; text-align: right; }
         .resaltado { background: rgba(180, 255, 100, 0.4) !important; border-left: 5px solid #2e7d32 !important; }
         .apartado-header { font-weight: bold; color: #795548; font-size: 0.9em; border-bottom: 1px solid #d7ccc8; text-align: right; margin-top: 20px; }
-        .btn-ritual { border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 0.85em; margin: 5px 0; font-weight: bold; display: inline-block; background: #5d4037; color: #ffffff !important; box-shadow: 0 2px 4px rgba(0,0,0,0.3); text-decoration: none; text-align: center; }
-        .btn-instancia-exec { background: #2e7d32; border: 2px solid #1b5e20; width: 100%; text-align: left; margin-bottom: 8px; color: white; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; }
-        .instancia-container { background: #fff9c4; border: 2px dashed #fbc02d; padding: 15px; margin: 15px 0; border-radius: 8px; display: none; }
-        .iframe-visor { width: 100%; height: 450px; border: 1px solid #8d6e63; border-radius: 4px; margin-top: 10px; background: #fff; }
+        .btn-ritual { border: none; padding: 10px 16px; border-radius: 20px; cursor: pointer; font-size: 0.85em; margin: 8px 0; font-weight: bold; display: inline-block; background: #5d4037; color: #ffffff !important; box-shadow: 0 2px 4px rgba(0,0,0,0.3); text-decoration: none; text-align: center; width: 100%; }
+        .instancia-container { background: #fff9c4; border: 2px dashed #fbc02d; padding: 10px; margin: 10px 0; border-radius: 8px; }
+        .iframe-visor { width: 100%; height: 500px; border: 1px solid #8d6e63; border-radius: 4px; background: #fff; margin-top: 5px; }
         .accion-texto { font-style: italic; color: #5d4037; }
     </style>
 </head>
@@ -120,7 +119,6 @@
             const contenedor = document.getElementById('rituales-content');
             
             contenedor.innerHTML = ""; 
-
             const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
             if (!seccion) return;
 
@@ -135,22 +133,21 @@
                     const ofi = paso.getAttribute("oficial");
                     let txt = paso.getAttribute("texto") || paso.textContent || "";
                     const idL = `l-${sId}-${counter}`;
+                    const esOficial = (fOfi && ofi.toLowerCase() === fOfi);
 
-                    // Links
+                    // Reemplazo de links estándar
                     txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
-                        return `<button class="btn-ritual" onclick="irA('${cod}')">${desc || 'Ir'} ➜</button>`;
+                        return `<button class="btn-ritual" style="width:auto;" onclick="irA('${cod}')">${desc || 'Ir'} ➜</button>`;
                     });
 
-                    // INSTANCIA con botón para evitar duplicidad y carga automática
-                    const esOficial = (fOfi && ofi.toLowerCase() === fOfi);
+                    // Sistema de INSTANCIA por BOTÓN
                     txt = txt.replace(/\[\[INSTANCIA\]\]/g, () => {
                         if (!esOficial) return "";
-                        return `<div id="btn-trigger-${idL}">
-                                    <button class="btn-ritual" style="background:#2e7d32; width:100%;" onclick="activarInstancia('${fOfi}', '${idL}')">
-                                        📂 VER DOCUMENTOS Y MEMOS ∴
+                        return `<div id="cont-instancia-${idL}">
+                                    <button class="btn-ritual" style="background:#2e7d32;" onclick="abrirDocumento('${fOfi}', '${idL}')">
+                                        📄 ABRIR DOCUMENTO ∴
                                     </button>
-                                </div>
-                                <div id="container-${idL}" class="instancia-container"></div>`;
+                                </div>`;
                     });
                     
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
@@ -165,66 +162,50 @@
             if (primeraID) document.getElementById(primeraID).scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
-        function activarInstancia(fOfi, idL) {
-            const btnTrigger = document.getElementById(`btn-trigger-${idL}`);
-            const container = document.getElementById(`container-${idL}`);
-            
-            // Si ya está visible, lo ocultamos
-            if (container.style.display === "block") {
-                container.style.display = "none";
-                return;
-            }
+        function abrirDocumento(fOfi, idL) {
+            const cont = document.getElementById(`cont-instancia-${idL}`);
+            if (!tenidasXml) return;
 
-            // Generamos el contenido solo una vez
-            const contenido = generarContenidoInstancia(fOfi);
-            if (contenido) {
-                container.innerHTML = contenido;
-                container.style.display = "block";
-                btnTrigger.style.display = "none"; // Ocultamos el botón inicial para que no se duplique la acción
-            }
-        }
-
-        function generarContenidoInstancia(fOfi) {
-            if (!tenidasXml) return "";
             const listaTenidas = Array.from(tenidasXml.getElementsByTagName("tenida"));
-            if (listaTenidas.length === 0) return "";
-            const iframeStyle = "width:100%; height:450px; border:1px solid #8d6e63; border-radius:4px; margin-top:10px; background:#fff;";
+            if (listaTenidas.length === 0) return;
+
+            let contenidoHtml = "";
 
             if (fOfi === "sec") {
                 const ultimaTenida = listaTenidas[listaTenidas.length - 1];
-                const itemBal = Array.from(ultimaTenida.getElementsByTagName("item")).find(i => i.getAttribute("acto") === "balaustre");
-                if (itemBal) {
-                    const url = itemBal.getAttribute("url");
-                    return `<strong>📜 BALAUSTRE (SESIÓN ANTERIOR):</strong><br>
-                            <iframe src="${url}" style="${iframeStyle}"></iframe>
-                            <button class="btn-ritual" style="width:100%; margin-top:10px;" onclick="window.open('${url}', '_blank')">Pantalla Completa ➜</button>`;
+                const item = Array.from(ultimaTenida.getElementsByTagName("item")).find(i => i.getAttribute("acto") === "balaustre");
+                if (item) {
+                    contenidoHtml = `<div class="instancia-container">
+                        <strong>📜 BALAUSTRE (SESIÓN ANTERIOR)</strong>
+                        <iframe src="${item.getAttribute("url")}" class="iframe-visor"></iframe>
+                    </div>`;
                 }
-            } 
-            
-            if (fOfi === "vm") {
+            } else if (fOfi === "vm") {
                 const hoy = new Date().toISOString().split('T')[0];
                 const tenidaHoy = listaTenidas.find(t => t.getAttribute("fecha") === hoy);
                 if (tenidaHoy) {
-                    let contenido = "";
                     Array.from(tenidaHoy.getElementsByTagName("item")).forEach(i => {
-                        const acto = i.getAttribute("acto");
-                        if (acto !== "balaustre") {
+                        if (i.getAttribute("acto") !== "balaustre") {
                             const url = i.getAttribute("url");
                             const titulo = i.getAttribute("titulo");
                             if (url.includes('rituales.html')) {
-                                contenido += `<button class="btn-instancia-exec" onclick="window.location.href='${url}'">${titulo}</button>`;
+                                contenidoHtml += `<button class="btn-ritual" style="background:#c62828;" onclick="window.location.href='${url}'">${titulo}</button>`;
                             } else {
-                                contenido += `<div style="margin-bottom:20px;">
-                                    <strong style="font-size:0.8em; color:#5d4037;">📄 ${titulo.toUpperCase()}</strong>
-                                    <iframe src="${url}" style="${iframeStyle}"></iframe>
+                                contenidoHtml += `<div class="instancia-container">
+                                    <strong>📄 ${titulo.toUpperCase()}</strong>
+                                    <iframe src="${url}" class="iframe-visor"></iframe>
                                 </div>`;
                             }
                         }
                     });
-                    return contenido;
                 }
             }
-            return "No hay documentos programados para hoy.";
+
+            if (contenidoHtml) {
+                cont.innerHTML = contenidoHtml; // Reemplaza el botón por el iFrame
+            } else {
+                cont.innerHTML = "<p style='font-size:0.8em; color:gray;'>No hay documentos disponibles.</p>";
+            }
         }
 
         function irA(codigo) {
