@@ -53,6 +53,32 @@
         let xmlDoc, glosarioDoc, tenidasXml, ritualActivo;
         let numGradoActual = "1", fechaTrabajo = "", seccionesVisibles = new Set(["1", "2", "3"]);
 
+        // --- FUNCIÓN DE NAVEGACIÓN GLOBAL (A PRUEBA DE FALLOS) ---
+        window.irA = function(codigo) {
+            try {
+                // De "102" extraemos el "2"
+                const targetIdStr = parseInt(codigo.substring(1), 10).toString();
+                const selector = document.getElementById("seccionFilter");
+                
+                if (selector) {
+                    // Aseguramos que sea visible
+                    seccionesVisibles.add(targetIdStr);
+                    actualizarSelectorSecciones(targetIdStr);
+                    
+                    // Buscamos la opción que coincida numéricamente
+                    const opcion = Array.from(selector.options).find(o => parseInt(o.value, 10).toString() === targetIdStr);
+                    
+                    if (opcion) {
+                        selector.value = opcion.value;
+                        cambioDeSeccion();
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                }
+            } catch (err) {
+                console.error("Error en irA:", err);
+            }
+        };
+
         async function inicializar() {
             try {
                 await cargarDatos();
@@ -100,10 +126,10 @@
             const valAnterior = idForzado || sSel.value;
             sSel.innerHTML = "";
             Array.from(ritualActivo.getElementsByTagName("seccion")).forEach(sec => {
-                const idOriginal = sec.getAttribute("id");
-                const idNum = parseInt(idOriginal, 10).toString();
+                const idXml = sec.getAttribute("id");
+                const idNum = parseInt(idXml, 10).toString();
                 if (seccionesVisibles.has(idNum)) {
-                    sSel.add(new Option(sec.getAttribute("titulo"), idOriginal));
+                    sSel.add(new Option(sec.getAttribute("titulo"), idXml));
                 }
             });
             sSel.value = valAnterior;
@@ -115,9 +141,7 @@
             const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
             const oficialesSet = new Set();
             if (seccion) {
-                Array.from(seccion.getElementsByTagName("paso")).forEach(p => { 
-                    if (p.getAttribute("oficial")) oficialesSet.add(p.getAttribute("oficial").trim()); 
-                });
+                Array.from(seccion.getElementsByTagName("paso")).forEach(p => { if (p.getAttribute("oficial")) oficialesSet.add(p.getAttribute("oficial").trim()); });
             }
             oSel.innerHTML = '<option value="">---</option>';
             Array.from(glosarioDoc.getElementsByTagName("item")).forEach(item => {
@@ -145,15 +169,15 @@
                     const oficialTur = paso.getAttribute("oficial"), idL = `l-${sId}-${counter}`;
                     let txt = paso.getAttribute("texto") || paso.textContent || "";
                     
-                    // PROCESAR LINKS (Normalización de búsqueda de títulos)
+                    // PROCESAR LINKS
                     txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
                         const targetIdNum = parseInt(cod.substring(1), 10).toString();
                         const secciones = Array.from(ritualActivo.getElementsByTagName("seccion"));
-                        // Buscamos comparando el número real, ignorando ceros a la izquierda del XML
                         const targetSec = secciones.find(s => parseInt(s.getAttribute("id"), 10).toString() === targetIdNum);
-                        
                         const textoBoton = desc || (targetSec ? targetSec.getAttribute("titulo") : `Sección ${targetIdNum}`);
-                        return `<br><button class="btn-ritual" onclick="irA('${cod}')">${textoBoton.trim()} ➜</button>`;
+                        
+                        // Llamada explícita a window.irA
+                        return `<br><button class="btn-ritual" onclick="window.irA('${cod}')">${textoBoton.trim()} ➜</button>`;
                     });
 
                     // PROCESAR INSTANCIA
@@ -174,26 +198,6 @@
             });
             contenedor.innerHTML = `<dl style="counter-reset: line-counter;">${html}</dl>`;
             if (primeraID) { const el = document.getElementById(primeraID); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
-        }
-
-        function irA(codigo) {
-            const targetIdNum = parseInt(codigo.substring(1), 10).toString();
-            const selector = document.getElementById("seccionFilter");
-
-            // 1. Asegurar que la sección sea visible
-            seccionesVisibles.add(targetIdNum);
-            
-            // 2. Re-renderizar el selector para que incluya la opción
-            actualizarSelectorSecciones();
-            
-            // 3. Buscar la opción que corresponde al número (independiente de si es "02" o "2")
-            const opcionCochina = Array.from(selector.options).find(opt => parseInt(opt.value, 10).toString() === targetIdNum);
-            
-            if (opcionCochina) {
-                selector.value = opcionCochina.value;
-                cambioDeSeccion();
-                window.scrollTo(0, 0);
-            }
         }
 
         function volver() {
