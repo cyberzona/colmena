@@ -100,11 +100,10 @@
             const valAnterior = idForzado || sSel.value;
             sSel.innerHTML = "";
             Array.from(ritualActivo.getElementsByTagName("seccion")).forEach(sec => {
-                const id = sec.getAttribute("id");
-                // Normalizamos el ID para la comparación
-                const idNormalizado = parseInt(id, 10).toString();
-                if (seccionesVisibles.has(idNormalizado)) {
-                    sSel.add(new Option(sec.getAttribute("titulo"), id));
+                const idOriginal = sec.getAttribute("id");
+                const idNum = parseInt(idOriginal, 10).toString();
+                if (seccionesVisibles.has(idNum)) {
+                    sSel.add(new Option(sec.getAttribute("titulo"), idOriginal));
                 }
             });
             sSel.value = valAnterior;
@@ -116,7 +115,9 @@
             const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
             const oficialesSet = new Set();
             if (seccion) {
-                Array.from(seccion.getElementsByTagName("paso")).forEach(p => { if (p.getAttribute("oficial")) oficialesSet.add(p.getAttribute("oficial").trim()); });
+                Array.from(seccion.getElementsByTagName("paso")).forEach(p => { 
+                    if (p.getAttribute("oficial")) oficialesSet.add(p.getAttribute("oficial").trim()); 
+                });
             }
             oSel.innerHTML = '<option value="">---</option>';
             Array.from(glosarioDoc.getElementsByTagName("item")).forEach(item => {
@@ -144,12 +145,11 @@
                     const oficialTur = paso.getAttribute("oficial"), idL = `l-${sId}-${counter}`;
                     let txt = paso.getAttribute("texto") || paso.textContent || "";
                     
-                    // PROCESAR LINKS
+                    // PROCESAR LINKS (Normalización de búsqueda de títulos)
                     txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
-                        const targetIdRaw = cod.substring(1); // ej: "03" o "04"
-                        const targetIdNum = parseInt(targetIdRaw, 10).toString();
-                        
+                        const targetIdNum = parseInt(cod.substring(1), 10).toString();
                         const secciones = Array.from(ritualActivo.getElementsByTagName("seccion"));
+                        // Buscamos comparando el número real, ignorando ceros a la izquierda del XML
                         const targetSec = secciones.find(s => parseInt(s.getAttribute("id"), 10).toString() === targetIdNum);
                         
                         const textoBoton = desc || (targetSec ? targetSec.getAttribute("titulo") : `Sección ${targetIdNum}`);
@@ -177,19 +177,21 @@
         }
 
         function irA(codigo) {
-            const targetIdRaw = codigo.substring(1); 
-            const targetIdNum = parseInt(targetIdRaw, 10).toString();
+            const targetIdNum = parseInt(codigo.substring(1), 10).toString();
+            const selector = document.getElementById("seccionFilter");
 
-            // Hacemos la sección visible antes de intentar seleccionarla
+            // 1. Asegurar que la sección sea visible
             seccionesVisibles.add(targetIdNum);
             
-            // Re-actualizamos el selector para que la nueva sección aparezca en la lista
-            actualizarSelectorSecciones(targetIdRaw);
+            // 2. Re-renderizar el selector para que incluya la opción
+            actualizarSelectorSecciones();
             
-            const selector = document.getElementById("seccionFilter");
-            if (selector) {
-                selector.value = targetIdRaw;
-                cambioDeSeccion(); // Esto invoca internamente a renderizarLiturgia
+            // 3. Buscar la opción que corresponde al número (independiente de si es "02" o "2")
+            const opcionCochina = Array.from(selector.options).find(opt => parseInt(opt.value, 10).toString() === targetIdNum);
+            
+            if (opcionCochina) {
+                selector.value = opcionCochina.value;
+                cambioDeSeccion();
                 window.scrollTo(0, 0);
             }
         }
