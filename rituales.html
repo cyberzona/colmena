@@ -12,27 +12,22 @@
         #titulo-ritual-header { font-size: 0.95rem; color: #5d4037; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
         .logo-mini { width: 65px; height: auto; }
         
-        /* Panel de Control con anchos diferenciados */
         #control-panel { background: #d7ccc8; padding: 10px; border-radius: 8px; border: 1px solid #a1887f; position: sticky; top: 0; z-index: 1000; display: flex; justify-content: flex-start; gap: 10px; }
         .container-select { display: flex; flex-direction: column; width: auto; }
         .select-label { font-size: 0.65rem; color: #4e342e; font-weight: 800; text-transform: uppercase; margin-bottom: 2px; }
         .select-seccion { width: 220px; padding: 8px; font-size: 0.95rem; border-radius: 4px; border: 1px solid #8d6e63; background: #fff; font-weight: bold; outline: none; }
         .select-oficiales { width: 100px; padding: 8px; font-size: 0.95rem; border-radius: 4px; border: 1px solid #8d6e63; background: #fff; font-weight: bold; outline: none; }
-        .line-exec { font-style: italic; font-size: 0.95em; color: rgba(0, 0, 0, 0.4); font-weight: normal; margin-left: 3px; }
         
         .sigla-texto-azul { color: #0277bd; font-weight: bold; }
+        .line-exec { font-style: italic; font-size: 0.8em; color: rgba(0, 0, 0, 0.4); font-weight: normal; margin-left: 3px; }
         dt { font-weight: bold; color: #5d4037; margin-top: 8px; }
-        
-        /* Diálogos Justificados */
         dd { margin-left: 45px; border-left: 3px solid #d7ccc8; padding-left: 10px; padding-right: 10px; position: relative; margin-bottom: 4px; counter-increment: line-counter; text-align: justify; text-justify: inter-word; hyphens: auto; }
         dd::before { content: counter(line-counter); position: absolute; left: -40px; color: #5d4037; font-size: 1.0em; font-weight: 800; width: 30px; text-align: right; }
         .resaltado { background: rgba(180, 255, 100, 0.4) !important; border-left: 5px solid #2e7d32 !important; }
         
-        /* Título de Apartado Mayor */
         .apartado-header { font-weight: bold; color: #795548; font-size: 1.1rem; border-bottom: 2px solid #d7ccc8; text-align: right; margin-top: 20px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
         
-        /* Botones Redondeados (Píldora) */
-        .btn-ritual, .btn-instancia-exec { border: none; padding: 8px 18px; border-radius: 50px; cursor: pointer; font-size: 0.85em; margin: 4px 0; font-weight: bold; display: table !important; background: #A87C00 !important; color: #ffffff !important; text-decoration: none; text-align: center; width: auto !important; max-width: fit-content; box-sizing: border-box; overflow: hidden; }
+        .btn-ritual, .btn-instancia-exec { border: none; padding: 8px 18px; border-radius: 50px; cursor: pointer; font-size: 0.85em; margin: 4px 0; font-weight: bold; display: table !important; background: #A87C00 !important; color: #ffffff !important; text-decoration: none; text-align: center; width: auto !important; max-width: fit-content; box-sizing: border-box; }
         .instancia-botones { margin-top: 10px; display: flex; flex-direction: column; gap: 5px; }
         
         .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
@@ -44,7 +39,7 @@
     <div class="header-container">
         <img src="./images/logo-mini.png" alt="Logo" class="logo-mini">
         <div class="logia-info">
-            <span class="line-logia">RLS∴ COLMENA # 8</span>
+            <span class="line-logia">RLS∴ COLMENA Nº 8</span>
             <span id="titulo-ritual-header">Cargando...</span>
         </div>
     </div>
@@ -70,7 +65,6 @@
                 if (parseInt(s) > 3) seccionesVisibles.add(s);
                 
                 ejecutarCargaRitual(numGradoActual, s);
-
                 if (oficialUrl) {
                     const oSel = document.getElementById("oficialFilter");
                     oSel.value = oficialUrl;
@@ -125,10 +119,7 @@
                 const sigla = item.getAttribute("sigla");
                 if (oficialesSet.has(sigla)) oSel.add(new Option(sigla + "∴", sigla));
             });
-            
-            // Mantiene al oficial si existe en la nueva sección
             if (oficialesSet.has(ofiPrevio)) oSel.value = ofiPrevio;
-            
             renderizarLiturgia();
         }
 
@@ -137,21 +128,32 @@
             const contenedor = document.getElementById('rituales-content'), seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
             if (!seccion) return;
             let html = "", counter = 0, primeraID = null;
+            
             Array.from(seccion.getElementsByTagName("apartado")).forEach(apa => {
                 html += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>`;
                 Array.from(apa.getElementsByTagName("paso")).forEach(paso => {
                     counter++;
                     const oficialTur = paso.getAttribute("oficial"), idL = `l-${sId}-${counter}`;
                     let txt = paso.getAttribute("texto") || paso.textContent || "";
+                    
+                    // Manejo de Links
                     txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
                         const targetId = parseInt(cod.substring(1), 10).toString();
                         const targetSec = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") === targetId);
                         return `<br><button class="btn-ritual" onclick="irA('${cod}')">${(desc || (targetSec ? targetSec.getAttribute("titulo") : "Ir")).trim()} ➜</button>`;
                     });
-                    if (txt.includes("[[INSTANCIA]]")) txt = txt.replace("[[INSTANCIA]]", (oficialSel && oficialTur === oficialSel) ? `<br>${procesarInstancia(oficialSel.toLowerCase())}` : "");
+
+                    // Lógica de Instancia Basada en el Orden del Día
+                    if (txt.includes("[[INSTANCIA]]")) {
+                        // El VM es público; los demás (como SEC) solo si están seleccionados
+                        const permitir = (oficialTur === "VM") || (oficialSel === oficialTur);
+                        txt = txt.replace("[[INSTANCIA]]", permitir ? `<br>${procesarInstancia(oficialTur.toLowerCase())}` : "");
+                    }
+
                     if (txt.includes("[[VOLVER]]")) txt = txt.replace("[[VOLVER]]", `<br><button class="btn-ritual" onclick="volver()">⬅ Regresar</button>`);
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     txt = txt.replace(/\[(.*?)\]/g, '<span class="line-exec">[$1]</span>');
+                    
                     const esOfi = (oficialSel && oficialTur === oficialSel);
                     if (esOfi && !primeraID) primeraID = idL;
                     html += `<dt>${oficialTur}∴</dt><dd class="${esOfi ? 'resaltado' : ''}" id="${idL}">${txt}</dd>`;
@@ -168,8 +170,9 @@
         }
 
         function volver() {
-            if (window.history.length > 1) { window.history.back();
-               setTimeout(() => { renderizarLiturgia(); }, 100);
+            if (window.history.length > 1) { 
+                window.history.back();
+                setTimeout(() => { renderizarLiturgia(); }, 100);
             } else { window.location.href = `rituales.html?num=${numGradoActual}&sec=1&fecha=${fechaTrabajo}`; }
         }
 
@@ -182,25 +185,28 @@
 
         function procesarInstancia(ofi) {
             if (!tenidasXml) return "";
-            const listaTenidas = Array.from(tenidasXml.getElementsByTagName("tenida"));  
+            const listaTenidas = Array.from(tenidasXml.getElementsByTagName("tenida"));
             const tActiva = listaTenidas.find(t => t.getAttribute("fecha") === fechaTrabajo) || listaTenidas[listaTenidas.length - 1];
             if (!tActiva) return "";
-            let contenido = "";    
+            
+            let contenido = "";
             if (ofi === "sec") {
                 const itemB = Array.from(tActiva.getElementsByTagName("item")).find(i => i.getAttribute("acto") === "balaustre");
-                if (itemB) {
-                    contenido = `<button class="btn-ritual" onclick="abrirVisor('${itemB.getAttribute("url")}')">📜: ${itemB.getAttribute("titulo")} ➜</button>`;
-                }
-            } 
-            else { Array.from(tActiva.getElementsByTagName("item")).forEach(i => {
+                if (itemB) contenido = `<button class="btn-ritual" onclick="abrirVisor('${itemB.getAttribute("url")}')">📜: ${itemB.getAttribute("titulo")} ➜</button>`;
+            } else {
+                Array.from(tActiva.getElementsByTagName("item")).forEach(i => {
                     if (i.getAttribute("acto") !== "balaustre") {
-                        const url = i.getAttribute("url");
-                        const acc = url.includes('rituales.html') ? `window.location.href='${url}&fecha=${tActiva.getAttribute("fecha")}'`: `abrirVisor('${url}')`;
+                        const url = i.getAttribute("url"), acc = url.includes('rituales.html') ? `window.location.href='${url}&fecha=${tActiva.getAttribute("fecha")}'` : `abrirVisor('${url}')`;
                         contenido += `<button class="btn-instancia-exec" onclick="${acc}">${i.getAttribute("titulo")}</button>`;
                     }
                 });
             }
             return contenido ? `<div class="instancia-botones">${contenido}</div>` : "";
+        }
+
+        function gestionarCambioOficial() {
+            const oSel = document.getElementById("oficialFilter");
+            renderizarLiturgia();
         }
     </script>
 </body>
