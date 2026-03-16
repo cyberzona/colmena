@@ -151,6 +151,7 @@
                     if (txt.includes("[[INSTANCIA]]")) txt = txt.replace("[[INSTANCIA]]", (oficialSel && oficialTur === oficialSel) ? `<br>${procesarInstancia(oficialSel.toLowerCase())}` : "");
                     if (txt.includes("[[VOLVER]]")) txt = txt.replace("[[VOLVER]]", `<br><button class="btn-ritual" onclick="volver()">⬅ Regresar</button>`);
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
+                    txt = txt.replace(/\[(.*?)\]/g, '<span class="line-exec">[$1]</span>');
                     const esOfi = (oficialSel && oficialTur === oficialSel);
                     if (esOfi && !primeraID) primeraID = idL;
                     html += `<dt>${oficialTur}∴</dt><dd class="${esOfi ? 'resaltado' : ''}" id="${idL}">${txt}</dd>`;
