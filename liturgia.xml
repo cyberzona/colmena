@@ -55,6 +55,69 @@
         </seccion>
         <seccion id="2" titulo="Desarrollo de Trabajos">        
             <apartado id="1" titulo="Del Balaustre del la Sesión Anterior">
+<?xml version="1.0" encoding="UTF-8"?>
+<liturgia>
+    <ritual taller="Colmena No. 8" grado="1">    
+        <seccion id="1" titulo="Apertura de Trabajos">
+            <apartado id="1" titulo="Del Espacio Físico">
+                <paso tipo="dialogo" oficial="VM" texto="¡Silencio en Logia, Hermanos (HH∴)! [Golpe de Mallete]"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<liturgia>
+    <ritual taller="Colmena No. 8" grado="1">    
+        <seccion id="1" titulo="Apertura de Trabajos">
+            <apartado id="1" titulo="Del Espacio Físico">
+                <paso tipo="dialogo" oficial="VM" texto="¡Silencio en Logia, Hermanos (HH∴)! [Golpe de Mallete]"/>
+                <paso tipo="dialogo" oficial="VM" texto="Hermano Maestro de Ceremonias (MC∴), ¿los puestos están cubiertos?"/>
+                <paso tipo="dialogo" oficial="MC" texto="Si, VM∴ los puestos están cubiertos y los HH∴ prontos a iniciar los trabajos."/>
+                <paso tipo="dialogo" oficial="VM" texto="Hermano Primer Vigilante (1V∴): ¿Sois Masón?"/>
+                <paso tipo="dialogo" oficial="1V" texto="Mis Hermanos (HH∴) me reconocen como tal, Venerable Maestro (VM∴)"/>
+                <paso tipo="dialogo" oficial="VM" texto="¿Cuál es nuestro primer deber en Logia Hermano 1V∴?"/>
+                <paso tipo="dialogo" oficial="1V" texto="Ver si el templo está cubierto de toda indiscreción profana"/>
+                <paso tipo="dialogo" oficial="VM" texto="Aseguraos de ello, Hermano mío."/>
+                <paso tipo="dialogo" oficial="1V" texto="Hermano Guarda Templo (GT∴) Cumplid con vuestro deber. [El GT da tres golpes en la puerta y la respuesta externa es similar]"/>
+                <paso tipo="dialogo" oficial="GT" texto="Hermano 1V∴, el Temp∴ está a cubierto de toda indiscreción profana."/>
+                <paso tipo="dialogo" oficial="1V" texto="VM∴ el Templo está cubierto de toda indiscreción. [Da tres golpes de Mallete]"/>
+            </apartado>
+            <apartado id="2" titulo="Del Cuerpo del Taller">
+                <paso tipo="dialogo" oficial="VM" texto="¿Cuál es vuestro segundo deber en Hermano 1V∴?"/>
+                <paso tipo="dialogo" oficial="1V" texto="Ver si todos los HH∴ que decoran ambas columnas son aprendices masones."/>
+                <paso tipo="dialogo" oficial="VM" texto="Aseguraos de ello, QQHH∴ Primer y Segundo Vigilantes, de pie y al orden."/>
+                <paso tipo="dialogo" oficial="2V" texto="Hermano 1V∴, los HH∴ que decoran mi Col∴ son masones y están de pie y al orden en el Grado de Aprendiz. [Da un golpe de mallete]"/>
+                <paso tipo="dialogo" oficial="1V" texto="VM∴ los HH∴ que se cobijan bajo la bóveda de nuestro templo son Masones y se hallan al orden, prontos para cumplir con vuestro mandato, y dispuestos a laborar en la construcción del Templo moral erigido a la ciencia, a la virtud y al trabajo. [Da un golpe de Mallete]."/>
+                <paso tipo="dialogo" oficial="VM" texto="HH∴ míos, también son masones los que decoran el Oriente, y están prontos para trabajar en la construcción del Templo Moral que la Masonería eleva en la gloria del perfeccionamiento humano, mediante la conquista de los sublimes principios de Libertad, Igualdad y Fraternidad [Da un golpe de Mallete seguido por los Vigilantes]."/>
+            </apartado>
+            <apartado id="3" titulo="Del Proposito del Cuerpo">
+                <paso tipo="dialogo" oficial="VM" texto="¿Para qué ocupáis ese puesto, Querido Hermano 2V∴?"/>
+                <paso tipo="dialogo" oficial="2V" texto="Para mejor observar el Sol en su meridiano, mandar a los obreros al trabajo y llamarlos a la recreación, y de la recreación al trabajo a fin de que la humanidad coseche el resplandor de los principios Masónicos."/>
+                <paso tipo="dialogo" oficial="VM" texto="Querido Hermano 2V∴ ¿Donde toma asiento nuestro Querido Hermano 1V∴?"/>
+                <paso tipo="dialogo" oficial="2V" texto="Al occidente, VM∴."/>
+                <paso tipo="dialogo" oficial="VM" texto="¿Para qué ocupáis ese puesto Querido Hermano 1V∴?"/>
+                <paso tipo="dialogo" oficial="1V" texto="Así como el Sol se oculta en el Occidente al terminar el día, así se sienta aquí el 1V∴, para ayudar al VM∴, abrir y cerrar la Logia, pagar a los obreros y despedirlos contentos y satisfechos de sus actos en la obra de amor y justicia en que estamos empeñados."/>
+                <paso tipo="dialogo" oficial="VM" texto="¿Donde toma asiento el VM∴ Querido Hermano 1V∴?"/>
+                <paso tipo="dialogo" oficial="1V" texto="En el Oriente (Or∴)"/>
+                <paso tipo="dialogo" oficial="VM" texto="¿Para qué H∴ mío."/>
+                <paso tipo="dialogo" oficial="1V" texto="Así como el Sol nace en Oriente al iniciar su carrera y romper el día, de igual manera se alza allí el asiento del VM∴ para abrir la Logia, dirigirla en sus trabajos e iluminar con sus luces, esclareciendo así los sublimes preceptos de nuestra."/>
+            </apartado>
+            <apartado id="4" titulo="De la Experiencia del Cuerpo">
+                <paso tipo="dialogo" oficial="VM" texto="Querido Hermano 2V∴ ¿Qué edad tenéis como Apr∴ Mas∴?"/>
+                <paso tipo="dialogo" oficial="2V" texto="Tres años, VM∴."/>
+                <paso tipo="dialogo" oficial="VM" texto="¿A qué hora empiezan los trabajos de Apr∴ Mas∴, QH∴ 1V∴?"/>
+                <paso tipo="dialogo" oficial="1V" texto="Al mediodía, VM∴."/>
+                <paso tipo="dialogo" oficial="VM" texto="¿Qué hora es, Querido Hermano 2V∴?"/>
+                <paso tipo="dialogo" oficial="2V" texto="La hora de empezar, mediodía en punto, VM∴."/>
+                <paso tipo="dialogo" oficial="VM" texto="Siendo mediodía en punto, hora que los Apr∴ Mas∴ abren sus trabajos QQHH∴, 1V∴ y 2V∴, servios invitar a los obreros que decoran vuestras respectivas CCol∴, como yo a los de Oriente, para que se unan a vosotros y a mí a fin de abrir los trabajos de esta Augusta y RL∴"/>
+                <paso tipo="dialogo" oficial="1V" texto="QH∴ 2V∴ y HH∴ que decoráis mi Col∴, por orden del VM∴, os invito que os unáis a él y a mí para abrir los trabajos de esta RL∴ en el grado de Apr∴ Mas∴."/>
+                <paso tipo="dialogo" oficial="2V" texto="QQHH∴ de la Col∴ del Norte, por orden del VM∴ comunicada a mí por nuestro QH∴ 1V∴, que os unáis a él y a nosotros para abrir los trabajos de esta RL∴ en grado de Apr∴Mas∴. [Anunciado en mi Col∴, QH∴ 1V∴.]"/>
+                <paso tipo="dialogo" oficial="1V" texto="Anunciado en ambas CCol∴, VM∴."/>
+            </apartado>
+            <apartado id="5" titulo="De la Consagración de la Luz">
+                <paso tipo="dialogo" oficial="VM" texto="¡En pie y al Orden, Queridos Hermanos! [Da un golpe de Mallete seguido por los Vigilantes]."/>
+                <paso tipo="dialogo" oficial="VM" texto="QH∴ Maestro de Ceremonias (MC∴) , prended las Luces. [MC∴ , abre el Libro de la Ley y coloca la Escuadra y sobre esta el Compás. Enciende la estrella del VM∴, dice: ¡Que la Sabiduría guie nuestros trabajos! ; MC∴, enciende la estrella del 1V∴ VM∴, dice: ¡Que la Fuerza los sostenga! ; MC∴, enciende la estrella del 2V∴, VM∴ dice: ¡Que la Belleza los adorne!]"/>
+                <paso tipo="dialogo" oficial="VM" texto="Puesto que todo está justo y perfecto, y que es la hora que los AAp∴ MMas∴ empiezan sus trabajos, uníos a mí HH∴ míos, ALGDGADU∴ y en su nombre y bajo la obediencia de la Ser∴ Gran L∴ de Lengua Española para los EE. UU. de A., declaro abiertos los trabajos de esta RL∴ en el grado de Ap∴Mas∴ del REAA∴. Queda prohibido a todo H∴ pasar de una a otra Col∴ ni cubrir el Templo sin permiso de su respectivo V∴; ni tratar asuntos políticos ni religiosos, a mí HH∴ por el signo y Bat∴ de Grado. [Da tres golpes de Mall∴ que repiten los VV∴] Tomad asiento, QQHH∴.[[LINK:102]]"/>
+            </apartado>
+        </seccion>
+        <seccion id="2" titulo="Desarrollo de Trabajos">        
+            <apartado id="1" titulo="Del Balaustre del la Sesión Anterior">
                 <paso tipo="dialogo" oficial="VM" texto="QQHH∴, habiéndose cumplido con las formalidades de la apertura, entramos ahora en el Desarrollo de Trabajos."/>
                 <paso tipo="dialogo" oficial="VM" texto="QH∴ Secretario (Sec∴), servíos dar lectura del último Trazado de este Taller."/>
                 <paso tipo="dialogo" oficial="Sec" texto="[QH∴ Sec∴ procede con la lectura.]   [[INSTANCIA]]"/>
@@ -69,7 +132,7 @@
                 <paso tipo="dialogo" oficial="1V" texto="Reina el silencio en ambas CCol∴, VM∴."/>
                 <paso tipo="dialogo" oficial="VM" texto="QH∴ OF∴ ¿Queréis darnos vuestras conclusiones respecto a la plancha trazada por nuestro H∴ Sec∴ de nuestros últimos trabajos? [El H∴Ora∴ da las conclusiones]"/>
                 <paso tipo="dialogo" oficial="VM" texto="Después de las conclusiones del H∴ Ora∴, los HH∴ que estén de acuerdo se servirán de hacer la señal de aprobación al primer golpe de Mall∴. [Con golpe de Mallete.] "/>
-                <paso tipo="dialogo" oficial="VM" texto="¡Hermanos míos! El Taller ha ordenado nuestro primer tiempo; ahora, para que el espíritu se manifieste en nueva forma, vamos a cubrir los trabajos de este Grado y proceder a . [Con golpe de Mallete.] [[LINK:103]] [[LINK:104]] [[LINK:105]] [[INSTANCIA]]"/>
+                <paso tipo="dialogo" oficial="VM" texto="¡Hermanos míos! El Taller ha ordenado nuestro primer tiempo; ahora, para que el espíritu se manifieste en nueva forma, vamos a cubrir los trabajos de este Grado y proceder a . [Con golpe de Mallete.] [[LINK:104]] [[INSTANCIA]]"/>
             </apartado>          
         </seccion>            
         <seccion id="3" titulo="Clausura de Trabajos">
@@ -107,7 +170,7 @@
                 <paso tipo="dialogo" oficial="2V" texto="Todo está justo y perfecto, VM∴."/>
                 <paso tipo="dialogo" oficial="1V" texto="Reina completa armonía, VM∴ y estamos en condición de luchar por la emancipación Moral y Material de los seres humanos."/>
                 <paso tipo="dialogo" oficial="VM" texto="YaHermanos míos: puesto que todo es justo y perfecto, y nos hallamos en condición de luchar para que el estandarte de la Justicia ondee desde la cúpula de nuestros Templos sobre toda la humanidad, acompañadme a clausurar las tareas de esta Respetable Logia. ALGDGADU∴, en su nombre y bajo la obediencia de la Ser∴ Gr∴ L∴ de Lengua Española para los EE. UU. de A., declaro cerrados los trabajos de este Taller por el día de hoy. ¡A mí, Hermanos, con el Signo y la Batería de Grado!"/>
-                <paso tipo="dialogo" oficial="VM" texto="Queridos Hermanos, antes de partir: ¿Juráis guardar absoluto silencio sobre lo aquí visto y oído, incluso ante aquellos Hermanos que no asistieron a esta Tenida? Todos. ¡Lo juramos!""/>
+                <paso tipo="dialogo" oficial="VM" texto="Queridos Hermanos, antes de partir: ¿Juráis guardar absoluto silencio sobre lo aquí visto y oído, incluso ante aquellos Hermanos que no asistieron a esta Tenida? Todos. ¡Lo juramos!"/>
                 <paso tipo="dialogo" oficial="VM" texto="Si así lo hiciereis, que el GADU∴ os lo premie; si no, que Él os lo demande. H∴ MC∴ servíos cerrar el Ara. Hermanos míos, retirémonos en paz y fraternidad."/>
                 <paso tipo="dialogo" oficial="MC" texto="[Apaga la estrella de 2V∴ , Apaga la estrella del 1V∴ y Apaga la estrella del VM∴ Retira la Escuadra y el Compás, y cierra el Libro de la Ley]"/>
             </apartado>
@@ -126,33 +189,13 @@
                 <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ que voy a conceder la palabra en bien general de la orden y en particular de este Tall∴."/>
                 <paso tipo="dialogo" oficial="2V" texto="QH∴ de la Col∴ del Norte, por orden del VM∴ y transmitida a mí por el QH∴ 1V∴ que está concedida la palabra en bien general de la orden y particular de este Tall∴."/>
                 <paso tipo="dialogo" oficial="2V" texto="QH∴ 1V∴, reina el silencio en mi Col∴.."/>
-                <paso tipo="dialogo" oficial="1V" texto="VM∴, reina silencio en ambas CCol∴."/>
+                <paso tipo="dialogo" oficial="1V" texto="VM∴, reina silencio en ambas CCol∴. [[LINK:105]]"/>
             </apartado>
         </seccion>    
         <seccion id="5" titulo="De los Asuntos Familiares">
             <apartado id="1" titulo="De los Asuntos Familiares y Otros">
                 <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ como yo lo hago en el Or∴ que vamos a tratar asuntos familiares."/>
-                <paso tipo="dialogo" oficial="VM" texto="Invitad al MC∴.. a que dé un paseo al salón de pasos perdidos a ver si hay algún visitante.[[LINK:103]]"/>
-            </apartado>
-        </seccion>
-        <seccion id="6" titulo="Instrucción: Simbolismo">
-            <apartado id="1" titulo="Estudio Profundo">
-                <paso tipo="dialogo" oficial="Ora" texto="La Piedra Bruta representa el estado de imperfección..."/>
-                <paso tipo="dialogo" oficial="Ora" texto="Es cuanto, VM∴. [[VOLVER]]"/>
-            </apartado>
-        </seccion>
-        <seccion id="7" titulo="Logia de San Juan">
-            <apartado id="1" titulo="Estudio Profundo">
-                <paso tipo="dialogo" oficial="Ora" texto="La Piedra Bruta representa el estado de imperfección..."/>
-                <paso tipo="dialogo" oficial="Ora" texto="Es cuanto, VM∴. [[VOLVER]]"/>
-            </apartado>
-        </seccion>
-    </ritual>
-    <ritual taller="Colmena No. 8" grado="2">
-        <seccion id="1" titulo="Logia de San Juan">
-            <apartado id="1" titulo="Estudio Profundo">
-                <paso tipo="dialogo" oficial="VM" texto="La Piedra Bruta representa el estado de imperfección..."/>
-                <paso tipo="dialogo" oficial="VM" texto="Es cuanto, VM∴. [[VOLVER]]"/>
+                <paso tipo="dialogo" oficial="VM" texto="Invitad al MC∴.. a que dé un paseo al salón de pasos perdidos a ver si hay algún visitante. [[LINK:103]]"/>
             </apartado>
         </seccion>
     </ritual>
