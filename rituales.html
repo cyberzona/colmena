@@ -136,20 +136,12 @@
                     const oficialTur = paso.getAttribute("oficial"), idL = `l-${sId}-${counter}`;
                     let txt = paso.getAttribute("texto") || paso.textContent || "";
                     
-                    // Manejo de Links
-                    txt = txt.replace(/\[\[LINK:(\d+)(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
-                        // Si usas 102 para la sección 2, restamos 100 o usamos el código directo
-                        // Opción A: Si el ID en el XML es el número final (ej: 2)
-                        const targetId = (parseInt(cod, 10) % 100).toString(); 
-    
-                        // Buscamos la sección en el ritual activo
-                        const secciones = ritualActivo.getElementsByTagName("seccion");
-                        const targetSec = Array.from(secciones).find(s => s.getAttribute("id") === targetId);
-
-                        // Si no encuentra la sección, el botón dirá "Seguir" o la descripción
-                        const textoBoton = (desc || (targetSec ? targetSec.getAttribute("titulo") : "Seguir")).trim();
-    
-                        return `<br><button class="btn-ritual" onclick="irA('${cod}')">${textoBoton} ➜</button>`;
+                   txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
+                       const targetId = parseInt(cod.substring(1), 10).toString();
+                       const secciones = Array.from(ritualActivo.getElementsByTagName("seccion"));
+                       const targetSec = secciones.find(s => s.getAttribute("id") === targetId);
+                       const textoBoton = desc || (targetSec ? targetSec.getAttribute("titulo") : `Ir a Sección ${targetId}`);
+                       return `<br><button class="btn-ritual" onclick="irA('${cod}')">${textoBoton.trim()} ➜</button>`;
                     });
                     // Lógica de Instancia Basada en el Orden del Día
                     if (txt.includes("[[INSTANCIA]]")) {
