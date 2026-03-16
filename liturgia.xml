@@ -50,7 +50,7 @@
             <apartado id="5" titulo="De la Consagración de la Luz">
                 <paso tipo="dialogo" oficial="VM" texto="¡En pie y al Orden, Queridos Hermanos! [Da un golpe de Mallete seguido por los Vigilantes]."/>
                 <paso tipo="dialogo" oficial="VM" texto="QH∴ Maestro de Ceremonias (MC∴) , prended las Luces. [MC∴ , abre el Libro de la Ley y coloca la Escuadra y sobre esta el Compás. Enciende la estrella del VM∴, dice: ¡Que la Sabiduría guie nuestros trabajos! ; MC∴, enciende la estrella del 1V∴ VM∴, dice: ¡Que la Fuerza los sostenga! ; MC∴, enciende la estrella del 2V∴, VM∴ dice: ¡Que la Belleza los adorne!]"/>
-                <paso tipo="dialogo" oficial="VM" texto="Puesto que todo está justo y perfecto, y que es la hora que los AAp∴ MMas∴ empiezan sus trabajos, uníos a mí HH∴ míos, ALGDGADU∴ y en su nombre y bajo la obediencia de la Ser∴ Gran L∴ de Lengua Española para los EE. UU. de A., declaro abiertos los trabajos de esta RL∴ en el grado de Ap∴Mas∴ del REAA∴. Queda prohibido a todo H∴ pasar de una a otra Col∴ ni cubrir el Templo sin permiso de su respectivo V∴; ni tratar asuntos políticos ni religiosos, a mí HH∴ por el signo y Bat∴ de Grado. [Da tres golpes de Mall∴ que repiten los VV∴] Tomad asiento, QQHH∴. [[LINK:102]]"/>
+                <paso tipo="dialogo" oficial="VM" texto="Puesto que todo está justo y perfecto, y que es la hora que los AAp∴ MMas∴ empiezan sus trabajos, uníos a mí HH∴ míos, ALGDGADU∴ y en su nombre y bajo la obediencia de la Ser∴ Gran L∴ de Lengua Española para los EE. UU. de A., declaro abiertos los trabajos de esta RL∴ en el grado de Ap∴Mas∴ del REAA∴. Queda prohibido a todo H∴ pasar de una a otra Col∴ ni cubrir el Templo sin permiso de su respectivo V∴; ni tratar asuntos políticos ni religiosos, a mí HH∴ por el signo y Bat∴ de Grado. [Da tres golpes de Mall∴ que repiten los VV∴] Tomad asiento, QQHH∴.[[LINK:102]]"/>
             </apartado>
         </seccion>
         <seccion id="2" titulo="Desarrollo de Trabajos">        
@@ -116,10 +116,10 @@
             <apartado id="1" titulo="De las Proposiciones por Escrito">
                 <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ como yo lo hago en el Or∴ que nuestro Q∴H∴ M∴ de Cer∴ va a circular el saco de proposiciones. [El MC∴ cumple con su deber y se coloca entre CCol∴.]"/>
                 <paso tipo="dialogo" oficial="1V" texto="VM∴, the saco de proposiciones se encuentra entre CCol∴ para circular."/>
-                <paso tipo="dialogo" oficial="VM" texto="Ordenad que circule empezando por mi derecha. Con Cer∴ o sin Cer∴, cumplida su misión, se coloca entre CCol∴."/>
+                <paso tipo="dialogo" oficial="VM" texto="Ordenad que circule empezando por mi derecha."/>
                 <paso tipo="dialogo" oficial="1V" texto="He cumplido con mi deber."/>
                 <paso tipo="dialogo" oficial="1V" texto="VM∴, the saco de proposiciones, después de haber circulado por los cuatro puntos cardinales, se halla nuevamente entre CCol∴."/>
-                <paso tipo="dialogo" oficial="VM" texto="Ordenad que pase a Or∴ y que en compañía del H∴ Ora∴ nos enteremos de su contenido. El H∴ Ora∴ da cuenta de la cantidad de PPl∴ producidas, después de un breve examen el Ven∴ M∴ puede dejarlas bajo Mall∴ hasta la próxima Ten∴."/>
+                <paso tipo="dialogo" oficial="VM" texto="Ordenad que pase a Or∴ y que en compañía del H∴ Ora∴ nos enteremos de su contenido."/>
                 <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴ anunciad en vuestras respectivas CCol∴ que vamos a pasar a proposiciones verbales."/>
                 <paso tipo="dialogo" oficial="2V" texto="H∴ 1V∴, reina el silencio en mi Col∴."/>
                 <paso tipo="dialogo" oficial="1V" texto="VM∴, reina silencio en ambas CCol∴."/>
@@ -133,6 +133,26 @@
             <apartado id="1" titulo="De los Asuntos Familiares y Otros">
                 <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ como yo lo hago en el Or∴ que vamos a tratar asuntos familiares."/>
                 <paso tipo="dialogo" oficial="VM" texto="Invitad al MC∴.. a que dé un paseo al salón de pasos perdidos a ver si hay algún visitante. [[LINK:103]]"/>
+            </apartado>
+        </seccion>
+        <seccion id="6" titulo="Instrucción: Simbolismo">
+            <apartado id="1" titulo="Estudio Profundo">
+                <paso tipo="dialogo" oficial="Ora" texto="La Piedra Bruta representa el estado de imperfección..."/>
+                <paso tipo="dialogo" oficial="Ora" texto="Es cuanto, VM∴. [[VOLVER]]"/>
+            </apartado>
+        </seccion>
+        <seccion id="7" titulo="Logia de San Juan">
+            <apartado id="1" titulo="Estudio Profundo">
+                <paso tipo="dialogo" oficial="Ora" texto="La Piedra Bruta representa el estado de imperfección..."/>
+                <paso tipo="dialogo" oficial="Ora" texto="Es cuanto, VM∴. [[VOLVER]]"/>
+            </apartado>
+        </seccion>
+    </ritual>
+    <ritual taller="Colmena No. 8" grado="2">
+        <seccion id="1" titulo="Logia de San Juan">
+            <apartado id="1" titulo="Estudio Profundo">
+                <paso tipo="dialogo" oficial="VM" texto="La Piedra Bruta representa el estado de imperfección..."/>
+                <paso tipo="dialogo" oficial="VM" texto="Es cuanto, VM∴. [[VOLVER]]"/>
             </apartado>
         </seccion>
     </ritual>
