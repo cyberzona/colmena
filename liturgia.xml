@@ -113,7 +113,7 @@
             </apartado>
         </seccion>
         <seccion id="4" titulo="De las Proposiciones por Escrito">
-            <apartado id="2" titulo="De las Proposiciones por Escrito">
+            <apartado id="1" titulo="De las Proposiciones por Escrito">
                 <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ como yo lo hago en el Or∴ que nuestro Q∴H∴ M∴ de Cer∴ va a circular el saco de proposiciones. [El MC∴ cumple con su deber y se coloca entre CCol∴.]"/>
                 <paso tipo="dialogo" oficial="1V" texto="VM∴, the saco de proposiciones se encuentra entre CCol∴ para circular."/>
                 <paso tipo="dialogo" oficial="VM" texto="Ordenad que circule empezando por mi derecha. Con Cer∴ o sin Cer∴, cumplida su misión, se coloca entre CCol∴."/>
@@ -130,7 +130,7 @@
             </apartado>
         </seccion>    
         <seccion id="5" titulo="De los Asuntos Familiares">
-            <apartado id="3" titulo="De los Asuntos Familiares y Otros">
+            <apartado id="1" titulo="De los Asuntos Familiares y Otros">
                 <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ como yo lo hago en el Or∴ que vamos a tratar asuntos familiares."/>
                 <paso tipo="dialogo" oficial="VM" texto="Invitad al MC∴.. a que dé un paseo al salón de pasos perdidos a ver si hay algún visitante.[[LINK:103]]"/>
             </apartado>
