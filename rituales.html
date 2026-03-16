@@ -182,17 +182,20 @@
 
         function procesarInstancia(ofi) {
             if (!tenidasXml) return "";
-            const listaTenidas = Array.from(tenidasXml.getElementsByTagName("tenida"));
+            const listaTenidas = Array.from(tenidasXml.getElementsByTagName("tenida"));  
             const tActiva = listaTenidas.find(t => t.getAttribute("fecha") === fechaTrabajo) || listaTenidas[listaTenidas.length - 1];
             if (!tActiva) return "";
-            let contenido = "";
+            let contenido = "";    
             if (ofi === "sec") {
                 const itemB = Array.from(tActiva.getElementsByTagName("item")).find(i => i.getAttribute("acto") === "balaustre");
-                if (itemB) contenido = `<button class="btn-ritual" onclick="abrirVisor('${itemB.getAttribute("url")}')">📜: ${itemB.getAttribute("titulo")} ➜</button>`;
-            } else {
-                Array.from(tActiva.getElementsByTagName("item")).forEach(i => {
+                if (itemB) {
+                    contenido = `<button class="btn-ritual" onclick="abrirVisor('${itemB.getAttribute("url")}')">📜: ${itemB.getAttribute("titulo")} ➜</button>`;
+                }
+            } 
+            else { Array.from(tActiva.getElementsByTagName("item")).forEach(i => {
                     if (i.getAttribute("acto") !== "balaustre") {
-                        const url = i.getAttribute("url"), acc = url.includes('rituales.html') ? `window.location.href='${url}&fecha=${tActiva.getAttribute("fecha")}'` : `abrirVisor('${url}')`;
+                        const url = i.getAttribute("url");
+                        const acc = url.includes('rituales.html') ? `window.location.href='${url}&fecha=${tActiva.getAttribute("fecha")}'`: `abrirVisor('${url}')`;
                         contenido += `<button class="btn-instancia-exec" onclick="${acc}">${i.getAttribute("titulo")}</button>`;
                     }
                 });
