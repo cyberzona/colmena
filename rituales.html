@@ -173,12 +173,6 @@
             } else { window.location.href = `rituales.html?num=${numGradoActual}&sec=1&fecha=${fechaTrabajo}`; }
         }
 
-        function formatearLineasDeAccion() {
-            const dialogos = document.querySelectorAll('.text');
-            dialogos.forEach(caja => {
-              caja.innerHTML = caja.innerHTML.replace(/\[(.*?)\]/g, '<span class="line-exec">[$1]</span>'); });
-        }
-
         function abrirVisor(url) {
             const overlay = document.createElement('div');
             overlay.className = 'visor-overlay';
