@@ -101,7 +101,9 @@
             sSel.innerHTML = "";
             Array.from(ritualActivo.getElementsByTagName("seccion")).forEach(sec => {
                 const id = sec.getAttribute("id");
-                if (seccionesVisibles.has(id.replace(/^0+/, ""))) {
+                // Normalizamos el ID para la comparación
+                const idNormalizado = parseInt(id, 10).toString();
+                if (seccionesVisibles.has(idNormalizado)) {
                     sSel.add(new Option(sec.getAttribute("titulo"), id));
                 }
             });
@@ -129,35 +131,32 @@
             const sId = document.getElementById("seccionFilter").value;
             const oficialSel = document.getElementById("oficialFilter").value; 
             const contenedor = document.getElementById('rituales-content');
-            
             const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
+            
             if (!seccion) return;
             
             let html = "", counter = 0, primeraID = null;
             
             Array.from(seccion.getElementsByTagName("apartado")).forEach(apa => {
                 html += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>`;
-                
                 Array.from(apa.getElementsByTagName("paso")).forEach(paso => {
                     counter++;
-                    const oficialTur = paso.getAttribute("oficial");
-                    const idL = `l-${sId}-${counter}`;
+                    const oficialTur = paso.getAttribute("oficial"), idL = `l-${sId}-${counter}`;
                     let txt = paso.getAttribute("texto") || paso.textContent || "";
                     
-                    // --- BOTONES LINK CORREGIDOS ---
+                    // PROCESAR LINKS
                     txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
-                        // Extrae el ID (ej: de 102 toma 2 o 02 según XML)
-                        let targetId = parseInt(cod.substring(1), 10).toString();
+                        const targetIdRaw = cod.substring(1); // ej: "03" o "04"
+                        const targetIdNum = parseInt(targetIdRaw, 10).toString();
+                        
                         const secciones = Array.from(ritualActivo.getElementsByTagName("seccion"));
+                        const targetSec = secciones.find(s => parseInt(s.getAttribute("id"), 10).toString() === targetIdNum);
                         
-                        // Busqueda flexible (coincidencia con "2" o "02")
-                        const targetSec = secciones.find(s => parseInt(s.getAttribute("id"), 10) == targetId);
-                        const textoBoton = desc || (targetSec ? targetSec.getAttribute("titulo") : `Sección ${targetId}`);
-                        
+                        const textoBoton = desc || (targetSec ? targetSec.getAttribute("titulo") : `Sección ${targetIdNum}`);
                         return `<br><button class="btn-ritual" onclick="irA('${cod}')">${textoBoton.trim()} ➜</button>`;
                     });
 
-                    // --- LÓGICA DE INSTANCIA ---
+                    // PROCESAR INSTANCIA
                     if (txt.includes("[[INSTANCIA]]")) {
                         const permitir = (oficialTur === "VM") || (oficialSel === oficialTur);
                         txt = txt.replace("[[INSTANCIA]]", permitir ? `<br>${procesarInstancia(oficialTur.toLowerCase())}` : "");
@@ -178,16 +177,20 @@
         }
 
         function irA(codigo) {
-            const targetIdInt = parseInt(codigo.substring(1), 10);
+            const targetIdRaw = codigo.substring(1); 
+            const targetIdNum = parseInt(targetIdRaw, 10).toString();
+
+            // Hacemos la sección visible antes de intentar seleccionarla
+            seccionesVisibles.add(targetIdNum);
+            
+            // Re-actualizamos el selector para que la nueva sección aparezca en la lista
+            actualizarSelectorSecciones(targetIdRaw);
+            
             const selector = document.getElementById("seccionFilter");
             if (selector) {
-                // Buscamos la opción que coincida numéricamente (por si es "3" o "03")
-                const opcion = Array.from(selector.options).find(opt => parseInt(opt.value, 10) === targetIdInt);
-                if (opcion) {
-                    selector.value = opcion.value;
-                    cambioDeSeccion();
-                    window.scrollTo(0, 0);
-                }
+                selector.value = targetIdRaw;
+                cambioDeSeccion(); // Esto invoca internamente a renderizarLiturgia
+                window.scrollTo(0, 0);
             }
         }
 
