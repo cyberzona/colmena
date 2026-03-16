@@ -68,31 +68,11 @@
                 <paso tipo="dialogo" oficial="2V" texto="Reina el silencio en mi Columna Hermano 1V∴."/>
                 <paso tipo="dialogo" oficial="1V" texto="Reina el silencio en ambas CCol∴, VM∴."/>
                 <paso tipo="dialogo" oficial="VM" texto="QH∴ OF∴ ¿Queréis darnos vuestras conclusiones respecto a la plancha trazada por nuestro H∴ Sec∴ de nuestros últimos trabajos? [El H∴Ora∴ da las conclusiones]"/>
-                <paso tipo="dialogo" oficial="VM" texto="Después de las conclusiones del H∴ Ora∴, los HH∴ que estén de acuerdo se servirán de hacer la señal de aprobación al primer golpe de Mall∴."/>
-                <paso tipo="dialogo" oficial="VM" texto="[Da a conocer el resultado de la votación].[[LINK:104]] [[LINK:105]]"/>
-                <paso tipo="dialogo" oficial="VM" texto="¡Hermanos míos! El Taller ha ordenado nuestro primer tiempo; ahora, para que el espíritu se manifieste en nueva forma, vamos a cubrir los trabajos de este Grado y proceder a ."/>
-                <paso tipo="dialogo" oficial="VM" texto="[Con golpe de Mallete.]  [[INSTANCIA]]"/>
-            </apartado>
-            <apartado id="2" titulo="De las Proposiciones por Escrito">
-                <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ como yo lo hago en el Or∴ que nuestro Q∴H∴ M∴ de Cer∴ va a circular el saco de proposiciones. [El MC∴ cumple con su deber y se coloca entre CCol∴.]"/>
-                <paso tipo="dialogo" oficial="1V" texto="VM∴, the saco de proposiciones se encuentra entre CCol∴ para circular."/>
-                <paso tipo="dialogo" oficial="VM" texto="Ordenad que circule empezando por mi derecha. Con Cer∴ o sin Cer∴, cumplida su misión, se coloca entre CCol∴."/>
-                <paso tipo="dialogo" oficial="1V" texto="He cumplido con mi deber."/>
-                <paso tipo="dialogo" oficial="1V" texto="VM∴, the saco de proposiciones, después de haber circulado por los cuatro puntos cardinales, se halla nuevamente entre CCol∴."/>
-                <paso tipo="dialogo" oficial="VM" texto="Ordenad que pase a Or∴ y que en compañía del H∴ Ora∴ nos enteremos de su contenido. El H∴ Ora∴ da cuenta de la cantidad de PPl∴ producidas, después de un breve examen el Ven∴ M∴ puede dejarlas bajo Mall∴ hasta la próxima Ten∴."/>
-                <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴ anunciad en vuestras respectivas CCol∴ que vamos a pasar a proposiciones verbales."/>
-                <paso tipo="dialogo" oficial="2V" texto="H∴ 1V∴, reina el silencio en mi Col∴."/>
-                <paso tipo="dialogo" oficial="1V" texto="VM∴, reina silencio en ambas CCol∴."/>
-                <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ que voy a conceder la palabra en bien general de la orden y en particular de este Tall∴."/>
-                <paso tipo="dialogo" oficial="2V" texto="QH∴ de la Col∴ del Norte, por orden del VM∴ y transmitida a mí por el QH∴ 1V∴ que está concedida la palabra en bien general de la orden y particular de este Tall∴."/>
-                <paso tipo="dialogo" oficial="2V" texto="QH∴ 1V∴, reina el silencio en mi Col∴.."/>
-                <paso tipo="dialogo" oficial="1V" texto="VM∴, reina silencio en ambas CCol∴."/>
-            </apartado>
-            <apartado id="3" titulo="De los Asuntos Familiares y Otros">
-                <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ como yo lo hago en el Or∴ que vamos a tratar asuntos familiares."/>
-                <paso tipo="dialogo" oficial="VM" texto="Invitad al MC∴.. a que dé un paseo al salón de pasos perdidos a ver si hay algún visitante.[[LINK:103]]"/>
-            </apartado>
-        </seccion>
+                <paso tipo="dialogo" oficial="VM" texto="Después de las conclusiones del H∴ Ora∴, los HH∴ que estén de acuerdo se servirán de hacer la señal de aprobación al primer golpe de Mall∴. [Con golpe de Mallete.] "/>
+                <paso tipo="dialogo" oficial="VM" texto="¡Hermanos míos! El Taller ha ordenado nuestro primer tiempo; ahora, para que el espíritu se manifieste en nueva forma, vamos a cubrir los trabajos de este Grado y proceder a .  [[INSTANCIA]]"/>
+                <paso tipo="dialogo" oficial="VM" texto="[Con golpe de Mallete.]  [[LINK:104]] [[LINK:105]] [[INSTANCIA]]"/>
+            </apartado>          
+        </seccion>            
         <seccion id="3" titulo="Clausura de Trabajos">
              <apartado id="1" titulo="Del Tronco de Beneficencia">
                 <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴ anunciad en vuestras CCol∴ que el H∴ Hos∴ va a circular en tronco de beneficencia."/>
@@ -128,19 +108,41 @@
                 <paso tipo="dialogo" oficial="2V" texto="Todo está justo y perfecto, VM∴."/>
                 <paso tipo="dialogo" oficial="1V" texto="Reina completa armonía, VM∴ y estamos en condición de luchar por la emancipación Moral y Material de los seres humanos."/>
                 <paso tipo="dialogo" oficial="VM" texto="YaHermanos míos: puesto que todo es justo y perfecto, y nos hallamos en condición de luchar para que el estandarte de la Justicia ondee desde la cúpula de nuestros Templos sobre toda la humanidad, acompañadme a clausurar las tareas de esta Respetable Logia. ALGDGADU∴, en su nombre y bajo la obediencia de la Ser∴ Gr∴ L∴ de Lengua Española para los EE. UU. de A., declaro cerrados los trabajos de este Taller por el día de hoy. ¡A mí, Hermanos, con el Signo y la Batería de Grado!"/>
-                <paso tipo="dialogo" oficial="VM" texto="Queridos Hermanos, antes de partir: ¿Juráis guardar absoluto silencio sobre lo aquí visto y oído, incluso ante aquellos Hermanos que no asistieron a esta Tenida?"/>
-                <paso tipo="dialogo" oficial="All" texto="¡Lo juramos!"/>
+                <paso tipo="dialogo" oficial="VM" texto="Queridos Hermanos, antes de partir: ¿Juráis guardar absoluto silencio sobre lo aquí visto y oído, incluso ante aquellos Hermanos que no asistieron a esta Tenida? Todos. ¡Lo juramos!""/>
                 <paso tipo="dialogo" oficial="VM" texto="Si así lo hiciereis, que el GADU∴ os lo premie; si no, que Él os lo demande. H∴ MC∴ servíos cerrar el Ara. Hermanos míos, retirémonos en paz y fraternidad."/>
                 <paso tipo="dialogo" oficial="MC" texto="[Apaga la estrella de 2V∴ , Apaga la estrella del 1V∴ y Apaga la estrella del VM∴ Retira la Escuadra y el Compás, y cierra el Libro de la Ley]"/>
             </apartado>
         </seccion>
-       <seccion id="4" titulo="Instrucción: Simbolismo">
+        <seccion id="4" titulo="De las Proposiciones por Escrito">
+            <apartado id="2" titulo="De las Proposiciones por Escrito">
+                <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ como yo lo hago en el Or∴ que nuestro Q∴H∴ M∴ de Cer∴ va a circular el saco de proposiciones. [El MC∴ cumple con su deber y se coloca entre CCol∴.]"/>
+                <paso tipo="dialogo" oficial="1V" texto="VM∴, the saco de proposiciones se encuentra entre CCol∴ para circular."/>
+                <paso tipo="dialogo" oficial="VM" texto="Ordenad que circule empezando por mi derecha. Con Cer∴ o sin Cer∴, cumplida su misión, se coloca entre CCol∴."/>
+                <paso tipo="dialogo" oficial="1V" texto="He cumplido con mi deber."/>
+                <paso tipo="dialogo" oficial="1V" texto="VM∴, the saco de proposiciones, después de haber circulado por los cuatro puntos cardinales, se halla nuevamente entre CCol∴."/>
+                <paso tipo="dialogo" oficial="VM" texto="Ordenad que pase a Or∴ y que en compañía del H∴ Ora∴ nos enteremos de su contenido. El H∴ Ora∴ da cuenta de la cantidad de PPl∴ producidas, después de un breve examen el Ven∴ M∴ puede dejarlas bajo Mall∴ hasta la próxima Ten∴."/>
+                <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴ anunciad en vuestras respectivas CCol∴ que vamos a pasar a proposiciones verbales."/>
+                <paso tipo="dialogo" oficial="2V" texto="H∴ 1V∴, reina el silencio en mi Col∴."/>
+                <paso tipo="dialogo" oficial="1V" texto="VM∴, reina silencio en ambas CCol∴."/>
+                <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ que voy a conceder la palabra en bien general de la orden y en particular de este Tall∴."/>
+                <paso tipo="dialogo" oficial="2V" texto="QH∴ de la Col∴ del Norte, por orden del VM∴ y transmitida a mí por el QH∴ 1V∴ que está concedida la palabra en bien general de la orden y particular de este Tall∴."/>
+                <paso tipo="dialogo" oficial="2V" texto="QH∴ 1V∴, reina el silencio en mi Col∴.."/>
+                <paso tipo="dialogo" oficial="1V" texto="VM∴, reina silencio en ambas CCol∴."/>
+            </apartado>
+        </seccion>    
+        <seccion id="5" titulo="De los Asuntos Familiares">
+            <apartado id="3" titulo="De los Asuntos Familiares y Otros">
+                <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ como yo lo hago en el Or∴ que vamos a tratar asuntos familiares."/>
+                <paso tipo="dialogo" oficial="VM" texto="Invitad al MC∴.. a que dé un paseo al salón de pasos perdidos a ver si hay algún visitante.[[LINK:103]]"/>
+            </apartado>
+        </seccion>
+        <seccion id="6" titulo="Instrucción: Simbolismo">
             <apartado id="1" titulo="Estudio Profundo">
                 <paso tipo="dialogo" oficial="Ora" texto="La Piedra Bruta representa el estado de imperfección..."/>
                 <paso tipo="dialogo" oficial="Ora" texto="Es cuanto, VM∴. [[VOLVER]]"/>
             </apartado>
         </seccion>
-        <seccion id="5" titulo="Logia de San Juan">
+        <seccion id="7" titulo="Logia de San Juan">
             <apartado id="1" titulo="Estudio Profundo">
                 <paso tipo="dialogo" oficial="Ora" texto="La Piedra Bruta representa el estado de imperfección..."/>
                 <paso tipo="dialogo" oficial="Ora" texto="Es cuanto, VM∴. [[VOLVER]]"/>
