@@ -186,7 +186,7 @@
         function procesarInstancia(ofi) {
             if (!tenidasXml) return "";
             const listaTenidas = Array.from(tenidasXml.getElementsByTagName("tenida"));
-            const tActiva = listaTenidas.find(t => t.getAttribute("fecha") === fechaTrabajo) || listaTenidas[listaTenidas.length - 1];
+            const tActiva = listaTenidas.find(t => t.getAttribute("fecha") === fechaTrabajo);
             if (!tActiva) return "";
             
             let contenido = "";
