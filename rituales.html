@@ -101,7 +101,9 @@
             sSel.innerHTML = "";
             Array.from(ritualActivo.getElementsByTagName("seccion")).forEach(sec => {
                 const id = sec.getAttribute("id");
-                if (seccionesVisibles.has(id)) sSel.add(new Option(sec.getAttribute("titulo"), id));
+                if (seccionesVisibles.has(id.replace(/^0+/, ""))) {
+                    sSel.add(new Option(sec.getAttribute("titulo"), id));
+                }
             });
             sSel.value = valAnterior;
         }
@@ -124,82 +126,70 @@
         }
 
         function renderizarLiturgia() {
-    const sId = document.getElementById("seccionFilter").value;
-    const oficialSel = document.getElementById("oficialFilter").value; 
-    const contenedor = document.getElementById('rituales-content');
-    
-    // Buscamos la sección actual en el ritual activo
-    const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
-    
-    if (!seccion) return;
-    
-    let html = "", counter = 0, primeraID = null;
-    
-    Array.from(seccion.getElementsByTagName("apartado")).forEach(apa => {
-        html += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>`;
-        
-        Array.from(apa.getElementsByTagName("paso")).forEach(paso => {
-            counter++;
-            const oficialTur = paso.getAttribute("oficial");
-            const idL = `l-${sId}-${counter}`;
-            let txt = paso.getAttribute("texto") || paso.textContent || "";
+            const sId = document.getElementById("seccionFilter").value;
+            const oficialSel = document.getElementById("oficialFilter").value; 
+            const contenedor = document.getElementById('rituales-content');
             
-            // --- CORRECCIÓN DE BOTONES LINK ---
-            txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
-                // Convertimos 102 -> "2" para buscar en el XML
-                const targetId = parseInt(cod.substring(1), 10).toString();
-                const secciones = Array.from(ritualActivo.getElementsByTagName("seccion"));
-                const targetSec = secciones.find(s => s.getAttribute("id") === targetId);
+            const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
+            if (!seccion) return;
+            
+            let html = "", counter = 0, primeraID = null;
+            
+            Array.from(seccion.getElementsByTagName("apartado")).forEach(apa => {
+                html += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>`;
                 
-                // Si halla la sección usa el título del XML, si no usa la descripción o "Ir"
-                const textoBoton = desc || (targetSec ? targetSec.getAttribute("titulo") : `Ir a Sección ${targetId}`);
-                
-                // IMPORTANTE: Asegúrate de que la función irA() acepte el código de 3 dígitos
-                return `<br><button class="btn-ritual" onclick="irA('${cod}')">${textoBoton.trim()} ➜</button>`;
+                Array.from(apa.getElementsByTagName("paso")).forEach(paso => {
+                    counter++;
+                    const oficialTur = paso.getAttribute("oficial");
+                    const idL = `l-${sId}-${counter}`;
+                    let txt = paso.getAttribute("texto") || paso.textContent || "";
+                    
+                    // --- BOTONES LINK CORREGIDOS ---
+                    txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
+                        // Extrae el ID (ej: de 102 toma 2 o 02 según XML)
+                        let targetId = parseInt(cod.substring(1), 10).toString();
+                        const secciones = Array.from(ritualActivo.getElementsByTagName("seccion"));
+                        
+                        // Busqueda flexible (coincidencia con "2" o "02")
+                        const targetSec = secciones.find(s => parseInt(s.getAttribute("id"), 10) == targetId);
+                        const textoBoton = desc || (targetSec ? targetSec.getAttribute("titulo") : `Sección ${targetId}`);
+                        
+                        return `<br><button class="btn-ritual" onclick="irA('${cod}')">${textoBoton.trim()} ➜</button>`;
+                    });
+
+                    // --- LÓGICA DE INSTANCIA ---
+                    if (txt.includes("[[INSTANCIA]]")) {
+                        const permitir = (oficialTur === "VM") || (oficialSel === oficialTur);
+                        txt = txt.replace("[[INSTANCIA]]", permitir ? `<br>${procesarInstancia(oficialTur.toLowerCase())}` : "");
+                    }
+
+                    if (txt.includes("[[VOLVER]]")) txt = txt.replace("[[VOLVER]]", `<br><button class="btn-ritual" onclick="volver()">⬅ Regresar</button>`);
+                    
+                    txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
+                    txt = txt.replace(/\[(.*?)\]/g, '<span class="line-exec">[$1]</span>');
+                    
+                    const esOfi = (oficialSel && oficialTur === oficialSel);
+                    if (esOfi && !primeraID) primeraID = idL;
+                    html += `<dt>${oficialTur}∴</dt><dd class="${esOfi ? 'resaltado' : ''}" id="${idL}">${txt}</dd>`;
+                });
             });
+            contenedor.innerHTML = `<dl style="counter-reset: line-counter;">${html}</dl>`;
+            if (primeraID) { const el = document.getElementById(primeraID); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+        }
 
-            // --- LÓGICA DE INSTANCIA ---
-            if (txt.includes("[[INSTANCIA]]")) {
-                const permitir = (oficialTur === "VM") || (oficialSel === oficialTur);
-                // Si no se permite, el replace elimina la etiqueta
-                txt = txt.replace("[[INSTANCIA]]", permitir ? `<br>${procesarInstancia(oficialTur.toLowerCase())}` : "");
+        function irA(codigo) {
+            const targetIdInt = parseInt(codigo.substring(1), 10);
+            const selector = document.getElementById("seccionFilter");
+            if (selector) {
+                // Buscamos la opción que coincida numéricamente (por si es "3" o "03")
+                const opcion = Array.from(selector.options).find(opt => parseInt(opt.value, 10) === targetIdInt);
+                if (opcion) {
+                    selector.value = opcion.value;
+                    cambioDeSeccion();
+                    window.scrollTo(0, 0);
+                }
             }
-
-            // --- LIMPIEZA Y FORMATO ---
-            if (txt.includes("[[VOLVER]]")) {
-                txt = txt.replace("[[VOLVER]]", `<br><button class="btn-ritual" onclick="volver()">⬅ Regresar</button>`);
-            }
-            
-            // Resaltado de siglas (∴) y líneas de ejecución ([...])
-            txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
-            txt = txt.replace(/\[(.*?)\]/g, '<span class="line-exec">[$1]</span>');
-            
-            const esOfi = (oficialSel && oficialTur === oficialSel);
-            if (esOfi && !primeraID) primeraID = idL;
-            
-            html += `<dt>${oficialTur}∴</dt><dd class="${esOfi ? 'resaltado' : ''}" id="${idL}">${txt}</dd>`;
-        });
-    });
-    
-    contenedor.innerHTML = `<dl style="counter-reset: line-counter;">${html}</dl>`;
-    
-    if (primeraID) { 
-        const el = document.getElementById(primeraID); 
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
-    }
-}
-function irA(codigo) {
-    // Extraemos el ID real (ej: de "102" a "2")
-    const idSeccion = parseInt(codigo.substring(1), 10).toString();
-    
-    // Actualizamos el select de secciones
-    const selector = document.getElementById("seccionFilter");
-    if (selector) {
-        selector.value = idSeccion;
-        // Disparamos el renderizado manualmente
-        renderizarLiturgia();
-    }
-}
+        }
 
         function volver() {
             if (window.history.length > 1) { 
@@ -233,11 +223,6 @@ function irA(codigo) {
                 });
             }
             return contenido ? `<div class="instancia-botones">${contenido}</div>` : "";
-        }
-
-        function gestionarCambioOficial() {
-            const oSel = document.getElementById("oficialFilter");
-            renderizarLiturgia();
         }
     </script>
 </body>
