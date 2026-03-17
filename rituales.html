@@ -206,36 +206,35 @@
             document.body.appendChild(overlay);
         }
 
-       function procesarInstancia(oficialPaso) {
+      function procesarInstancia(oficialPaso) {
     if (!tenidasXml) return "";
+    
     const tActiva = Array.from(tenidasXml.getElementsByTagName("tenida"))
         .find(t => t.getAttribute("fecha").trim() === fechaTrabajo.trim());
     
     if (!tActiva) return "";            
     
-    // Capturamos quién es el oficial seleccionado en el filtro de la parte superior
-    const filtroGlobal = document.getElementById("oficialFilter").value;
+    const filtroSuperior = document.getElementById("oficialFilter").value;
+    const oficialDelPasoActual = (oficialPaso || "").trim();
+    
     let contenido = "";
     const items = tActiva.getElementsByTagName("item");
-    
-    const oficialDelPasoActual = (oficialPaso || "").trim();
 
     for (let i = 0; i < items.length; i++) {
         const item = items[i];
         const acto = item.getAttribute("acto") || "";
         const url = item.getAttribute("url") || "";
-        const titulo = item.getAttribute("titulo") || "Trabajo";
+        const titulo = item.getAttribute("titulo") || "";
 
+        // 1. Caso específico para el Balaustre (Condicionado)
         if (acto === "balaustre") {
-            // LÓGICA DE DEPENDENCIA:
-            // 1. El paso debe ser del Secretario (oficialDelPasoActual === "Sec")
-            // 2. Y ADEMÁS el filtro de arriba debe estar en "Sec" (filtroGlobal === "Sec")
-            if (oficialDelPasoActual === "Sec" && filtroGlobal === "Sec") {
+            if (oficialDelPasoActual === "Sec" && filtroSuperior === "Sec") {
                 contenido += `<button class="btn-ritual" onclick="abrirVisor('${url}')">📜: ${titulo} ➜</button>`;
             }
-        } else {
-            // El trabajo del VM (Elevación) y otros: 
-            // Se encienden "por primera vez" (siempre visibles) sin depender del filtro.
+        } 
+        // 2. Caso para todos los demás actos (Públicos)
+        // El 'else if' garantiza que si ya entró en 'balaustre', no evaluará esto.
+        else if (acto !== "") {
             const acc = url.includes('rituales.html') 
                 ? `window.location.href='${url}&fecha=${fechaTrabajo}'` 
                 : `abrirVisor('${url}')`;
