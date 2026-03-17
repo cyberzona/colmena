@@ -195,7 +195,7 @@
             const oficialSeleccionado = document.getElementById("oficialFilter").value;
             let contenido = "";
 
-            // 1. Lógica para el Secretario: Solo si está seleccionado
+            // 1. REGLA PARA EL BALAUSTRE: Solo si el Secretario está seleccionado en el filtro.
             if (oficialSeleccionado === "Sec") {
                 const itemB = Array.from(tActiva.getElementsByTagName("item")).find(i => i.getAttribute("acto") === "balaustre");
                 if (itemB) {
@@ -203,8 +203,9 @@
                 }
             }
 
-            // 2. Lógica para el VM: Todos los botones EXCEPTO el balaustre
-            if (ofi === "VM") {
+            // 2. REGLA PARA DEMÁS TRABAJOS: Aparecen en cualquier diálogo (excepto el de Sec), 
+            // siempre que no sean el balaustre.
+            if (oficialSeleccionado !== "Sec") {
                 Array.from(tActiva.getElementsByTagName("item")).forEach(i => {
                     if (i.getAttribute("acto") !== "balaustre") {
                         const url = i.getAttribute("url");
