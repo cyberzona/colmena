@@ -126,13 +126,13 @@
                 <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ que voy a conceder la palabra en bien general de la orden y en particular de este Tall∴."/>
                 <paso tipo="dialogo" oficial="2V" texto="QH∴ de la Col∴ del Norte, por orden del VM∴ y transmitida a mí por el QH∴ 1V∴ que está concedida la palabra en bien general de la orden y particular de este Tall∴."/>
                 <paso tipo="dialogo" oficial="2V" texto="QH∴ 1V∴, reina el silencio en mi Col∴.."/>
-                <paso tipo="dialogo" oficial="1V" texto="VM∴, reina silencio en ambas CCol∴."/>
+                <paso tipo="dialogo" oficial="1V" texto="VM∴, reina silencio en ambas CCol∴. [[VOLVER]]"/>
             </apartado>
         </seccion>    
         <seccion id="5" titulo="De los Asuntos Familiares">
             <apartado id="1" titulo="De los Asuntos Familiares y Otros">
                 <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ como yo lo hago en el Or∴ que vamos a tratar asuntos familiares."/>
-                <paso tipo="dialogo" oficial="VM" texto="Invitad al MC∴.. a que dé un paseo al salón de pasos perdidos a ver si hay algún visitante. [[LINK:103]]"/>
+                <paso tipo="dialogo" oficial="VM" texto="Invitad al MC∴.. a que dé un paseo al salón de pasos perdidos a ver si hay algún visitante. [[VOLVER]]"/>
             </apartado>
         </seccion>
         <seccion id="6" titulo="Instrucción: Simbolismo">
@@ -152,7 +152,7 @@
         <seccion id="1" titulo="Logia de San Juan">
             <apartado id="1" titulo="Estudio Profundo">
                 <paso tipo="dialogo" oficial="VM" texto="La Piedra Bruta representa el estado de imperfección..."/>
-                <paso tipo="dialogo" oficial="VM" texto="Es cuanto, VM∴. [[LINK:102]]"/>
+                <paso tipo="dialogo" oficial="VM" texto="Es cuanto, VM∴. [[VOLVER]]"/>
             </apartado>
         </seccion>
     </ritual>
