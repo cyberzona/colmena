@@ -191,11 +191,19 @@
             if (!tenidasXml) return "";
             const tActiva = Array.from(tenidasXml.getElementsByTagName("tenida")).find(t => t.getAttribute("fecha") === fechaTrabajo);
             if (!tActiva) return "";            
+            
+            const oficialSeleccionado = document.getElementById("oficialFilter").value;
             let contenido = "";
-            if (ofi === "VM" || ofi === "Sec") {
+
+            // 1. Lógica para el Secretario: Solo si está seleccionado
+            if (oficialSeleccionado === "Sec") {
                 const itemB = Array.from(tActiva.getElementsByTagName("item")).find(i => i.getAttribute("acto") === "balaustre");
-                if (itemB) { contenido += `<button class="btn-ritual" onclick="abrirVisor('${itemB.getAttribute("url")}')">📜: ${itemB.getAttribute("titulo")} ➜</button>`; }
+                if (itemB) {
+                    contenido += `<button class="btn-ritual" onclick="abrirVisor('${itemB.getAttribute("url")}')">📜: ${itemB.getAttribute("titulo")} ➜</button>`;
+                }
             }
+
+            // 2. Lógica para el VM: Todos los botones EXCEPTO el balaustre
             if (ofi === "VM") {
                 Array.from(tActiva.getElementsByTagName("item")).forEach(i => {
                     if (i.getAttribute("acto") !== "balaustre") {
@@ -205,6 +213,7 @@
                     }
                 });
             }
+            
             return contenido ? `<div class="instancia-botones">${contenido}</div>` : "";
         }
     </script>
