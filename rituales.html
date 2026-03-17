@@ -44,20 +44,25 @@
         </div>
     </div>
     <div id="control-panel">
-        <div class="container-select"><span class="select-label">Sección</span><select id="seccionFilter" class="select-seccion" onchange="cambioDeSeccion()"></select></div>
-        <div class="container-select"><span class="select-label">Oficial</span><select id="oficialFilter" class="select-oficiales" onchange="renderizarLiturgia()"></select></div>
+        <div class="container-select">
+            <span class="select-label">Sección</span>
+            <select id="seccionFilter" class="select-seccion" onchange="cambioDeSeccion()"></select>
+        </div>
+        <div class="container-select">
+            <span class="select-label">Oficial</span>
+            <select id="oficialFilter" class="select-oficiales" onchange="renderizarLiturgia()"></select>
+        </div>
     </div>
     <div id="rituales-content"></div>
 
     <script>
         let xmlDoc, glosarioDoc, tenidasXml, ritualActivo;
         let numGradoActual = "1", fechaTrabajo = "";
-        // Secciones visibles por defecto
-        let seccionesVisibles = new Set(["1", "2", "3"]);
+        // El set se inicializa vacío y se llena en inicializar()
+        let seccionesVisibles = new Set();
 
         window.irA = function(codigo) {
             try {
-                // Extrae el ID de sección del código (ej: "S004" -> "4")
                 const targetIdStr = parseInt(codigo.substring(1), 10).toString();
                 seccionesVisibles.add(targetIdStr);
                 actualizarSelectorSecciones(targetIdStr);
@@ -68,12 +73,16 @@
 
         async function inicializar() {
             try {
+                // 1. Reinicio de secciones a las 3 base
+                seccionesVisibles = new Set(["1", "2", "3"]);
+                
                 await cargarDatos();
+                
                 const urlParams = new URLSearchParams(window.location.search);
+                // Aseguramos formato YYYY-MM-DD para la fecha
                 fechaTrabajo = urlParams.get('fecha') || new Date().toISOString().split('T')[0];
                 numGradoActual = (urlParams.get('num') || "1").toString();
                 
-                // Si la URL pide una sección específica que no es 1, 2 o 3, la habilitamos
                 const secUrl = (urlParams.get('sec') || "1").toString();
                 seccionesVisibles.add(secUrl);
 
@@ -114,7 +123,6 @@
             sSel.innerHTML = "";
             Array.from(ritualActivo.getElementsByTagName("seccion")).forEach(sec => {
                 const idXml = sec.getAttribute("id");
-                // Solo añadir si está en el set de permitidas
                 if (seccionesVisibles.has(idXml.toString())) {
                     sSel.add(new Option(sec.getAttribute("titulo"), idXml));
                 }
@@ -194,6 +202,7 @@
 
         function procesarInstancia() {
             if (!tenidasXml) return "";
+            // Buscamos la tenida que coincida con la fecha de la URL
             const tActiva = Array.from(tenidasXml.getElementsByTagName("tenida")).find(t => t.getAttribute("fecha") === fechaTrabajo);
             if (!tActiva) return "";            
             
