@@ -84,52 +84,58 @@
         
         window.irA = function(codigo) {
     try {
-        // 1. Extraemos el número puro (ej: "103", "201", "505")
+        // 1. Limpieza total del código
         const targetIdStr = codigo.replace(/\D/g, "");
         const targetNum = parseInt(targetIdStr);
         
         if (isNaN(targetNum)) return;
 
-        // 2. DETERMINACIÓN DEL GRADO DESTINO
-        // Si el código es >= 100, el primer dígito es el grado (1xx=Grado 1, 5xx=Grado 5)
-        // Si el código es < 100 (1, 2, 3, 4), se mantiene el grado en el que ya estás
+        // 2. DETERMINACIÓN DEL GRADO DESTINO (1 al 9)
+        // Regla: Códigos 1xx -> Grado 1, 2xx -> Grado 2, etc.
+        // Códigos < 100 se quedan en el grado actual.
         let gradoDestino = numGradoActual; 
         if (targetNum >= 100) {
             gradoDestino = targetIdStr.charAt(0);
         }
 
-        // 3. EJECUCIÓN DEL CAMBIO DE GRADO (Salto entre rituales)
+        // 3. CAMBIO DE GRADO CON CARGA PRIORITARIA
         if (gradoDestino !== numGradoActual) {
             numGradoActual = gradoDestino;
             
-            // Definimos qué se ve en el selector al entrar al nuevo grado
+            // Ajuste de visibilidad antes de cargar
             if (targetNum <= 3) {
                 seccionesVisibles = new Set(["1", "2", "3"]);
             } else {
                 seccionesVisibles = new Set([targetIdStr]);
             }
             
-            // Recargamos el ritual correspondiente (esto actualiza títulos y oficiales)
+            // Forzamos la carga del nuevo bloque XML
             ejecutarCargaRitual(gradoDestino, targetIdStr);
+            
+            // Detenemos la ejecución aquí para evitar conflictos de renderizado
             window.scrollTo({ top: 0, behavior: 'smooth' });
             return;
         }
 
-        // 4. NAVEGACIÓN INTERNA (Mismo grado)
+        // 4. NAVEGACIÓN DENTRO DEL MISMO GRADO
+        // Aseguramos que el set de visibilidad sea el correcto antes de renderizar
         if (targetNum <= 3) {
             seccionesVisibles = new Set(["1", "2", "3"]);
         } else {
             seccionesVisibles = new Set([targetIdStr]);
         }
 
+        // Sincronización manual del selector
         actualizarSelectorSecciones(targetIdStr);
         cambioDeSeccion();
+        
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
     } catch (err) {
-        console.error("Error en la navegación jerárquica:", err);
+        console.error("Fallo crítico en navegación:", err);
     }
 };
+
 
 
 
