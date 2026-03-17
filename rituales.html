@@ -82,62 +82,55 @@
         let historialNavegacion = [];
 
         
-        window.irA = function(codigo) {
+        // --- SUSTITUYE COMPLETAMENTE TU FUNCIÓN window.irA ---
+window.irA = function(codigo) {
     try {
-        // 1. Limpieza total del código
         const targetIdStr = codigo.replace(/\D/g, "");
         const targetNum = parseInt(targetIdStr);
-        
         if (isNaN(targetNum)) return;
 
-        // 2. DETERMINACIÓN DEL GRADO DESTINO (1 al 9)
-        // Regla: Códigos 1xx -> Grado 1, 2xx -> Grado 2, etc.
-        // Códigos < 100 se quedan en el grado actual.
+        // Determinación del Grado (1xx -> 1, 2xx -> 2, etc.)
         let gradoDestino = numGradoActual; 
         if (targetNum >= 100) {
             gradoDestino = targetIdStr.charAt(0);
         }
 
-        // 3. CAMBIO DE GRADO CON CARGA PRIORITARIA
+        // Si hay cambio de grado, actualizamos el contexto global
         if (gradoDestino !== numGradoActual) {
             numGradoActual = gradoDestino;
+            // Definimos visibilidad: bloque 1-3 o sección única
+            seccionesVisibles = (targetNum <= 3) ? new Set(["1", "2", "3"]) : new Set([targetIdStr]);
             
-            // Ajuste de visibilidad antes de cargar
-            if (targetNum <= 3) {
-                seccionesVisibles = new Set(["1", "2", "3"]);
-            } else {
-                seccionesVisibles = new Set([targetIdStr]);
-            }
-            
-            // Forzamos la carga del nuevo bloque XML
+            // Recargamos el ritual (esto actualiza ritualActivo)
             ejecutarCargaRitual(gradoDestino, targetIdStr);
-            
-            // Detenemos la ejecución aquí para evitar conflictos de renderizado
             window.scrollTo({ top: 0, behavior: 'smooth' });
             return;
         }
 
-        // 4. NAVEGACIÓN DENTRO DEL MISMO GRADO
-        // Aseguramos que el set de visibilidad sea el correcto antes de renderizar
-        if (targetNum <= 3) {
-            seccionesVisibles = new Set(["1", "2", "3"]);
-        } else {
-            seccionesVisibles = new Set([targetIdStr]);
-        }
-
-        // Sincronización manual del selector
+        // Si es el mismo grado, simplemente navegamos
+        seccionesVisibles = (targetNum <= 3) ? new Set(["1", "2", "3"]) : new Set([targetIdStr]);
         actualizarSelectorSecciones(targetIdStr);
         cambioDeSeccion();
-        
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
     } catch (err) {
-        console.error("Fallo crítico en navegación:", err);
+        console.error("Fallo en navegación:", err);
     }
 };
 
+// --- BUSCA Y SUSTITUYE EL BLOQUE DE PROCESAR LINKS DENTRO DE renderizarLiturgia ---
+// Es el bloque que usa txt.replace(/\[\[LINK:(\d{3})...
 
-
+txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
+    const targetIdNum = parseInt(cod.substring(1), 10).toString();
+    
+    // BÚSQUEDA GLOBAL: Buscamos en todo el XML, no solo en el ritualActivo
+    const todasLasSecciones = Array.from(xmlDoc.getElementsByTagName("seccion"));
+    const targetSec = todasLasSecciones.find(s => s.getAttribute("id") === targetIdNum);
+    
+    const textoBoton = desc || (targetSec ? targetSec.getAttribute("titulo") : `Sección ${targetIdNum}`);
+    return `<span class="nav-link-container"><button class="btn-ritual" onclick="window.irA('${cod}')">${textoBoton.trim()} ➜</button></span>`;
+});
 
         async function inicializar() {
             try {
