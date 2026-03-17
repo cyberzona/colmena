@@ -76,24 +76,18 @@
 
         async function inicializar() {
             try {
-                const urlParams = new URLSearchParams(window.location.search);
-                
-                // FECHA DINÁMICA: Usa hoy si no hay fecha en la URL
+                const urlParams = new URLSearchParams(window.location.search);                
                 const hoy = new Date().toISOString().split('T')[0];
                 fechaTrabajo = urlParams.get('fecha') || hoy; 
-
                 numGradoActual = (urlParams.get('num') || "1").toString();
                 const secUrl = (urlParams.get('sec') || "1").toString();
-
                 if (parseInt(secUrl) > 3) {
                     seccionesVisibles = new Set([secUrl]);
                 } else {
                     seccionesVisibles = new Set(["1", "2", "3"]);
                 }
-
                 await cargarDatos();
-                ejecutarCargaRitual(numGradoActual, secUrl);
-                
+                ejecutarCargaRitual(numGradoActual, secUrl);                
                 const oficialUrl = urlParams.get('ofi') || "";
                 if (oficialUrl) {
                     document.getElementById("oficialFilter").value = oficialUrl;
