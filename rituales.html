@@ -216,23 +216,19 @@
             // Bucle clásico para evitar errores de iteración en XML
             for (let i = 0; i < items.length; i++) {
                 const item = items[i];
-                const acto = item.getAttribute("acto");
-                const url = item.getAttribute("url");
-                const titulo = item.getAttribute("titulo");
-
+                const acto = item.getAttribute("acto") || "";
+                const url = item.getAttribute("url") || "";
+                const titulo = item.getAttribute("titulo") || "Trabajo";
                 if (acto === "balaustre") {
                     // El balaustre es condicional al filtro
                     if (oficialSeleccionadoFiltro === "Sec") {
                         contenido += `<button class="btn-ritual" onclick="abrirVisor('${url}')">📜: ${titulo} ➜</button>`;
                     }
                 } else {
-                    // Cualquier otro trabajo (elevación, plancha, etc.) se muestra SIEMPRE
-                    const acc = url.includes('rituales.html') ? `window.location.href='${url}&fecha=${fechaTrabajo}'` : `abrirVisor('${url}')`;
-                    contenido += `<button class="btn-instancia-exec" onclick="${acc}">${titulo}</button>`;
-                }
-            }
-            
-            return contenido ? `<div class="instancia-botones">${contenido}</div>` : "";
+                       const acc = url.includes('rituales.html') ? `window.location.href='${url}&fecha=${fechaTrabajo}'` : `abrirVisor('${url}')`;
+                       contenido += `<button class="btn-instancia-exec" onclick="${acc}">${titulo}</button>`;
+                }            
+                return contenido ? `<div class="instancia-botones">${contenido}</div>` : "";
         }
     </script>
 </body>
