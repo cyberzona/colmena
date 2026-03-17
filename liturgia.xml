@@ -152,7 +152,7 @@
         <seccion id="1" titulo="Logia de San Juan">
             <apartado id="1" titulo="Estudio Profundo">
                 <paso tipo="dialogo" oficial="VM" texto="La Piedra Bruta representa el estado de imperfección..."/>
-                <paso tipo="dialogo" oficial="VM" texto="Es cuanto, VM∴. [[VOLVER]]"/>
+                <paso tipo="dialogo" oficial="VM" texto="Es cuanto, VM∴. [[LINK:102]]"/>
             </apartado>
         </seccion>
     </ritual>
