@@ -206,49 +206,59 @@
             document.body.appendChild(overlay);
         }
 
- function procesarInstancia(oficialPaso) {
-    if (!tenidasXml) return "<b style='color:red;'>[ERROR: XML no cargado]</b>";
+function procesarInstancia(oficialPaso) {
+    // 1. Verificación radical de existencia
+    if (typeof tenidasXml === 'undefined' || !tenidasXml) {
+        alert("DIAGNÓSTICO: El archivo XML no ha cargado en el sistema.");
+        return "";
+    }
     
-    const tActiva = Array.from(tenidasXml.getElementsByTagName("tenida"))
-        .find(t => t.getAttribute("fecha").trim() === fechaTrabajo.trim());
+    // 2. Buscar la tenida de hoy (2026-03-16)
+    var tActiva = null;
+    var todasLasTenidas = tenidasXml.getElementsByTagName("tenida");
     
-    // Si no encuentra la fecha 2026-03-16, te avisará aquí
-    if (!tActiva) return `<b style='color:orange;'>[ERROR: No hay datos para ${fechaTrabajo}]</b>`;            
-    
-    const filtroSuperior = document.getElementById("oficialFilter").value;
-    const oficialActual = (oficialPaso || "").trim();
-    let botonesHtml = []; 
-    
-    const items = tActiva.getElementsByTagName("item");
+    for (var j = 0; j < todasLasTenidas.length; j++) {
+        if (todasLasTenidas[j].getAttribute("fecha") === fechaTrabajo.trim()) {
+            tActiva = todasLasTenidas[j];
+            break;
+        }
+    }
 
-    // ESTO APARECERÁ EN PANTALLA PARA QUE LO VEAS
-    let informe = `<div style="font-size:11px; color:#666; border-bottom:1px solid #ccc; margin-bottom:5px;">` +
-                  `Verificación Artifex — Items detectados: ${items.length} | Filtro: ${filtroSuperior}</div>`;
+    if (!tActiva) {
+        alert("DIAGNÓSTICO: No se encontró ninguna tenida con la fecha: " + fechaTrabajo);
+        return "";
+    }            
+    
+    var items = tActiva.getElementsByTagName("item");
+    
+    // AQUÍ ESTÁ LA RESPUESTA A TU PREGUNTA:
+    // Este mensaje aparecerá en tu Pixel 10 apenas abras el ritual.
+    alert("CONTROL ARTIFEX:\n- Items encontrados: " + items.length + 
+          "\n- Fecha detectada: " + fechaTrabajo + 
+          "\n- Oficial del paso: " + oficialPaso);
 
-    for (let i = 0; i < items.length; i++) {
-        const item = items[i];
-        const acto = (item.getAttribute("acto") || "").trim();
-        const url = item.getAttribute("url") || "";
-        const titulo = item.getAttribute("titulo") || "Trabajo";
+    var filtroSuperior = document.getElementById("oficialFilter").value;
+    var contenido = "";
+
+    for (var i = 0; i < items.length; i++) {
+        var acto = (items[i].getAttribute("acto") || "").trim();
+        var url = items[i].getAttribute("url") || "";
+        var titulo = items[i].getAttribute("titulo") || "Trabajo";
 
         if (acto === "balaustre") {
-            if (oficialActual === "Sec" && filtroSuperior === "Sec") {
-                botonesHtml.push(`<button class="btn-ritual" onclick="abrirVisor('${url}')">📜: ${titulo} ➜</button>`);
+            if (oficialPaso === "Sec" && filtroSuperior === "Sec") {
+                contenido += '<button class="btn-ritual" onclick="abrirVisor(\'' + url + '\')">📜: ' + titulo + ' ➜</button>';
             }
-        } 
-        
-        if (acto === "elevacion") {
-            const acc = url.includes('rituales.html') 
-                ? `window.location.href='${url}&fecha=${fechaTrabajo}'` 
-                : `abrirVisor('${url}')`;
+        } else if (acto === "elevacion") {
+            var acc = url.indexOf('rituales.html') !== -1 
+                ? "window.location.href='" + url + "&fecha=" + fechaTrabajo + "'" 
+                : "abrirVisor('" + url + "')";
             
-            botonesHtml.push(`<button class="btn-instancia-exec" onclick="${acc}">${titulo}</button>`);
+            contenido += '<button class="btn-instancia-exec" onclick="' + acc + '">' + titulo + '</button>';
         }
     }
     
-    // Si no hay botones pero sí hay ítems, el informe te dirá cuántos hay
-    const resultado = botonesHtml.join("");
-    return `<div class="instancia-botones">${informe}${resultado}</div>`;
-}   </script>
+    return contenido ? '<div class="instancia-botones">' + contenido + '</div>' : "";
+}  </script>
 </body>
 </html>
