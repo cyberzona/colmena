@@ -206,13 +206,14 @@
             document.body.appendChild(overlay);
         }
 
-  function procesarInstancia(oficialPaso) {
-    if (!tenidasXml) return "";
+ function procesarInstancia(oficialPaso) {
+    if (!tenidasXml) return "<b style='color:red;'>[ERROR: XML no cargado]</b>";
     
     const tActiva = Array.from(tenidasXml.getElementsByTagName("tenida"))
         .find(t => t.getAttribute("fecha").trim() === fechaTrabajo.trim());
     
-    if (!tActiva) return "";            
+    // Si no encuentra la fecha 2026-03-16, te avisará aquí
+    if (!tActiva) return `<b style='color:orange;'>[ERROR: No hay datos para ${fechaTrabajo}]</b>`;            
     
     const filtroSuperior = document.getElementById("oficialFilter").value;
     const oficialActual = (oficialPaso || "").trim();
@@ -220,11 +221,9 @@
     
     const items = tActiva.getElementsByTagName("item");
 
-    // VALIDACIÓN DE SEGURIDAD:
-    // Si esperamos 2 elementos y hay menos, lo registramos en la consola para depuración.
-    if (items.length < 2) {
-        console.warn(`Atención Artifex: Se esperaban 2 ítems en la tenida, pero se encontraron ${items.length}.`);
-    }
+    // ESTO APARECERÁ EN PANTALLA PARA QUE LO VEAS
+    let informe = `<div style="font-size:11px; color:#666; border-bottom:1px solid #ccc; margin-bottom:5px;">` +
+                  `Verificación Artifex — Items detectados: ${items.length} | Filtro: ${filtroSuperior}</div>`;
 
     for (let i = 0; i < items.length; i++) {
         const item = items[i];
@@ -232,7 +231,6 @@
         const url = item.getAttribute("url") || "";
         const titulo = item.getAttribute("titulo") || "Trabajo";
 
-        // Evaluación independiente para cada ítem del array
         if (acto === "balaustre") {
             if (oficialActual === "Sec" && filtroSuperior === "Sec") {
                 botonesHtml.push(`<button class="btn-ritual" onclick="abrirVisor('${url}')">📜: ${titulo} ➜</button>`);
@@ -248,9 +246,9 @@
         }
     }
     
-    return botonesHtml.length > 0 
-        ? `<div class="instancia-botones">${botonesHtml.join("")}</div>` 
-        : "";
-}    </script>
+    // Si no hay botones pero sí hay ítems, el informe te dirá cuántos hay
+    const resultado = botonesHtml.join("");
+    return `<div class="instancia-botones">${informe}${resultado}</div>`;
+}   </script>
 </body>
 </html>
