@@ -63,15 +63,11 @@
         window.irA = function(codigo) {
             try {
                 const targetIdStr = parseInt(codigo.substring(1), 10).toString();
-                
-                // Si la sección es mayor a 3, entramos en modo enfoque único
                 if (parseInt(targetIdStr) > 3) {
                     seccionesVisibles = new Set([targetIdStr]);
                 } else {
-                    // Si regresamos a 1, 2 o 3, restauramos el menú base
                     seccionesVisibles = new Set(["1", "2", "3"]);
                 }
-                
                 actualizarSelectorSecciones(targetIdStr);
                 cambioDeSeccion();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -173,7 +169,6 @@
                     const oficialTur = paso.getAttribute("oficial"), idL = `l-${sId}-${counter}`;
                     let txt = paso.getAttribute("texto") || paso.textContent || "";
                     
-                    // Manejo de enlaces [[LINK]]
                     txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
                         const targetIdNum = parseInt(cod.substring(1), 10).toString();
                         const secciones = Array.from(ritualActivo.getElementsByTagName("seccion"));
@@ -182,7 +177,6 @@
                         return `<br><button class="btn-ritual" onclick="window.irA('${cod}')">${textoBoton.trim()} ➜</button>`;
                     });
 
-                    // Manejo de marcadores [[INSTANCIA]] y [[VOLVER]]
                     if (txt.includes("[[INSTANCIA]]")) {
                         txt = txt.replace("[[INSTANCIA]]", `<br>${procesarInstancia()}`);
                     }
@@ -191,7 +185,6 @@
                         txt = txt.replace("[[VOLVER]]", `<br><button class="btn-ritual" onclick="window.irA('S001')">⬅ Regresar al Flujo Principal</button>`);
                     }
                     
-                    // Formato visual
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     txt = txt.replace(/\[(.*?)\]/g, '<span class="line-exec">[$1]</span>');
                     
@@ -218,21 +211,22 @@
             
             const oficialSeleccionadoFiltro = document.getElementById("oficialFilter").value;
             let contenido = "";
+            const items = Array.from(tActiva.getElementsByTagName("item"));
 
-            // Botón de Balaustre (Condicionado al filtro de Secretario)
-            if (oficialSeleccionadoFiltro === "Sec") {
-                const itemB = Array.from(tActiva.getElementsByTagName("item")).find(i => i.getAttribute("acto") === "balaustre");
-                if (itemB) {
-                    contenido += `<button class="btn-ritual" onclick="abrirVisor('${itemB.getAttribute("url")}')">📜: ${itemB.getAttribute("titulo")} ➜</button>`;
-                }
-            }
+            items.forEach(i => {
+                const acto = i.getAttribute("acto");
+                const url = i.getAttribute("url");
+                const titulo = i.getAttribute("titulo");
 
-            // Botones de Trabajos (Visibles siempre que haya instancia)
-            Array.from(tActiva.getElementsByTagName("item")).forEach(i => {
-                if (i.getAttribute("acto") !== "balaustre") {
-                    const url = i.getAttribute("url");
+                if (acto === "balaustre") {
+                    // Solo mostramos balaustre si el filtro es Sec
+                    if (oficialSeleccionadoFiltro === "Sec") {
+                        contenido += `<button class="btn-ritual" onclick="abrirVisor('${url}')">📜: ${titulo} ➜</button>`;
+                    }
+                } else {
+                    // Todos los demás trabajos se muestran siempre
                     const acc = url.includes('rituales.html') ? `window.location.href='${url}&fecha=${fechaTrabajo}'` : `abrirVisor('${url}')`;
-                    contenido += `<button class="btn-instancia-exec" onclick="${acc}">${i.getAttribute("titulo")}</button>`;
+                    contenido += `<button class="btn-instancia-exec" onclick="${acc}">${titulo}</button>`;
                 }
             });
             
