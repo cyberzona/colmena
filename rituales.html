@@ -208,15 +208,11 @@
 
         function procesarInstancia(oficialPaso) {
     if (!tenidasXml) return "";
-    
-    // 1. Buscamos la tenida del día
     const tActiva = Array.from(tenidasXml.getElementsByTagName("tenida")).find(t => t.getAttribute("fecha").trim() === fechaTrabajo.trim());
     if (!tActiva) return "";            
     
     let contenido = "";
     const items = tActiva.getElementsByTagName("item");
-
-    // 2. Limpiamos el valor del oficial del paso para evitar espacios extra
     const oficialActual = (oficialPaso || "").trim();
 
     for (let i = 0; i < items.length; i++) {
@@ -226,14 +222,12 @@
         const titulo = item.getAttribute("titulo") || "";
 
         if (acto === "balaustre") {
-            // REGLA DE ORO: Solo si el dueño del paso en el XML es 'Sec'
-            // Ignoramos completamente lo que el usuario haya seleccionado en el filtro superior
+            // PRIVADO: Solo si el paso pertenece al Secretario
             if (oficialActual === "Sec") {
                 contenido += `<button class="btn-ritual" onclick="abrirVisor('${url}')">📜: ${titulo} ➜</button>`;
             }
         } else {
-            // Trabajos Generales (Elevación, Planchas, etc.)
-            // Se muestran siempre, sin importar quién sea el oficialActual
+            // PÚBLICO: Aparece en cualquier diálogo que tenga el marcador [[INSTANCIA]]
             const acc = url.includes('rituales.html') 
                 ? `window.location.href='${url}&fecha=${fechaTrabajo}'` 
                 : `abrirVisor('${url}')`;
@@ -241,9 +235,7 @@
             contenido += `<button class="btn-instancia-exec" onclick="${acc}">${titulo}</button>`;
         }
     }
-    
     return contenido ? `<div class="instancia-botones">${contenido}</div>` : "";
-}
-    </script>
+}    </script>
 </body>
 </html>
