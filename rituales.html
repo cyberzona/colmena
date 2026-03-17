@@ -231,14 +231,16 @@ function procesarInstancia(oficialPaso) {
         var url = items[i].getAttribute("url") || "";
         var titulo = items[i].getAttribute("titulo") || "Trabajo";
 
-        // 1. El Balaustre: SOLO lo ve el Secretario si tiene su filtro puesto
+        // 1. REGLA PARA EL BALAUSTRE: 
+        // Solo aparece si el oficial del paso es el Secretario Y el filtro arriba dice Sec.
         if (acto === "balaustre") {
             if (oficialPaso === "Sec" && filtroSuperior === "Sec") {
                 contenido += '<button class="btn-ritual" onclick="abrirVisor(\'' + url + '\')">📜: ' + titulo + ' ➜</button>';
             }
         } 
         
-        // 2. La Elevación: La ven todos MENOS el Secretario (para no duplicar)
+        // 2. REGLA PARA LA ELEVACIÓN (Cámara):
+        // Solo aparece si el oficial NO es el Secretario. Así evitamos que se cole en su sección.
         else if (acto === "elevacion") {
             if (oficialPaso !== "Sec") { 
                 var acc = url.indexOf('rituales.html') !== -1 
