@@ -190,31 +190,22 @@
         function procesarInstancia(ofi) {
             if (!tenidasXml) return "";
             const tActiva = Array.from(tenidasXml.getElementsByTagName("tenida")).find(t => t.getAttribute("fecha") === fechaTrabajo);
-            if (!tActiva) return "";            
-            
+            if (!tActiva) return "";           
             const oficialSeleccionado = document.getElementById("oficialFilter").value;
             let contenido = "";
-
-            // 1. REGLA PARA EL BALAUSTRE: Solo si el Secretario está seleccionado en el filtro.
             if (oficialSeleccionado === "Sec") {
                 const itemB = Array.from(tActiva.getElementsByTagName("item")).find(i => i.getAttribute("acto") === "balaustre");
                 if (itemB) {
                     contenido += `<button class="btn-ritual" onclick="abrirVisor('${itemB.getAttribute("url")}')">📜: ${itemB.getAttribute("titulo")} ➜</button>`;
                 }
             }
-
-            // 2. REGLA PARA DEMÁS TRABAJOS: Aparecen en cualquier diálogo (excepto el de Sec), 
-            // siempre que no sean el balaustre.
-            if (oficialSeleccionado !== "Sec") {
-                Array.from(tActiva.getElementsByTagName("item")).forEach(i => {
-                    if (i.getAttribute("acto") !== "balaustre") {
-                        const url = i.getAttribute("url");
-                        const acc = url.includes('rituales.html') ? `window.location.href='${url}&fecha=${fechaTrabajo}'` : `abrirVisor('${url}')`;
-                        contenido += `<button class="btn-instancia-exec" onclick="${acc}">${i.getAttribute("titulo")}</button>`;
-                    }
-                });
-            }
-            
+            Array.from(tActiva.getElementsByTagName("item")).forEach(i => {
+                if (i.getAttribute("acto") !== "balaustre") {
+                    const url = i.getAttribute("url");
+                    const acc = url.includes('rituales.html') ? `window.location.href='${url}&fecha=${fechaTrabajo}'` : `abrirVisor('${url}')`;
+                    contenido += `<button class="btn-instancia-exec" onclick="${acc}">${i.getAttribute("titulo")}</button>`;
+                }
+            });            
             return contenido ? `<div class="instancia-botones">${contenido}</div>` : "";
         }
     </script>
