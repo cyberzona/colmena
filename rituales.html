@@ -82,41 +82,52 @@
         let historialNavegacion = [];
 
         
-        // --- SUSTITUYE COMPLETAMENTE TU FUNCIÓN window.irA ---
-window.irA = function(codigo) {
+        // window.irA = function(codigo) {
     try {
         const targetIdStr = codigo.replace(/\D/g, "");
         const targetNum = parseInt(targetIdStr);
         if (isNaN(targetNum)) return;
 
-        // Determinación del Grado (1xx -> 1, 2xx -> 2, etc.)
+        // 1. DETERMINAR GRADO DESTINO
         let gradoDestino = numGradoActual; 
         if (targetNum >= 100) {
             gradoDestino = targetIdStr.charAt(0);
         }
 
-        // Si hay cambio de grado, actualizamos el contexto global
+        // 2. CAMBIO DE GRADO (Salto entre rituales)
         if (gradoDestino !== numGradoActual) {
             numGradoActual = gradoDestino;
-            // Definimos visibilidad: bloque 1-3 o sección única
             seccionesVisibles = (targetNum <= 3) ? new Set(["1", "2", "3"]) : new Set([targetIdStr]);
             
-            // Recargamos el ritual (esto actualiza ritualActivo)
+            // Pasamos el targetIdStr para que ejecutarCargaRitual sepa a dónde ir exactamente
             ejecutarCargaRitual(gradoDestino, targetIdStr);
             window.scrollTo({ top: 0, behavior: 'smooth' });
             return;
         }
 
-        // Si es el mismo grado, simplemente navegamos
-        seccionesVisibles = (targetNum <= 3) ? new Set(["1", "2", "3"]) : new Set([targetIdStr]);
+        // 3. NAVEGACIÓN INTERNA (Mismo grado)
+        // CRÍTICO: Actualizamos la visibilidad ANTES de cambiar la sección
+        if (targetNum <= 3) {
+            seccionesVisibles = new Set(["1", "2", "3"]);
+        } else {
+            seccionesVisibles = new Set([targetIdStr]);
+        }
+
+        // 4. FORZAR SINCRONIZACIÓN
         actualizarSelectorSecciones(targetIdStr);
+        
+        // Forzamos manualmente el valor del selector para que cambioDeSeccion() no use el default (1)
+        const selector = document.getElementById("seccionFilter");
+        selector.value = targetIdStr;
+        
         cambioDeSeccion();
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
     } catch (err) {
-        console.error("Fallo en navegación:", err);
+        console.error("Error en el brinco:", err);
     }
 };
+
 
 // --- BUSCA Y SUSTITUYE EL BLOQUE DE PROCESAR LINKS DENTRO DE renderizarLiturgia ---
 // Es el bloque que usa txt.replace(/\[\[LINK:(\d{3})...
