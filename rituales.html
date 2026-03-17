@@ -81,38 +81,41 @@
         let seccionesVisibles = new Set();
         let historialNavegacion = [];
 
+        
         window.irA = function(codigo) {
-            try {
-                if (codigo === 'VOLVER') {
-                    if (historialNavegacion.length > 0) {
-                        const anterior = historialNavegacion.pop();
-                        seccionesVisibles = anterior.visibilidad;
-                        actualizarSelectorSecciones(anterior.seccion);
-                        cambioDeSeccion();
-                        setTimeout(() => {
-                            window.scrollTo({ top: anterior.scroll, behavior: 'smooth' });
-                        }, 150);
-                    } else {
-                        seccionesVisibles = new Set(["1", "2", "3"]);
-                        actualizarSelectorSecciones("1");
-                        cambioDeSeccion();
-                    }
-                    return;
-                }
+    try {
+        // 1. Limpieza: Extraemos solo el número (ej. de "L103" a "103")
+        const targetIdStr = codigo.replace(/\D/g, "");
+        const targetNum = parseInt(targetIdStr);
+        
+        if (isNaN(targetNum)) return;
 
-                const targetIdStr = parseInt(codigo.substring(1), 10).toString();
-                historialNavegacion.push({
-                    seccion: document.getElementById("seccionFilter").value,
-                    scroll: window.scrollY,
-                    visibilidad: new Set(seccionesVisibles)
-                });
+        // 2. LÓGICA DE TRÁNSITO: Si el código es 1XX y estamos en Grado 2, bajamos al 1
+        if (targetNum >= 100 && targetNum < 200 && numGradoActual !== "1") {
+            numGradoActual = "1"; 
+            // Recargamos el motor del ritual para que lea el bloque <ritual grado="1">
+            ejecutarCargaRitual("1", targetIdStr); 
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            return; // Finalizamos aquí, ejecutarCargaRitual hace el resto
+        }
 
-                seccionesVisibles = new Set([targetIdStr]);
-                actualizarSelectorSecciones(targetIdStr);
-                cambioDeSeccion();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            } catch (err) { console.error("Error en irA:", err); }
-        };
+        // 3. REGLA DE VISIBILIDAD: Mantener el bloque 1-4 unido o aislar Cámaras
+        if (targetNum <= 4) {
+            seccionesVisibles = new Set(["1", "2", "3", "4"]);
+        } else {
+            seccionesVisibles = new Set([targetIdStr]);
+        }
+
+        // 4. EJECUCIÓN: Actualizamos el selector y mostramos el contenido
+        actualizarSelectorSecciones(targetIdStr);
+        cambioDeSeccion();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    } catch (err) {
+        console.error("Error en el tránsito de secciones/grados:", err);
+    }
+};
+
 
         async function inicializar() {
             try {
