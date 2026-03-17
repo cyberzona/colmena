@@ -60,34 +60,25 @@
         let numGradoActual = "1", fechaTrabajo = "";
         let seccionesVisibles = new Set();
 
+        // FUNCIÓN DE NAVEGACIÓN REFORZADA (Reset de selector)
         window.irA = function(codigo) {
-    try {
-        // Extraemos el número de la sección (ej. de 'S201' a '201')
-        const targetIdStr = parseInt(codigo.substring(1), 10).toString();
-        
-        // REGLA DE VISIBILIDAD:
-        // Si volvemos a una sección básica (1, 2 o 3), restauramos la vista completa.
-        if (parseInt(targetIdStr) <= 3) {
-            seccionesVisibles = new Set(["1", "2", "3"]);
-        } else {
-            // Si vamos a una cámara (ej. 201), aislamos esa sección.
-            seccionesVisibles = new Set([targetIdStr]);
-        }
-
-        // 1. Forzamos la reconstrucción del menú desplegable con las secciones permitidas.
-        actualizarSelectorSecciones(targetIdStr);
-        
-        // 2. Ejecutamos el cambio de lógica y oficiales.
-        cambioDeSeccion();
-        
-        // 3. Movemos el scroll al inicio para comenzar la lectura.
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        
-    } catch (err) { 
-        console.error("Error en irA:", err); 
-    }
-};
-
+            try {
+                const targetIdStr = parseInt(codigo.substring(1), 10).toString();
+                
+                // Si el destino es una sección básica (1, 2 o 3), restauramos visibilidad
+                if (parseInt(targetIdStr) <= 3) {
+                    seccionesVisibles = new Set(["1", "2", "3"]);
+                } else {
+                    // Si es cámara (ej. 201), aislamos
+                    seccionesVisibles = new Set([targetIdStr]);
+                }
+                
+                // Forzamos reconstrucción del selector antes de cambiar
+                actualizarSelectorSecciones(targetIdStr);
+                cambioDeSeccion();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (err) { console.error("Error en irA:", err); }
+        };
 
         async function inicializar() {
             try {
@@ -113,13 +104,15 @@
             } catch (e) { console.error("Error inicializando:", e); }
         }
 
+        // CARGA CON FORZADO DE CACHÉ (Anti-Caché radical)
         async function cargarDatos() {
-            const timestamp = new Date().getTime();
+            const v = new Date().getTime(); 
             const [glosario, liturgia, tenidas] = await Promise.all([
-                fetch('glosario.xml?v=' + timestamp).then(r => r.text()),
-                fetch('liturgia.xml?v=' + timestamp).then(r => r.text()),
-                fetch('tenidas.xml?v=' + timestamp).then(r => r.text()).catch(() => '<bitacora></bitacora>')
+                fetch(`glosario.xml?v=${v}`).then(r => r.text()),
+                fetch(`liturgia.xml?v=${v}`).then(r => r.text()),
+                fetch(`tenidas.xml?v=${v}`).then(r => r.text()).catch(() => '<bitacora></bitacora>')
             ]);
+            
             const parser = new DOMParser();
             glosarioDoc = parser.parseFromString(glosario, "text/xml");
             xmlDoc = parser.parseFromString(liturgia, "text/xml");
@@ -243,7 +236,6 @@
                         contenido += `<button class="btn-ritual" onclick="abrirVisor('${url}')">📜: ${titulo} ➜</button>`;
                     }
                 } else if (acto === "elevacion") {
-                    // Solo muestra la elevación si NO es el Secretario para evitar duplicados
                     if (oficialPaso !== "Sec") {
                         const acc = url.indexOf('rituales.html') !== -1 
                             ? `window.location.href='${url}&fecha=${fechaTrabajo}'` 
