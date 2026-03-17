@@ -207,8 +207,7 @@
         function procesarInstancia() {
             if (!tenidasXml) return "";
             const tActiva = Array.from(tenidasXml.getElementsByTagName("tenida")).find(t => t.getAttribute("fecha").trim() === fechaTrabajo.trim());
-            if (!tActiva) return "";            
-            
+            if (!tActiva) return "";           
             const oficialSeleccionadoFiltro = document.getElementById("oficialFilter").value;
             let contenido = "";
             const items = Array.from(tActiva.getElementsByTagName("item"));
@@ -216,11 +215,7 @@
             items.forEach(i => {
                 const acto = i.getAttribute("acto");
                 const url = i.getAttribute("url");
-                const titulo = i.getAttribute("titulo");
-
-                // Lógica corregida: 
-                // Si es balaustre, SOLO se muestra si el oficial es Sec.
-                // Si NO es balaustre, se muestra SIEMPRE (para todos).
+                const titulo = i.getAttribute("titulo");               
                 if (acto === "balaustre") {
                     if (oficialSeleccionadoFiltro === "Sec") {
                         contenido += `<button class="btn-ritual" onclick="abrirVisor('${url}')">📜: ${titulo} ➜</button>`;
@@ -229,8 +224,7 @@
                     const acc = url.includes('rituales.html') ? `window.location.href='${url}&fecha=${fechaTrabajo}'` : `abrirVisor('${url}')`;
                     contenido += `<button class="btn-instancia-exec" onclick="${acc}">${titulo}</button>`;
                 }
-            });
-            
+            });            
             return contenido ? `<div class="instancia-botones">${contenido}</div>` : "";
         }
     </script>
