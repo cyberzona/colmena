@@ -206,7 +206,7 @@
             document.body.appendChild(overlay);
         }
 
-    function procesarInstancia(oficialPaso) {
+   function procesarInstancia(oficialPaso) {
     if (!tenidasXml) return "";
     
     const tActiva = Array.from(tenidasXml.getElementsByTagName("tenida"))
@@ -215,26 +215,26 @@
     if (!tActiva) return "";            
     
     const filtroSuperior = document.getElementById("oficialFilter").value;
-    const oficialDelPasoActual = (oficialPaso || "").trim();
-    
+    const oficialActual = (oficialPaso || "").trim();
     let contenido = "";
     const items = tActiva.getElementsByTagName("item");
 
     for (let i = 0; i < items.length; i++) {
         const item = items[i];
-        const acto = (item.getAttribute("acto") || "").toLowerCase();
+        const acto = (item.getAttribute("acto") || "").trim();
         const url = item.getAttribute("url") || "";
         const titulo = item.getAttribute("titulo") || "Trabajo";
 
-        // 1. EL BALAUSTRE (Regla de Privacidad)
+        // 1. Bloque para el balaustre (con restricción)
         if (acto === "balaustre") {
-            if (oficialDelPasoActual === "Sec" && filtroSuperior === "Sec") {
+            if (oficialActual === "Sec" && filtroSuperior === "Sec") {
                 contenido += `<button class="btn-ritual" onclick="abrirVisor('${url}')">📜: ${titulo} ➜</button>`;
             }
         } 
-        // 2. ELEVACIÓN Y OTROS (Regla Pública)
-        // Usamos un 'else' directo para asegurar que CUALQUIER otro acto genere su botón
-        else if (acto !== "") {
+        
+        // 2. Bloque para elevacion (sin tilde, tal cual está en tu XML)
+        // Se evalúa de forma independiente para evitar que el fallo del anterior lo bloquee
+        if (acto === "elevacion") {
             const acc = url.includes('rituales.html') 
                 ? `window.location.href='${url}&fecha=${fechaTrabajo}'` 
                 : `abrirVisor('${url}')`;
