@@ -52,19 +52,17 @@
     <script>
         let xmlDoc, glosarioDoc, tenidasXml, ritualActivo;
         let numGradoActual = "1", fechaTrabajo = "";
+        // Secciones visibles por defecto
         let seccionesVisibles = new Set(["1", "2", "3"]);
 
         window.irA = function(codigo) {
             try {
+                // Extrae el ID de sección del código (ej: "S004" -> "4")
                 const targetIdStr = parseInt(codigo.substring(1), 10).toString();
                 seccionesVisibles.add(targetIdStr);
                 actualizarSelectorSecciones(targetIdStr);
-                const selector = document.getElementById("seccionFilter");
-                if (selector) {
-                    selector.value = targetIdStr;
-                    cambioDeSeccion();
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                }
+                cambioDeSeccion();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             } catch (err) { console.error("Error en irA:", err); }
         };
 
@@ -74,10 +72,14 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 fechaTrabajo = urlParams.get('fecha') || new Date().toISOString().split('T')[0];
                 numGradoActual = (urlParams.get('num') || "1").toString();
+                
+                // Si la URL pide una sección específica que no es 1, 2 o 3, la habilitamos
+                const secUrl = (urlParams.get('sec') || "1").toString();
+                seccionesVisibles.add(secUrl);
+
+                ejecutarCargaRitual(numGradoActual, secUrl);
+                
                 const oficialUrl = urlParams.get('ofi') || "";
-                let s = (urlParams.get('sec') || "1").toString();
-                seccionesVisibles.add(s);
-                ejecutarCargaRitual(numGradoActual, s);
                 if (oficialUrl) {
                     document.getElementById("oficialFilter").value = oficialUrl;
                     renderizarLiturgia();
@@ -109,15 +111,15 @@
 
         function actualizarSelectorSecciones(idForzado) {
             const sSel = document.getElementById("seccionFilter");
-            const valAnterior = idForzado || sSel.value;
             sSel.innerHTML = "";
             Array.from(ritualActivo.getElementsByTagName("seccion")).forEach(sec => {
                 const idXml = sec.getAttribute("id");
+                // Solo añadir si está en el set de permitidas
                 if (seccionesVisibles.has(idXml.toString())) {
                     sSel.add(new Option(sec.getAttribute("titulo"), idXml));
                 }
             });
-            sSel.value = valAnterior;
+            if (idForzado) sSel.value = idForzado;
         }
 
         function cambioDeSeccion() {
@@ -153,6 +155,7 @@
                     counter++;
                     const oficialTur = paso.getAttribute("oficial"), idL = `l-${sId}-${counter}`;
                     let txt = paso.getAttribute("texto") || paso.textContent || "";
+                    
                     txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
                         const targetIdNum = parseInt(cod.substring(1), 10).toString();
                         const secciones = Array.from(ritualActivo.getElementsByTagName("seccion"));
@@ -160,10 +163,12 @@
                         const textoBoton = desc || (targetSec ? targetSec.getAttribute("titulo") : `Sección ${targetIdNum}`);
                         return `<br><button class="btn-ritual" onclick="window.irA('${cod}')">${textoBoton.trim()} ➜</button>`;
                     });
+
                     if (txt.includes("[[INSTANCIA]]")) {
-                        txt = txt.replace("[[INSTANCIA]]", `<br>${procesarInstancia(oficialTur.trim())}`);
+                        txt = txt.replace("[[INSTANCIA]]", `<br>${procesarInstancia()}`);
                     }
                     if (txt.includes("[[VOLVER]]")) txt = txt.replace("[[VOLVER]]", `<br><button class="btn-ritual" onclick="volver()">⬅ Regresar</button>`);
+                    
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     txt = txt.replace(/\[(.*?)\]/g, '<span class="line-exec">[$1]</span>');
                     const esOfi = (oficialSel && oficialTur === oficialSel);
@@ -187,25 +192,29 @@
             document.body.appendChild(overlay);
         }
 
-        function procesarInstancia(ofi) {
+        function procesarInstancia() {
             if (!tenidasXml) return "";
             const tActiva = Array.from(tenidasXml.getElementsByTagName("tenida")).find(t => t.getAttribute("fecha") === fechaTrabajo);
-            if (!tActiva) return "";           
-            const oficialSeleccionado = document.getElementById("oficialFilter").value;
+            if (!tActiva) return "";            
+            
+            const oficialSeleccionadoFiltro = document.getElementById("oficialFilter").value;
             let contenido = "";
-            if (oficialSeleccionado === "Sec") {
+
+            if (oficialSeleccionadoFiltro === "Sec") {
                 const itemB = Array.from(tActiva.getElementsByTagName("item")).find(i => i.getAttribute("acto") === "balaustre");
                 if (itemB) {
                     contenido += `<button class="btn-ritual" onclick="abrirVisor('${itemB.getAttribute("url")}')">📜: ${itemB.getAttribute("titulo")} ➜</button>`;
                 }
             }
+
             Array.from(tActiva.getElementsByTagName("item")).forEach(i => {
                 if (i.getAttribute("acto") !== "balaustre") {
                     const url = i.getAttribute("url");
                     const acc = url.includes('rituales.html') ? `window.location.href='${url}&fecha=${fechaTrabajo}'` : `abrirVisor('${url}')`;
                     contenido += `<button class="btn-instancia-exec" onclick="${acc}">${i.getAttribute("titulo")}</button>`;
                 }
-            });            
+            });
+            
             return contenido ? `<div class="instancia-botones">${contenido}</div>` : "";
         }
     </script>
