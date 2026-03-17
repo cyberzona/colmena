@@ -207,36 +207,22 @@
         }
 
 function procesarInstancia(oficialPaso) {
-    // 1. Verificación radical de existencia
-    if (typeof tenidasXml === 'undefined' || !tenidasXml) {
-        alert("DIAGNÓSTICO: El archivo XML no ha cargado en el sistema.");
-        return "";
-    }
+    if (typeof tenidasXml === 'undefined' || !tenidasXml) return "";
     
-    // 2. Buscar la tenida de hoy (2026-03-16)
     var tActiva = null;
     var todasLasTenidas = tenidasXml.getElementsByTagName("tenida");
-    
+    var fBusqueda = fechaTrabajo.trim();
+
     for (var j = 0; j < todasLasTenidas.length; j++) {
-        if (todasLasTenidas[j].getAttribute("fecha") === fechaTrabajo.trim()) {
+        if (todasLasTenidas[j].getAttribute("fecha") === fBusqueda) {
             tActiva = todasLasTenidas[j];
             break;
         }
     }
 
-    if (!tActiva) {
-        alert("DIAGNÓSTICO: No se encontró ninguna tenida con la fecha: " + fechaTrabajo);
-        return "";
-    }            
+    if (!tActiva) return "";            
     
     var items = tActiva.getElementsByTagName("item");
-    
-    // AQUÍ ESTÁ LA RESPUESTA A TU PREGUNTA:
-    // Este mensaje aparecerá en tu Pixel 10 apenas abras el ritual.
-    alert("CONTROL ARTIFEX:\n- Items encontrados: " + items.length + 
-          "\n- Fecha detectada: " + fechaTrabajo + 
-          "\n- Oficial del paso: " + oficialPaso);
-
     var filtroSuperior = document.getElementById("oficialFilter").value;
     var contenido = "";
 
@@ -245,20 +231,26 @@ function procesarInstancia(oficialPaso) {
         var url = items[i].getAttribute("url") || "";
         var titulo = items[i].getAttribute("titulo") || "Trabajo";
 
+        // 1. El Balaustre: SOLO lo ve el Secretario si tiene su filtro puesto
         if (acto === "balaustre") {
             if (oficialPaso === "Sec" && filtroSuperior === "Sec") {
                 contenido += '<button class="btn-ritual" onclick="abrirVisor(\'' + url + '\')">📜: ' + titulo + ' ➜</button>';
             }
-        } else if (acto === "elevacion") {
-            var acc = url.indexOf('rituales.html') !== -1 
-                ? "window.location.href='" + url + "&fecha=" + fechaTrabajo + "'" 
-                : "abrirVisor('" + url + "')";
-            
-            contenido += '<button class="btn-instancia-exec" onclick="' + acc + '">' + titulo + '</button>';
+        } 
+        
+        // 2. La Elevación: La ven todos MENOS el Secretario (para no duplicar)
+        else if (acto === "elevacion") {
+            if (oficialPaso !== "Sec") { 
+                var acc = url.indexOf('rituales.html') !== -1 
+                    ? "window.location.href='" + url + "&fecha=" + fechaTrabajo + "'" 
+                    : "abrirVisor('" + url + "')";
+                
+                contenido += '<button class="btn-instancia-exec" onclick="' + acc + '">' + titulo + '</button>';
+            }
         }
     }
     
     return contenido ? '<div class="instancia-botones">' + contenido + '</div>' : "";
-}  </script>
+} </script>
 </body>
 </html>
