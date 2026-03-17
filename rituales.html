@@ -206,7 +206,7 @@
             document.body.appendChild(overlay);
         }
 
-   function procesarInstancia(oficialPaso) {
+  function procesarInstancia(oficialPaso) {
     if (!tenidasXml) return "";
     
     const tActiva = Array.from(tenidasXml.getElementsByTagName("tenida"))
@@ -216,7 +216,8 @@
     
     const filtroSuperior = document.getElementById("oficialFilter").value;
     const oficialActual = (oficialPaso || "").trim();
-    let contenido = "";
+    let botonesHtml = []; // Usamos un array para colectar todos los botones generados
+    
     const items = tActiva.getElementsByTagName("item");
 
     for (let i = 0; i < items.length; i++) {
@@ -225,25 +226,27 @@
         const url = item.getAttribute("url") || "";
         const titulo = item.getAttribute("titulo") || "Trabajo";
 
-        // 1. Bloque para el balaustre (con restricción)
+        // Verificamos el primer tipo: balaustre
         if (acto === "balaustre") {
             if (oficialActual === "Sec" && filtroSuperior === "Sec") {
-                contenido += `<button class="btn-ritual" onclick="abrirVisor('${url}')">📜: ${titulo} ➜</button>`;
+                botonesHtml.push(`<button class="btn-ritual" onclick="abrirVisor('${url}')">📜: ${titulo} ➜</button>`);
             }
         } 
         
-        // 2. Bloque para elevacion (sin tilde, tal cual está en tu XML)
-        // Se evalúa de forma independiente para evitar que el fallo del anterior lo bloquee
+        // Verificamos el segundo tipo: elevacion (sin tildes)
         if (acto === "elevacion") {
             const acc = url.includes('rituales.html') 
                 ? `window.location.href='${url}&fecha=${fechaTrabajo}'` 
                 : `abrirVisor('${url}')`;
             
-            contenido += `<button class="btn-instancia-exec" onclick="${acc}">${titulo}</button>`;
+            botonesHtml.push(`<button class="btn-instancia-exec" onclick="${acc}">${titulo}</button>`);
         }
     }
     
-    return contenido ? `<div class="instancia-botones">${contenido}</div>` : "";
+    // Unimos todos los botones encontrados en un solo bloque
+    return botonesHtml.length > 0 
+        ? `<div class="instancia-botones">${botonesHtml.join("")}</div>` 
+        : "";
 }    </script>
 </body>
 </html>
