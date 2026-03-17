@@ -102,7 +102,7 @@
             const [glosario, liturgia, tenidas] = await Promise.all([
                 fetch('glosario.xml').then(r => r.text()),
                 fetch('liturgia.xml').then(r => r.text()),
-                fetch('tenidas.xml').then(r => r.text()).catch(() => '<bitacora></bitacora>')
+                fetch('tenidas.xml?v=' + new Date().getTime()).then(r => r.text()).catch(() => '<bitacora></bitacora>')
             ]);
             const parser = new DOMParser();
             glosarioDoc = parser.parseFromString(glosario, "text/xml");
