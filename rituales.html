@@ -52,19 +52,20 @@
     <script>
         let xmlDoc, glosarioDoc, tenidasXml, ritualActivo;
         let numGradoActual = "1", fechaTrabajo = "";
+        let seccionesVisibles = new Set(["1", "2", "3"]);
 
-        // --- NAVEGACIÓN ENTRE SECCIONES ---
+        // --- NAVEGACIÓN GLOBAL ---
         window.irA = function(codigo) {
             try {
-                const targetIdNum = parseInt(codigo.substring(1), 10).toString();
+                const targetIdStr = parseInt(codigo.substring(1), 10).toString();
+                seccionesVisibles.add(targetIdStr); // Desbloqueamos la sección si se usa un LINK
+                actualizarSelectorSecciones(targetIdStr);
+                
                 const selector = document.getElementById("seccionFilter");
                 if (selector) {
-                    const opcion = Array.from(selector.options).find(o => o.value === targetIdNum);
-                    if (opcion) {
-                        selector.value = opcion.value;
-                        cambioDeSeccion();
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }
+                    selector.value = targetIdStr;
+                    cambioDeSeccion();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
             } catch (err) { console.error("Error en irA:", err); }
         };
@@ -76,14 +77,16 @@
                 fechaTrabajo = urlParams.get('fecha') || new Date().toISOString().split('T')[0];
                 numGradoActual = (urlParams.get('num') || "1").toString();
                 const oficialUrl = urlParams.get('ofi') || "";
-                let s = (urlParams.get('sec') || "1");
                 
+                let s = (urlParams.get('sec') || "1").toString();
+                seccionesVisibles.add(s); // Aseguramos que la sección de la URL sea visible
+
                 ejecutarCargaRitual(numGradoActual, s);
                 if (oficialUrl) {
                     document.getElementById("oficialFilter").value = oficialUrl;
                     renderizarLiturgia();
                 }
-            } catch (e) { console.error("Error en inicialización:", e); }
+            } catch (e) { console.error("Error inicializando:", e); }
         }
 
         async function cargarDatos() {
@@ -110,12 +113,18 @@
 
         function actualizarSelectorSecciones(idForzado) {
             const sSel = document.getElementById("seccionFilter");
+            const valAnterior = idForzado || sSel.value;
             sSel.innerHTML = "";
+            
             const seccionesXml = Array.from(ritualActivo.getElementsByTagName("seccion"));
             seccionesXml.forEach(sec => {
-                sSel.add(new Option(sec.getAttribute("titulo"), sec.getAttribute("id")));
+                const idXml = sec.getAttribute("id");
+                // Solo mostrar si está en el Set de visibles
+                if (seccionesVisibles.has(idXml.toString())) {
+                    sSel.add(new Option(sec.getAttribute("titulo"), idXml));
+                }
             });
-            if (idForzado) sSel.value = idForzado;
+            sSel.value = valAnterior;
         }
 
         function cambioDeSeccion() {
@@ -156,12 +165,12 @@
                     const oficialTur = paso.getAttribute("oficial"), idL = `l-${sId}-${counter}`;
                     let txt = paso.getAttribute("texto") || paso.textContent || "";
                     
-                    // PROCESAR LINKS DINÁMICOS
+                    // PROCESAR LINKS
                     txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
                         const targetIdNum = parseInt(cod.substring(1), 10).toString();
                         const secciones = Array.from(ritualActivo.getElementsByTagName("seccion"));
                         const targetSec = secciones.find(s => s.getAttribute("id") === targetIdNum);
-                        const textoBoton = desc || (targetSec ? targetSec.getAttribute("titulo") : `Ir a Sección ${targetIdNum}`);
+                        const textoBoton = desc || (targetSec ? targetSec.getAttribute("titulo") : `Sección ${targetIdNum}`);
                         return `<br><button class="btn-ritual" onclick="window.irA('${cod}')">${textoBoton.trim()} ➜</button>`;
                     });
 
