@@ -60,20 +60,14 @@
         let numGradoActual = "1", fechaTrabajo = "";
         let seccionesVisibles = new Set();
 
-        // FUNCIÓN DE NAVEGACIÓN REFORZADA (Reset de selector)
         window.irA = function(codigo) {
             try {
                 const targetIdStr = parseInt(codigo.substring(1), 10).toString();
-                
-                // Si el destino es una sección básica (1, 2 o 3), restauramos visibilidad
                 if (parseInt(targetIdStr) <= 3) {
                     seccionesVisibles = new Set(["1", "2", "3"]);
                 } else {
-                    // Si es cámara (ej. 201), aislamos
                     seccionesVisibles = new Set([targetIdStr]);
                 }
-                
-                // Forzamos reconstrucción del selector antes de cambiar
                 actualizarSelectorSecciones(targetIdStr);
                 cambioDeSeccion();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -83,7 +77,11 @@
         async function inicializar() {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
-                fechaTrabajo = urlParams.get('fecha') || "2026-03-16";
+                
+                // FECHA DINÁMICA: Usa hoy si no hay fecha en la URL
+                const hoy = new Date().toISOString().split('T')[0];
+                fechaTrabajo = urlParams.get('fecha') || hoy; 
+
                 numGradoActual = (urlParams.get('num') || "1").toString();
                 const secUrl = (urlParams.get('sec') || "1").toString();
 
@@ -104,7 +102,7 @@
             } catch (e) { console.error("Error inicializando:", e); }
         }
 
-        // CARGA CON FORZADO DE CACHÉ (Anti-Caché radical)
+        // CARGA CON SELLO DE TIEMPO (Anti-Caché radical)
         async function cargarDatos() {
             const v = new Date().getTime(); 
             const [glosario, liturgia, tenidas] = await Promise.all([
@@ -112,7 +110,6 @@
                 fetch(`liturgia.xml?v=${v}`).then(r => r.text()),
                 fetch(`tenidas.xml?v=${v}`).then(r => r.text()).catch(() => '<bitacora></bitacora>')
             ]);
-            
             const parser = new DOMParser();
             glosarioDoc = parser.parseFromString(glosario, "text/xml");
             xmlDoc = parser.parseFromString(liturgia, "text/xml");
@@ -217,36 +214,42 @@
         function procesarInstancia(oficialPaso) {
             if (typeof tenidasXml === 'undefined' || !tenidasXml) return "";
             
-            const tActiva = Array.from(tenidasXml.getElementsByTagName("tenida"))
-                .find(t => t.getAttribute("fecha").trim() === fechaTrabajo.trim());
+            var tActiva = null;
+            var todasLasTenidas = tenidasXml.getElementsByTagName("tenida");
+            for (var j = 0; j < todasLasTenidas.length; j++) {
+                if (todasLasTenidas[j].getAttribute("fecha") === fechaTrabajo.trim()) {
+                    tActiva = todasLasTenidas[j];
+                    break;
+                }
+            }
 
             if (!tActiva) return "";            
             
-            const items = Array.from(tActiva.getElementsByTagName("item"));
-            const filtroSuperior = document.getElementById("oficialFilter").value;
-            let contenido = "";
+            var items = tActiva.getElementsByTagName("item");
+            var filtroSuperior = document.getElementById("oficialFilter").value;
+            var contenido = "";
 
-            items.forEach(item => {
-                const acto = (item.getAttribute("acto") || "").trim();
-                const url = item.getAttribute("url") || "";
-                const titulo = item.getAttribute("titulo") || "Trabajo";
+            for (var i = 0; i < items.length; i++) {
+                var acto = (items[i].getAttribute("acto") || "").trim();
+                var url = items[i].getAttribute("url") || "";
+                var titulo = items[i].getAttribute("titulo") || "Trabajo";
 
                 if (acto === "balaustre") {
                     if (oficialPaso === "Sec" && filtroSuperior === "Sec") {
-                        contenido += `<button class="btn-ritual" onclick="abrirVisor('${url}')">📜: ${titulo} ➜</button>`;
+                        contenido += '<button class="btn-ritual" onclick="abrirVisor(\'' + url + '\')">📜: ' + titulo + ' ➜</button>';
                     }
                 } else if (acto === "elevacion") {
+                    // EXCLUSIÓN: No mostramos la elevación al Secretario para evitar duplicados
                     if (oficialPaso !== "Sec") {
-                        const acc = url.indexOf('rituales.html') !== -1 
+                        var acc = url.indexOf('rituales.html') !== -1 
                             ? `window.location.href='${url}&fecha=${fechaTrabajo}'` 
                             : `abrirVisor('${url}')`;
                         
-                        contenido += `<button class="btn-instancia-exec" onclick="${acc}">${titulo}</button>`;
+                        contenido += '<button class="btn-instancia-exec" onclick="' + acc + '">' + titulo + '</button>';
                     }
                 }
-            });
-            
-            return contenido ? `<div class="instancia-botones">${contenido}</div>` : "";
+            }
+            return contenido ? '<div class="instancia-botones">' + contenido + '</div>' : "";
         }
     </script>
 </body>
