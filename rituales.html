@@ -206,29 +206,38 @@
             document.body.appendChild(overlay);
         }
 
-        function procesarInstancia(oficialDelPaso) {
+        function procesarInstancia(oficialPaso) {
     if (!tenidasXml) return "";
+    
+    // 1. Buscamos la tenida del día
     const tActiva = Array.from(tenidasXml.getElementsByTagName("tenida")).find(t => t.getAttribute("fecha").trim() === fechaTrabajo.trim());
     if (!tActiva) return "";            
     
     let contenido = "";
     const items = tActiva.getElementsByTagName("item");
 
+    // 2. Limpiamos el valor del oficial del paso para evitar espacios extra
+    const oficialActual = (oficialPaso || "").trim();
+
     for (let i = 0; i < items.length; i++) {
         const item = items[i];
-        const acto = item.getAttribute("acto");
-        const url = item.getAttribute("url");
-        const titulo = item.getAttribute("titulo");
+        const acto = item.getAttribute("acto") || "";
+        const url = item.getAttribute("url") || "";
+        const titulo = item.getAttribute("titulo") || "";
 
         if (acto === "balaustre") {
-            // CORRECCIÓN: Solo se muestra si el dueño del diálogo es el Sec.
-            // Eliminamos la dependencia del filtro global para este botón.
-            if (oficialDelPaso === "Sec") {
+            // REGLA DE ORO: Solo si el dueño del paso en el XML es 'Sec'
+            // Ignoramos completamente lo que el usuario haya seleccionado en el filtro superior
+            if (oficialActual === "Sec") {
                 contenido += `<button class="btn-ritual" onclick="abrirVisor('${url}')">📜: ${titulo} ➜</button>`;
             }
         } else {
-            // Trabajos generales (Elevación, etc.): Siempre visibles para todos los oficiales.
-            const acc = url.includes('rituales.html') ? `window.location.href='${url}&fecha=${fechaTrabajo}'` : `abrirVisor('${url}')`;
+            // Trabajos Generales (Elevación, Planchas, etc.)
+            // Se muestran siempre, sin importar quién sea el oficialActual
+            const acc = url.includes('rituales.html') 
+                ? `window.location.href='${url}&fecha=${fechaTrabajo}'` 
+                : `abrirVisor('${url}')`;
+            
             contenido += `<button class="btn-instancia-exec" onclick="${acc}">${titulo}</button>`;
         }
     }
