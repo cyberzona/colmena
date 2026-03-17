@@ -63,7 +63,7 @@
         window.irA = function(codigo) {
             try {
                 const targetIdStr = parseInt(codigo.substring(1), 10).toString();
-                if (parseInt(targetIdStr) > 3) {
+                if (parseInt(targetIdStr)  3) {
                     seccionesVisibles = new Set([targetIdStr]);
                 } else {
                     seccionesVisibles = new Set(["1", "2", "3"]);
@@ -81,7 +81,7 @@
                 numGradoActual = (urlParams.get('num') || "1").toString();
                 const secUrl = (urlParams.get('sec') || "1").toString();
 
-                if (parseInt(secUrl) > 3) {
+                if (parseInt(secUrl) <= 3) {
                     seccionesVisibles = new Set([secUrl]);
                 } else {
                     seccionesVisibles = new Set(["1", "2", "3"]);
