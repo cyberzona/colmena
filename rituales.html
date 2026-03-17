@@ -58,13 +58,19 @@
     <script>
         let xmlDoc, glosarioDoc, tenidasXml, ritualActivo;
         let numGradoActual = "1", fechaTrabajo = "";
-        // El set se inicializa vacío y se llena en inicializar()
         let seccionesVisibles = new Set();
 
         window.irA = function(codigo) {
             try {
                 const targetIdStr = parseInt(codigo.substring(1), 10).toString();
-                seccionesVisibles.add(targetIdStr);
+                
+                // Lógica de "Enfoque Único" para secciones > 3
+                if (parseInt(targetIdStr) > 3) {
+                    seccionesVisibles = new Set([targetIdStr]);
+                } else {
+                    seccionesVisibles = new Set(["1", "2", "3"]);
+                }
+                
                 actualizarSelectorSecciones(targetIdStr);
                 cambioDeSeccion();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -73,19 +79,19 @@
 
         async function inicializar() {
             try {
-                // 1. Reinicio de secciones a las 3 base
-                seccionesVisibles = new Set(["1", "2", "3"]);
-                
-                await cargarDatos();
-                
                 const urlParams = new URLSearchParams(window.location.search);
-                // Aseguramos formato YYYY-MM-DD para la fecha
-                fechaTrabajo = urlParams.get('fecha') || new Date().toISOString().split('T')[0];
+                fechaTrabajo = urlParams.get('fecha') || "2026-03-16"; // Forzado o desde URL
                 numGradoActual = (urlParams.get('num') || "1").toString();
-                
                 const secUrl = (urlParams.get('sec') || "1").toString();
-                seccionesVisibles.add(secUrl);
 
+                // Inicializar secciones según el ID recibido
+                if (parseInt(secUrl) > 3) {
+                    seccionesVisibles = new Set([secUrl]);
+                } else {
+                    seccionesVisibles = new Set(["1", "2", "3"]);
+                }
+
+                await cargarDatos();
                 ejecutarCargaRitual(numGradoActual, secUrl);
                 
                 const oficialUrl = urlParams.get('ofi') || "";
@@ -135,12 +141,14 @@
             const oSel = document.getElementById("oficialFilter");
             const ofiPrevio = oSel.value;
             const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
+            
             const oficialesSet = new Set();
             if (seccion) {
                 Array.from(seccion.getElementsByTagName("paso")).forEach(p => { 
                     if (p.getAttribute("oficial")) oficialesSet.add(p.getAttribute("oficial").trim()); 
                 });
             }
+            
             oSel.innerHTML = '<option value="">---</option>';
             Array.from(glosarioDoc.getElementsByTagName("item")).forEach(item => {
                 const sigla = item.getAttribute("sigla");
@@ -156,6 +164,7 @@
             const contenedor = document.getElementById('rituales-content');
             const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
             if (!seccion) return;
+
             let html = "", counter = 0, primeraID = null;
             Array.from(seccion.getElementsByTagName("apartado")).forEach(apa => {
                 html += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>`;
@@ -165,20 +174,21 @@
                     let txt = paso.getAttribute("texto") || paso.textContent || "";
                     
                     txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
-                        const targetIdNum = parseInt(cod.substring(1), 10).toString();
-                        const secciones = Array.from(ritualActivo.getElementsByTagName("seccion"));
-                        const targetSec = secciones.find(s => s.getAttribute("id") === targetIdNum);
-                        const textoBoton = desc || (targetSec ? targetSec.getAttribute("titulo") : `Sección ${targetIdNum}`);
-                        return `<br><button class="btn-ritual" onclick="window.irA('${cod}')">${textoBoton.trim()} ➜</button>`;
+                        return `<br><button class="btn-ritual" onclick="window.irA('${cod}')">${(desc || 'Continuar').trim()} ➜</button>`;
                     });
 
                     if (txt.includes("[[INSTANCIA]]")) {
                         txt = txt.replace("[[INSTANCIA]]", `<br>${procesarInstancia()}`);
                     }
-                    if (txt.includes("[[VOLVER]]")) txt = txt.replace("[[VOLVER]]", `<br><button class="btn-ritual" onclick="volver()">⬅ Regresar</button>`);
+
+                    if (txt.includes("[[VOLVER]]")) {
+                        // Al volver, forzamos el reinicio a las secciones 1, 2 y 3
+                        txt = txt.replace("[[VOLVER]]", `<br><button class="btn-ritual" onclick="window.irA('S001')">⬅ Regresar al Flujo Principal</button>`);
+                    }
                     
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     txt = txt.replace(/\[(.*?)\]/g, '<span class="line-exec">[$1]</span>');
+                    
                     const esOfi = (oficialSel && oficialTur === oficialSel);
                     if (esOfi && !primeraID) primeraID = idL;
                     html += `<dt>${oficialTur}∴</dt><dd class="${esOfi ? 'resaltado' : ''}" id="${idL}">${txt}</dd>`;
@@ -186,11 +196,6 @@
             });
             contenedor.innerHTML = `<dl style="counter-reset: line-counter;">${html}</dl>`;
             if (primeraID) { const el = document.getElementById(primeraID); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
-        }
-
-        function volver() {
-            if (window.history.length > 1) { window.history.back(); } 
-            else { window.location.href = `rituales.html?num=${numGradoActual}&sec=1&fecha=${fechaTrabajo}`; }
         }
 
         function abrirVisor(url) {
@@ -202,7 +207,6 @@
 
         function procesarInstancia() {
             if (!tenidasXml) return "";
-            // Buscamos la tenida que coincida con la fecha de la URL
             const tActiva = Array.from(tenidasXml.getElementsByTagName("tenida")).find(t => t.getAttribute("fecha") === fechaTrabajo);
             if (!tActiva) return "";            
             
