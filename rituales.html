@@ -206,7 +206,7 @@
             document.body.appendChild(overlay);
         }
 
-      function procesarInstancia(oficialPaso) {
+    function procesarInstancia(oficialPaso) {
     if (!tenidasXml) return "";
     
     const tActiva = Array.from(tenidasXml.getElementsByTagName("tenida"))
@@ -222,18 +222,18 @@
 
     for (let i = 0; i < items.length; i++) {
         const item = items[i];
-        const acto = item.getAttribute("acto") || "";
+        const acto = (item.getAttribute("acto") || "").toLowerCase();
         const url = item.getAttribute("url") || "";
-        const titulo = item.getAttribute("titulo") || "";
+        const titulo = item.getAttribute("titulo") || "Trabajo";
 
-        // 1. Caso específico para el Balaustre (Condicionado)
+        // 1. EL BALAUSTRE (Regla de Privacidad)
         if (acto === "balaustre") {
             if (oficialDelPasoActual === "Sec" && filtroSuperior === "Sec") {
                 contenido += `<button class="btn-ritual" onclick="abrirVisor('${url}')">📜: ${titulo} ➜</button>`;
             }
         } 
-        // 2. Caso para todos los demás actos (Públicos)
-        // El 'else if' garantiza que si ya entró en 'balaustre', no evaluará esto.
+        // 2. ELEVACIÓN Y OTROS (Regla Pública)
+        // Usamos un 'else' directo para asegurar que CUALQUIER otro acto genere su botón
         else if (acto !== "") {
             const acc = url.includes('rituales.html') 
                 ? `window.location.href='${url}&fecha=${fechaTrabajo}'` 
