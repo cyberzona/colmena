@@ -19,7 +19,7 @@
         .select-oficiales { width: 100px; padding: 8px; font-size: 0.95rem; border-radius: 4px; border: 1px solid #8d6e63; background: #fff; font-weight: bold; outline: none; }
         
         .sigla-texto-azul { color: #0277bd; font-weight: bold; }
-        .line-exec { font-style: italic; font-size: 0.95em; color: rgba(0, 0, 0, 0.4); font-weight: normal; margin-left: 3px; }
+        .line-exec { display: block;font-style: italic; font-size: 0.95em; color: rgba(0, 0, 0, 0.4); font-weight: normal; margin-left: 3px; }
         dt { font-weight: bold; color: #5d4037; margin-top: 8px; }
         dd { margin-left: 45px; border-left: 3px solid #d7ccc8; padding-left: 10px; padding-right: 10px; position: relative; margin-bottom: 4px; counter-increment: line-counter; text-align: justify; text-justify: inter-word; hyphens: auto; }
         dd::before { content: counter(line-counter); position: absolute; left: -40px; color: #5d4037; font-size: 1.0em; font-weight: 800; width: 30px; text-align: right; }
@@ -28,7 +28,7 @@
         .apartado-header { font-weight: bold; color: #795548; font-size: 1.1rem; border-bottom: 2px solid #d7ccc8; text-align: right; margin-top: 20px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
         
         .btn-ritual, .btn-instancia-exec { border: none; padding: 8px 18px; border-radius: 50px; cursor: pointer; font-size: 0.85em; margin: 4px 0; font-weight: bold; display: table !important; background: #A87C00 !important; color: #ffffff !important; text-decoration: none; text-align: center; width: auto !important; max-width: fit-content; box-sizing: border-box; }
-        .instancia-botones { margin-top: 10px; display: flex; flex-direction: column; gap: 5px; }
+        .instancia-botones { margin-top: 10px; display: flex; flex-direction: column; gap: 5px; align-items: flex-start; }
         
         .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .visor-content { width: 95%; height: 90%; background: #fff; border-radius: 8px; overflow: hidden; position: relative; }
@@ -175,7 +175,7 @@
                         const secciones = Array.from(ritualActivo.getElementsByTagName("seccion"));
                         const targetSec = secciones.find(s => s.getAttribute("id") === targetIdNum);
                         const textoBoton = desc || (targetSec ? targetSec.getAttribute("titulo") : `Sección ${targetIdNum}`);
-                        return `<br><button class="btn-ritual" onclick="window.irA('${cod}')">${textoBoton.trim()} ➜</button>`;
+                        return `<button class="btn-ritual" onclick="window.irA('${cod}')">${textoBoton.trim()} ➜</button>`;
                     });
 
                     if (txt.includes("[[INSTANCIA]]")) {
@@ -183,7 +183,7 @@
                     }
 
                     if (txt.includes("[[VOLVER]]")) {
-                        txt = txt.replace("[[VOLVER]]", `<br><button class="btn-ritual" onclick="window.irA('S001')">⬅ Regresar al Flujo Principal</button>`);
+                        txt = txt.replace("[[VOLVER]]", `<button class="btn-ritual" onclick="window.irA('S001')">⬅ Regresar al Flujo Principal</button>`);
                     }
                     
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
