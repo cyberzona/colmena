@@ -84,37 +84,53 @@
         
         window.irA = function(codigo) {
     try {
-        // 1. Limpieza: Extraemos solo el número (ej. de "L103" a "103")
+        // 1. Extraemos el número puro (ej: "103", "201", "505")
         const targetIdStr = codigo.replace(/\D/g, "");
         const targetNum = parseInt(targetIdStr);
         
         if (isNaN(targetNum)) return;
 
-        // 2. LÓGICA DE TRÁNSITO: Si el código es 1XX y estamos en Grado 2, bajamos al 1
-        if (targetNum >= 100 && targetNum < 200 && numGradoActual !== "1") {
-            numGradoActual = "1"; 
-            // Recargamos el motor del ritual para que lea el bloque <ritual grado="1">
-            ejecutarCargaRitual("1", targetIdStr); 
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            return; // Finalizamos aquí, ejecutarCargaRitual hace el resto
+        // 2. DETERMINACIÓN DEL GRADO DESTINO
+        // Si el código es >= 100, el primer dígito es el grado (1xx=Grado 1, 5xx=Grado 5)
+        // Si el código es < 100 (1, 2, 3, 4), se mantiene el grado en el que ya estás
+        let gradoDestino = numGradoActual; 
+        if (targetNum >= 100) {
+            gradoDestino = targetIdStr.charAt(0);
         }
 
-        // 3. REGLA DE VISIBILIDAD: Mantener el bloque 1-4 unido o aislar Cámaras
-        if (targetNum <= 4) {
-            seccionesVisibles = new Set(["1", "2", "3", "4"]);
+        // 3. EJECUCIÓN DEL CAMBIO DE GRADO (Salto entre rituales)
+        if (gradoDestino !== numGradoActual) {
+            numGradoActual = gradoDestino;
+            
+            // Definimos qué se ve en el selector al entrar al nuevo grado
+            if (targetNum <= 3) {
+                seccionesVisibles = new Set(["1", "2", "3"]);
+            } else {
+                seccionesVisibles = new Set([targetIdStr]);
+            }
+            
+            // Recargamos el ritual correspondiente (esto actualiza títulos y oficiales)
+            ejecutarCargaRitual(gradoDestino, targetIdStr);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            return;
+        }
+
+        // 4. NAVEGACIÓN INTERNA (Mismo grado)
+        if (targetNum <= 3) {
+            seccionesVisibles = new Set(["1", "2", "3"]);
         } else {
             seccionesVisibles = new Set([targetIdStr]);
         }
 
-        // 4. EJECUCIÓN: Actualizamos el selector y mostramos el contenido
         actualizarSelectorSecciones(targetIdStr);
         cambioDeSeccion();
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
     } catch (err) {
-        console.error("Error en el tránsito de secciones/grados:", err);
+        console.error("Error en la navegación jerárquica:", err);
     }
 };
+
 
 
         async function inicializar() {
