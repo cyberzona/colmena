@@ -216,9 +216,15 @@
     
     const filtroSuperior = document.getElementById("oficialFilter").value;
     const oficialActual = (oficialPaso || "").trim();
-    let botonesHtml = []; // Usamos un array para colectar todos los botones generados
+    let botonesHtml = []; 
     
     const items = tActiva.getElementsByTagName("item");
+
+    // VALIDACIÓN DE SEGURIDAD:
+    // Si esperamos 2 elementos y hay menos, lo registramos en la consola para depuración.
+    if (items.length < 2) {
+        console.warn(`Atención Artifex: Se esperaban 2 ítems en la tenida, pero se encontraron ${items.length}.`);
+    }
 
     for (let i = 0; i < items.length; i++) {
         const item = items[i];
@@ -226,14 +232,13 @@
         const url = item.getAttribute("url") || "";
         const titulo = item.getAttribute("titulo") || "Trabajo";
 
-        // Verificamos el primer tipo: balaustre
+        // Evaluación independiente para cada ítem del array
         if (acto === "balaustre") {
             if (oficialActual === "Sec" && filtroSuperior === "Sec") {
                 botonesHtml.push(`<button class="btn-ritual" onclick="abrirVisor('${url}')">📜: ${titulo} ➜</button>`);
             }
         } 
         
-        // Verificamos el segundo tipo: elevacion (sin tildes)
         if (acto === "elevacion") {
             const acc = url.includes('rituales.html') 
                 ? `window.location.href='${url}&fecha=${fechaTrabajo}'` 
@@ -243,7 +248,6 @@
         }
     }
     
-    // Unimos todos los botones encontrados en un solo bloque
     return botonesHtml.length > 0 
         ? `<div class="instancia-botones">${botonesHtml.join("")}</div>` 
         : "";
