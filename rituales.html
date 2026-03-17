@@ -99,10 +99,11 @@
         }
 
         async function cargarDatos() {
+            const timestamp = new Date().getTime();
             const [glosario, liturgia, tenidas] = await Promise.all([
-                fetch('glosario.xml').then(r => r.text()),
-                fetch('liturgia.xml').then(r => r.text()),
-                fetch('tenidas.xml?v=' + new Date().getTime()).then(r => r.text()).catch(() => '<bitacora></bitacora>')
+                fetch('glosario.xml?v=' + timestamp).then(r => r.text()),
+                fetch('liturgia.xml?v=' + timestamp).then(r => r.text()),
+                fetch('tenidas.xml?v=' + timestamp).then(r => r.text()).catch(() => '<bitacora></bitacora>')
             ]);
             const parser = new DOMParser();
             glosarioDoc = parser.parseFromString(glosario, "text/xml");
@@ -166,7 +167,7 @@
                 html += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>`;
                 Array.from(apa.getElementsByTagName("paso")).forEach(paso => {
                     counter++;
-                    const oficialTur = paso.getAttribute("oficial") || "Ofi"; // Fallback para evitar errores
+                    const oficialTur = (paso.getAttribute("oficial") || "Ofi").trim();
                     const idL = `l-${sId}-${counter}`;
                     let txt = paso.getAttribute("texto") || paso.textContent || "";
                     
@@ -178,7 +179,6 @@
                         return `<br><button class="btn-ritual" onclick="window.irA('${cod}')">${textoBoton.trim()} ➜</button>`;
                     });
 
-                    // Inyectar botones dinámicos
                     if (txt.includes("[[INSTANCIA]]")) {
                         txt = txt.replace("[[INSTANCIA]]", `<br>${procesarInstancia(oficialTur)}`);
                     }
@@ -206,53 +206,41 @@
             document.body.appendChild(overlay);
         }
 
-function procesarInstancia(oficialPaso) {
-    if (typeof tenidasXml === 'undefined' || !tenidasXml) return "";
-    
-    var tActiva = null;
-    var todasLasTenidas = tenidasXml.getElementsByTagName("tenida");
-    var fBusqueda = fechaTrabajo.trim();
+        function procesarInstancia(oficialPaso) {
+            if (typeof tenidasXml === 'undefined' || !tenidasXml) return "";
+            
+            const tActiva = Array.from(tenidasXml.getElementsByTagName("tenida"))
+                .find(t => t.getAttribute("fecha").trim() === fechaTrabajo.trim());
 
-    for (var j = 0; j < todasLasTenidas.length; j++) {
-        if (todasLasTenidas[j].getAttribute("fecha") === fBusqueda) {
-            tActiva = todasLasTenidas[j];
-            break;
+            if (!tActiva) return "";            
+            
+            const items = Array.from(tActiva.getElementsByTagName("item"));
+            const filtroSuperior = document.getElementById("oficialFilter").value;
+            let contenido = "";
+
+            items.forEach(item => {
+                const acto = (item.getAttribute("acto") || "").trim();
+                const url = item.getAttribute("url") || "";
+                const titulo = item.getAttribute("titulo") || "Trabajo";
+
+                if (acto === "balaustre") {
+                    if (oficialPaso === "Sec" && filtroSuperior === "Sec") {
+                        contenido += `<button class="btn-ritual" onclick="abrirVisor('${url}')">📜: ${titulo} ➜</button>`;
+                    }
+                } else if (acto === "elevacion") {
+                    // Solo muestra la elevación si NO es el Secretario para evitar duplicados
+                    if (oficialPaso !== "Sec") {
+                        const acc = url.indexOf('rituales.html') !== -1 
+                            ? `window.location.href='${url}&fecha=${fechaTrabajo}'` 
+                            : `abrirVisor('${url}')`;
+                        
+                        contenido += `<button class="btn-instancia-exec" onclick="${acc}">${titulo}</button>`;
+                    }
+                }
+            });
+            
+            return contenido ? `<div class="instancia-botones">${contenido}</div>` : "";
         }
-    }
-
-    if (!tActiva) return "";            
-    
-    var items = tActiva.getElementsByTagName("item");
-    var filtroSuperior = document.getElementById("oficialFilter").value;
-    var contenido = "";
-
-    for (var i = 0; i < items.length; i++) {
-        var acto = (items[i].getAttribute("acto") || "").trim();
-        var url = items[i].getAttribute("url") || "";
-        var titulo = items[i].getAttribute("titulo") || "Trabajo";
-
-        // 1. REGLA PARA EL BALAUSTRE: 
-        // Solo aparece si el oficial del paso es el Secretario Y el filtro arriba dice Sec.
-        if (acto === "balaustre") {
-            if (oficialPaso === "Sec" && filtroSuperior === "Sec") {
-                contenido += '<button class="btn-ritual" onclick="abrirVisor(\'' + url + '\')">📜: ' + titulo + ' ➜</button>';
-            }
-        } 
-        
-        // 2. REGLA PARA LA ELEVACIÓN (Cámara):
-        // Solo aparece si el oficial NO es el Secretario. Así evitamos que se cole en su sección.
-        else if (acto === "elevacion") {
-            if (oficialPaso !== "Sec") { 
-                var acc = url.indexOf('rituales.html') !== -1 
-                    ? "window.location.href='" + url + "&fecha=" + fechaTrabajo + "'" 
-                    : "abrirVisor('" + url + "')";
-                
-                contenido += '<button class="btn-instancia-exec" onclick="' + acc + '">' + titulo + '</button>';
-            }
-        }
-    }
-    
-    return contenido ? '<div class="instancia-botones">' + contenido + '</div>' : "";
-} </script>
+    </script>
 </body>
 </html>
