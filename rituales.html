@@ -64,7 +64,6 @@
             try {
                 const targetIdStr = parseInt(codigo.substring(1), 10).toString();
                 
-                // Lógica de "Enfoque Único" para secciones > 3
                 if (parseInt(targetIdStr) > 3) {
                     seccionesVisibles = new Set([targetIdStr]);
                 } else {
@@ -80,11 +79,10 @@
         async function inicializar() {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
-                fechaTrabajo = urlParams.get('fecha') || "2026-03-16"; // Forzado o desde URL
+                fechaTrabajo = urlParams.get('fecha') || "2026-03-16";
                 numGradoActual = (urlParams.get('num') || "1").toString();
                 const secUrl = (urlParams.get('sec') || "1").toString();
 
-                // Inicializar secciones según el ID recibido
                 if (parseInt(secUrl) > 3) {
                     seccionesVisibles = new Set([secUrl]);
                 } else {
@@ -173,8 +171,13 @@
                     const oficialTur = paso.getAttribute("oficial"), idL = `l-${sId}-${counter}`;
                     let txt = paso.getAttribute("texto") || paso.textContent || "";
                     
+                    // CORRECCIÓN DE TÍTULO DE BOTÓN
                     txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
-                        return `<br><button class="btn-ritual" onclick="window.irA('${cod}')">${(desc || 'Continuar').trim()} ➜</button>`;
+                        const targetIdNum = parseInt(cod.substring(1), 10).toString();
+                        const secciones = Array.from(ritualActivo.getElementsByTagName("seccion"));
+                        const targetSec = secciones.find(s => s.getAttribute("id") === targetIdNum);
+                        const textoBoton = desc || (targetSec ? targetSec.getAttribute("titulo") : `Sección ${targetIdNum}`);
+                        return `<br><button class="btn-ritual" onclick="window.irA('${cod}')">${textoBoton.trim()} ➜</button>`;
                     });
 
                     if (txt.includes("[[INSTANCIA]]")) {
@@ -182,7 +185,6 @@
                     }
 
                     if (txt.includes("[[VOLVER]]")) {
-                        // Al volver, forzamos el reinicio a las secciones 1, 2 y 3
                         txt = txt.replace("[[VOLVER]]", `<br><button class="btn-ritual" onclick="window.irA('S001')">⬅ Regresar al Flujo Principal</button>`);
                     }
                     
