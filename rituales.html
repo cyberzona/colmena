@@ -208,26 +208,33 @@
 
         function procesarInstancia(oficialPaso) {
     if (!tenidasXml) return "";
-    const tActiva = Array.from(tenidasXml.getElementsByTagName("tenida")).find(t => t.getAttribute("fecha").trim() === fechaTrabajo.trim());
+    
+    // 1. Obtener la tenida activa para la fecha de trabajo
+    const tActiva = Array.from(tenidasXml.getElementsByTagName("tenida"))
+        .find(t => t.getAttribute("fecha").trim() === fechaTrabajo.trim());
+    
     if (!tActiva) return "";            
     
     let contenido = "";
     const items = tActiva.getElementsByTagName("item");
-    const oficialActual = (oficialPaso || "").trim();
+    
+    // Normalizamos el oficial del paso para evitar errores de comparación
+    const oficialDelPasoActual = (oficialPaso || "").trim();
 
     for (let i = 0; i < items.length; i++) {
         const item = items[i];
         const acto = item.getAttribute("acto") || "";
         const url = item.getAttribute("url") || "";
-        const titulo = item.getAttribute("titulo") || "";
+        const titulo = item.getAttribute("titulo") || "Trabajo";
 
         if (acto === "balaustre") {
-            // PRIVADO: Solo si el paso pertenece al Secretario
-            if (oficialActual === "Sec") {
+            // REGLA: El balaustre solo se genera dentro del bloque de texto del Secretario
+            if (oficialDelPasoActual === "Sec") {
                 contenido += `<button class="btn-ritual" onclick="abrirVisor('${url}')">📜: ${titulo} ➜</button>`;
             }
         } else {
-            // PÚBLICO: Aparece en cualquier diálogo que tenga el marcador [[INSTANCIA]]
+            // REGLA: Los demás trabajos (Elevación, etc.) se generan para cualquier oficial
+            // que tenga el marcador [[INSTANCIA]] en su texto.
             const acc = url.includes('rituales.html') 
                 ? `window.location.href='${url}&fecha=${fechaTrabajo}'` 
                 : `abrirVisor('${url}')`;
@@ -235,6 +242,7 @@
             contenido += `<button class="btn-instancia-exec" onclick="${acc}">${titulo}</button>`;
         }
     }
+    
     return contenido ? `<div class="instancia-botones">${contenido}</div>` : "";
 }    </script>
 </body>
