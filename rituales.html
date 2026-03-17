@@ -206,19 +206,18 @@
             document.body.appendChild(overlay);
         }
 
-        function procesarInstancia(oficialPaso) {
+       function procesarInstancia(oficialPaso) {
     if (!tenidasXml) return "";
-    
-    // 1. Obtener la tenida activa para la fecha de trabajo
     const tActiva = Array.from(tenidasXml.getElementsByTagName("tenida"))
         .find(t => t.getAttribute("fecha").trim() === fechaTrabajo.trim());
     
     if (!tActiva) return "";            
     
+    // Capturamos quién es el oficial seleccionado en el filtro de la parte superior
+    const filtroGlobal = document.getElementById("oficialFilter").value;
     let contenido = "";
     const items = tActiva.getElementsByTagName("item");
     
-    // Normalizamos el oficial del paso para evitar errores de comparación
     const oficialDelPasoActual = (oficialPaso || "").trim();
 
     for (let i = 0; i < items.length; i++) {
@@ -228,13 +227,15 @@
         const titulo = item.getAttribute("titulo") || "Trabajo";
 
         if (acto === "balaustre") {
-            // REGLA: El balaustre solo se genera dentro del bloque de texto del Secretario
-            if (oficialDelPasoActual === "Sec") {
+            // LÓGICA DE DEPENDENCIA:
+            // 1. El paso debe ser del Secretario (oficialDelPasoActual === "Sec")
+            // 2. Y ADEMÁS el filtro de arriba debe estar en "Sec" (filtroGlobal === "Sec")
+            if (oficialDelPasoActual === "Sec" && filtroGlobal === "Sec") {
                 contenido += `<button class="btn-ritual" onclick="abrirVisor('${url}')">📜: ${titulo} ➜</button>`;
             }
         } else {
-            // REGLA: Los demás trabajos (Elevación, etc.) se generan para cualquier oficial
-            // que tenga el marcador [[INSTANCIA]] en su texto.
+            // El trabajo del VM (Elevación) y otros: 
+            // Se encienden "por primera vez" (siempre visibles) sin depender del filtro.
             const acc = url.includes('rituales.html') 
                 ? `window.location.href='${url}&fecha=${fechaTrabajo}'` 
                 : `abrirVisor('${url}')`;
