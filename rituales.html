@@ -61,19 +61,28 @@
         let seccionesVisibles = new Set(["1", "2", "3"]);
 
         window.irA = function(idOriginal) {
-            // Limpiamos el ID (por si viene S104 o solo 104)
+            if (!idOriginal) return;
+            
+            // Convertimos a string y extraemos solo los números (ej: "S102" -> "102")
             const idLimpio = idOriginal.toString().replace(/\D/g, "");
+            
+            // Importante: Quitar ceros a la izquierda si los hay (ej: "005" -> "5")
             const targetId = parseInt(idLimpio, 10).toString();
             
-            // Agregamos a visibles para que aparezca en el menú
+            console.log("Saltando a sección:", targetId);
+
+            // Aseguramos que la sección sea permitida en la vista
             seccionesVisibles.add(targetId);
             
-            // Actualizamos el selector y disparamos el cambio
+            // Forzamos la actualización del menú desplegable
             actualizarSelectorSecciones(targetId);
+            
+            // Ejecutamos el cambio de contenido
             cambioDeSeccion();
+            
+            // Scroll al inicio para ver la nueva sección
             window.scrollTo({ top: 0, behavior: 'smooth' });
         };
-
         async function inicializar() {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
@@ -156,6 +165,7 @@
             const oficialSel = document.getElementById("oficialFilter").value; 
             const contenedor = document.getElementById('rituales-content');
             const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
+            
             if (!seccion) return;
 
             let html = "", counter = 0, primeraID = null;
@@ -167,8 +177,8 @@
                     const idL = `l-${sId}-${counter}`;
                     let txt = paso.getAttribute("texto") || paso.textContent || "";
                     
-                    // CORRECCIÓN: Regex robusta para detectar el código y el texto del link
-                    txt = txt.replace(/\[\[LINK:(\d+):(.*?)\]\]/g, (match, cod, label) => {
+                    // Regex mejorada: detecta [[LINK:ID:TEXTO]]
+                    txt = txt.replace(/\[\[LINK:([^:]+):([^\]]+)\]\]/g, (match, cod, label) => {
                         return `<br><button class="btn-ritual" onclick="window.irA('${cod}')">${label.trim()} ➜</button>`;
                     });
 
@@ -189,9 +199,11 @@
                 });
             });
             contenedor.innerHTML = `<dl style="counter-reset: line-counter;">${html}</dl>`;
-            if (primeraID) { const el = document.getElementById(primeraID); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+            if (primeraID) { 
+                const el = document.getElementById(primeraID); 
+                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+            }
         }
-
         function abrirVisor(url) {
             const overlay = document.createElement('div');
             overlay.className = 'visor-overlay';
