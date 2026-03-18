@@ -24,7 +24,7 @@
         .resaltado { background: rgba(180, 255, 100, 0.4) !important; border-left: 5px solid #2e7d32 !important; }
         .apartado-header { font-weight: bold; color: #795548; font-size: 1.1rem; border-bottom: 2px solid #d7ccc8; text-align: right; margin-top: 20px; margin-bottom: 10px; text-transform: uppercase; }
         .nav-link-container { display: block; margin: 12px 0; }
-        .btn-ritual, .btn-instancia-exec { border: none; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-size: 0.85em; font-weight: bold; background: #A87C00 !important; color: #ffffff !important; text-decoration: none; display: inline-flex; align-items: center; border: 1px solid #7a5a00; }
+        .btn-ritual { border: 1px solid #7a5a00; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-size: 0.85em; font-weight: bold; background: #A87C00 !important; color: #ffffff !important; text-decoration: none; display: inline-flex; align-items: center; }
         .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; align-items: center; justify-content: center; }
         .visor-content { width: 95%; height: 90%; background: #fff; border-radius: 8px; overflow: hidden; position: relative; }
         .visor-close { position: absolute; top: 8px; right: 8px; background: #ff0000; color: #ffffff; border: 2px solid #ffffff; width: 32px; height: 32px; border-radius: 50%; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
@@ -53,46 +53,44 @@
     <script>
         let xmlDoc, glosarioDoc, tenidasXml, ritualActivo;
         let numGradoActual = "1", fechaTrabajo = "";
-        let seccionesVisibles = new Set();
+        let seccionesVisibles = [];
         let historialNavegacion = [];
 
+        // Función Global de Navegación
         window.irA = function(codigo) {
-            console.log("Navegando a:", codigo);
-            try {
-                if (codigo === 'VOLVER') {
-                    if (historialNavegacion.length > 0) {
-                        const anterior = historialNavegacion.pop();
-                        numGradoActual = anterior.grado;
-                        seccionesVisibles = new Set(anterior.visibilidad);
-                        
-                        ejecutarCargaRitual(numGradoActual, anterior.seccion);
-                        
-                        setTimeout(() => {
-                            window.scrollTo({ top: anterior.scroll, behavior: 'instant' });
-                        }, 150);
-                    }
-                    return;
+            if (codigo === 'VOLVER') {
+                if (historialNavegacion.length > 0) {
+                    const anterior = historialNavegacion.pop();
+                    numGradoActual = anterior.grado;
+                    seccionesVisibles = anterior.visibilidad;
+                    
+                    ejecutarCargaRitual(numGradoActual, anterior.seccion);
+                    
+                    // Delay para asegurar que el contenido se renderizó antes del scroll
+                    setTimeout(() => {
+                        window.scrollTo(0, anterior.scroll);
+                    }, 100);
                 }
+                return;
+            }
 
-                // Guardar estado actual antes de saltar
-                historialNavegacion.push({
-                    grado: numGradoActual,
-                    seccion: document.getElementById("seccionFilter").value,
-                    scroll: window.scrollY,
-                    visibilidad: Array.from(seccionesVisibles)
-                });
+            // Guardar estado actual
+            historialNavegacion.push({
+                grado: numGradoActual,
+                seccion: document.getElementById("seccionFilter").value,
+                scroll: window.scrollY,
+                visibilidad: [...seccionesVisibles]
+            });
 
-                // Ejemplo: '102' -> Grado '1', Sección '2'
-                const targetGrado = codigo.charAt(0); 
-                const targetIdStr = parseInt(codigo.substring(1), 10).toString();
+            // Procesar código (ej: 102 -> Grado 1, Sección 2)
+            const g = codigo.charAt(0);
+            const s = parseInt(codigo.substring(1), 10).toString();
 
-                numGradoActual = targetGrado;
-                seccionesVisibles = new Set([targetIdStr]);
-                
-                ejecutarCargaRitual(numGradoActual, targetIdStr);
-                window.scrollTo({ top: 0, behavior: 'instant' });
-
-            } catch (err) { console.error("Error en irA:", err); }
+            numGradoActual = g;
+            seccionesVisibles = [s];
+            
+            ejecutarCargaRitual(numGradoActual, s);
+            window.scrollTo(0, 0);
         };
 
         async function inicializar() {
@@ -102,7 +100,9 @@
                 numGradoActual = (urlParams.get('num') || "1").toString();
                 const secUrl = (urlParams.get('sec') || "1").toString();
                 
-                seccionesVisibles = (parseInt(secUrl) > 3) ? new Set([secUrl]) : new Set(["1", "2", "3"]);
+                // Si la sección es mayor a 3, solo mostramos esa, si no, las básicas
+                seccionesVisibles = (parseInt(secUrl) > 3) ? [secUrl] : ["1", "2", "3"];
+                
                 await cargarDatos();
                 ejecutarCargaRitual(numGradoActual, secUrl);
 
@@ -141,7 +141,7 @@
             sSel.innerHTML = "";
             Array.from(ritualActivo.getElementsByTagName("seccion")).forEach(sec => {
                 const idXml = sec.getAttribute("id");
-                if (seccionesVisibles.has(idXml.toString())) {
+                if (seccionesVisibles.includes(idXml.toString())) {
                     sSel.add(new Option(sec.getAttribute("titulo"), idXml));
                 }
             });
@@ -188,11 +188,7 @@
                     
                     // Procesar LINKS
                     txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
-                        const targetIdNum = parseInt(cod.substring(1), 10).toString();
-                        const todasLasSecciones = Array.from(xmlDoc.getElementsByTagName("seccion"));
-                        const targetSec = todasLasSecciones.find(s => s.getAttribute("id") === targetIdNum);
-                        const textoBoton = desc || (targetSec ? targetSec.getAttribute("titulo") : `Sección ${targetIdNum}`);
-                        return `<span class="nav-link-container"><button class="btn-ritual" onclick="window.irA('${cod}')">${textoBoton.trim()} ➜</button></span>`;
+                        return `<span class="nav-link-container"><button class="btn-ritual" onclick="window.irA('${cod}')">${(desc || 'Ir').trim()} ➜</button></span>`;
                     });
 
                     // Procesar VOLVER
@@ -241,8 +237,7 @@
                 if (acto === "balaustre" && oficialPaso === "Sec" && filtroSuperior === "Sec") {
                     contenido += `<button class="btn-ritual" onclick="abrirVisor('${url}')">📜: ${titulo} ➜</button>`;
                 } else if (acto === "elevacion" && oficialPaso !== "Sec") {
-                    const acc = url.indexOf('rituales.html') !== -1 ? `window.location.href='${url}&fecha=${fechaTrabajo}'` : `abrirVisor('${url}')`;
-                    contenido += `<button class="btn-instancia-exec" onclick="${acc}">${titulo}</button>`;
+                    contenido += `<button class="btn-ritual" onclick="abrirVisor('${url}')">${titulo}</button>`;
                 }
             });
             return contenido;
