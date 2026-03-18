@@ -60,21 +60,26 @@
         const fechaTrabajo = urlParams.get('fecha') || new Date().toISOString().split('T')[0];
 
         // Función para manejar los saltos de sección (LINK)
-        window.irA = function(idSeccion) {
-            const selector = document.getElementById("seccionFilter");
-            // Verificar si la opción existe en el selector actual
-            const existe = Array.from(selector.options).some(opt => opt.value == idSeccion);
+       window.irA = function(idDestino) {
+            const idStr = idDestino.toString();
             
-            if (existe) {
-                selector.value = idSeccion;
-                cambioDeSeccion();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            } else {
-                // Si la sección no está en el selector (por ser de otro grado o flujo), 
-                // se recarga con el parámetro sec
-                const grado = urlParams.get('num') || "1";
-                window.location.href = `?num=${grado}&sec=${idSeccion}&fecha=${fechaTrabajo}`;
+            // Si es un ID de 3 dígitos (ej: 104), extraemos el grado (1)
+            if (idStr.length === 3) {
+                const gradoLink = idStr.charAt(0);
+                // Si el grado es distinto al actual, recargamos la página completa
+                if (gradoLink !== numGradoActual) {
+                    window.location.href = `?num=${gradoLink}&sec=${idStr}&fecha=${fechaTrabajo}`;
+                    return;
+                }
             }
+
+            // Agregamos la sección a las permitidas para que aparezca en el selector
+            seccionesPermitidas.add(idStr);
+            actualizarSelector();
+            
+            document.getElementById("seccionFilter").value = idStr;
+            cambioDeSeccion();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         };
 
         async function cargarDatos() {
