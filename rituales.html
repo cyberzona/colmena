@@ -60,29 +60,28 @@
         let numGradoActual = "1", fechaTrabajo = "";
         let seccionesVisibles = new Set(["1", "2", "3"]);
 
-        window.irA = function(idOriginal) {
-            if (!idOriginal) return;
-            
-            // Convertimos a string y extraemos solo los números (ej: "S102" -> "102")
-            const idLimpio = idOriginal.toString().replace(/\D/g, "");
-            
-            // Importante: Quitar ceros a la izquierda si los hay (ej: "005" -> "5")
-            const targetId = parseInt(idLimpio, 10).toString();
-            
-            console.log("Saltando a sección:", targetId);
-
-            // Aseguramos que la sección sea permitida en la vista
-            seccionesVisibles.add(targetId);
-            
-            // Forzamos la actualización del menú desplegable
-            actualizarSelectorSecciones(targetId);
-            
-            // Ejecutamos el cambio de contenido
-            cambioDeSeccion();
-            
-            // Scroll al inicio para ver la nueva sección
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        };
+       window.irA = function(codigo) {
+    if (!codigo) return;
+    try {
+        // Extrae solo los números (ej: "S102" -> "102", "005" -> "5")
+        const idLimpio = codigo.toString().replace(/\D/g, "");
+        const targetId = parseInt(idLimpio, 10).toString();
+        
+        // Habilitamos la sección en el Set de visibles
+        seccionesVisibles.add(targetId);
+        
+        // Actualizamos el menú desplegable para que incluya la nueva sección
+        actualizarSelectorSecciones(targetId);
+        
+        // Cambiamos el contenido
+        cambioDeSeccion();
+        
+        // Subir al inicio
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (err) {
+        console.error("Error al saltar de sección:", err);
+    }
+};
         async function inicializar() {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
@@ -179,16 +178,16 @@
                     
                     // Regex mejorada: detecta [[LINK:ID:TEXTO]]
                     txt = txt.replace(/\[\[LINK:([^:]+):([^\]]+)\]\]/g, (match, cod, label) => {
-                        return `<br><button class="btn-ritual" onclick="window.irA('${cod}')">${label.trim()} ➜</button>`;
-                    });
+    return `<br><button class="btn-ritual" onclick="window.irA('${cod}')">${label.trim()} ➜</button>`;
+});
 
                     if (txt.includes("[[INSTANCIA]]")) {
                         txt = txt.replace("[[INSTANCIA]]", `<br>${procesarInstancia(oficialTur)}`);
                     }
 
                     if (txt.includes("[[VOLVER]]")) {
-                        txt = txt.replace("[[VOLVER]]", `<br><button class="btn-ritual" onclick="window.irA('1')">⬅ Regresar al Flujo Principal</button>`);
-                    }
+    txt = txt.replace("[[VOLVER]]", `<br><button class="btn-ritual" onclick="window.irA('1')">⬅ Regresar al Flujo Principal</button>`);
+}
                     
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     txt = txt.replace(/\[(.*?)\]/g, '<span class="line-exec">[$1]</span>');
