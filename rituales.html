@@ -61,21 +61,12 @@
         let seccionesVisibles = new Set(["1", "2", "3"]); 
 
         // Función irA adaptada específicamente para el flujo de la V6
-        window.irA = function(codigo) {
-            try {
-                // Limpiar el código (ej: de "S104" o "104" obtener "104")
-                const targetIdStr = codigo.replace(/\D/g, "");
-                
-                // Permitir que la sección sea visible en el selector
-                seccionesVisibles.add(targetIdStr);
-                
-                // Refrescar el selector para incluir la nueva sección
-                actualizarSelectorSecciones(targetIdStr);
-                
-                // Ejecutar el cambio
-                cambioDeSeccion();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            } catch (err) { console.error("Error en irA:", err); }
+        window.irA = function(id) {
+            const idStr = id.toString();
+            seccionesVisibles.add(idStr);
+            actualizarSelectorSecciones(idStr);
+            cambioDeSeccion();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         };
 
         async function inicializar() {
