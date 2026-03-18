@@ -58,35 +58,29 @@
 
         window.irA = function(codigo) {
             try {
-                // LÓGICA DE VOLVER
                 if (codigo === 'VOLVER') {
                     if (historialNavegacion.length > 0) {
                         const anterior = historialNavegacion.pop();
                         numGradoActual = anterior.grado;
                         seccionesVisibles = anterior.visibilidad;
-                        
                         ejecutarCargaRitual(numGradoActual, anterior.seccion);
-                        
                         setTimeout(() => {
                             window.scrollTo({ top: anterior.scroll, behavior: 'smooth' });
                         }, 100);
-                    } else {
-                        window.location.reload();
                     }
                     return;
                 }
 
-                // LÓGICA DE IR (BRINCO)
-                const targetIdStr = parseInt(codigo.substring(1), 10).toString();
-                const targetGrado = codigo.charAt(1); // El primer dígito del código (p.ej. '1' en '102')
-
-                // Guardar estado actual en el historial antes de saltar
+                // Guardar estado actual antes del salto
                 historialNavegacion.push({
                     grado: numGradoActual,
                     seccion: document.getElementById("seccionFilter").value,
                     scroll: window.scrollY,
                     visibilidad: new Set(seccionesVisibles)
                 });
+
+                const targetIdStr = parseInt(codigo.substring(1), 10).toString();
+                const targetGrado = codigo.charAt(0); // El primer dígito es el grado (ej: '1' en '102')
 
                 numGradoActual = targetGrado;
                 seccionesVisibles = new Set([targetIdStr]);
@@ -188,10 +182,8 @@
                     const idL = `l-${sId}-${counter}`;
                     let txt = paso.getAttribute("texto") || paso.textContent || "";
                     
-                    // PROCESAMIENTO DE LINKS (Busca el título en todo el XML)
                     txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
                         const targetIdNum = parseInt(cod.substring(1), 10).toString();
-                        // Buscamos la sección en cualquier parte del XML (no solo el ritual activo)
                         const todasLasSecciones = Array.from(xmlDoc.getElementsByTagName("seccion"));
                         const targetSec = todasLasSecciones.find(s => s.getAttribute("id") === targetIdNum);
                         const textoBoton = desc || (targetSec ? targetSec.getAttribute("titulo") : `Sección ${targetIdNum}`);
@@ -215,7 +207,10 @@
                 });
             });
             contenedor.innerHTML = `<dl style="counter-reset: line-counter;">${html}</dl>`;
-            if (primeraID) { const el = document.getElementById(primeraID); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+            if (primeraID) { 
+                const el = document.getElementById(primeraID); 
+                if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'center' }), 50);
+            }
         }
 
         function abrirVisor(url) {
