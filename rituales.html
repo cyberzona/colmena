@@ -62,15 +62,17 @@
 
        window.irA = function(codigo) {
             if (!codigo) return;
-            // Extrae solo los números por si viene como "S102" o "0102"
+            // Extrae solo los números (ej: "S102" -> "102")
             const idLimpio = codigo.toString().replace(/\D/g, "");
             const targetId = parseInt(idLimpio, 10).toString();
             
-            // 1. Lo hace visible en el menú
+            // Agrega a visibles para que no se bloquee en el selector
             seccionesVisibles.add(targetId);
-            // 2. Actualiza el selector de secciones
+            
+            // Actualiza el selector con el nuevo ID
             actualizarSelectorSecciones(targetId);
-            // 3. Cambia el contenido
+            
+            // Cambia la sección y renderiza
             cambioDeSeccion();
             
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -168,8 +170,7 @@
                     const idL = `l-${sId}-${counter}`;
                     let txt = paso.getAttribute("texto") || paso.textContent || "";
                     
-                    // CORRECCIÓN DEFINITIVA PARA LOS BOTONES
-                    // Busca [[LINK:CualquierCosa:Texto]]
+                    // CORRECCIÓN DE BOTONES: Detecta [[LINK:CualquierID:CualquierTexto]]
                     txt = txt.replace(/\[\[LINK:([^:]+):([^\]]+)\]\]/g, (match, cod, label) => {
                         return `<br><button class="btn-ritual" onclick="window.irA('${cod}')">${label.trim()} ➜</button>`;
                     });
