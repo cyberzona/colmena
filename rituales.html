@@ -57,42 +57,60 @@
         let historialNavegacion = [];
 
         // Función Global de Navegación
-        window.irA = function(codigo) {
-            if (codigo === 'VOLVER') {
-                if (historialNavegacion.length > 0) {
-                    const anterior = historialNavegacion.pop();
-                    numGradoActual = anterior.grado;
-                    seccionesVisibles = anterior.visibilidad;
-                    
-                    ejecutarCargaRitual(numGradoActual, anterior.seccion);
-                    
-                    // Delay para asegurar que el contenido se renderizó antes del scroll
-                    setTimeout(() => {
-                        window.scrollTo(0, anterior.scroll);
-                    }, 100);
-                }
-                return;
-            }
+       window.irA = function(codigo) {
+    if (codigo === 'VOLVER') {
+        window.history.back();
+        return;
+    }
 
-            // Guardar estado actual
-            historialNavegacion.push({
-                grado: numGradoActual,
-                seccion: document.getElementById("seccionFilter").value,
-                scroll: window.scrollY,
-                visibilidad: [...seccionesVisibles]
-            });
+    // 1. CAPTURA DE ORIGEN (Para poder regresar exacto después)
+    const pasoOrigen = window.event?.target.closest('dd')?.id;
+    const estadoAnterior = {
+        grado: numGradoActual,
+        seccion: document.getElementById("seccionFilter").value,
+        scroll: window.scrollY,
+        visibilidad: [...seccionesVisibles],
+        anchor: pasoOrigen
+    };
+    window.history.pushState(estadoAnterior, "");
 
-            // Procesar código (ej: 102 -> Grado 1, Sección 2)
-            const g = codigo.charAt(0);
-            const s = parseInt(codigo.substring(1), 10).toString();
+    // 2. DESCOMPOSICIÓN DEL CÓDIGO (Ej: "301")
+    const nuevoGrado = codigo.charAt(0); // Resultado: "3"
+    const nuevaSecId = parseInt(codigo.substring(1), 10).toString(); // "01" -> "1"
 
-            numGradoActual = g;
-            seccionesVisibles = [s];
-            
-            ejecutarCargaRitual(numGradoActual, s);
-            window.scrollTo(0, 0);
-        };
+    // 3. ACTUALIZACIÓN DE VARIABLES GLOBALES
+    numGradoActual = nuevoGrado;
+    seccionesVisibles = [nuevaSecId]; // Forzamos a que solo se vea la sección destino
 
+    // 4. CARGA Y RENDERIZADO
+    ejecutarCargaRitual(numGradoActual, nuevaSecId);
+    
+    // 5. SEGURO DE POSICIONAMIENTO
+    // Usamos un pequeño delay para que el navegador "dibuje" el ritual 
+    // y el scroll no se pierda.
+    setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'instant' });
+    }, 50);
+};
+
+// Esta función debe asegurar que busca el ID correctamente
+function actualizarSelectorSecciones(idForzado) {
+    const sSel = document.getElementById("seccionFilter");
+    sSel.innerHTML = "";
+    
+    // Buscamos las secciones del NUEVO grado activo
+    const secciones = Array.from(ritualActivo.getElementsByTagName("seccion"));
+    
+    secciones.forEach(sec => {
+        const idXml = sec.getAttribute("id").toString();
+        // Solo añadimos al menú las secciones permitidas
+        if (seccionesVisibles.includes(idXml)) {
+            sSel.add(new Option(sec.getAttribute("titulo"), idXml));
+        }
+    });
+    
+    if (idForzado) sSel.value = idForzado;
+}
         async function inicializar() {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
