@@ -21,10 +21,8 @@
         .select-seccion { width: 200px; padding: 8px; font-size: 0.95rem; border-radius: 4px; border: 1px solid #8d6e63; background: #fff; font-weight: bold; outline: none; }
         .select-oficiales { width: 90px; padding: 8px; font-size: 0.95rem; border-radius: 4px; border: 1px solid #8d6e63; background: #fff; font-weight: bold; outline: none; }
         
-        /* LITURGIA Y TEXTOS */
+        /* TEXTOS Y LITURGIA */
         .sigla-texto-azul { color: #0277bd; font-weight: bold; }
-        
-        /* Instrucciones entre corchetes como bloque */
         .line-exec { 
             display: block; 
             font-style: italic; 
@@ -34,7 +32,6 @@
             padding-left: 8px;
             border-left: 2px solid #d7ccc8;
         }
-
         dt { font-weight: bold; color: #5d4037; margin-top: 12px; }
         dd { margin-left: 45px; border-left: 3px solid #d7ccc8; padding-left: 10px; padding-right: 10px; position: relative; margin-bottom: 4px; counter-increment: line-counter; text-align: justify; }
         dd::before { content: counter(line-counter); position: absolute; left: -40px; color: #5d4037; font-size: 1.0em; font-weight: 800; width: 30px; text-align: right; }
@@ -42,29 +39,12 @@
         
         .apartado-header { font-weight: bold; color: #795548; font-size: 1.1rem; border-bottom: 2px solid #d7ccc8; text-align: right; margin-top: 20px; margin-bottom: 10px; text-transform: uppercase; }
         
-        /* BOTONES Y CONTENEDORES (Sin <br>) */
+        /* BOTONES Y CONTENEDORES */
         .nav-link-container { display: block; margin: 12px 0; }
-        
-        .instancia-botones { 
-            margin-top: 10px; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 8px; 
-            align-items: flex-start; 
-        }
-
+        .instancia-botones { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
         .btn-ritual, .btn-instancia-exec { 
-            border: none; 
-            padding: 10px 20px; 
-            border-radius: 50px; 
-            cursor: pointer; 
-            font-size: 0.85em; 
-            font-weight: bold; 
-            background: #A87C00 !important; 
-            color: #ffffff !important; 
-            text-decoration: none; 
-            display: inline-flex;
-            align-items: center;
+            border: none; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-size: 0.85em; font-weight: bold; 
+            background: #A87C00 !important; color: #ffffff !important; text-decoration: none; display: inline-flex; align-items: center;
         }
         
         /* VISOR */
@@ -101,10 +81,8 @@
         let seccionesVisibles = new Set();
         let historialNavegacion = [];
 
-        // FUNCIÓN DE NAVEGACIÓN UNIFICADA (LINK + VOLVER)
         window.irA = function(codigo) {
             try {
-                // Caso VOLVER: Recupera el punto exacto de scroll y sección
                 if (codigo === 'VOLVER') {
                     if (historialNavegacion.length > 0) {
                         const anterior = historialNavegacion.pop();
@@ -122,7 +100,6 @@
                     return;
                 }
 
-                // Caso SALTO (LINK:XXX): Guarda el estado actual
                 const targetIdStr = parseInt(codigo.substring(1), 10).toString();
                 historialNavegacion.push({
                     seccion: document.getElementById("seccionFilter").value,
@@ -134,21 +111,16 @@
                 actualizarSelectorSecciones(targetIdStr);
                 cambioDeSeccion();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-
             } catch (err) { console.error("Error en irA:", err); }
         };
 
         async function inicializar() {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
-                
-                // Fecha automática: Hoy es 17 de Marzo de 2026
                 const hoy = new Date().toISOString().split('T')[0];
                 fechaTrabajo = urlParams.get('fecha') || hoy; 
-
                 numGradoActual = (urlParams.get('num') || "1").toString();
                 const secUrl = (urlParams.get('sec') || "1").toString();
-
                 seccionesVisibles = (parseInt(secUrl) > 3) ? new Set([secUrl]) : new Set(["1", "2", "3"]);
 
                 await cargarDatos();
@@ -163,7 +135,7 @@
         }
 
         async function cargarDatos() {
-            const v = new Date().getTime(); // Anti-caché radical
+            const v = new Date().getTime(); 
             const [glosario, liturgia, tenidas] = await Promise.all([
                 fetch(`glosario.xml?v=${v}`).then(r => r.text()),
                 fetch(`liturgia.xml?v=${v}`).then(r => r.text()),
@@ -235,25 +207,24 @@
                     const idL = `l-${sId}-${counter}`;
                     let txt = paso.getAttribute("texto") || paso.textContent || "";
                     
-                    // PROCESAR LINKS
+                    // PROCESAR LINKS (CON TÍTULOS DEL XML)
                     txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
-                        return `<span class="nav-link-container"><button class="btn-ritual" onclick="window.irA('${cod}')">${desc || 'Ir'} ➜</button></span>`;
+                        const targetIdNum = parseInt(cod.substring(1), 10).toString();
+                        const secciones = Array.from(ritualActivo.getElementsByTagName("seccion"));
+                        const targetSec = secciones.find(s => s.getAttribute("id") === targetIdNum);
+                        const textoBoton = desc || (targetSec ? targetSec.getAttribute("titulo") : `Sección ${targetIdNum}`);
+                        return `<span class="nav-link-container"><button class="btn-ritual" onclick="window.irA('${cod}')">${textoBoton.trim()} ➜</button></span>`;
                     });
 
-                    // PROCESAR VOLVER
                     if (txt.includes("[[VOLVER]]")) {
                         txt = txt.replace("[[VOLVER]]", `<span class="nav-link-container"><button class="btn-ritual" onclick="window.irA('VOLVER')">⬅ Regresar</button></span>`);
                     }
 
-                    // PROCESAR INSTANCIAS (Memos)
                     if (txt.includes("[[INSTANCIA]]")) {
                         txt = txt.replace("[[INSTANCIA]]", `<div class="instancia-botones">${procesarInstancia(oficialTur)}</div>`);
                     }
                     
-                    // PROCESAR CORCHETES (Acciones como bloque)
                     txt = txt.replace(/\[(.*?)\]/g, '<span class="line-exec">[$1]</span>');
-                    
-                    // ESTILO SIGLAS
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     
                     const esOfi = (oficialSel && oficialTur === oficialSel);
