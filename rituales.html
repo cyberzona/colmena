@@ -163,8 +163,8 @@
                     const idL = `l-${sId}-${counter}`;
                     let txt = paso.getAttribute("texto") || paso.textContent || "";
                     
-                    // Procesar LINKS para que llamen a irA
-                    txt = txt.replace(/\[\[LINK:(\d+):(.*?)\]\]/g, (match, id, label) => {
+                    // CORRECCIÓN: Procesar LINKS con una expresión regular más robusta
+                    txt = txt.replace(/\[\[LINK:(\d+):([^\]]+)\]\]/g, (match, id, label) => {
                         return `<br><button class="btn-ritual" onclick="window.irA('${id}')">${label.trim()} ➜</button>`;
                     });
 
@@ -185,7 +185,10 @@
                 });
             });
             contenedor.innerHTML = `<dl style="counter-reset: line-counter;">${html}</dl>`;
-            if (primeraID) { const el = document.getElementById(primeraID); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+            if (primeraID) { 
+                const el = document.getElementById(primeraID); 
+                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+            }
         }
 
         function abrirVisor(url) {
