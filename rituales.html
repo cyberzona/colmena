@@ -56,28 +56,31 @@
         let xmlDoc = null;
         let tenidasXml = null;
         let ritualActivo = null;
+        let seccionesVisibles = new Set(["1", "2", "3"]); // Control de secciones permitidas
+        
         const urlParams = new URLSearchParams(window.location.search);
         const fechaTrabajo = urlParams.get('fecha') || new Date().toISOString().split('T')[0];
 
-        // Función para manejar los saltos de sección (LINK)
-       window.irA = function(idDestino) {
+        // Función irA corregida para la Interfaz V6
+        window.irA = function(idDestino) {
             const idStr = idDestino.toString();
+            seccionesVisibles.add(idStr);
             
-            // Si es un ID de 3 dígitos (ej: 104), extraemos el grado (1)
-            if (idStr.length === 3) {
-                const gradoLink = idStr.charAt(0);
-                // Si el grado es distinto al actual, recargamos la página completa
-                if (gradoLink !== numGradoActual) {
-                    window.location.href = `?num=${gradoLink}&sec=${idStr}&fecha=${fechaTrabajo}`;
-                    return;
+            // Re-poblar el selector para que incluya la nueva sección
+            const sFilter = document.getElementById("seccionFilter");
+            sFilter.innerHTML = "";
+            const seccionesXml = ritualActivo.getElementsByTagName("seccion");
+            Array.from(seccionesXml).forEach(s => {
+                const idXml = s.getAttribute("id");
+                if (seccionesVisibles.has(idXml)) {
+                    const opt = document.createElement("option");
+                    opt.value = idXml;
+                    opt.textContent = s.getAttribute("titulo");
+                    sFilter.appendChild(opt);
                 }
-            }
+            });
 
-            // Agregamos la sección a las permitidas para que aparezca en el selector
-            seccionesPermitidas.add(idStr);
-            actualizarSelector();
-            
-            document.getElementById("seccionFilter").value = idStr;
+            sFilter.value = idStr;
             cambioDeSeccion();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         };
@@ -96,6 +99,7 @@
 
                 const g = urlParams.get('num') || "1";
                 const s = urlParams.get('sec') || "1";
+                seccionesVisibles.add(s); // Asegurar que la sección inicial sea visible
                 
                 inicializar(g, s);
             } catch (e) {
@@ -116,10 +120,13 @@
                 const sFilter = document.getElementById("seccionFilter");
                 const secciones = ritualActivo.getElementsByTagName("seccion");
                 Array.from(secciones).forEach(s => {
-                    const opt = document.createElement("option");
-                    opt.value = s.getAttribute("id");
-                    opt.textContent = s.getAttribute("titulo");
-                    sFilter.appendChild(opt);
+                    const id = s.getAttribute("id");
+                    if (seccionesVisibles.has(id)) {
+                        const opt = document.createElement("option");
+                        opt.value = id;
+                        opt.textContent = s.getAttribute("titulo");
+                        sFilter.appendChild(opt);
+                    }
                 });
 
                 sFilter.value = seccionID;
@@ -168,7 +175,7 @@
                         .replace(/\[(.*?)\]/g, '<span class="rubrica">[$1]</span>')
                         .replace(/(\w+∴)/g, '<span class="tri-punto">$1</span>');
 
-                    // Corrección para que los LINK llamen a irA()
+                    // CORRECCIÓN LINK: Ahora usa irA()
                     texto = texto.replace(/\[\[LINK:(\d+):(.*?)\]\]/g, (match, id, label) => {
                         return `<button class="btn-ritual" onclick="irA('${id}')">${label} ➜</button>`;
                     });
