@@ -61,27 +61,20 @@
         let seccionesVisibles = new Set(["1", "2", "3"]);
 
        window.irA = function(codigo) {
-    if (!codigo) return;
-    try {
-        // Extrae solo los números (ej: "S102" -> "102", "005" -> "5")
-        const idLimpio = codigo.toString().replace(/\D/g, "");
-        const targetId = parseInt(idLimpio, 10).toString();
-        
-        // Habilitamos la sección en el Set de visibles
-        seccionesVisibles.add(targetId);
-        
-        // Actualizamos el menú desplegable para que incluya la nueva sección
-        actualizarSelectorSecciones(targetId);
-        
-        // Cambiamos el contenido
-        cambioDeSeccion();
-        
-        // Subir al inicio
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    } catch (err) {
-        console.error("Error al saltar de sección:", err);
-    }
-};
+            if (!codigo) return;
+            // Extrae solo los números por si viene como "S102" o "0102"
+            const idLimpio = codigo.toString().replace(/\D/g, "");
+            const targetId = parseInt(idLimpio, 10).toString();
+            
+            // 1. Lo hace visible en el menú
+            seccionesVisibles.add(targetId);
+            // 2. Actualiza el selector de secciones
+            actualizarSelectorSecciones(targetId);
+            // 3. Cambia el contenido
+            cambioDeSeccion();
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
         async function inicializar() {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
@@ -164,7 +157,6 @@
             const oficialSel = document.getElementById("oficialFilter").value; 
             const contenedor = document.getElementById('rituales-content');
             const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
-            
             if (!seccion) return;
 
             let html = "", counter = 0, primeraID = null;
@@ -176,18 +168,19 @@
                     const idL = `l-${sId}-${counter}`;
                     let txt = paso.getAttribute("texto") || paso.textContent || "";
                     
-                    // Regex mejorada: detecta [[LINK:ID:TEXTO]]
+                    // CORRECCIÓN DEFINITIVA PARA LOS BOTONES
+                    // Busca [[LINK:CualquierCosa:Texto]]
                     txt = txt.replace(/\[\[LINK:([^:]+):([^\]]+)\]\]/g, (match, cod, label) => {
-    return `<br><button class="btn-ritual" onclick="window.irA('${cod}')">${label.trim()} ➜</button>`;
-});
+                        return `<br><button class="btn-ritual" onclick="window.irA('${cod}')">${label.trim()} ➜</button>`;
+                    });
 
                     if (txt.includes("[[INSTANCIA]]")) {
                         txt = txt.replace("[[INSTANCIA]]", `<br>${procesarInstancia(oficialTur)}`);
                     }
 
                     if (txt.includes("[[VOLVER]]")) {
-    txt = txt.replace("[[VOLVER]]", `<br><button class="btn-ritual" onclick="window.irA('1')">⬅ Regresar al Flujo Principal</button>`);
-}
+                        txt = txt.replace("[[VOLVER]]", `<br><button class="btn-ritual" onclick="window.irA('1')">⬅ Regresar al Flujo Principal</button>`);
+                    }
                     
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     txt = txt.replace(/\[(.*?)\]/g, '<span class="line-exec">[$1]</span>');
@@ -198,10 +191,7 @@
                 });
             });
             contenedor.innerHTML = `<dl style="counter-reset: line-counter;">${html}</dl>`;
-            if (primeraID) { 
-                const el = document.getElementById(primeraID); 
-                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
-            }
+            if (primeraID) { const el = document.getElementById(primeraID); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
         }
         function abrirVisor(url) {
             const overlay = document.createElement('div');
