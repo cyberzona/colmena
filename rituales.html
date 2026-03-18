@@ -63,15 +63,19 @@
                         const anterior = historialNavegacion.pop();
                         numGradoActual = anterior.grado;
                         seccionesVisibles = anterior.visibilidad;
+                        
+                        // Recargamos el ritual del grado anterior
                         ejecutarCargaRitual(numGradoActual, anterior.seccion);
+                        
+                        // Esperamos un instante a que se renderice antes de aplicar el scroll
                         setTimeout(() => {
-                            window.scrollTo({ top: anterior.scroll, behavior: 'smooth' });
+                            window.scrollTo({ top: anterior.scroll, behavior: 'auto' });
                         }, 100);
                     }
                     return;
                 }
 
-                // Guardar estado actual antes del salto
+                // Guardar estado actual (grado, sección, scroll) antes de saltar
                 historialNavegacion.push({
                     grado: numGradoActual,
                     seccion: document.getElementById("seccionFilter").value,
@@ -79,14 +83,15 @@
                     visibilidad: new Set(seccionesVisibles)
                 });
 
+                // Extraer Grado (primer dígito) y Sección (ID real)
+                const targetGrado = codigo.charAt(0); 
                 const targetIdStr = parseInt(codigo.substring(1), 10).toString();
-                const targetGrado = codigo.charAt(0); // El primer dígito es el grado (ej: '1' en '102')
 
                 numGradoActual = targetGrado;
                 seccionesVisibles = new Set([targetIdStr]);
                 
                 ejecutarCargaRitual(numGradoActual, targetIdStr);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                window.scrollTo({ top: 0, behavior: 'auto' });
 
             } catch (err) { console.error("Error en irA:", err); }
         };
