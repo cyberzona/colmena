@@ -82,67 +82,46 @@
         let historialNavegacion = [];
 
         
-        // window.irA = function(codigo) {
+   window.irA = function(codigo) {
     try {
+        // 1. Normalización del ID (ej: "201")
         const targetIdStr = codigo.replace(/\D/g, "");
         const targetNum = parseInt(targetIdStr);
         if (isNaN(targetNum)) return;
 
-        // 1. DETERMINAR GRADO DESTINO
+        // 2. Determinación de Grado (Soporta 1xx, 2xx, 3xx)
         let gradoDestino = numGradoActual; 
-        if (targetNum >= 100) {
-            gradoDestino = targetIdStr.charAt(0);
+        if (targetNum >= 100) { 
+            gradoDestino = targetIdStr.charAt(0); 
         }
 
-        // 2. CAMBIO DE GRADO (Salto entre rituales)
-        if (gradoDestino !== numGradoActual) {
+        // 3. Cambio de Grado (Crucial para Grado 2)
+        if (gradoDestino !== numGradoActual.toString()) {
             numGradoActual = gradoDestino;
+            // Definimos visibilidad antes de cargar
             seccionesVisibles = (targetNum <= 3) ? new Set(["1", "2", "3"]) : new Set([targetIdStr]);
             
-            // Pasamos el targetIdStr para que ejecutarCargaRitual sepa a dónde ir exactamente
+            // Forzamos la carga del nuevo ritual antes de mover el selector
             ejecutarCargaRitual(gradoDestino, targetIdStr);
             window.scrollTo({ top: 0, behavior: 'smooth' });
-            return;
+            return; // Salimos para que ejecutarCargaRitual tome el control
         }
 
-        // 3. NAVEGACIÓN INTERNA (Mismo grado)
-        // CRÍTICO: Actualizamos la visibilidad ANTES de cambiar la sección
-        if (targetNum <= 3) {
-            seccionesVisibles = new Set(["1", "2", "3"]);
-        } else {
-            seccionesVisibles = new Set([targetIdStr]);
-        }
-
-        // 4. FORZAR SINCRONIZACIÓN
+        // 4. Navegación en el mismo grado
+        seccionesVisibles = (targetNum <= 3) ? new Set(["1", "2", "3"]) : new Set([targetIdStr]);
         actualizarSelectorSecciones(targetIdStr);
         
-        // Forzamos manualmente el valor del selector para que cambioDeSeccion() no use el default (1)
-        const selector = document.getElementById("seccionFilter");
-        selector.value = targetIdStr;
-        
-        cambioDeSeccion();
+        const sel = document.getElementById("seccionFilter");
+        if (sel) {
+            sel.value = targetIdStr;
+            cambioDeSeccion();
+        }
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    } catch (err) {
-        console.error("Error en el brinco:", err);
+    } catch (err) { 
+        console.error("Error en el brinco al grado/sección:", err); 
     }
 };
-
-
-// --- BUSCA Y SUSTITUYE EL BLOQUE DE PROCESAR LINKS DENTRO DE renderizarLiturgia ---
-// Es el bloque que usa txt.replace(/\[\[LINK:(\d{3})...
-
-txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
-    const targetIdNum = parseInt(cod.substring(1), 10).toString();
-    
-    // BÚSQUEDA GLOBAL: Buscamos en todo el XML, no solo en el ritualActivo
-    const todasLasSecciones = Array.from(xmlDoc.getElementsByTagName("seccion"));
-    const targetSec = todasLasSecciones.find(s => s.getAttribute("id") === targetIdNum);
-    
-    const textoBoton = desc || (targetSec ? targetSec.getAttribute("titulo") : `Sección ${targetIdNum}`);
-    return `<span class="nav-link-container"><button class="btn-ritual" onclick="window.irA('${cod}')">${textoBoton.trim()} ➜</button></span>`;
-});
-
         async function inicializar() {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
