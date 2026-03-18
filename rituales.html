@@ -12,206 +12,192 @@
         #titulo-ritual-header { font-size: 0.95rem; color: #5d4037; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
         .logo-mini { width: 65px; height: auto; }
         
-        #control-panel { background: #d7ccc8; padding: 10px; border-radius: 8px; border: 1px solid #a1887f; position: sticky; top: 0; z-index: 1000; display: flex; justify-content: flex-start; gap: 10px; }
-        .container-select { display: flex; flex-direction: column; width: auto; }
-        .select-label { font-size: 0.65rem; color: #4e342e; font-weight: 800; text-transform: uppercase; margin-bottom: 2px; }
-        .select-seccion { width: 220px; padding: 8px; font-size: 0.95rem; border-radius: 4px; border: 1px solid #8d6e63; background: #fff; font-weight: bold; outline: none; }
-        .select-oficiales { width: 100px; padding: 8px; font-size: 0.95rem; border-radius: 4px; border: 1px solid #8d6e63; background: #fff; font-weight: bold; outline: none; }
+        #control-panel { background: #d7ccc8; padding: 10px; border-radius: 8px; border: 1px solid #a1887f; position: sticky; top: 0; z-index: 100; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .filter-group { display: flex; flex-direction: column; gap: 8px; }
+        select { padding: 8px; border-radius: 4px; border: 1px solid #8d6e63; background: #efebe9; font-size: 0.9rem; width: 100%; color: #3e2723; }
         
-        .sigla-texto-azul { color: #0277bd; font-weight: bold; }
-        .line-exec { font-style: italic; font-size: 0.95em; color: rgba(0, 0, 0, 0.4); font-weight: normal; margin-left: 3px; }
-        dt { font-weight: bold; color: #5d4037; margin-top: 8px; }
-        dd { margin-left: 45px; border-left: 3px solid #d7ccc8; padding-left: 10px; padding-right: 10px; position: relative; margin-bottom: 4px; counter-increment: line-counter; text-align: justify; text-justify: inter-word; hyphens: auto; }
-        dd::before { content: counter(line-counter); position: absolute; left: -40px; color: #5d4037; font-size: 1.0em; font-weight: 800; width: 30px; text-align: right; }
-        .resaltado { background: rgba(180, 255, 100, 0.4) !important; border-left: 5px solid #2e7d32 !important; }
+        .ritual-content { max-width: 800px; margin: 0 auto; padding-bottom: 50px; }
+        .paso-container { margin-bottom: 12px; padding: 8px; border-radius: 4px; border-left: 3px solid transparent; transition: background 0.3s; }
+        .paso-highlight { background-color: #e8f5e9; border-left-color: #2e7d32; }
+        .oficial-label { font-weight: bold; color: #5d4037; display: block; margin-bottom: 2px; font-size: 0.85rem; text-transform: uppercase; }
+        .texto-ritual { font-size: 1.05rem; display: block; }
+        .rubrica { font-style: italic; color: #757575; font-size: 0.95rem; }
+        .btn-ritual { background: #5d4037; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; margin-top: 5px; font-size: 0.85rem; display: inline-block; }
+        .instancia-botones { margin-top: 8px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .btn-instancia-exec { background: #2e7d32; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: bold; }
         
-        .apartado-header { font-weight: bold; color: #795548; font-size: 1.1rem; border-bottom: 2px solid #d7ccc8; text-align: right; margin-top: 20px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
-        
-        .btn-ritual, .btn-instancia-exec { border: none; padding: 8px 18px; border-radius: 50px; cursor: pointer; font-size: 0.85em; margin: 4px 0; font-weight: bold; display: table !important; background: #A87C00 !important; color: #ffffff !important; text-decoration: none; text-align: center; width: auto !important; max-width: fit-content; box-sizing: border-box; }
-        .instancia-botones { margin-top: 10px; display: flex; flex-direction: column; gap: 5px; }
-        
-        .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .visor-content { width: 95%; height: 90%; background: #fff; border-radius: 8px; overflow: hidden; position: relative; }
-        .visor-close { position: absolute; top: 8px; right: 8px; background: #ff0000; color: #ffffff; border: 2px solid #ffffff; width: 32px; height: 32px; border-radius: 50%; font-weight: bold; font-size: 18px; cursor: pointer; z-index: 2001; display: flex; align-items: center; justify-content: center; }
+        #loading { text-align: center; padding: 40px; font-weight: bold; color: #5d4037; }
+        .tri-punto { color: #1565c0; font-weight: bold; }
     </style>
 </head>
-<body onload="inicializar()">
+<body>
+
     <div class="header-container">
-        <img src="./images/logo-mini.png" alt="Logo" class="logo-mini">
+        <img src="https://colmena8.org/wp-content/uploads/2024/02/cropped-logo-colmena-8-1.png" alt="Logo" class="logo-mini">
         <div class="logia-info">
-            <span class="line-logia">RLS∴ COLMENA # 8</span>
-            <span id="titulo-ritual-header">Cargando...</span>
+            <span class="line-logia">COLMENA No. 8</span>
+            <span id="titulo-ritual-header">CARGANDO...</span>
         </div>
     </div>
+
     <div id="control-panel">
-        <div class="container-select">
-            <span class="select-label">Sección</span>
-            <select id="seccionFilter" class="select-seccion" onchange="cambioDeSeccion()"></select>
-        </div>
-        <div class="container-select">
-            <span class="select-label">Oficial</span>
-            <select id="oficialFilter" class="select-oficiales" onchange="renderizarLiturgia()"></select>
+        <div class="filter-group">
+            <select id="seccionFilter" onchange="cambioDeSeccion()"></select>
+            <select id="oficialFilter" onchange="cambioDeOficial()">
+                <option value="TODOS">-- Todos los Oficiales --</option>
+            </select>
         </div>
     </div>
-    <div id="rituales-content"></div>
+
+    <div id="loading">CARGANDO RITUAL...</div>
+    <div id="ritual-display" class="ritual-content" style="display:none;"></div>
 
     <script>
-        let xmlDoc, glosarioDoc, tenidasXml, ritualActivo;
-        let numGradoActual = "1", fechaTrabajo = "";
-        let seccionesVisibles = new Set();
+        let xmlDoc = null;
+        let tenidasXml = null;
+        let ritualActivo = null;
+        const urlParams = new URLSearchParams(window.location.search);
+        const fechaTrabajo = urlParams.get('fecha') || new Date().toISOString().split('T')[0];
 
-        window.irA = function(codigo) {
-            try {
-                const targetIdStr = parseInt(codigo.substring(1), 10).toString();
-                if (parseInt(targetIdStr) <= 3) {
-                    seccionesVisibles = new Set([targetIdStr]);
-                } else {
-                    seccionesVisibles = new Set(["1", "2", "3"]);
-                }
-                actualizarSelectorSecciones(targetIdStr);
+        // Función para manejar los saltos de sección (LINK)
+        window.irA = function(idSeccion) {
+            const selector = document.getElementById("seccionFilter");
+            // Verificar si la opción existe en el selector actual
+            const existe = Array.from(selector.options).some(opt => opt.value == idSeccion);
+            
+            if (existe) {
+                selector.value = idSeccion;
                 cambioDeSeccion();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-            } catch (err) { console.error("Error en irA:", err); }
+            } else {
+                // Si la sección no está en el selector (por ser de otro grado o flujo), 
+                // se recarga con el parámetro sec
+                const grado = urlParams.get('num') || "1";
+                window.location.href = `?num=${grado}&sec=${idSeccion}&fecha=${fechaTrabajo}`;
+            }
         };
 
-        async function inicializar() {
-            try {
-                const urlParams = new URLSearchParams(window.location.search);
-                fechaTrabajo = urlParams.get('fecha') || "2026-03-16";
-                numGradoActual = (urlParams.get('num') || "1").toString();
-                const secUrl = (urlParams.get('sec') || "1").toString();
-
-                if (parseInt(secUrl) > 3) {
-                    seccionesVisibles = new Set([secUrl]);
-                } else {
-                    seccionesVisibles = new Set(["1", "2", "3"]);
-                }
-
-                await cargarDatos();
-                ejecutarCargaRitual(numGradoActual, secUrl);
-                
-                const oficialUrl = urlParams.get('ofi') || "";
-                if (oficialUrl) {
-                    document.getElementById("oficialFilter").value = oficialUrl;
-                    renderizarLiturgia();
-                }
-            } catch (e) { console.error("Error inicializando:", e); }
-        }
-
         async function cargarDatos() {
-            const timestamp = new Date().getTime();
-            const [glosario, liturgia, tenidas] = await Promise.all([
-                fetch('glosario.xml?v=' + timestamp).then(r => r.text()),
-                fetch('liturgia.xml?v=' + timestamp).then(r => r.text()),
-                fetch('tenidas.xml?v=' + timestamp).then(r => r.text()).catch(() => '<bitacora></bitacora>')
-            ]);
-            const parser = new DOMParser();
-            glosarioDoc = parser.parseFromString(glosario, "text/xml");
-            xmlDoc = parser.parseFromString(liturgia, "text/xml");
-            tenidasXml = parser.parseFromString(tenidas, "text/xml");
+            try {
+                const v = new Date().getTime();
+                const [resRitual, resTenidas] = await Promise.all([
+                    fetch(`liturgia.xml?v=${v}`).then(r => r.text()),
+                    fetch(`tenidas.xml?v=${v}`).then(r => r.text())
+                ]);
+                
+                const parser = new DOMParser();
+                xmlDoc = parser.parseFromString(resRitual, "text/xml");
+                tenidasXml = parser.parseFromString(resTenidas, "text/xml");
+
+                const g = urlParams.get('num') || "1";
+                const s = urlParams.get('sec') || "1";
+                
+                inicializar(g, s);
+            } catch (e) {
+                document.getElementById("loading").textContent = "Error al cargar archivos XML.";
+            }
         }
 
-        function ejecutarCargaRitual(grado, seccionID) {
-            ritualActivo = Array.from(xmlDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("grado") === grado);
+        function inicializar(grado, seccionID) {
+            ritualActivo = Array.from(xmlDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("grado") === grado.toString());
+
             if (ritualActivo) {
                 const titulos = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Maestría" };
                 document.getElementById("titulo-ritual-header").textContent = titulos[grado] || "Ritual";
-                actualizarSelectorSecciones(seccionID);
+                
+                document.getElementById("loading").style.display = "none";
+                document.getElementById("ritual-display").style.display = "block";
+
+                const sFilter = document.getElementById("seccionFilter");
+                const secciones = ritualActivo.getElementsByTagName("seccion");
+                Array.from(secciones).forEach(s => {
+                    const opt = document.createElement("option");
+                    opt.value = s.getAttribute("id");
+                    opt.textContent = s.getAttribute("titulo");
+                    sFilter.appendChild(opt);
+                });
+
+                sFilter.value = seccionID;
                 cambioDeSeccion();
             }
         }
 
-        function actualizarSelectorSecciones(idForzado) {
-            const sSel = document.getElementById("seccionFilter");
-            sSel.innerHTML = "";
-            Array.from(ritualActivo.getElementsByTagName("seccion")).forEach(sec => {
-                const idXml = sec.getAttribute("id");
-                if (seccionesVisibles.has(idXml.toString())) {
-                    sSel.add(new Option(sec.getAttribute("titulo"), idXml));
+        function cambioDeSeccion() {
+            const seccionID = document.getElementById("seccionFilter").value;
+            const oficialBusqueda = document.getElementById("oficialFilter").value;
+            const seccionXml = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") === seccionID);
+            
+            const display = document.getElementById("ritual-display");
+            display.innerHTML = "";
+
+            if (!seccionXml) return;
+
+            const todosLosPasos = Array.from(seccionXml.getElementsByTagName("paso"));
+            const oficialesSet = new Set(todosLosPasos.map(p => p.getAttribute("oficial")));
+            
+            const oSel = document.getElementById("oficialFilter");
+            const valPrevio = oSel.value;
+            oSel.innerHTML = '<option value="TODOS">-- Todos los Oficiales --</option>';
+            oficialesSet.forEach(of => {
+                if(of) {
+                    const opt = document.createElement("option");
+                    opt.value = of; opt.textContent = of;
+                    oSel.appendChild(opt);
                 }
             });
-            if (idForzado) sSel.value = idForzado;
-        }
+            if (Array.from(oSel.options).some(o => o.value === valPrevio)) oSel.value = valPrevio;
 
-        function cambioDeSeccion() {
-            const sId = document.getElementById("seccionFilter").value;
-            const oSel = document.getElementById("oficialFilter");
-            const ofiPrevio = oSel.value;
-            const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
-            
-            const oficialesSet = new Set();
-            if (seccion) {
-                Array.from(seccion.getElementsByTagName("paso")).forEach(p => { 
-                    if (p.getAttribute("oficial")) oficialesSet.add(p.getAttribute("oficial").trim()); 
-                });
-            }
-            
-            oSel.innerHTML = '<option value="">---</option>';
-            Array.from(glosarioDoc.getElementsByTagName("item")).forEach(item => {
-                const sigla = item.getAttribute("sigla");
-                if (oficialesSet.has(sigla)) oSel.add(new Option(sigla + "∴", sigla));
-            });
-            if (oficialesSet.has(ofiPrevio)) oSel.value = ofiPrevio;
-            renderizarLiturgia();
-        }
+            Array.from(seccionXml.getElementsByTagName("apartado")).forEach(ap => {
+                const h = document.createElement("h3");
+                h.style = "border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-top: 20px; color: #5d4037;";
+                h.textContent = ap.getAttribute("titulo");
+                display.appendChild(h);
 
-        function renderizarLiturgia() {
-            const sId = document.getElementById("seccionFilter").value;
-            const oficialSel = document.getElementById("oficialFilter").value; 
-            const contenedor = document.getElementById('rituales-content');
-            const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
-            if (!seccion) return;
+                Array.from(ap.getElementsByTagName("paso")).forEach(p => {
+                    const of = p.getAttribute("oficial");
+                    const contenedor = document.createElement("div");
+                    contenedor.className = "paso-container";
+                    if (oficialBusqueda !== "TODOS" && of === oficialBusqueda) contenedor.classList.add("paso-highlight");
 
-            let html = "", counter = 0, primeraID = null;
-            Array.from(seccion.getElementsByTagName("apartado")).forEach(apa => {
-                html += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>`;
-                Array.from(apa.getElementsByTagName("paso")).forEach(paso => {
-                    counter++;
-                    const oficialTur = (paso.getAttribute("oficial") || "Ofi").trim();
-                    const idL = `l-${sId}-${counter}`;
-                    let txt = paso.getAttribute("texto") || paso.textContent || "";
-                    
-                    txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
-                        const targetIdNum = parseInt(cod.substring(1), 10).toString();
-                        const secciones = Array.from(ritualActivo.getElementsByTagName("seccion"));
-                        const targetSec = secciones.find(s => s.getAttribute("id") === targetIdNum);
-                        const textoBoton = desc || (targetSec ? targetSec.getAttribute("titulo") : `Sección ${targetIdNum}`);
-                        return `<br><button class="btn-ritual" onclick="window.irA('${cod}')">${textoBoton.trim()} ➜</button>`;
+                    let texto = (p.getAttribute("texto") || "")
+                        .replace(/\[(.*?)\]/g, '<span class="rubrica">[$1]</span>')
+                        .replace(/(\w+∴)/g, '<span class="tri-punto">$1</span>');
+
+                    // Corrección para que los LINK llamen a irA()
+                    texto = texto.replace(/\[\[LINK:(\d+):(.*?)\]\]/g, (match, id, label) => {
+                        return `<button class="btn-ritual" onclick="irA('${id}')">${label} ➜</button>`;
                     });
 
-                    if (txt.includes("[[INSTANCIA]]")) {
-                        txt = txt.replace("[[INSTANCIA]]", `<br>${procesarInstancia(oficialTur)}`);
+                    if (texto.includes("[[INSTANCIA]]")) {
+                        const btnInstancia = procesarInstancia(of);
+                        texto = texto.replace("[[INSTANCIA]]", btnInstancia);
                     }
 
-                    if (txt.includes("[[VOLVER]]")) {
-                        txt = txt.replace("[[VOLVER]]", `<br><button class="btn-ritual" onclick="window.irA('S001')">⬅ Regresar al Flujo Principal</button>`);
-                    }
-                    
-                    txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
-                    txt = txt.replace(/\[(.*?)\]/g, '<span class="line-exec">[$1]</span>');
-                    
-                    const esOfi = (oficialSel && oficialTur === oficialSel);
-                    if (esOfi && !primeraID) primeraID = idL;
-                    html += `<dt>${oficialTur}∴</dt><dd class="${esOfi ? 'resaltado' : ''}" id="${idL}">${txt}</dd>`;
+                    contenedor.innerHTML = `<span class="oficial-label">${of}:</span><span class="texto-ritual">${texto}</span>`;
+                    display.appendChild(contenedor);
                 });
             });
-            contenedor.innerHTML = `<dl style="counter-reset: line-counter;">${html}</dl>`;
-            if (primeraID) { const el = document.getElementById(primeraID); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+
+            if (oficialBusqueda !== "TODOS") {
+                const primero = display.querySelector('.paso-highlight');
+                if (primero) primero.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
         }
+
+        function cambioDeOficial() { cambioDeSeccion(); }
 
         function abrirVisor(url) {
             const overlay = document.createElement('div');
-            overlay.className = 'visor-overlay';
-            overlay.innerHTML = `<div class="visor-content"><button class="visor-close" onclick="this.parentElement.parentElement.remove()">✕</button><iframe src="${url}" style="width:100%; height:100%; border:none;"></iframe></div>`;
+            overlay.style = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:1000;display:flex;flex-direction:column;";
+            overlay.innerHTML = `
+                <div style="background:#5d4037;padding:10px;text-align:right;"><button onclick="this.parentElement.parentElement.remove()" style="color:white;background:none;border:none;font-size:20px;cursor:pointer;">✕ Cerrar</button></div>
+                <iframe src="${url}" style="flex-grow:1;border:none;"></iframe>`;
             document.body.appendChild(overlay);
         }
 
         function procesarInstancia(oficialPaso) {
             if (typeof tenidasXml === 'undefined' || !tenidasXml) return "";
-            
-            const tActiva = Array.from(tenidasXml.getElementsByTagName("tenida"))
-                .find(t => t.getAttribute("fecha").trim() === fechaTrabajo.trim());
-
+            const tActiva = Array.from(tenidasXml.getElementsByTagName("tenida")).find(t => t.getAttribute("fecha").trim() === fechaTrabajo.trim());
             if (!tActiva) return "";            
             
             const items = Array.from(tActiva.getElementsByTagName("item"));
@@ -240,6 +226,8 @@
             
             return contenido ? `<div class="instancia-botones">${contenido}</div>` : "";
         }
+
+        window.onload = cargarDatos;
     </script>
 </body>
 </html>
