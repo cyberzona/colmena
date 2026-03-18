@@ -23,8 +23,7 @@
         dd::before { content: counter(line-counter); position: absolute; left: -40px; color: #5d4037; font-size: 1.0em; font-weight: 800; width: 30px; text-align: right; }
         .resaltado { background: rgba(180, 255, 100, 0.4) !important; border-left: 5px solid #2e7d32 !important; }
         .apartado-header { font-weight: bold; color: #795548; font-size: 1.1rem; border-bottom: 2px solid #d7ccc8; text-align: right; margin-top: 20px; margin-bottom: 10px; text-transform: uppercase; }
-        .nav-link-container { display: block; margin: 12px 0; }
-        .btn-ritual { border: 1px solid #7a5a00; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-size: 0.85em; font-weight: bold; background: #A87C00 !important; color: #ffffff !important; text-decoration: none; display: inline-flex; align-items: center; }
+        .btn-ritual { border: 1px solid #7a5a00; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-size: 0.85em; font-weight: bold; background: #A87C00 !important; color: #ffffff !important; display: inline-flex; align-items: center; margin: 5px 0; text-decoration: none; }
         .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; align-items: center; justify-content: center; }
         .visor-content { width: 95%; height: 90%; background: #fff; border-radius: 8px; overflow: hidden; position: relative; }
         .visor-close { position: absolute; top: 8px; right: 8px; background: #ff0000; color: #ffffff; border: 2px solid #ffffff; width: 32px; height: 32px; border-radius: 50%; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
@@ -54,81 +53,59 @@
         let xmlDoc, glosarioDoc, tenidasXml, ritualActivo;
         let numGradoActual = "1", fechaTrabajo = "";
         let seccionesVisibles = [];
-        let historialNavegacion = [];
 
-        // Función Global de Navegación
-       window.irA = function(codigo) {
-    if (codigo === 'VOLVER') {
-        window.history.back();
-        return;
-    }
+        window.onpopstate = function(event) {
+            if (event.state) {
+                numGradoActual = event.state.grado;
+                seccionesVisibles = event.state.visibilidad;
+                ejecutarCargaRitual(numGradoActual, event.state.seccion);
+                setTimeout(() => {
+                    if (event.state.anchor) {
+                        const el = document.getElementById(event.state.anchor);
+                        if (el) el.scrollIntoView({ behavior: 'instant', block: 'center' });
+                    } else {
+                        window.scrollTo(0, event.state.scroll);
+                    }
+                }, 150);
+            }
+        };
 
-    // 1. CAPTURA DE ORIGEN (Para poder regresar exacto después)
-    const pasoOrigen = window.event?.target.closest('dd')?.id;
-    const estadoAnterior = {
-        grado: numGradoActual,
-        seccion: document.getElementById("seccionFilter").value,
-        scroll: window.scrollY,
-        visibilidad: [...seccionesVisibles],
-        anchor: pasoOrigen
-    };
-    window.history.pushState(estadoAnterior, "");
+        window.irA = function(codigo) {
+            if (codigo === 'VOLVER') {
+                window.history.back();
+                return;
+            }
+            const origen = window.event?.target.closest('dd')?.id;
+            window.history.pushState({
+                grado: numGradoActual,
+                seccion: document.getElementById("seccionFilter").value,
+                scroll: window.scrollY,
+                visibilidad: [...seccionesVisibles],
+                anchor: origen
+            }, "");
 
-    // 2. DESCOMPOSICIÓN DEL CÓDIGO (Ej: "301")
-    const nuevoGrado = codigo.charAt(0); // Resultado: "3"
-    const nuevaSecId = parseInt(codigo.substring(1), 10).toString(); // "01" -> "1"
+            numGradoActual = codigo.charAt(0);
+            const targetIdStr = parseInt(codigo.substring(1), 10).toString();
+            seccionesVisibles = [targetIdStr];
+            ejecutarCargaRitual(numGradoActual, targetIdStr);
+            window.scrollTo(0, 0);
+        };
 
-    // 3. ACTUALIZACIÓN DE VARIABLES GLOBALES
-    numGradoActual = nuevoGrado;
-    seccionesVisibles = [nuevaSecId]; // Forzamos a que solo se vea la sección destino
-
-    // 4. CARGA Y RENDERIZADO
-    ejecutarCargaRitual(numGradoActual, nuevaSecId);
-    
-    // 5. SEGURO DE POSICIONAMIENTO
-    // Usamos un pequeño delay para que el navegador "dibuje" el ritual 
-    // y el scroll no se pierda.
-    setTimeout(() => {
-        window.scrollTo({ top: 0, behavior: 'instant' });
-    }, 50);
-};
-
-// Esta función debe asegurar que busca el ID correctamente
-function actualizarSelectorSecciones(idForzado) {
-    const sSel = document.getElementById("seccionFilter");
-    sSel.innerHTML = "";
-    
-    // Buscamos las secciones del NUEVO grado activo
-    const secciones = Array.from(ritualActivo.getElementsByTagName("seccion"));
-    
-    secciones.forEach(sec => {
-        const idXml = sec.getAttribute("id").toString();
-        // Solo añadimos al menú las secciones permitidas
-        if (seccionesVisibles.includes(idXml)) {
-            sSel.add(new Option(sec.getAttribute("titulo"), idXml));
-        }
-    });
-    
-    if (idForzado) sSel.value = idForzado;
-}
         async function inicializar() {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
                 fechaTrabajo = urlParams.get('fecha') || new Date().toISOString().split('T')[0]; 
                 numGradoActual = (urlParams.get('num') || "1").toString();
                 const secUrl = (urlParams.get('sec') || "1").toString();
-                
-                // Si la sección es mayor a 3, solo mostramos esa, si no, las básicas
                 seccionesVisibles = (parseInt(secUrl) > 3) ? [secUrl] : ["1", "2", "3"];
-                
                 await cargarDatos();
                 ejecutarCargaRitual(numGradoActual, secUrl);
-
+                window.history.replaceState({ grado: numGradoActual, seccion: secUrl, scroll: 0, visibilidad: [...seccionesVisibles] }, "");
                 if (urlParams.get('ofi')) {
                     document.getElementById("oficialFilter").value = urlParams.get('ofi');
                     renderizarLiturgia();
                 }
-            } catch (e) { console.error("Error inicializando:", e); }
+            } catch (e) { console.error(e); }
         }
 
         async function cargarDatos() {
@@ -158,8 +135,8 @@ function actualizarSelectorSecciones(idForzado) {
             const sSel = document.getElementById("seccionFilter");
             sSel.innerHTML = "";
             Array.from(ritualActivo.getElementsByTagName("seccion")).forEach(sec => {
-                const idXml = sec.getAttribute("id");
-                if (seccionesVisibles.includes(idXml.toString())) {
+                const idXml = sec.getAttribute("id").toString();
+                if (seccionesVisibles.includes(idXml)) {
                     sSel.add(new Option(sec.getAttribute("titulo"), idXml));
                 }
             });
@@ -168,17 +145,15 @@ function actualizarSelectorSecciones(idForzado) {
 
         function cambioDeSeccion() {
             const sId = document.getElementById("seccionFilter").value;
+            const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
             const oSel = document.getElementById("oficialFilter");
             const ofiPrevio = oSel.value;
-            const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
-            
             const oficialesSet = new Set();
             if (seccion) {
                 Array.from(seccion.getElementsByTagName("paso")).forEach(p => { 
                     if (p.getAttribute("oficial")) oficialesSet.add(p.getAttribute("oficial").trim()); 
                 });
             }
-            
             oSel.innerHTML = '<option value="">---</option>';
             Array.from(glosarioDoc.getElementsByTagName("item")).forEach(item => {
                 const sigla = item.getAttribute("sigla");
@@ -204,17 +179,25 @@ function actualizarSelectorSecciones(idForzado) {
                     const idL = `l-${sId}-${counter}`;
                     let txt = paso.getAttribute("texto") || paso.textContent || "";
                     
-                    // Procesar LINKS
+                    // REEMPLAZO DE LINKS CON TÍTULO AUTOMÁTICO
                     txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
-                        return `<span class="nav-link-container"><button class="btn-ritual" onclick="window.irA('${cod}')">${(desc || 'Ir').trim()} ➜</button></span>`;
+                        let textoBoton = desc;
+                        if (!textoBoton) {
+                            const g = cod.charAt(0);
+                            const sIdBusca = parseInt(cod.substring(1), 10).toString();
+                            const rRef = Array.from(xmlDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("grado") === g);
+                            if (rRef) {
+                                const sRef = Array.from(rRef.getElementsByTagName("seccion")).find(s => s.getAttribute("id") === sIdBusca);
+                                if (sRef) textoBoton = sRef.getAttribute("titulo");
+                            }
+                        }
+                        return `<button class="btn-ritual" onclick="window.irA('${cod}')">${(textoBoton || cod).trim()} ➜</button>`;
                     });
 
-                    // Procesar VOLVER
                     if (txt.includes("[[VOLVER]]")) {
-                        txt = txt.replace("[[VOLVER]]", `<span class="nav-link-container"><button class="btn-ritual" onclick="window.irA('VOLVER')">⬅ Regresar</button></span>`);
+                        txt = txt.replace("[[VOLVER]]", `<button class="btn-ritual" onclick="window.irA('VOLVER')">⬅ Regresar</button>`);
                     }
 
-                    // Procesar INSTANCIA
                     if (txt.includes("[[INSTANCIA]]")) {
                         txt = txt.replace("[[INSTANCIA]]", `<div class="instancia-botones">${procesarInstancia(oficialTur)}</div>`);
                     }
