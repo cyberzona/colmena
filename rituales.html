@@ -58,25 +58,34 @@
     <script>
         let xmlDoc, glosarioDoc, tenidasXml, ritualActivo;
         let numGradoActual = "1", fechaTrabajo = "";
-        let seccionesVisibles = new Set(["1", "2", "3"]); 
+        let seccionesVisibles = new Set();
 
-        // Función irA adaptada específicamente para el flujo de la V6
-        window.irA = function(id) {
-            const idStr = id.toString();
-            seccionesVisibles.add(idStr);
-            actualizarSelectorSecciones(idStr);
-            cambioDeSeccion();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.irA = function(codigo) {
+            try {
+                const targetIdStr = parseInt(codigo.substring(1), 10).toString();
+                if (parseInt(targetIdStr) <= 3) {
+                    seccionesVisibles = new Set([targetIdStr]);
+                } else {
+                    seccionesVisibles = new Set(["1", "2", "3"]);
+                }
+                actualizarSelectorSecciones(targetIdStr);
+                cambioDeSeccion();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (err) { console.error("Error en irA:", err); }
         };
 
         async function inicializar() {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
-                fechaTrabajo = urlParams.get('fecha') || new Date().toISOString().split('T')[0];
+                fechaTrabajo = urlParams.get('fecha') || "2026-03-16";
                 numGradoActual = (urlParams.get('num') || "1").toString();
                 const secUrl = (urlParams.get('sec') || "1").toString();
 
-                seccionesVisibles.add(secUrl);
+                if (parseInt(secUrl) > 3) {
+                    seccionesVisibles = new Set([secUrl]);
+                } else {
+                    seccionesVisibles = new Set(["1", "2", "3"]);
+                }
 
                 await cargarDatos();
                 ejecutarCargaRitual(numGradoActual, secUrl);
@@ -114,7 +123,6 @@
 
         function actualizarSelectorSecciones(idForzado) {
             const sSel = document.getElementById("seccionFilter");
-            const currentVal = idForzado || sSel.value;
             sSel.innerHTML = "";
             Array.from(ritualActivo.getElementsByTagName("seccion")).forEach(sec => {
                 const idXml = sec.getAttribute("id");
@@ -122,7 +130,7 @@
                     sSel.add(new Option(sec.getAttribute("titulo"), idXml));
                 }
             });
-            if (currentVal) sSel.value = currentVal;
+            if (idForzado) sSel.value = idForzado;
         }
 
         function cambioDeSeccion() {
@@ -163,9 +171,12 @@
                     const idL = `l-${sId}-${counter}`;
                     let txt = paso.getAttribute("texto") || paso.textContent || "";
                     
-                    // CORRECCIÓN: Procesar LINKS con una expresión regular más robusta
-                    txt = txt.replace(/\[\[LINK:(\d+):([^\]]+)\]\]/g, (match, id, label) => {
-                        return `<br><button class="btn-ritual" onclick="window.irA('${id}')">${label.trim()} ➜</button>`;
+                    txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
+                        const targetIdNum = parseInt(cod.substring(1), 10).toString();
+                        const secciones = Array.from(ritualActivo.getElementsByTagName("seccion"));
+                        const targetSec = secciones.find(s => s.getAttribute("id") === targetIdNum);
+                        const textoBoton = desc || (targetSec ? targetSec.getAttribute("titulo") : `Sección ${targetIdNum}`);
+                        return `<br><button class="btn-ritual" onclick="window.irA('${cod}')">${textoBoton.trim()} ➜</button>`;
                     });
 
                     if (txt.includes("[[INSTANCIA]]")) {
@@ -173,7 +184,7 @@
                     }
 
                     if (txt.includes("[[VOLVER]]")) {
-                        txt = txt.replace("[[VOLVER]]", `<br><button class="btn-ritual" onclick="window.irA('1')">⬅ Regresar al Flujo Principal</button>`);
+                        txt = txt.replace("[[VOLVER]]", `<br><button class="btn-ritual" onclick="window.irA('S001')">⬅ Regresar al Flujo Principal</button>`);
                     }
                     
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
@@ -185,10 +196,7 @@
                 });
             });
             contenedor.innerHTML = `<dl style="counter-reset: line-counter;">${html}</dl>`;
-            if (primeraID) { 
-                const el = document.getElementById(primeraID); 
-                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
-            }
+            if (primeraID) { const el = document.getElementById(primeraID); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
         }
 
         function abrirVisor(url) {
@@ -200,7 +208,10 @@
 
         function procesarInstancia(oficialPaso) {
             if (typeof tenidasXml === 'undefined' || !tenidasXml) return "";
-            const tActiva = Array.from(tenidasXml.getElementsByTagName("tenida")).find(t => t.getAttribute("fecha").trim() === fechaTrabajo.trim());
+            
+            const tActiva = Array.from(tenidasXml.getElementsByTagName("tenida"))
+                .find(t => t.getAttribute("fecha").trim() === fechaTrabajo.trim());
+
             if (!tActiva) return "";            
             
             const items = Array.from(tActiva.getElementsByTagName("item"));
