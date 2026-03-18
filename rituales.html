@@ -21,13 +21,13 @@
         .sigla-texto-azul { color: #0277bd; font-weight: bold; }
         .line-exec { font-style: italic; font-size: 0.95em; color: rgba(0, 0, 0, 0.4); font-weight: normal; margin-left: 3px; }
         dt { font-weight: bold; color: #5d4037; margin-top: 8px; }
-        dd { margin-left: 45px; border-left: 3px solid #d7ccc8; padding-left: 10px; padding-right: 10px; position: relative; margin-bottom: 4px; counter-increment: line-counter; text-align: justify; text-justify: inter-word; hyphens: auto; }
+        dd { margin-left: 45px; border-left: 3px solid #d7ccc8; padding-left: 10px; padding-right: 10px; position: relative; margin-bottom: 4px; counter-increment: line-counter; text-align: justify; }
         dd::before { content: counter(line-counter); position: absolute; left: -40px; color: #5d4037; font-size: 1.0em; font-weight: 800; width: 30px; text-align: right; }
         .resaltado { background: rgba(180, 255, 100, 0.4) !important; border-left: 5px solid #2e7d32 !important; }
         
         .apartado-header { font-weight: bold; color: #795548; font-size: 1.1rem; border-bottom: 2px solid #d7ccc8; text-align: right; margin-top: 20px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
         
-        .btn-ritual, .btn-instancia-exec { border: none; padding: 8px 18px; border-radius: 50px; cursor: pointer; font-size: 0.85em; margin: 4px 0; font-weight: bold; display: table !important; background: #A87C00 !important; color: #ffffff !important; text-decoration: none; text-align: center; width: auto !important; max-width: fit-content; box-sizing: border-box; }
+        .btn-ritual, .btn-instancia-exec { border: none; padding: 8px 18px; border-radius: 50px; cursor: pointer; font-size: 0.85em; margin: 4px 0; font-weight: bold; display: table !important; background: #A87C00 !important; color: #ffffff !important; text-decoration: none; text-align: center; width: auto !important; max-width: fit-content; }
         .instancia-botones { margin-top: 10px; display: flex; flex-direction: column; gap: 5px; }
         
         .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
@@ -58,34 +58,30 @@
     <script>
         let xmlDoc, glosarioDoc, tenidasXml, ritualActivo;
         let numGradoActual = "1", fechaTrabajo = "";
-        let seccionesVisibles = new Set();
+        let seccionesVisibles = new Set(["1", "2", "3"]);
 
-        window.irA = function(codigo) {
-            try {
-                const targetIdStr = parseInt(codigo.substring(1), 10).toString();
-                if (parseInt(targetIdStr) <= 3) {
-                    seccionesVisibles = new Set([targetIdStr]);
-                } else {
-                    seccionesVisibles = new Set(["1", "2", "3"]);
-                }
-                actualizarSelectorSecciones(targetIdStr);
-                cambioDeSeccion();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            } catch (err) { console.error("Error en irA:", err); }
+        window.irA = function(idOriginal) {
+            // Limpiamos el ID (por si viene S104 o solo 104)
+            const idLimpio = idOriginal.toString().replace(/\D/g, "");
+            const targetId = parseInt(idLimpio, 10).toString();
+            
+            // Agregamos a visibles para que aparezca en el menú
+            seccionesVisibles.add(targetId);
+            
+            // Actualizamos el selector y disparamos el cambio
+            actualizarSelectorSecciones(targetId);
+            cambioDeSeccion();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         };
 
         async function inicializar() {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
-                fechaTrabajo = urlParams.get('fecha') || "2026-03-16";
+                fechaTrabajo = urlParams.get('fecha') || new Date().toISOString().split('T')[0];
                 numGradoActual = (urlParams.get('num') || "1").toString();
                 const secUrl = (urlParams.get('sec') || "1").toString();
 
-                if (parseInt(secUrl) > 3) {
-                    seccionesVisibles = new Set([secUrl]);
-                } else {
-                    seccionesVisibles = new Set(["1", "2", "3"]);
-                }
+                seccionesVisibles.add(secUrl);
 
                 await cargarDatos();
                 ejecutarCargaRitual(numGradoActual, secUrl);
@@ -171,12 +167,9 @@
                     const idL = `l-${sId}-${counter}`;
                     let txt = paso.getAttribute("texto") || paso.textContent || "";
                     
-                    txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
-                        const targetIdNum = parseInt(cod.substring(1), 10).toString();
-                        const secciones = Array.from(ritualActivo.getElementsByTagName("seccion"));
-                        const targetSec = secciones.find(s => s.getAttribute("id") === targetIdNum);
-                        const textoBoton = desc || (targetSec ? targetSec.getAttribute("titulo") : `Sección ${targetIdNum}`);
-                        return `<br><button class="btn-ritual" onclick="window.irA('${cod}')">${textoBoton.trim()} ➜</button>`;
+                    // CORRECCIÓN: Regex robusta para detectar el código y el texto del link
+                    txt = txt.replace(/\[\[LINK:(\d+):(.*?)\]\]/g, (match, cod, label) => {
+                        return `<br><button class="btn-ritual" onclick="window.irA('${cod}')">${label.trim()} ➜</button>`;
                     });
 
                     if (txt.includes("[[INSTANCIA]]")) {
@@ -184,7 +177,7 @@
                     }
 
                     if (txt.includes("[[VOLVER]]")) {
-                        txt = txt.replace("[[VOLVER]]", `<br><button class="btn-ritual" onclick="window.irA('S001')">⬅ Regresar al Flujo Principal</button>`);
+                        txt = txt.replace("[[VOLVER]]", `<br><button class="btn-ritual" onclick="window.irA('1')">⬅ Regresar al Flujo Principal</button>`);
                     }
                     
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
@@ -208,10 +201,7 @@
 
         function procesarInstancia(oficialPaso) {
             if (typeof tenidasXml === 'undefined' || !tenidasXml) return "";
-            
-            const tActiva = Array.from(tenidasXml.getElementsByTagName("tenida"))
-                .find(t => t.getAttribute("fecha").trim() === fechaTrabajo.trim());
-
+            const tActiva = Array.from(tenidasXml.getElementsByTagName("tenida")).find(t => t.getAttribute("fecha").trim() === fechaTrabajo.trim());
             if (!tActiva) return "";            
             
             const items = Array.from(tActiva.getElementsByTagName("item"));
@@ -223,21 +213,13 @@
                 const url = item.getAttribute("url") || "";
                 const titulo = item.getAttribute("titulo") || "Trabajo";
 
-                if (acto === "balaustre") {
-                    if (oficialPaso === "Sec" && filtroSuperior === "Sec") {
-                        contenido += `<button class="btn-ritual" onclick="abrirVisor('${url}')">📜: ${titulo} ➜</button>`;
-                    }
-                } else if (acto === "elevacion") {
-                    if (oficialPaso !== "Sec") {
-                        const acc = url.indexOf('rituales.html') !== -1 
-                            ? `window.location.href='${url}&fecha=${fechaTrabajo}'` 
-                            : `abrirVisor('${url}')`;
-                        
-                        contenido += `<button class="btn-instancia-exec" onclick="${acc}">${titulo}</button>`;
-                    }
+                if (acto === "balaustre" && oficialPaso === "Sec" && filtroSuperior === "Sec") {
+                    contenido += `<button class="btn-ritual" onclick="abrirVisor('${url}')">📜: ${titulo} ➜</button>`;
+                } else if (acto === "elevacion" && oficialPaso !== "Sec") {
+                    const acc = url.indexOf('rituales.html') !== -1 ? `window.location.href='${url}&fecha=${fechaTrabajo}'` : `abrirVisor('${url}')`;
+                    contenido += `<button class="btn-instancia-exec" onclick="${acc}">${titulo}</button>`;
                 }
             });
-            
             return contenido ? `<div class="instancia-botones">${contenido}</div>` : "";
         }
     </script>
