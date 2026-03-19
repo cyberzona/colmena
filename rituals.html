@@ -57,11 +57,10 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 numLibroActual = (urlParams.get('num') || "1").toString();
                 const capUrl = (urlParams.get('cap') || "1").toString();
-                // Sincronizamos con los IDs del XML (1 al 7)
                 capitulosVisibles = (parseInt(capUrl) > 3) ? [capUrl] : ["1", "2", "3", "4", "5", "6", "7"];
                 await cargarDatos();
                 ejecutarCargaRitual(numLibroActual, capUrl);
-            } catch (e) { console.error("Error:", e); }
+            } catch (e) { console.error("Error inicializando:", e); }
         }
 
         async function cargarDatos() {
@@ -76,13 +75,13 @@
         }
 
         function ejecutarCargaRitual(libroNum, capituloID) {
-            // Cambio radical: Busca etiqueta <libro> y atributo 'numero'
             const libros = xmlDoc.getElementsByTagName("libro");
             libroActivo = Array.from(libros).find(b => b.getAttribute("numero") == libroNum.toString());
 
             if (libroActivo) {
-                // Busca atributo 'titulo'
-                document.getElementById("titulo-ritual-header").textContent = libroActivo.getAttribute("titulo") || "Ritual";
+                // SEGURIDAD: Intentar obtener titulo o title
+                const txtLibro = libroActivo.getAttribute("titulo") || libroActivo.getAttribute("title") || "Ritual";
+                document.getElementById("titulo-ritual-header").textContent = txtLibro;
                 actualizarSelectorCapitulos(capituloID);
                 cambioDeCapitulo();
             }
@@ -91,11 +90,12 @@
         function actualizarSelectorCapitulos(idForzado) {
             const cSel = document.getElementById("chapterFilter");
             cSel.innerHTML = "";
-            // Cambio radical: Busca etiquetas <capitulo>
             const caps = libroActivo.getElementsByTagName("capitulo");
+            
             Array.from(caps).forEach(chap => {
                 const idXml = chap.getAttribute("id");
-                const tituloBoton = chap.getAttribute("titulo"); // Atributo en español
+                // SEGURIDAD: Intentar obtener titulo o title
+                const tituloBoton = chap.getAttribute("titulo") || chap.getAttribute("title") || "Sin Título";
                 
                 if (capitulosVisibles.includes(idXml.toString())) {
                     cSel.add(new Option(tituloBoton, idXml));
@@ -112,7 +112,6 @@
             const oficialesSet = new Set();
             
             if (chapter) {
-                // Cambio radical: Busca <versiculo> y 'oficial'
                 Array.from(chapter.getElementsByTagName("versiculo")).forEach(v => { 
                     const ofi = v.getAttribute("oficial");
                     if (ofi) oficialesSet.add(ofi.trim()); 
@@ -138,18 +137,18 @@
 
             let html = "", verseCounter = 0, primeraID = null;
             
-            // Cambio radical: Busca <seccion>
             Array.from(chapter.getElementsByTagName("seccion")).forEach(sec => {
-                html += `<div class="section-header">${sec.getAttribute("titulo")}</div>`;
+                // SEGURIDAD: Obtener titulo de sección
+                const tituloSec = sec.getAttribute("titulo") || sec.getAttribute("title") || "";
+                html += `<div class="section-header">${tituloSec}</div>`;
                 
-                // Cambio radical: Busca <versiculo> y 'dialogo'
                 Array.from(sec.getElementsByTagName("versiculo")).forEach(v => {
                     verseCounter++;
                     const officerName = (v.getAttribute("oficial") || "Ofi").trim(); 
                     const idV = `v-${cId}-${verseCounter}`;
-                    let txt = v.getAttribute("dialogo") || "";
+                    // PRIORIDAD: dialogo, luego texto
+                    let txt = v.getAttribute("dialogo") || v.getAttribute("texto") || "";
                     
-                    // Procesar enlaces
                     txt = txt.replace(/\[\[LINK:(\d{3,5})(?::([^\]]+))?\]\]/g, (m, cod, desc) => {
                         let label = desc ? desc.trim() : "Ir ➜";
                         return `<span class="nav-link-container"><button class="btn-ritual" onclick="window.irA('${cod}')">${label}</button></span>`;
