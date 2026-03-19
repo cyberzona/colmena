@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ritual - Colmena No. 8</title>
     <style>
-        /* Estética base funcional */
+        /* ESTÉTICA SOBRIA (Basada en la versión del 19/03) */
         body { font-family: 'Palatino Linotype', serif; line-height: 1.2; color: #000; margin: 0; padding: 10px; background-color: #fff; }
         .header-container { display: flex; align-items: center; gap: 15px; margin-bottom: 10px; border-bottom: 1px solid #000; padding-bottom: 5px; }
+        .logia-info { display: flex; flex-direction: column; }
         .line-logia { font-size: 1.1rem; font-weight: bold; }
         #titulo-ritual-header { font-size: 1.0rem; text-transform: uppercase; font-weight: bold; }
         .logo-mini { width: 60px; height: auto; }
@@ -15,7 +16,7 @@
         #control-panel { background: #f0f0f0; padding: 8px; border: 1px solid #ccc; position: sticky; top: 0; z-index: 1000; display: flex; gap: 10px; margin-bottom: 15px; }
         .container-select { display: flex; flex-direction: column; }
         .select-label { font-size: 0.75rem; color: #333; font-weight: bold; text-transform: uppercase; }
-        select { padding: 6px; font-size: 0.95rem; border: 1px solid #999; background: #fff; }
+        select { padding: 6px; font-size: 0.95rem; border: 1px solid #999; background: #fff; font-family: inherit; }
 
         .apartado-header { background: #333; color: #fff; padding: 5px 10px; margin-top: 20px; font-weight: bold; text-transform: uppercase; }
         dt { font-weight: bold; margin-top: 15px; font-size: 1.1rem; }
@@ -26,7 +27,7 @@
         .line-exec { display: block; font-style: italic; color: #555; margin: 5px 0; padding-left: 10px; border-left: 2px solid #ddd; }
         .resaltado { background-color: #ffffcc !important; border-left: 4px solid #ffcc00 !important; }
 
-        .btn-ritual { background: #444; color: #fff; border: 1px solid #000; padding: 10px 20px; cursor: pointer; font-weight: bold; text-transform: uppercase; }
+        .btn-ritual { background: #444; color: #fff; border: 1px solid #000; padding: 10px 20px; cursor: pointer; font-weight: bold; text-transform: uppercase; margin: 10px 0; }
         .btn-instancia-exec { background: #666; color: white; border: 1px solid #333; padding: 8px 15px; margin: 5px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
@@ -62,6 +63,7 @@
         window.irA = function(codigo) {
             if (!ritualActivo) return;
 
+            // 1. LÓGICA DE VOLVER (Historial o Retorno de Grado)
             if (codigo === 'VOLVER') {
                 if (historialNavegacion.length > 0) {
                     const ant = historialNavegacion.pop();
@@ -70,7 +72,6 @@
                     cambioDeSeccion();
                     setTimeout(() => window.scrollTo(0, ant.scroll), 100);
                 } else {
-                    // Retorno entre grados usando parámetros de URL
                     const urlParams = new URLSearchParams(window.location.search);
                     const rNum = urlParams.get('retNum');
                     const rSec = urlParams.get('retSec');
@@ -81,16 +82,31 @@
                 return;
             }
 
-            const targetIdStr = codigo.replace(/\D/g, ''); 
+            // 2. LÓGICA DE COORDENADAS (Detección de Grado y Sección)
+            let gDestino = numGradoActual;
+            let sDestino = codigo.toString().replace(/\D/g, ''); 
 
+            // Si el código es de 3 dígitos (ej: 103), el primero es el Grado
+            if (codigo.toString().length === 3) {
+                gDestino = codigo.toString().substring(0, 1);
+                sDestino = parseInt(codigo.toString().substring(1), 10).toString();
+            }
+
+            // Si el Grado solicitado es diferente, cambiamos de archivo URL
+            if (gDestino !== numGradoActual && ["1", "2", "3"].includes(gDestino)) {
+                window.location.href = `rituales.html?num=${gDestino}&sec=${sDestino}&fecha=${fechaTrabajo}`;
+                return;
+            }
+
+            // 3. NAVEGACIÓN INTERNA (Mismo Libro)
             historialNavegacion.push({
                 seccion: document.getElementById("seccionFilter").value,
                 scroll: window.scrollY,
                 visibilidad: new Set(seccionesVisibles)
             });
 
-            seccionesVisibles.add(targetIdStr);
-            actualizarSelectorSecciones(targetIdStr);
+            seccionesVisibles.add(sDestino);
+            actualizarSelectorSecciones(sDestino);
             cambioDeSeccion();
             window.scrollTo(0, 0);
         };
@@ -111,7 +127,7 @@
                     const el = document.querySelector('.resaltado');
                     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }, 600);
-            } catch (e) { console.error(e); }
+            } catch (e) { console.error("Error Inicialización:", e); }
         }
 
         async function cargarDatos() {
@@ -178,16 +194,18 @@
             let html = "";
             Array.from(seccion.getElementsByTagName("apartado")).forEach(apa => {
                 html += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>`;
-                Array.from(apa.getElementsByTagName("paso")).forEach((paso, i) => {
+                Array.from(apa.getElementsByTagName("paso")).forEach((paso) => {
                     const ofi = (paso.getAttribute("oficial") || "Ofi").trim();
                     let txt = (paso.getAttribute("texto") || paso.textContent).trim();
 
+                    // CORRECCIÓN REGEX: Captura código y texto opcional (Ej: [[LINK:103:Clausura]])
                     txt = txt.replace(/\[\[LINK:(\d+)(?::([^\]]+))?\]\]/g, (m, cod, desc) => {
-                        return `<div style="text-align:center;margin:10px 0;"><button class="btn-ritual" onclick="irA('${cod}')">${desc || 'Ir'}</button></div>`;
+                        const label = desc ? desc : "Ir";
+                        return `<div style="text-align:center;"><button class="btn-ritual" onclick="irA('${cod}')">${label} ➜</button></div>`;
                     });
 
                     if (txt.includes("[[VOLVER]]")) {
-                        txt = txt.replace("[[VOLVER]]", `<div style="text-align:center;margin:10px 0;"><button class="btn-ritual" onclick="irA('VOLVER')">Regresar</button></div>`);
+                        txt = txt.replace("[[VOLVER]]", `<div style="text-align:center;"><button class="btn-ritual" onclick="irA('VOLVER')">⬅ Regresar</button></div>`);
                     }
 
                     if (txt.includes("[[INSTANCIA]]")) {
@@ -216,7 +234,7 @@
                 const titulo = item.getAttribute("titulo") || "Trabajo";
 
                 if (acto === "elevacion" && oficialPaso !== "Sec") {
-                    // Al saltar, guardamos el grado y sección de origen en la URL
+                    // PERSISTENCIA: Pasamos el Grado y Sección actual a la nueva página
                     const acc = `window.location.href='${url}&fecha=${fechaTrabajo}&retNum=${numGradoActual}&retSec=${sIdActual}'`;
                     contenido += `<button class="btn-instancia-exec" onclick="${acc}">${titulo}</button>`;
                 }
