@@ -58,11 +58,11 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 numLibroActual = (urlParams.get('num') || "1").toString();
                 const capUrl = (urlParams.get('cap') || "1").toString();
-                capitulosVisibles = (parseInt(capUrl) > 3) ? [capUrl] : ["1", "2", "3"];
+                capitulosVisibles = (parseInt(capUrl) > 3) ? [capUrl] : ["1", "2", "3", "4", "5", "6"];
                 
                 await cargarDatos();
                 ejecutarCargaRitual(numLibroActual, capUrl);
-            } catch (e) { console.error("Error:", e); }
+            } catch (e) { console.error("Error al cargar:", e); }
         }
 
         async function cargarDatos() {
@@ -105,7 +105,6 @@
             
             const oficialesSet = new Set();
             if (chapter) {
-                // CORRECCIÓN: Usar 'officer' para detectar oficiales
                 Array.from(chapter.getElementsByTagName("verse")).forEach(v => { 
                     if (v.getAttribute("officer")) oficialesSet.add(v.getAttribute("officer").trim()); 
                 });
@@ -132,16 +131,15 @@
                 html += `<div class="section-header">${sec.getAttribute("title")}</div>`;
                 Array.from(sec.getElementsByTagName("verse")).forEach(v => {
                     verseCounter++;
-                    // CORRECCIÓN: Leer atributo 'officer'
                     const officerName = (v.getAttribute("officer") || "Ofi").trim();
                     const idV = `v-${cId}-${verseCounter}`;
                     let txt = v.getAttribute("texto") || "";
                     
-                    // CORRECCIÓN DE BOTONES: Captura el título después de los :
+                    // PROCESAR LINKS: [[LINK:Codigo:Titulo]]
                     txt = txt.replace(/\[\[LINK:(\d{3,5})(?::([^\]]+))?\]\]/g, (m, cod, desc) => {
                         let fullCod = cod.length === 3 ? cod + "01" : cod;
-                        let tituloBoton = desc ? desc.trim() : "Ir ➜"; // Si no hay título, usa "Ir ➜"
-                        return `<span class="nav-link-container"><button class="btn-ritual" onclick="window.irA('${fullCod}')">${tituloBoton}</button></span>`;
+                        let labelBoton = desc ? desc.trim() : "Ir ➜"; // Aquí toma el texto tras los ":"
+                        return `<span class="nav-link-container"><button class="btn-ritual" onclick="window.irA('${fullCod}')">${labelBoton}</button></span>`;
                     });
 
                     if (txt.includes("[[VOLVER]]")) {
@@ -153,8 +151,8 @@
                     
                     const esOfi = (oficialSel && officerName === oficialSel);
                     if (esOfi && !primeraID) primeraID = idV;
-                    
-                    // CORRECCIÓN: Mostrar officerName en el DT
+
+                    // DT muestra el officerName (VM, 1V, etc)
                     html += `<dt>${officerName}∴</dt><dd class="${esOfi ? 'resaltado' : ''}" id="${idV}">${txt}</dd>`;
                 });
             });
