@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ritual - Colmena No. 8</title>
     <style>
-        /* ESTÉTICA SOBRIA VALIDADA */
+        /* ESTÉTICA ESTÁNDAR VALIDADA */
         body { font-family: 'Palatino Linotype', serif; line-height: 1.2; color: #000; margin: 0; padding: 10px; background-color: #fff; }
         .header-container { display: flex; align-items: center; gap: 15px; margin-bottom: 10px; border-bottom: 1px solid #000; padding-bottom: 5px; }
         .logia-info { display: flex; flex-direction: column; }
@@ -117,7 +117,7 @@
                 if (parseInt(secUrl) > 3) seccionesVisibles.add(secUrl);
                 ejecutarCargaRitual(numGradoActual, secUrl);
 
-                // Scroll al punto resaltado (especialmente para regresos de compañero)
+                // Posicionamiento tras carga (Crucial para el retorno de grado)
                 setTimeout(() => {
                     const el = document.querySelector('.resaltado');
                     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -222,7 +222,7 @@
             });
             document.getElementById('rituales-content').innerHTML = `<dl>${html}</dl>`;
 
-            // Posicionamiento automático del Oficial al filtrar
+            // POSICIONAMIENTO AUTOMÁTICO DE OFICIAL AL SELECCIONAR
             if (ofiSel) {
                 setTimeout(() => {
                     const primera = document.querySelector('.resaltado');
@@ -255,7 +255,10 @@
                 } 
                 else if (acto === "elevacion" && oficialPaso !== "Sec") {
                     const esOtroRitual = url.indexOf('rituales.html') !== -1;
+                    
+                    // CORRECCIÓN RETORNO: Guardamos la URL de origen completa con la sección actual
                     const urlOrigen = `${window.location.href.split('?')[0]}?num=${numGradoActual}&sec=${sIdActual}&fecha=${fechaTrabajo}`;
+                    
                     const accion = esOtroRitual 
                         ? `sessionStorage.setItem('puntoRetornoLogia', '${urlOrigen}'); window.location.href='${url}&fecha=${fechaTrabajo}'` 
                         : `abrirVisor('${url}')`;
