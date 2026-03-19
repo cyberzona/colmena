@@ -104,6 +104,7 @@
             const oficialesSet = new Set();
             if (chapter) {
                 Array.from(chapter.getElementsByTagName("verse")).forEach(v => { 
+                    // Se usa "officer" para sincronizar con liturgy.xml
                     if (v.getAttribute("officer")) oficialesSet.add(v.getAttribute("officer").trim()); 
                 });
             }
@@ -128,7 +129,10 @@
                 html += `<div class="section-header">${sec.getAttribute("title")}</div>`;
                 Array.from(sec.getElementsByTagName("verse")).forEach(v => {
                     verseCounter++;
-                    const officerName = (v.getAttribute("officer") || "Ofi").trim();
+                    
+                    // Aquí se extrae el valor del atributo "officer" del XML
+                    const officerName = (v.getAttribute("officer") || "Ofi").trim(); 
+                    
                     const idV = `v-${cId}-${verseCounter}`;
                     let txt = v.getAttribute("texto") || "";
                     
