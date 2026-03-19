@@ -76,6 +76,7 @@
         }
 
         function ejecutarCargaRitual(libroNum, capituloID) {
+            // Sincronizado con <book>
             bookActivo = Array.from(xmlDoc.getElementsByTagName("book")).find(b => b.getAttribute("number") === libroNum.toString());
             if (bookActivo) {
                 document.getElementById("titulo-ritual-header").textContent = bookActivo.getAttribute("title") || "Ritual";
@@ -87,6 +88,7 @@
         function actualizarSelectorCapitulos(idForzado) {
             const cSel = document.getElementById("chapterFilter");
             cSel.innerHTML = "";
+            // Sincronizado con <chapter>
             Array.from(bookActivo.getElementsByTagName("chapter")).forEach(chap => {
                 const idXml = chap.getAttribute("id");
                 if (capitulosVisibles.includes(idXml.toString())) {
@@ -103,6 +105,7 @@
             const chapter = Array.from(bookActivo.getElementsByTagName("chapter")).find(c => c.getAttribute("id") == cId);
             const oficialesSet = new Set();
             if (chapter) {
+                // Sincronizado con atributo 'officer'
                 Array.from(chapter.getElementsByTagName("verse")).forEach(v => { 
                     if (v.getAttribute("officer")) oficialesSet.add(v.getAttribute("officer").trim()); 
                 });
@@ -124,21 +127,21 @@
             if (!chapter) return;
 
             let html = "", verseCounter = 0, primeraID = null;
+            // Sincronizado con <section>
             Array.from(chapter.getElementsByTagName("section")).forEach(sec => {
                 html += `<div class="section-header">${sec.getAttribute("title")}</div>`;
+                // Sincronizado con <verse>
                 Array.from(sec.getElementsByTagName("verse")).forEach(v => {
                     verseCounter++;
-                    // LEER ATRIBUTO 'officer'
                     const officerName = (v.getAttribute("officer") || "Ofi").trim();
                     const idV = `v-${cId}-${verseCounter}`;
-                    // LEER ATRIBUTO 'texto'
+                    // Sincronizado con atributo 'texto'
                     let txt = v.getAttribute("texto") || "";
                     
                     // PROCESAR TITULOS EN BOTONES [[LINK:Codigo:Titulo]]
                     txt = txt.replace(/\[\[LINK:(\d{3,5})(?::([^\]]+))?\]\]/g, (m, cod, desc) => {
-                        let fullCod = cod.length === 3 ? cod + "01" : cod;
-                        let tituloBoton = desc ? desc.trim() : "Ir ➜"; // Aquí se extrae el título
-                        return `<span class="nav-link-container"><button class="btn-ritual" onclick="window.irA('${fullCod}')">${tituloBoton}</button></span>`;
+                        let label = desc ? desc.trim() : "Ir ➜";
+                        return `<span class="nav-link-container"><button class="btn-ritual" onclick="window.irA('${cod}')">${label}</button></span>`;
                     });
 
                     if (txt.includes("[[VOLVER]]")) {
@@ -151,7 +154,6 @@
                     const esOfi = (oficialSel && officerName === oficialSel);
                     if (esOfi && !primeraID) primeraID = idV;
                     
-                    // MOSTRAR EL OFFICER CORRECTO (VM, 1V, etc)
                     html += `<dt>${officerName}∴</dt><dd class="${esOfi ? 'resaltado' : ''}" id="${idV}">${txt}</dd>`;
                 });
             });
@@ -181,20 +183,9 @@
             });
             const g = codigo.charAt(0);
             const c = parseInt(codigo.substring(1, 3), 10).toString();
-            const v = parseInt(codigo.substring(3), 10).toString();
             numLibroActual = g;
             if (!capitulosVisibles.includes(c)) capitulosVisibles.push(c);
             ejecutarCargaRitual(numLibroActual, c);
-            if (v !== "0") {
-                setTimeout(() => {
-                    const el = document.getElementById(`v-${c}-${v}`);
-                    if (el) {
-                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        el.classList.add('resaltado');
-                        setTimeout(() => el.classList.remove('resaltado'), 2000);
-                    }
-                }, 400);
-            }
         };
     </script>
 </body>
