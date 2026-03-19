@@ -5,59 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ritual - Colmena No. 8</title>
     <style>
-        /* ESTÉTICA ESTÁNDAR RESTAURADA: Alto contraste, sin fondos de color, bordes rectos */
+        /* ESTÉTICA ESTÁNDAR VALIDADA */
         body { font-family: 'Palatino Linotype', serif; line-height: 1.2; color: #000; margin: 0; padding: 10px; background-color: #fff; }
-        
-        /* HEADER: Limpio, sin bordes de color */
         .header-container { display: flex; align-items: center; gap: 15px; margin-bottom: 10px; border-bottom: 1px solid #000; padding-bottom: 5px; }
         .logia-info { display: flex; flex-direction: column; }
         .line-logia { font-size: 1.1rem; color: #000; font-weight: bold; }
         #titulo-ritual-header { font-size: 1.0rem; color: #000; text-transform: uppercase; font-weight: bold; }
         .logo-mini { width: 60px; height: auto; }
         
-        /* PANEL DE CONTROL: Fondo gris muy claro, bordes rectos, sticky */
         #control-panel { 
             background: #f0f0f0; padding: 8px; border: 1px solid #ccc; 
-            position: sticky; top: 0; z-index: 1000; display: flex; gap: 10px; 
-            margin-bottom: 15px;
+            position: sticky; top: 0; z-index: 1000; display: flex; gap: 10px; margin-bottom: 15px;
         }
         .container-select { display: flex; flex-direction: column; }
         .select-label { font-size: 0.75rem; color: #333; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; }
-        
-        /* SELECTS: Rectos, sin bordes de color */
-        .select-seccion { width: 200px; padding: 6px; font-size: 0.95rem; border: 1px solid #999; background: #fff; color: #000; font-family: inherit; }
-        .select-oficiales { width: 100px; padding: 6px; font-size: 0.95rem; border: 1px solid #999; background: #fff; color: #000; font-family: inherit; }
+        .select-seccion { width: 200px; padding: 6px; font-size: 0.95rem; border: 1px solid #999; background: #fff; color: #000; }
+        .select-oficiales { width: 100px; padding: 6px; font-size: 0.95rem; border: 1px solid #999; background: #fff; color: #000; }
 
-        /* RITUAL CONTENT: Títulos negros, dd con borde gris */
         .apartado-header { background: #333; color: #fff; padding: 5px 10px; margin-top: 20px; font-weight: bold; text-transform: uppercase; font-size: 0.9rem; }
         dt { font-weight: bold; color: #000; margin-top: 15px; font-size: 1.1rem; }
         dd { margin-left: 50px; border-left: 2px solid #ccc; padding: 0 10px; position: relative; margin-bottom: 5px; counter-increment: line-counter; text-align: justify; }
         dd::before { content: counter(line-counter); position: absolute; left: -45px; color: #666; font-size: 0.8rem; font-weight: bold; width: 35px; text-align: right; top: 2px; }
         
-        /* TEXTO Y RESALTADO */
         .sigla-texto-azul { color: #0056b3; font-weight: bold; }
         .line-exec { display: block; font-style: italic; font-size: 0.95em; color: #555; margin: 5px 0; padding-left: 10px; border-left: 2px solid #ddd; }
-        
-        /* Resaltado estándar: Amarillo suave */
         .resaltado { background-color: #ffffcc !important; border-left: 4px solid #ffcc00 !important; }
 
-        /* BOTONES ESTÁNDAR: Fondo oscuro, texto blanco, RECTOS, sin sombras */
         .nav-link-container { display: block; margin: 15px 0; text-align: center; }
         .btn-ritual { 
             background: #444 !important; color: #fff !important; border: 1px solid #000; padding: 10px 20px; 
-            cursor: pointer; font-weight: bold; font-family: inherit; font-size: 0.95rem; 
-            text-transform: uppercase; letter-spacing: 1px;
+            cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 0.85rem;
         }
-        .btn-ritual:hover { background: #000 !important; }
-
-        /* Botones de instancia: Gris oscuro */
         .btn-instancia-exec { background: #666; color: white; border: 1px solid #333; padding: 8px 15px; margin: 5px; cursor: pointer; font-weight: bold; }
-        .btn-instancia-exec:hover { background: #333; }
 
-        /* VISOR: Estándar */
         .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; display: flex; align-items: center; justify-content: center; }
-        .visor-content { width: 90%; height: 85%; background: #fff; border: 2px solid #000; position: relative; overflow: hidden; }
-        .visor-close { position: absolute; top: 5px; right: 5px; background: #cc0000; color: white; border: none; padding: 8px 12px; cursor: pointer; z-index: 2100; font-weight: bold; }
+        .visor-content { width: 90%; height: 85%; background: #fff; border: 2px solid #000; position: relative; }
+        .visor-close { position: absolute; top: 5px; right: 5px; background: #cc0000; color: white; border: none; padding: 8px 12px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body onload="inicializar()">
@@ -89,16 +72,26 @@
         let seccionesVisibles = new Set(["1", "2", "3"]);
         let historialNavegacion = [];
 
-        // MOTOR DE NAVEGACIÓN (Mantenemos la lógica funcional)
+        // MOTOR DE NAVEGACIÓN CON MEMORIA ENTRE GRADOS (LIBROS)
         window.irA = function(codigo) {
             if (!ritualActivo) return;
+
             if (codigo === 'VOLVER') {
+                // 1. Intentar volver dentro del mismo archivo
                 if (historialNavegacion.length > 0) {
                     const ant = historialNavegacion.pop();
                     seccionesVisibles = ant.visibilidad;
                     actualizarSelectorSecciones(ant.seccion);
                     cambioDeSeccion();
                     setTimeout(() => window.scrollTo(0, ant.scroll), 150);
+                } 
+                // 2. Si no hay historial interno, volver al GRADO anterior
+                else {
+                    const retornoGrado = sessionStorage.getItem('puntoRetornoLogia');
+                    if (retornoGrado) {
+                        sessionStorage.removeItem('puntoRetornoLogia');
+                        window.location.href = retornoGrado;
+                    }
                 }
                 return;
             }
@@ -126,7 +119,7 @@
                 await cargarDatos();
                 if (parseInt(secUrl) > 3) seccionesVisibles.add(secUrl);
                 ejecutarCargaRitual(numGradoActual, secUrl);
-            } catch (e) { console.error("Error inicializando:", e); }
+            } catch (e) { console.error("Error:", e); }
         }
 
         async function cargarDatos() {
@@ -169,14 +162,12 @@
             const oSel = document.getElementById("oficialFilter");
             const ofiPrevio = oSel.value;
             const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
-            
             const ofis = new Set();
             if (seccion) {
                 Array.from(seccion.getElementsByTagName("paso")).forEach(p => {
                     if (p.getAttribute("oficial")) ofis.add(p.getAttribute("oficial").trim());
                 });
             }
-
             oSel.innerHTML = '<option value="">---</option>';
             Array.from(glosarioDoc.getElementsByTagName("item")).forEach(i => {
                 const sigla = i.getAttribute("sigla");
@@ -200,7 +191,6 @@
                     const idL = `l-${sId}-${i}`;
                     let txt = paso.getAttribute("texto") || paso.textContent;
 
-                    // Procesamiento de LINKS (con estética estándar)
                     txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (m, cod, desc) => {
                         const tId = parseInt(cod.substring(1), 10).toString();
                         const target = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") === tId);
@@ -224,8 +214,6 @@
                 });
             });
             document.getElementById('rituales-content').innerHTML = `<dl>${html}</dl>`;
-            
-            // Mantenemos el scroll funcional
             const primera = document.querySelector('.resaltado');
             if (primera) primera.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
@@ -251,9 +239,13 @@
 
                 if (acto === "balaustre" && oficialPaso === "Sec" && filtroSuperior === "Sec") {
                     contenido += `<button class="btn-ritual" onclick="abrirVisor('${url}')">📜: ${titulo} ➜</button>`;
-                } else if (acto === "elevacion" && oficialPaso !== "Sec") {
-                    const acc = url.indexOf('rituales.html') !== -1 ? `window.location.href='${url}&fecha=${fechaTrabajo}'` : `abrirVisor('${url}')`;
-                    contenido += `<button class="btn-instancia-exec" onclick="${acc}">${titulo}</button>`;
+                } 
+                else if (acto === "elevacion" && oficialPaso !== "Sec") {
+                    const esOtroRitual = url.indexOf('rituales.html') !== -1;
+                    const accion = esOtroRitual 
+                        ? `sessionStorage.setItem('puntoRetornoLogia', window.location.href); window.location.href='${url}&fecha=${fechaTrabajo}'` 
+                        : `abrirVisor('${url}')`;
+                    contenido += `<button class="btn-instancia-exec" onclick="${accion}">${titulo}</button>`;
                 }
             });
             return contenido;
