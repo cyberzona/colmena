@@ -1,67 +1,170 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <liturgia>
-    <book taller="Colmena No. 8" number="1" title="Aprendiz">    
-        
-        <chapter id="1" title="Apertura de Trabajos">
-            <section id="1" title="Del Espacio Físico">
-                <verse oficial="VM" texto="¡Silencio en Logia, Hermanos (HH∴)! [Golpe de Mallete]"/>
-                <verse oficial="VM" texto="Hermano Maestro de Ceremonias (MC∴), ¿los puestos están cubiertos?"/>
-                <verse oficial="MC" texto="Si, VM∴ los puestos están cubiertos y los HH∴ prontos a iniciar los trabajos."/>
-                <verse oficial="VM" texto="Hermano Primer Vigilante (1V∴): ¿Sois Masón?"/>
-                <verse oficial="1V" texto="Mis Hermanos (HH∴) me reconocen como tal, Venerable Maestro (VM∴)"/>
-                <verse oficial="VM" texto="¿Cuál es nuestro primer deber en Logia Hermano 1V∴?"/>
-                <verse oficial="1V" texto="Ver si el templo está cubierto de toda indiscreción profana"/>
-                <verse oficial="VM" texto="Aseguraos de ello, Hermano mío."/>
-                <verse oficial="1V" texto="Hermano Guarda Templo (GT∴) Cumplid con vuestro deber."/>
-                <verse oficial="GT" texto="Hermano 1V∴, el Temp∴ está a cubierto de toda indiscreción profana."/>
-                <verse oficial="1V" texto="VM∴ el Templo está cubierto de toda indiscreción. [Da tres golpes de Mallete]"/>
-            </section>
+    <libro numero="1" titulo="APRENDIZ" taller="Colmena No. 8">    
+        <capitulo id="1" titulo="APERTURA DE TRABAJOS">
+            <seccion id="1" titulo="DEL ESPACIO FÍSICO">
+                <versiculo oficial="VM" dialogo="¡Silencio en Logia, Hermanos (HH∴)! [Golpe de Mallete]"/>
+                <versiculo oficial="VM" dialogo="Hermano Maestro de Ceremonias (MC∴), ¿los puestos están cubiertos?"/>
+                <versiculo oficial="MC" dialogo="Si, VM∴ los puestos están cubiertos y los HH∴ prontos a iniciar los trabajos."/>
+                <versiculo oficial="VM" dialogo="Hermano Primer Vigilante (1V∴): ¿Sois Masón?"/>
+                <versiculo oficial="1V" dialogo="Mis Hermanos (HH∴) me reconocen como tal, Venerable Maestro (VM∴)"/>
+                <versiculo oficial="VM" dialogo="¿Cuál es nuestro primer deber en Logia Hermano 1V∴?"/>
+                <versiculo oficial="1V" dialogo="Ver si el templo está cubierto de toda indiscreción profana"/>
+                <versiculo oficial="VM" dialogo="Aseguraos de ello, Hermano mío."/>
+                <versiculo oficial="1V" dialogo="Hermano Guarda Templo (GT∴) Cumplid con vuestro deber. [El GT da tres golpes en la puerta y la respuesta externa es similar]"/>
+                <versiculo oficial="GT" dialogo="Hermano 1V∴, el Temp∴ está a cubierto de toda indiscreción profana."/>
+                <versiculo oficial="1V" dialogo="VM∴ el Templo está cubierto de toda indiscreción. [Da tres golpes de Mallete]"/>
+            </seccion>
 
+            <seccion id="2" titulo="DEL CUERPO DEL TALLER">
+                <versiculo oficial="VM" dialogo="¿Cuál es vuestro segundo deber en Hermano 1V∴?"/>
+                <versiculo oficial="1V" dialogo="Ver si todos los HH∴ que decoran ambas columnas son aprendices masones."/>
+                <versiculo oficial="VM" dialogo="Aseguraos de ello, QQHH∴ Primer y Segundo Vigilantes, de pie y al orden."/>
+                <versiculo oficial="2V" dialogo="Hermano 1V∴, los HH∴ que decoran mi Col∴ son masones y están de pie y al orden en el Grado de Aprendiz. [Da un golpe de mallete]"/>
+                <versiculo oficial="1V" dialogo="VM∴ los HH∴ que se cobijan bajo la bóveda de nuestro templo son Masones y se hallan al orden, prontos para cumplir con vuestro mandato, y dispuestos a laborar en la construcción del Templo moral erigido a la ciencia, a la virtud y al trabajo. [Da un golpe de Mallete]."/>
+                <versiculo oficial="VM" dialogo="HH∴ míos, también son masones los que decoran el Oriente, y están prontos para trabajar en la construcción del Templo Moral que la Masonería eleva en la gloria del perfeccionamiento humano, mediante la conquista de los sublimes principios de Libertad, Igualdad y Fraternidad [Da un golpe de Mallete seguido por los Vigilantes]."/>
+            </seccion>
 
-            <section id="2" title="Del Cuerpo del Taller">
-                <verse oficial="VM" texto="¿Cuál es vuestro segundo deber en Hermano 1V∴?"/>
-                <verse oficial="1V" texto="Ver si todos los HH∴ que decoran ambas columnas son aprendices masones."/>
-                <verse oficial="VM" texto="Aseguraos de ello, QQHH∴ Primer y Segundo Vigilantes, de pie y al orden."/>
-                <verse oficial="2V" texto="Hermano 1V∴, los HH∴ que decoran mi Col∴ son masones."/>
-                <verse oficial="1V" texto="VM∴ los HH∴ se hallan al orden, prontos para cumplir con vuestro mandato. [[LINK:10201]]"/>
-            </section>
-            
-        </chapter>
+            <seccion id="3" titulo="DEL PROPÓSITO DEL CUERPO">
+                <versiculo oficial="VM" dialogo="¿Para qué ocupáis ese puesto, Querido Hermano 2V∴?"/>
+                <versiculo oficial="2V" dialogo="Para mejor observar el Sol en su meridiano, mandar a los obreros al trabajo y llamarlos a la recreación, y de la recreación al trabajo a fin de que la humanidad coseche el resplandor de los principios Masónicos."/>
+                <versiculo oficial="VM" dialogo="Querido Hermano 2V∴ ¿Donde toma asiento nuestro Querido Hermano 1V∴?"/>
+                <versiculo oficial="2V" dialogo="Al occidente, VM∴."/>
+                <versiculo oficial="VM" dialogo="¿Para qué ocupáis ese puesto Querido Hermano 1V∴?"/>
+                <versiculo oficial="1V" dialogo="Así como el Sol se oculta en el Occidente al terminar el día, así se sienta aquí el 1V∴, para ayudar al VM∴, abrir y cerrar la Logia, pagar a los obreros y despedirlos contentos y satisfechos de sus actos en la obra de amor y justicia en que estamos empeñados."/>
+                <versiculo oficial="VM" dialogo="¿Donde toma asiento el VM∴ Querido Hermano 1V∴?"/>
+                <versiculo oficial="1V" dialogo="En el Oriente (Or∴)"/>
+                <versiculo oficial="VM" dialogo="¿Para qué H∴ mío."/>
+                <versiculo oficial="1V" dialogo="Así como el Sol nace en Oriente al iniciar su carrera y romper el día, de igual manera se alza allí el asiento del VM∴ para abrir la Logia, dirigirla en sus trabajos e iluminar con sus luces, esclareciendo así los sublimes preceptos de nuestra."/>
+            </seccion>
 
+            <seccion id="4" titulo="DE LA EXPERIENCIA DEL CUERPO">
+                <versiculo oficial="VM" dialogo="Querido Hermano 2V∴ ¿Qué edad tenéis como Apr∴ Mas∴?"/>
+                <versiculo oficial="2V" dialogo="Tres años, VM∴."/>
+                <versiculo oficial="VM" dialogo="¿A qué hora empiezan los trabajos de Apr∴ Mas∴, QH∴ 1V∴?"/>
+                <versiculo oficial="1V" dialogo="Al mediodía, VM∴."/>
+                <versiculo oficial="VM" dialogo="¿Qué hora es, Querido Hermano 2V∴?"/>
+                <versiculo oficial="2V" dialogo="La hora de empezar, mediodía en punto, VM∴."/>
+                <versiculo oficial="VM" dialogo="Siendo mediodía en punto, hora que los Apr∴ Mas∴ abren sus trabajos QQHH∴, 1V∴ y 2V∴, servios invitar a los obreros que decoran vuestras respectivas CCol∴, como yo a los de Oriente, para que se unan a vosotros y a mí a fin de abrir los trabajos de esta Augusta y RL∴"/>
+                <versiculo oficial="1V" dialogo="QH∴ 2V∴ y HH∴ que decoráis mi Col∴, por orden del VM∴, os invito que os unáis a él y a mí para abrir los trabajos de esta RL∴ en el grado de Apr∴ Mas∴."/>
+                <versiculo oficial="2V" dialogo="QQHH∴ de la Col∴ del Norte, por orden del VM∴ comunicada a mí por nuestro QH∴ 1V∴, que os unáis a él y a nosotros para abrir los trabajos de esta RL∴ en grado de Apr∴Mas∴. [Anunciado en mi Col∴, QH∴ 1V∴.]"/>
+                <versiculo oficial="1V" dialogo="Anunciado en ambas CCol∴, VM∴."/>
+            </seccion>
 
-        <chapter id="2" title="Desarrollo de Trabajos">        
-            <section id="1" title="Del Balaustre">
-                <verse oficial="VM" texto="QQHH∴, entramos ahora en el Desarrollo de Trabajos."/>
-                <verse oficial="VM" texto="QH∴ Secretario (Sec∴), servíos dar lectura del último memo."/>
-                <verse oficial="Sec" texto="[Lectura del Trazado] [[INSTANCIA]]"/>
-                <verse oficial="VM" texto="Pasemos a las proposiciones. [[LINK:10401]]"/>
-            </section>          
-        </chapter>            
-        <chapter id="3" title="Desarrollo de Trabajos">        
-            <section id="1" title="Del Balaustre">
-                <verse oficial="VM" texto="QQHH∴, entramos ahora en el Desarrollo de Trabajos."/>
-                <verse oficial="VM" texto="QH∴ Secretario (Sec∴), servíos dar lectura del último memo."/>
-                <verse oficial="Sec" texto="[Lectura del Trazado] [[INSTANCIA]]"/>
-                <verse oficial="VM" texto="Pasemos a las proposiciones. [[LINK:10401]]"/>
-            </section>          
-        </chapter>            
+            <seccion id="5" titulo="DE LA CONSAGRACIÓN DE LA LUZ">
+                <versiculo oficial="VM" dialogo="¡En pie y al Orden, Queridos Hermanos! [Da un golpe de Mallete seguido por los Vigilantes]."/>
+                <versiculo oficial="VM" dialogo="QH∴ Maestro de Ceremonias (MC∴) , prended las Luces. [MC∴ , abre el Libro de la Ley y coloca la Escuadra y sobre esta el Compás. Enciende la estrella del VM∴, dice: ¡Que la Sabiduría guie nuestros trabajos! ; MC∴, enciende la estrella del 1V∴ VM∴, dice: ¡Que la Fuerza los sostenga! ; MC∴, enciende la estrella del 2V∴, VM∴ dice: ¡Que la Belleza los adorne!]"/>
+                <versiculo oficial="VM" dialogo="Puesto que todo está justo y perfecto, y que es la hora que los AAp∴ MMas∴ empiezan sus trabajos, uníos a mí HH∴ míos, ALGDGADU∴ y en su nombre y bajo la obediencia de la Ser∴ Gran L∴ de Lengua Española para los EE. UU. de A., declaro abiertos los trabajos de esta RL∴ en el grado de Ap∴Mas∴ del REAA∴. Queda prohibido a todo H∴ pasar de una a otra Col∴ ni cubrir el Templo sin permiso de su respectivo V∴; ni tratar asuntos políticos ni religiosos, a mí HH∴ por el signo y Bat∴ de Grado. [Da tres golpes de Mall∴ que repiten los VV∴] Tomad asiento, QQHH∴. [[LINK:102]]"/>
+            </seccion>
+        </capitulo>
 
-        <chapter id="4" title="De las Proposiciones por Escrito">
-            <section id="1" title="Circulación del Saco">
-                <verse oficial="VM" texto="El Q∴H∴ M∴ de Cer∴ va a circular el saco de proposiciones."/>
-                <verse oficial="1V" texto="VM∴, el saco se encuentra entre CCol∴."/>
-                <verse oficial="VM" texto="Regresemos al desarrollo. [[VOLVER]]"/>
-            </section>
-        </chapter>
-    </book>
+        <capitulo id="2" titulo="DESARROLLO DE TRABAJOS">        
+            <seccion id="1" titulo="DEL BALAUSTRE DE LA SESIÓN ANTERIOR">
+                <versiculo oficial="VM" dialogo="QQHH∴, habiéndose cumplido con las formalidades de la apertura, entramos ahora en el Desarrollo de Trabajos."/>
+                <versiculo oficial="VM" dialogo="QH∴ Secretario (Sec∴), servíos dar lectura del último Trazado de este Taller."/>
+                <versiculo oficial="Sec" dialogo="[QH∴ Sec∴ procede con la lectura.] [[INSTANCIA]]"/>
+                <versiculo oficial="1V" dialogo="Reina el silencio en ambas CCol∴, VM∴."/>
+                <versiculo oficial="VM" dialogo="QQHH∴ 1V∴ y 2V∴, anunciad en vuestras respectivas columnas que el memo está en discusión. Si algún hermano desea hacer una observación, tiene la palabra"/>
+                <versiculo oficial="1V" dialogo="QH∴ 2V∴, HH∴ de la Col∴ del Norte, el trazado de la sesión anterior está en discusión por orden del VM∴."/>
+                <versiculo oficial="2V" dialogo="HH∴ de la Col∴ del Sur, el trazado está en discusión. La palabra es vuestra."/>
+                <versiculo oficial="VM" dialogo="Habiendo agotado los asuntos administrativos del Desarrollo de Trabajos, pasemos ahora a la instrucción del Grado.."/>       
+                <versiculo oficial="VM" dialogo="QQHH∴ 1V∴ y 2V∴, anunciad en vuestras respectivas CCol∴ que se dará lectura a la Plancha de los últimos trabajos."/>
+                <versiculo oficial="VM" dialogo="QQHH∴ 1V∴ y 2V∴, anunciad en vuestras respectivas CCol∴, como yo lo hago en Ort∴ que está en consideración la plancha trazada por nuestro QH∴ Sec∴, en tal sentido, si algún H∴ desea hacer uso de la palabra podéis concedérsela."/>
+                <versiculo oficial="2V" dialogo="Reina el silencio en mi Columna Hermano 1V∴."/>
+                <versiculo oficial="1V" dialogo="Reina el silencio en ambas CCol∴, VM∴."/>
+                <versiculo oficial="VM" dialogo="QH∴ OF∴ ¿Queréis darnos vuestras conclusiones respecto a la plancha trazada por nuestro H∴ Sec∴ de nuestros últimos trabajos? [El H∴Ora∴ da las conclusiones]"/>
+                <versiculo oficial="VM" dialogo="Después de las conclusiones del H∴ Ora∴, los HH∴ que estén de acuerdo se servirán de hacer la señal de aprobación al primer golpe de Mall∴. [Con golpe de Mallete.] "/>
+                <versiculo oficial="VM" dialogo="¡Hermanos míos! El Taller ha ordenado nuestro primer tiempo; ahora, para que el espíritu se manifieste en nueva forma, vamos a cubrir los trabajos de este Grado y proceder a . [Con golpe de Mallete.] [[LINK:103]] [[LINK:104]] [[LINK:105]] [[INSTANCIA]]"/>
+            </seccion>          
+        </capitulo>            
 
+        <capitulo id="3" titulo="CLAUSURA DE TRABAJOS">
+             <seccion id="1" titulo="DEL TRONCO DE BENEFICENCIA">
+                <versiculo oficial="VM" dialogo="QQHH∴ 1V∴ y 2V∴ anunciad en vuestras CCol∴ que el H∴ Hos∴ va a circular en tronco de beneficencia."/>
+                <versiculo oficial="2V" dialogo="Anunciado en la Col∴ del Mediodía, H∴ 1V∴."/>
+                <versiculo oficial="1V" dialogo="Anunciado en ambas Ccol∴, VM∴."/>
+                <versiculo oficial="VM" dialogo="QH∴ Hos∴, cumplid con vuestro deber. [El H∴ Hos∴ se coloca entre Ccol∴.]."/>
+                <versiculo oficial="1V" dialogo="VM∴, el H∴ Hos∴ se encuentra entre Ccol∴ pronto a circular entre los HH∴."/>
+                <versiculo oficial="VM" dialogo="Ordenad que circule empezando por la derecha."/>
+                <versiculo oficial="1V" dialogo="QH∴ Hos∴, cumplid con vuestro deber. [El H∴ Hos∴ después de haber circulado se coloca entre Ccol∴.]"/>
+                <versiculo oficial="Hos" dialogo="QH∴ 1V∴, he cumplido vuestro mandato."/>
+                <versiculo oficial="1V" dialogo="VM∴, el tronco de beneficencia después de circular por los cuatro puntos cardinales del templo se encuentra nuevamente entre Ccol∴.."/>
+                <versiculo oficial="VM" dialogo="Ordenad que ocupe su puesto y nos de cuenta de su contenido."/>
+                <versiculo oficial="VM" dialogo="QH∴ OF∴, ¿Nos queréis dar las conclusiones de los trabajos de la Ten∴ de hoy?"/>
+                <versiculo oficial="OF" dialogo="[Da a conocer el resultado del Trazado]."/>
+                <versiculo oficial="VM" dialogo="En virtud de haber sido en un todo favorable las conclusiones del H∴ OF∴ a la labor realizada, vamos a proceder al cierre de los trabajos de esta RL∴."/>
+                <versiculo oficial="VM" dialogo="QH∴ 1V∴ podéis decirnos. ¿Cuáles son los caracteres distintivos que deben de adornar al verdadero Mas∴?"/>
+                <versiculo oficial="1V" dialogo="Ser virtuoso y amante con los HH∴ y tolerante con todos."/>
+                <versiculo oficial="VM" dialogo="QH∴ 2V∴ ¿Qué se deben los Masones entre sí?"/>
+                <versiculo oficial="2V" dialogo="Respeto mutuo y amor fraternal, VM∴."/>
+                <versiculo oficial="VM" dialogo="¿Cuál debe ser la conducta del Masón en el mundo profano, QH∴ 1V∴?"/>
+                <versiculo oficial="1V" dialogo="Enseñar con la práctica el ejercicio de las virtudes."/>
+            </seccion>    
+            <seccion id="2" titulo="DE LA VERIFICACIÓN DE LOS TRABAJOS">
+                <versiculo oficial="VM" dialogo="QH∴ 1V∴ ¿Qué edad tenéis como Ap∴Mas∴?"/>
+                <versiculo oficial="1V" dialogo="Tres años, VM∴."/>
+                <versiculo oficial="VM" dialogo="QH∴ 2V∴ ¿A qué hora cierran los trabajos los AAp∴ Mas∴?"/>
+                <versiculo oficial="2V" dialogo="Medianoche en punto, VM∴."/>
+                <versiculo oficial="VM" dialogo="¿Qué hora es, QH∴ 1V∴?"/>
+                <versiculo oficial="1V" dialogo="La hora de cerrar, medianoche en punto, VM∴."/>
+            </seccion>     
+            <seccion id="3" titulo="DEL CIERRE DE LOS TRABAJOS">    
+                <versiculo oficial="VM" dialogo="Puesto que es la hora en que los AAp∴ MMas∴ cierran sus trabajos, QQHH∴ 1V∴ y 2V∴, invitad a los obreros de vuestras respectivas CCol∴ como yo invito a los de Or∴ para que se unan a vosotros y a mí a fin de cerrar los trabajos de esta Aug∴ RL∴. [El VM∴ da tres golpes de Mall∴ que repiten los VV∴ y dice: de pie y al orden mis HH∴.]."/>
+                <versiculo oficial="2V" dialogo="Todo está justo y perfecto, VM∴."/>
+                <versiculo oficial="1V" dialogo="Reina completa armonía, VM∴ y estamos en condición de luchar por la emancipación Moral y Material de los seres humanos."/>
+                <versiculo oficial="VM" dialogo="Ya Hermanos míos: puesto que todo es justo y perfecto, y nos hallamos en condición de luchar para que el estandarte de la Justicia ondee desde la cúpula de nuestros Templos sobre toda la humanidad, acompañadme a clausurar las tareas de esta Respetable Logia. ALGDGADU∴, en su nombre y bajo la obediencia de la Ser∴ Gr∴ L∴ de Lengua Española para los EE. UU. de A., declaro cerrados los trabajos de este Taller por el día de hoy. ¡A mí, Hermanos, con el Signo y la Batería de Grado!"/>
+                <versiculo oficial="VM" dialogo="Queridos Hermanos, antes de partir: ¿Juráis guardar absoluto silencio sobre lo aquí visto y oído, incluso ante aquellos Hermanos que no asistieron a esta Tenida? Todos. ¡Lo juramos!"/>
+                <versiculo oficial="VM" dialogo="Si así lo hiciereis, que el GADU∴ os lo premie; si no, que Él os lo demande. H∴ MC∴ servíos cerrar el Ara. Hermanos míos, retirémonos en paz y fraternidad."/>
+                <versiculo oficial="MC" dialogo="[Apaga la estrella de 2V∴ , Apaga la estrella del 1V∴ y Apaga la estrella del VM∴ Retira la Escuadra y el Compás, y cierra el Libro de la Ley]"/>
+            </seccion>
+        </capitulo>
 
-    <book taller="Colmena No. 8" number="2" title="Compañero">
-        <chapter id="1" title="Instrucción del Grado">
-            <section id="1" title="Simbolismo">
-                <verse oficial="VM" texto="La Piedra Bruta ha sido labrada."/>
-                <verse oficial="VM" texto="Es cuanto, VM∴. [[VOLVER]]"/>
-            </section>
-        </chapter>
-    </book>
+        <capitulo id="4" titulo="DE LAS PROPOSICIONES POR ESCRITO">
+            <seccion id="1" titulo="DE LAS PROPOSICIONES POR ESCRITO">
+                <versiculo oficial="VM" dialogo="QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ como yo lo hago en el Or∴ que nuestro Q∴H∴ M∴ de Cer∴ va a circular el saco de proposiciones. [El MC∴ cumple con su deber y se coloca entre CCol∴.]"/>
+                <versiculo oficial="1V" dialogo="VM∴, el saco de proposiciones se encuentra entre CCol∴ para circular."/>
+                <versiculo oficial="VM" dialogo="Ordenad que circule empezando por mi derecha."/>
+                <versiculo oficial="1V" dialogo="He cumplido con mi deber."/>
+                <versiculo oficial="1V" dialogo="VM∴, el saco de proposiciones, después de haber circulado por los cuatro puntos cardinales, se halla nuevamente entre CCol∴."/>
+                <versiculo oficial="VM" dialogo="Ordenad que pase a Or∴ y que en compañía del H∴ Ora∴ nos enteremos de su contenido."/>
+                <versiculo oficial="VM" dialogo="QQHH∴ 1V∴ y 2V∴ anunciad en vuestras respectivas CCol∴ que vamos a pasar a proposiciones verbales."/>
+                <versiculo oficial="2V" dialogo="H∴ 1V∴, reina el silencio en mi Col∴."/>
+                <versiculo oficial="1V" dialogo="VM∴, reina silencio en ambas CCol∴."/>
+                <versiculo oficial="VM" dialogo="QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ que voy a conceder la palabra en bien general de la orden y en particular de este Tall∴."/>
+                <versiculo oficial="2V" dialogo="QH∴ de la Col∴ del Norte, por orden del VM∴ y transmitida a mí por el QH∴ 1V∴ que está concedida la palabra en bien general de la orden y particular de este Tall∴."/>
+                <versiculo oficial="2V" dialogo="QH∴ 1V∴, reina el silencio en mi Col∴.."/>
+                <versiculo oficial="1V" dialogo="VM∴, reina silencio en ambas CCol∴. [[VOLVER]]"/>
+            </seccion>
+        </capitulo>    
+
+        <capitulo id="5" titulo="DE LOS ASUNTOS FAMILIARES">
+            <seccion id="1" titulo="DE LOS ASUNTOS FAMILIARES Y OTROS">
+                <versiculo oficial="VM" dialogo="QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ como yo lo hago en el Or∴ que vamos a tratar asuntos familiares."/>
+                <versiculo oficial="VM" dialogo="Invitad al MC∴.. a que dé un paseo al salón de pasos perdidos a ver si hay algún visitante. [[VOLVER]]"/>
+            </seccion>
+        </capitulo>
+
+        <capitulo id="6" titulo="INSTRUCCIÓN: SIMBOLISMO">
+            <seccion id="1" titulo="ESTUDIO PROFUNDO">
+                <versiculo oficial="Ora" dialogo="La Piedra Bruta representa el estado de imperfección..."/>
+                <versiculo oficial="Ora" dialogo="Es cuanto, VM∴. [[VOLVER]]"/>
+            </seccion>
+        </capitulo>
+
+        <capitulo id="7" titulo="LOGIA DE SAN JUAN">
+            <seccion id="1" titulo="ESTUDIO PROFUNDO">
+                <versiculo oficial="Ora" dialogo="La Piedra Bruta representa el estado de imperfección..."/>
+                <versiculo oficial="Ora" dialogo="Es cuanto, VM∴. [[VOLVER]]"/>
+            </seccion>
+        </capitulo>
+    </libro>
+
+    <libro numero="2" titulo="COMPAÑERO" taller="Colmena No. 8">
+        <capitulo id="1" titulo="LOGIA DE SAN JUAN">
+            <seccion id="1" titulo="ESTUDIO PROFUNDO">
+                <versiculo oficial="VM" dialogo="La Piedra Bruta representa el estado de imperfección..."/>
+                <versiculo oficial="VM" dialogo="Es cuanto, VM∴. [[VOLVER]]"/>
+            </seccion>
+        </capitulo>
+    </libro>
 </liturgia>
