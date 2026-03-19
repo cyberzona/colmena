@@ -62,7 +62,7 @@
                 
                 await cargarDatos();
                 ejecutarCargaRitual(numLibroActual, capUrl);
-            } catch (e) { console.error("Error al inicializar:", e); }
+            } catch (e) { console.error("Error:", e); }
         }
 
         async function cargarDatos() {
@@ -105,6 +105,7 @@
             
             const oficialesSet = new Set();
             if (chapter) {
+                // CORRECCIÓN: Usar 'officer' para detectar oficiales
                 Array.from(chapter.getElementsByTagName("verse")).forEach(v => { 
                     if (v.getAttribute("officer")) oficialesSet.add(v.getAttribute("officer").trim()); 
                 });
@@ -131,15 +132,16 @@
                 html += `<div class="section-header">${sec.getAttribute("title")}</div>`;
                 Array.from(sec.getElementsByTagName("verse")).forEach(v => {
                     verseCounter++;
-                    const officerTur = (v.getAttribute("officer") || "Ofi").trim();
+                    // CORRECCIÓN: Leer atributo 'officer'
+                    const officerName = (v.getAttribute("officer") || "Ofi").trim();
                     const idV = `v-${cId}-${verseCounter}`;
                     let txt = v.getAttribute("texto") || "";
                     
-                    // REGLA DE BOTONES: Procesa [[LINK:Codigo:Titulo]]
+                    // CORRECCIÓN DE BOTONES: Captura el título después de los :
                     txt = txt.replace(/\[\[LINK:(\d{3,5})(?::([^\]]+))?\]\]/g, (m, cod, desc) => {
                         let fullCod = cod.length === 3 ? cod + "01" : cod;
-                        let label = desc ? desc.trim() : "Ir";
-                        return `<span class="nav-link-container"><button class="btn-ritual" onclick="window.irA('${fullCod}')">${label} ➜</button></span>`;
+                        let tituloBoton = desc ? desc.trim() : "Ir ➜"; // Si no hay título, usa "Ir ➜"
+                        return `<span class="nav-link-container"><button class="btn-ritual" onclick="window.irA('${fullCod}')">${tituloBoton}</button></span>`;
                     });
 
                     if (txt.includes("[[VOLVER]]")) {
@@ -149,9 +151,11 @@
                     txt = txt.replace(/\[(.*?)\]/g, '<span class="line-exec">[$1]</span>');
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     
-                    const esOfi = (oficialSel && officerTur === oficialSel);
+                    const esOfi = (oficialSel && officerName === oficialSel);
                     if (esOfi && !primeraID) primeraID = idV;
-                    html += `<dt>${officerTur}∴</dt><dd class="${esOfi ? 'resaltado' : ''}" id="${idV}">${txt}</dd>`;
+                    
+                    // CORRECCIÓN: Mostrar officerName en el DT
+                    html += `<dt>${officerName}∴</dt><dd class="${esOfi ? 'resaltado' : ''}" id="${idV}">${txt}</dd>`;
                 });
             });
             contenedor.innerHTML = `<dl style="counter-reset: line-counter;">${html}</dl>`;
