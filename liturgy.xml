@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<liturgia>
+    <book taller="Colmena No. 8" number="1" title="Aprendiz">    
+        
+        <chapter id="1" title="Apertura de Trabajos">
+            <section id="1" title="Del Espacio Físico">
+                <verse oficial="VM" texto="¡Silencio en Logia, Hermanos (HH∴)! [Golpe de Mallete]"/>
+                <verse oficial="VM" texto="Hermano Maestro de Ceremonias (MC∴), ¿los puestos están cubiertos?"/>
+                <verse oficial="MC" texto="Si, VM∴ los puestos están cubiertos y los HH∴ prontos a iniciar los trabajos."/>
+                <verse oficial="VM" texto="Hermano Primer Vigilante (1V∴): ¿Sois Masón?"/>
+                <verse oficial="1V" texto="Mis Hermanos (HH∴) me reconocen como tal, Venerable Maestro (VM∴)"/>
+                <verse oficial="VM" texto="¿Cuál es nuestro primer deber en Logia Hermano 1V∴?"/>
+                <verse oficial="1V" texto="Ver si el templo está cubierto de toda indiscreción profana"/>
+                <verse oficial="VM" texto="Aseguraos de ello, Hermano mío."/>
+                <verse oficial="1V" texto="Hermano Guarda Templo (GT∴) Cumplid con vuestro deber."/>
+                <verse oficial="GT" texto="Hermano 1V∴, el Temp∴ está a cubierto de toda indiscreción profana."/>
+                <verse oficial="1V" texto="VM∴ el Templo está cubierto de toda indiscreción. [Da tres golpes de Mallete]"/>
+            </section>
+
+
+            <section id="2" title="Del Cuerpo del Taller">
+                <verse oficial="VM" texto="¿Cuál es vuestro segundo deber en Hermano 1V∴?"/>
+                <verse oficial="1V" texto="Ver si todos los HH∴ que decoran ambas columnas son aprendices masones."/>
+                <verse oficial="VM" texto="Aseguraos de ello, QQHH∴ Primer y Segundo Vigilantes, de pie y al orden."/>
+                <verse oficial="2V" texto="Hermano 1V∴, los HH∴ que decoran mi Col∴ son masones."/>
+                <verse oficial="1V" texto="VM∴ los HH∴ se hallan al orden, prontos para cumplir con vuestro mandato."/>
+            </section>
+        </chapter>
+
+
+        <chapter id="2" title="Desarrollo de Trabajos">        
+            <section id="1" title="Del Balaustre">
+                <verse oficial="VM" texto="QQHH∴, entramos ahora en el Desarrollo de Trabajos."/>
+                <verse oficial="VM" texto="QH∴ Secretario (Sec∴), servíos dar lectura del último memo."/>
+                <verse oficial="Sec" texto="[Lectura del Trazado] [[INSTANCIA]]"/>
+                <verse oficial="VM" texto="Pasemos a las proposiciones. [[LINK:10401]]"/>
+            </section>          
+        </chapter>            
+
+
+        <chapter id="4" title="De las Proposiciones por Escrito">
+            <section id="1" title="Circulación del Saco">
+                <verse oficial="VM" texto="El Q∴H∴ M∴ de Cer∴ va a circular el saco de proposiciones."/>
+                <verse oficial="1V" texto="VM∴, el saco se encuentra entre CCol∴."/>
+                <verse oficial="VM" texto="Regresemos al desarrollo. [[VOLVER]]"/>
+            </section>
+        </chapter>
+    </book>
+
+
+    <book taller="Colmena No. 8" number="2" title="Compañero">
+        <chapter id="1" title="Instrucción del Grado">
+            <section id="1" title="Simbolismo">
+                <verse oficial="VM" texto="La Piedra Bruta ha sido labrada."/>
+                <verse oficial="VM" texto="Es cuanto, VM∴. [[VOLVER]]"/>
+            </section>
+        </chapter>
+    </book>
+</liturgia>
