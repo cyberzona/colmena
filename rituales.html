@@ -24,9 +24,9 @@
         .line-exec { display: block; font-style: italic; font-size: 0.9em; color: rgba(0, 0, 0, 0.5); margin: 8px 0; padding-left: 8px; border-left: 2px solid #d7ccc8; }
         .resaltado { background: rgba(180, 255, 100, 0.4) !important; border-left: 5px solid #2e7d32 !important; }
         .nav-link-container { display: block; margin: 15px 0; text-align: center; }
-        .btn-ritual { background: #A87C00 !important; color: #fff !important; border: none; padding: 12px 24px; border-radius: 50px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn-ritual { background: #A87C00 !important; color: #fff !important; border: none; padding: 12px 24px; border-radius: 50px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1); font-family: inherit; }
         .btn-instancia-exec { background: #5d4037; color: white; border: none; padding: 10px 15px; border-radius: 5px; margin: 5px; cursor: pointer; font-weight: bold; }
-        .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; align-items: center; justify-content: center; }
+        .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .visor-content { width: 95%; height: 90%; background: #fff; border-radius: 8px; position: relative; overflow: hidden; }
         .visor-close { position: absolute; top: 10px; right: 10px; background: #ff5252; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; z-index: 2100; }
     </style>
@@ -57,7 +57,7 @@
     <script>
         let xmlDoc, glosarioDoc, tenidasXml, ritualActivo;
         let numGradoActual = "1", fechaTrabajo = "";
-        let seccionesVisibles = new Set(["1", "2", "3"]);
+        let seccionesVisibles = new Set(["1", "2", "3"]); // PUNTO 2: Siempre se mantienen las 3 primeras
         let historialNavegacion = [];
 
         window.irA = function(codigo) {
@@ -80,7 +80,7 @@
                 visibilidad: new Set(seccionesVisibles)
             });
 
-            // Agregamos la nueva sección a las visibles para que aparezca en la lista
+            // PUNTO 2: Se añade la nueva sección sin borrar las anteriores
             seccionesVisibles.add(targetIdStr);
             actualizarSelectorSecciones(targetIdStr);
             cambioDeSeccion();
@@ -97,7 +97,7 @@
                 await cargarDatos();
                 if (parseInt(secUrl) > 3) seccionesVisibles.add(secUrl);
                 ejecutarCargaRitual(numGradoActual, secUrl);
-            } catch (e) { console.error("Error:", e); }
+            } catch (e) { console.error("Error inicializando:", e); }
         }
 
         async function cargarDatos() {
@@ -128,7 +128,7 @@
             sSel.innerHTML = "";
             Array.from(ritualActivo.getElementsByTagName("seccion")).forEach(sec => {
                 const id = sec.getAttribute("id");
-                // Mantenemos siempre visibles 1, 2 y 3, además de las activadas por LINK
+                // PUNTO 2: Lógica de persistencia de las tres primeras secciones
                 if (id === "1" || id === "2" || id === "3" || seccionesVisibles.has(id)) {
                     sSel.add(new Option(sec.getAttribute("titulo"), id));
                 }
@@ -141,12 +141,14 @@
             const oSel = document.getElementById("oficialFilter");
             const ofiPrevio = oSel.value;
             const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
+            
             const ofis = new Set();
             if (seccion) {
                 Array.from(seccion.getElementsByTagName("paso")).forEach(p => {
                     if (p.getAttribute("oficial")) ofis.add(p.getAttribute("oficial").trim());
                 });
             }
+
             oSel.innerHTML = '<option value="">---</option>';
             Array.from(glosarioDoc.getElementsByTagName("item")).forEach(i => {
                 const sigla = i.getAttribute("sigla");
@@ -181,6 +183,7 @@
                         txt = txt.replace("[[VOLVER]]", `<span class="nav-link-container"><button class="btn-ritual" onclick="irA('VOLVER')">⬅ Regresar</button></span>`);
                     }
 
+                    // PUNTO 3: Inyección del oficial para activar INSTANCIA
                     if (txt.includes("[[INSTANCIA]]")) {
                         txt = txt.replace("[[INSTANCIA]]", `<div class="instancia-botones">${procesarInstancia(ofi)}</div>`);
                     }
@@ -194,11 +197,9 @@
             });
             document.getElementById('rituales-content').innerHTML = `<dl>${html}</dl>`;
             
-            // CORRECCIÓN 1: Scroll al oficial seleccionado
-            const primerResaltado = document.querySelector('.resaltado');
-            if (primerResaltado) {
-                primerResaltado.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
+            // PUNTO 1: Mantener el scroll (ya resuelto anteriormente)
+            const primera = document.querySelector('.resaltado');
+            if (primera) primera.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
         function abrirVisor(url) {
@@ -220,6 +221,7 @@
                 const url = item.getAttribute("url") || "";
                 const titulo = item.getAttribute("titulo") || "Trabajo";
 
+                // PUNTO 3: Lógica corregida para mostrar botones según el oficial
                 if (acto === "balaustre" && oficialPaso === "Sec" && filtroSuperior === "Sec") {
                     contenido += `<button class="btn-ritual" onclick="abrirVisor('${url}')">📜: ${titulo} ➜</button>`;
                 } else if (acto === "elevacion" && oficialPaso !== "Sec") {
