@@ -117,8 +117,16 @@
                 if (parseInt(secUrl) > 3) seccionesVisibles.add(secUrl);
                 ejecutarCargaRitual(numGradoActual, secUrl);
 
-                // Posicionamiento tras carga (Crucial para el retorno de grado)
+                // Prioridad de Scroll: 1. Hash (#id), 2. Resaltado, 3. Top
                 setTimeout(() => {
+                    const hash = window.location.hash;
+                    if (hash) {
+                        const target = document.querySelector(hash);
+                        if (target) {
+                            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            return;
+                        }
+                    }
                     const el = document.querySelector('.resaltado');
                     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }, 800);
@@ -194,7 +202,6 @@
                     const idL = `l-${sId}-${i}`;
                     let txt = (paso.getAttribute("texto") || paso.textContent).trim();
 
-                    // REPARACIÓN TÍTULOS LINK
                     txt = txt.replace(/\[\[LINK:(\d+)(?::([^\]]+))?\]\]/g, (match, cod, titulo) => {
                         let label = titulo ? titulo.trim() : "";
                         if (!label) {
@@ -210,7 +217,7 @@
                     }
 
                     if (txt.includes("[[INSTANCIA]]")) {
-                        txt = txt.replace("[[INSTANCIA]]", `<div class="instancia-botones">${procesarInstancia(ofi, sId)}</div>`);
+                        txt = txt.replace("[[INSTANCIA]]", `<div class="instancia-botones">${procesarInstancia(ofi, sId, i)}</div>`);
                     }
 
                     txt = txt.replace(/\[(.*?)\]/g, '<span class="line-exec">[$1]</span>');
@@ -222,7 +229,6 @@
             });
             document.getElementById('rituales-content').innerHTML = `<dl>${html}</dl>`;
 
-            // POSICIONAMIENTO AUTOMÁTICO DE OFICIAL AL SELECCIONAR
             if (ofiSel) {
                 setTimeout(() => {
                     const primera = document.querySelector('.resaltado');
@@ -238,7 +244,7 @@
             document.body.appendChild(overlay);
         }
 
-        function procesarInstancia(oficialPaso, sIdActual) {
+        function procesarInstancia(oficialPaso, sIdActual, indexPaso) {
             if (!tenidasXml) return "";
             const tActiva = Array.from(tenidasXml.getElementsByTagName("tenida")).find(t => t.getAttribute("fecha").trim() === fechaTrabajo.trim());
             if (!tActiva) return "";            
@@ -256,8 +262,8 @@
                 else if (acto === "elevacion" && oficialPaso !== "Sec") {
                     const esOtroRitual = url.indexOf('rituales.html') !== -1;
                     
-                    // CORRECCIÓN RETORNO: Guardamos la URL de origen completa con la sección actual
-                    const urlOrigen = `${window.location.href.split('?')[0]}?num=${numGradoActual}&sec=${sIdActual}&fecha=${fechaTrabajo}`;
+                    // RETORNO QUIRÚRGICO: Incluimos el hash del ID del paso actual (#l-seccion-indice)
+                    const urlOrigen = `${window.location.href.split('?')[0]}?num=${numGradoActual}&sec=${sIdActual}&fecha=${fechaTrabajo}#l-${sIdActual}-${indexPaso}`;
                     
                     const accion = esOtroRitual 
                         ? `sessionStorage.setItem('puntoRetornoLogia', '${urlOrigen}'); window.location.href='${url}&fecha=${fechaTrabajo}'` 
