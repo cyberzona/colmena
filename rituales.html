@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ritual - Colmena No. 8</title>
     <style>
-        /* ESTÉTICA SOBRIA VALIDADA (19/03) */
+        /* ESTÉTICA SOBRIA VALIDADA */
         body { font-family: 'Palatino Linotype', serif; line-height: 1.2; color: #000; margin: 0; padding: 10px; background-color: #fff; }
         .header-container { display: flex; align-items: center; gap: 15px; margin-bottom: 10px; border-bottom: 1px solid #000; padding-bottom: 5px; }
         .logia-info { display: flex; flex-direction: column; }
@@ -24,7 +24,7 @@
 
         .apartado-header { background: #333; color: #fff; padding: 5px 10px; margin-top: 20px; font-weight: bold; text-transform: uppercase; font-size: 0.9rem; }
         dt { font-weight: bold; color: #000; margin-top: 15px; font-size: 1.1rem; }
-        dd { margin-left: 50px; border-left: 2px solid #ccc; padding: 0; padding-left: 10px; position: relative; margin-bottom: 5px; counter-increment: line-counter; text-align: justify; }
+        dd { margin-left: 50px; border-left: 2px solid #ccc; padding-left: 10px; position: relative; margin-bottom: 5px; counter-increment: line-counter; text-align: justify; }
         dd::before { content: counter(line-counter); position: absolute; left: -45px; color: #666; font-size: 0.8rem; font-weight: bold; width: 35px; text-align: right; top: 2px; }
         
         .sigla-texto-azul { color: #0056b3; font-weight: bold; }
@@ -92,7 +92,6 @@
                 return;
             }
 
-            // Detección de ID de sección para códigos internos
             const targetIdStr = codigo.length === 3 ? parseInt(codigo.substring(1), 10).toString() : codigo.replace(/\D/g, '');
 
             historialNavegacion.push({
@@ -118,10 +117,11 @@
                 if (parseInt(secUrl) > 3) seccionesVisibles.add(secUrl);
                 ejecutarCargaRitual(numGradoActual, secUrl);
 
+                // Scroll al punto resaltado (especialmente para regresos de compañero)
                 setTimeout(() => {
                     const el = document.querySelector('.resaltado');
                     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 600);
+                }, 800);
             } catch (e) { console.error("Error:", e); }
         }
 
@@ -194,7 +194,7 @@
                     const idL = `l-${sId}-${i}`;
                     let txt = (paso.getAttribute("texto") || paso.textContent).trim();
 
-                    // REPARACIÓN DEFINITIVA DE TÍTULOS EN LINK
+                    // REPARACIÓN TÍTULOS LINK
                     txt = txt.replace(/\[\[LINK:(\d+)(?::([^\]]+))?\]\]/g, (match, cod, titulo) => {
                         let label = titulo ? titulo.trim() : "";
                         if (!label) {
@@ -221,6 +221,14 @@
                 });
             });
             document.getElementById('rituales-content').innerHTML = `<dl>${html}</dl>`;
+
+            // Posicionamiento automático del Oficial al filtrar
+            if (ofiSel) {
+                setTimeout(() => {
+                    const primera = document.querySelector('.resaltado');
+                    if (primera) primera.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 100);
+            }
         }
 
         function abrirVisor(url) {
@@ -247,7 +255,6 @@
                 } 
                 else if (acto === "elevacion" && oficialPaso !== "Sec") {
                     const esOtroRitual = url.indexOf('rituales.html') !== -1;
-                    // RETORNO EXACTO: Guardamos la URL de origen completa con la sección
                     const urlOrigen = `${window.location.href.split('?')[0]}?num=${numGradoActual}&sec=${sIdActual}&fecha=${fechaTrabajo}`;
                     const accion = esOtroRitual 
                         ? `sessionStorage.setItem('puntoRetornoLogia', '${urlOrigen}'); window.location.href='${url}&fecha=${fechaTrabajo}'` 
