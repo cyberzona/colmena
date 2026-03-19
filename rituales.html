@@ -7,27 +7,38 @@
     <style>
         body { font-family: 'Palatino Linotype', serif; line-height: 1.2; color: #000; margin: 0; padding: 10px; background-color: #fff; }
         
-        /* BLOQUE DE IDENTIDAD (Desaparece al hacer scroll) */
-        .identity-header {
+        /* BLOQUE DE IDENTIDAD */
+        .identity-container {
             display: flex;
             align-items: center;
             gap: 15px;
             padding-bottom: 10px;
-            border-bottom: 1px solid #ccc;
             margin-bottom: 5px;
         }
-        .logo-mini { width: 50px; height: auto; }
+        .logo-mini { width: 55px; height: auto; }
         .logia-info { display: flex; flex-direction: column; }
-        .line-logia { font-size: 1.1rem; font-weight: bold; }
-        .line-rito { font-size: 0.8rem; text-transform: uppercase; color: #555; letter-spacing: 1px; }
+        .line-logia { font-size: 1.2rem; font-weight: bold; color: #000; }
+        .line-rito { font-size: 0.85rem; text-transform: uppercase; color: #444; font-weight: bold; }
 
-        /* PANEL DE CONTROL (Se queda fijo arriba) */
-        .fixed-header {
+        /* IDENTIFICADOR DE GRADO (Dinámico) */
+        #grado-actual-label {
+            display: block;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #b71c1c; /* Color distintivo para el grado */
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            border-left: 3px solid #b71c1c;
+            padding-left: 8px;
+        }
+
+        /* PANEL DE SELECCIÓN PERSISTENTE */
+        .sticky-controls {
             position: sticky;
             top: 0;
             background: #fff;
             z-index: 1000;
-            padding: 8px 0;
+            padding: 10px 0;
             border-bottom: 2px solid #000;
         }
 
@@ -38,70 +49,56 @@
         }
         
         .container-select { display: flex; flex-direction: column; }
-        .select-label { font-size: 0.65rem; color: #666; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; }
+        .select-label { font-size: 0.65rem; color: #666; font-weight: bold; text-transform: uppercase; margin-bottom: 3px; }
         
-        /* SECCIÓN: Destacada para orientación rápida */
         .container-seccion { flex: 2; }
         .select-seccion { 
             width: 100%; 
-            padding: 8px; 
+            padding: 10px; 
             font-size: 1.2rem; 
             font-weight: bold;
             border: 2px solid #000; 
-            border-radius: 6px;
-            background-color: #f9f9f9;
+            border-radius: 8px;
+            background-color: #fcfcfc;
         }
 
         .container-oficial { flex: 1; }
         .select-oficiales { 
             width: 100%; 
-            padding: 8px; 
+            padding: 10px; 
             font-size: 1rem; 
             border: 1px solid #999; 
-            border-radius: 6px;
+            border-radius: 8px;
         }
 
-        /* CONTENIDO LITÚRGICO */
-        .apartado-header { background: #333; color: #fff; padding: 5px 10px; margin-top: 20px; font-weight: bold; text-transform: uppercase; font-size: 0.85rem; border-radius: 4px; }
-        dt { font-weight: bold; color: #000; margin-top: 15px; font-size: 1.1rem; }
-        dd { margin-left: 45px; border-left: 2px solid #ccc; padding-left: 10px; position: relative; margin-bottom: 5px; counter-increment: line-counter; text-align: justify; }
-        dd::before { content: counter(line-counter); position: absolute; left: -40px; color: #888; font-size: 0.75rem; font-weight: bold; width: 30px; text-align: right; top: 3px; }
+        /* ESTILOS DE TEXTO */
+        #rituales-content { margin-top: 10px; }
+        .apartado-header { background: #333; color: #fff; padding: 6px 12px; margin-top: 25px; font-weight: bold; text-transform: uppercase; font-size: 0.9rem; border-radius: 4px; }
+        dt { font-weight: bold; color: #000; margin-top: 20px; font-size: 1.15rem; }
+        dd { margin-left: 45px; border-left: 2px solid #ddd; padding-left: 12px; position: relative; margin-bottom: 8px; counter-increment: line-counter; text-align: justify; }
+        dd::before { content: counter(line-counter); position: absolute; left: -40px; color: #888; font-size: 0.8rem; font-weight: bold; width: 30px; text-align: right; top: 2px; }
         
         .sigla-texto-azul { color: #0056b3; font-weight: bold; }
-        .line-exec { display: block; font-style: italic; font-size: 0.95em; color: #666; margin: 5px 0; padding-left: 10px; border-left: 2px solid #eee; }
-        .resaltado { background-color: #fffde7 !important; border-left: 4px solid #ffd600 !important; }
+        .line-exec { display: block; font-style: italic; font-size: 0.95em; color: #555; margin: 6px 0; padding-left: 10px; border-left: 2px solid #eee; }
+        .resaltado { background-color: #fff9c4 !important; border-left: 4px solid #fbc02d !important; }
 
-        /* BOTONES REDONDEADOS IZQUIERDA */
-        .nav-link-container { display: block; margin: 15px 0; text-align: left; }
-        .btn-ritual { 
-            background: #222 !important; color: #fff !important; 
-            border: none; padding: 10px 25px; 
-            cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 0.8rem; 
-            border-radius: 50px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-        .btn-instancia-exec { 
-            background: #666; color: white; border: none; padding: 8px 20px; 
-            margin: 5px 0; cursor: pointer; font-weight: bold; 
-            border-radius: 50px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        /* VISOR */
-        .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; display: flex; align-items: center; justify-content: center; }
-        .visor-content { width: 95%; height: 90%; background: #fff; border-radius: 8px; overflow: hidden; position: relative; }
-        .visor-close { position: absolute; top: 8px; right: 8px; background: #cc0000; color: white; border: none; width: 35px; height: 35px; cursor: pointer; border-radius: 50%; }
+        .nav-link-container { display: block; margin: 20px 0; text-align: left; }
+        .btn-ritual { background: #222 !important; color: #fff !important; border: none; padding: 12px 30px; cursor: pointer; font-weight: bold; text-transform: uppercase; border-radius: 50px; }
+        .btn-instancia-exec { background: #555; color: white; border: none; padding: 10px 25px; margin: 5px 0; cursor: pointer; font-weight: bold; border-radius: 50px; }
     </style>
 </head>
 <body onload="inicializar()">
 
-    <div class="identity-header">
+    <div class="identity-container">
         <img src="./images/logo-mini.png" alt="Logo" class="logo-mini">
         <div class="logia-info">
             <span class="line-logia">RLS∴ COLMENA # 8</span>
-            <span class="line-rito">A∴ y A∴ Rito Escocés Antiguo y Aceptado</span>
+            <span class="line-rito">Rito Escocés Antiguo y Aceptado</span>
         </div>
     </div>
 
-    <div class="fixed-header">
+    <div class="sticky-controls">
+        <span id="grado-actual-label">Cargando Ritual...</span>
         <div id="control-panel">
             <div class="container-select container-seccion">
                 <span class="select-label">Sección</span>
@@ -122,54 +119,22 @@
         let seccionesVisibles = new Set(["1", "2", "3"]);
         let historialNavegacion = [];
 
-        window.irA = function(codigo) {
-            if (!ritualActivo) return;
-            if (codigo === 'VOLVER') {
-                if (historialNavegacion.length > 0) {
-                    const ant = historialNavegacion.pop();
-                    seccionesVisibles = ant.visibilidad;
-                    actualizarSelectorSecciones(ant.seccion);
-                    cambioDeSeccion();
-                    setTimeout(() => window.scrollTo(0, ant.scroll), 150);
-                } else {
-                    const retornoGrado = sessionStorage.getItem('puntoRetornoLogia');
-                    if (retornoGrado) {
-                        sessionStorage.removeItem('puntoRetornoLogia');
-                        window.location.href = retornoGrado;
-                    }
-                }
-                return;
-            }
-            const targetIdStr = codigo.length === 3 ? parseInt(codigo.substring(1), 10).toString() : codigo.replace(/\D/g, '');
-            historialNavegacion.push({
-                seccion: document.getElementById("seccionFilter").value,
-                scroll: window.scrollY,
-                visibilidad: new Set(seccionesVisibles)
-            });
-            seccionesVisibles.add(targetIdStr);
-            actualizarSelectorSecciones(targetIdStr);
-            cambioDeSeccion();
-            window.scrollTo(0, 0);
-        };
-
         async function inicializar() {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
                 fechaTrabajo = urlParams.get('fecha') || new Date().toISOString().split('T')[0]; 
                 numGradoActual = (urlParams.get('num') || "1").toString();
-                const secUrl = (urlParams.get('sec') || "1").toString();
+                
+                // Actualizar la etiqueta del grado
+                const labelGrado = document.getElementById("grado-actual-label");
+                if(numGradoActual === "1") labelGrado.textContent = "Ritual de Aprendiz";
+                else if(numGradoActual === "2") labelGrado.textContent = "Ritual de Compañero";
+                else if(numGradoActual === "3") labelGrado.textContent = "Ritual de Maestro";
+
                 await cargarDatos();
+                const secUrl = (urlParams.get('sec') || "1").toString();
                 if (parseInt(secUrl) > 3) seccionesVisibles.add(secUrl);
                 ejecutarCargaRitual(numGradoActual, secUrl);
-                setTimeout(() => {
-                    const hash = window.location.hash;
-                    if (hash) {
-                        const target = document.querySelector(hash);
-                        if (target) { target.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
-                    }
-                    const el = document.querySelector('.resaltado');
-                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 800);
             } catch (e) { console.error("Error:", e); }
         }
 
@@ -239,16 +204,8 @@
                     const idL = `l-${sId}-${i}`;
                     let txt = (paso.getAttribute("texto") || paso.textContent).trim();
                     txt = txt.replace(/\[\[LINK:(\d+)(?::([^\]]+))?\]\]/g, (match, cod, titulo) => {
-                        let label = titulo ? titulo.trim() : "";
-                        if (!label) {
-                            const tId = cod.length === 3 ? parseInt(cod.substring(1), 10).toString() : cod;
-                            const targetSec = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") === tId);
-                            label = targetSec ? targetSec.getAttribute("titulo") : "Ir";
-                        }
-                        return `<div class="nav-link-container"><button class="btn-ritual" onclick="irA('${cod}')">${label} ➜</button></div>`;
+                        return `<div class="nav-link-container"><button class="btn-ritual" onclick="irA('${cod}')">${titulo || 'Ir'} ➜</button></div>`;
                     });
-                    if (txt.includes("[[VOLVER]]")) txt = txt.replace("[[VOLVER]]", `<div class="nav-link-container"><button class="btn-ritual" onclick="irA('VOLVER')">⬅ Regresar</button></div>`);
-                    if (txt.includes("[[INSTANCIA]]")) txt = txt.replace("[[INSTANCIA]]", `<div class="instancia-botones">${procesarInstancia(ofi, sId, i)}</div>`);
                     txt = txt.replace(/\[(.*?)\]/g, '<span class="line-exec">[$1]</span>');
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     const esOfi = ofiSel && ofi === ofiSel;
@@ -256,42 +213,16 @@
                 });
             });
             document.getElementById('rituales-content').innerHTML = `<dl>${html}</dl>`;
-            if (ofiSel) {
-                setTimeout(() => {
-                    const primera = document.querySelector('.resaltado');
-                    if (primera) primera.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 100);
-            }
         }
-
-        function abrirVisor(url) {
-            const overlay = document.createElement('div');
-            overlay.className = 'visor-overlay';
-            overlay.innerHTML = `<div class="visor-content"><button class="visor-close" onclick="this.parentElement.parentElement.remove()">✕</button><iframe src="${url}" style="width:100%; height:100%; border:none;"></iframe></div>`;
-            document.body.appendChild(overlay);
-        }
-
-        function procesarInstancia(oficialPaso, sIdActual, indexPaso) {
-            if (!tenidasXml) return "";
-            const tActiva = Array.from(tenidasXml.getElementsByTagName("tenida")).find(t => t.getAttribute("fecha").trim() === fechaTrabajo.trim());
-            if (!tActiva) return "";            
-            const filtroSuperior = document.getElementById("oficialFilter").value;
-            let contenido = "";
-            Array.from(tActiva.getElementsByTagName("item")).forEach(item => {
-                const acto = (item.getAttribute("acto") || "").trim();
-                const url = item.getAttribute("url") || "";
-                const titulo = item.getAttribute("titulo") || "Trabajo";
-                if (acto === "balaustre" && oficialPaso === "Sec" && filtroSuperior === "Sec") {
-                    contenido += `<button class="btn-ritual" onclick="abrirVisor('${url}')">📜: ${titulo} ➜</button>`;
-                } else if (acto === "elevacion" && oficialPaso !== "Sec") {
-                    const esOtroRitual = url.indexOf('rituales.html') !== -1;
-                    const urlOrigen = `${window.location.href.split('?')[0]}?num=${numGradoActual}&sec=${sIdActual}&fecha=${fechaTrabajo}#l-${sIdActual}-${indexPaso}`;
-                    const accion = esOtroRitual ? `sessionStorage.setItem('puntoRetornoLogia', '${urlOrigen}'); window.location.href='${url}&fecha=${fechaTrabajo}'` : `abrirVisor('${url}')`;
-                    contenido += `<button class="btn-instancia-exec" onclick="${accion}">${titulo}</button>`;
-                }
-            });
-            return contenido;
-        }
+        
+        // Función irA y resto de lógica necesaria...
+        window.irA = function(codigo) {
+            const targetIdStr = codigo.replace(/\D/g, '');
+            seccionesVisibles.add(targetIdStr);
+            actualizarSelectorSecciones(targetIdStr);
+            cambioDeSeccion();
+            window.scrollTo(0, 0);
+        };
     </script>
 </body>
 </html>
