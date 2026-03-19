@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -14,7 +14,7 @@
         #control-panel { background: #d7ccc8; padding: 10px; border-radius: 8px; border: 1px solid #a1887f; position: sticky; top: 0; z-index: 1000; display: flex; justify-content: flex-start; gap: 10px; }
         .container-select { display: flex; flex-direction: column; width: auto; }
         .select-label { font-size: 0.65rem; color: #4e342e; font-weight: 800; text-transform: uppercase; margin-bottom: 2px; }
-        .select-capitulo { width: 200px; padding: 8px; font-size: 0.95rem; border-radius: 4px; border: 1px solid #8d6e63; background: #fff; font-weight: bold; outline: none; }
+        .select-capitulo { width: 180px; padding: 8px; font-size: 0.95rem; border-radius: 4px; border: 1px solid #8d6e63; background: #fff; font-weight: bold; outline: none; }
         .select-oficiales { width: 90px; padding: 8px; font-size: 0.95rem; border-radius: 4px; border: 1px solid #8d6e63; background: #fff; font-weight: bold; outline: none; }
         .sigla-texto-azul { color: #0277bd; font-weight: bold; }
         .line-exec { display: block; font-style: italic; font-size: 0.9em; color: rgba(0, 0, 0, 0.5); margin: 8px 0; padding-left: 8px; border-left: 2px solid #d7ccc8; }
@@ -47,83 +47,34 @@
     </div>
     <div id="rituales-content"></div>
 
-
     <script>
-        let xmlDoc, glosarioDoc, tenidasXml, bookActivo;
-        let numLibroActual = "1", fechaTrabajo = "";
+        let xmlDoc, glosarioDoc, bookActivo;
+        let numLibroActual = "1";
         let capitulosVisibles = [];
         let historialNavegacion = [];
-
-
-        window.irA = function(codigo) {
-            if (codigo === 'VOLVER') {
-                if (historialNavegacion.length > 0) {
-                    const ant = historialNavegacion.pop();
-                    numLibroActual = ant.libro;
-                    capitulosVisibles = ant.visibilidad;
-                    ejecutarCargaRitual(numLibroActual, ant.capitulo);
-                    setTimeout(() => window.scrollTo(0, ant.scroll), 100);
-                }
-                return;
-            }
-
-
-            historialNavegacion.push({
-                libro: numLibroActual,
-                capitulo: document.getElementById("chapterFilter").value,
-                scroll: window.scrollY,
-                visibilidad: [...capitulosVisibles]
-            });
-
-
-            // Desglosar GSSVV (Ej: 10410 -> Libro 1, Capítulo 04, Versículo 10)
-            const g = codigo.charAt(0);
-            const c = parseInt(codigo.substring(1, 3), 10).toString();
-            const v = parseInt(codigo.substring(3), 10).toString();
-
-
-            numLibroActual = g;
-            capitulosVisibles = [c];
-            
-            ejecutarCargaRitual(numLibroActual, c);
-            
-            if (v !== "0") {
-                setTimeout(() => {
-                    const el = document.getElementById(`v-${c}-${v}`);
-                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 300);
-            }
-        };
-
 
         async function inicializar() {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
-                fechaTrabajo = urlParams.get('fecha') || new Date().toISOString().split('T')[0]; 
                 numLibroActual = (urlParams.get('num') || "1").toString();
                 const capUrl = (urlParams.get('cap') || "1").toString();
-                
                 capitulosVisibles = (parseInt(capUrl) > 3) ? [capUrl] : ["1", "2", "3"];
                 
                 await cargarDatos();
                 ejecutarCargaRitual(numLibroActual, capUrl);
-            } catch (e) { console.error("Error:", e); }
+            } catch (e) { console.error("Error al inicializar:", e); }
         }
-
 
         async function cargarDatos() {
             const v = new Date().getTime(); 
-            const [glosario, liturgia, tenidas] = await Promise.all([
+            const [glosario, liturgia] = await Promise.all([
                 fetch(`glosario.xml?v=${v}`).then(r => r.text()),
-                fetch(`liturgy.xml?v=${v}`).then(r => r.text()),
-                fetch(`tenidas.xml?v=${v}`).then(r => r.text()).catch(() => '<bitacora></bitacora>')
+                fetch(`liturgy.xml?v=${v}`).then(r => r.text())
             ]);
             const parser = new DOMParser();
             glosarioDoc = parser.parseFromString(glosario, "text/xml");
             xmlDoc = parser.parseFromString(liturgia, "text/xml");
-            tenidasXml = parser.parseFromString(tenidas, "text/xml");
         }
-
 
         function ejecutarCargaRitual(libroNum, capituloID) {
             bookActivo = Array.from(xmlDoc.getElementsByTagName("book")).find(b => b.getAttribute("number") === libroNum.toString());
@@ -133,7 +84,6 @@
                 cambioDeCapitulo();
             }
         }
-
 
         function actualizarSelectorCapitulos(idForzado) {
             const cSel = document.getElementById("chapterFilter");
@@ -147,17 +97,16 @@
             if (idForzado) cSel.value = idForzado;
         }
 
-
         function cambioDeCapitulo() {
             const cId = document.getElementById("chapterFilter").value;
             const oSel = document.getElementById("oficialFilter");
             const ofiPrevio = oSel.value;
-            const capitulo = Array.from(bookActivo.getElementsByTagName("chapter")).find(c => c.getAttribute("id") == cId);
+            const chapter = Array.from(bookActivo.getElementsByTagName("chapter")).find(c => c.getAttribute("id") == cId);
             
             const oficialesSet = new Set();
-            if (capitulo) {
-                Array.from(capitulo.getElementsByTagName("verse")).forEach(v => { 
-                    if (v.getAttribute("oficial")) oficialesSet.add(v.getAttribute("oficial").trim()); 
+            if (chapter) {
+                Array.from(chapter.getElementsByTagName("verse")).forEach(v => { 
+                    if (v.getAttribute("officer")) oficialesSet.add(v.getAttribute("officer").trim()); 
                 });
             }
             
@@ -170,30 +119,28 @@
             renderizarLiturgia();
         }
 
-
         function renderizarLiturgia() {
             const cId = document.getElementById("chapterFilter").value;
             const oficialSel = document.getElementById("oficialFilter").value; 
             const contenedor = document.getElementById('rituales-content');
-            const capitulo = Array.from(bookActivo.getElementsByTagName("chapter")).find(c => c.getAttribute("id") == cId);
-            if (!capitulo) return;
-
+            const chapter = Array.from(bookActivo.getElementsByTagName("chapter")).find(c => c.getAttribute("id") == cId);
+            if (!chapter) return;
 
             let html = "", verseCounter = 0, primeraID = null;
-            Array.from(capitulo.getElementsByTagName("section")).forEach(sec => {
+            Array.from(chapter.getElementsByTagName("section")).forEach(sec => {
                 html += `<div class="section-header">${sec.getAttribute("title")}</div>`;
                 Array.from(sec.getElementsByTagName("verse")).forEach(v => {
                     verseCounter++;
-                    const oficialTur = (v.getAttribute("oficial") || "Ofi").trim();
+                    const officerTur = (v.getAttribute("officer") || "Ofi").trim();
                     const idV = `v-${cId}-${verseCounter}`;
                     let txt = v.getAttribute("texto") || "";
                     
-                    // Procesar LINKS GSSVV
+                    // REGLA DE BOTONES: Procesa [[LINK:Codigo:Titulo]]
                     txt = txt.replace(/\[\[LINK:(\d{3,5})(?::([^\]]+))?\]\]/g, (m, cod, desc) => {
                         let fullCod = cod.length === 3 ? cod + "01" : cod;
-                        return `<span class="nav-link-container"><button class="btn-ritual" onclick="window.irA('${fullCod}')">${(desc || 'Ir').trim()} ➜</button></span>`;
+                        let label = desc ? desc.trim() : "Ir";
+                        return `<span class="nav-link-container"><button class="btn-ritual" onclick="window.irA('${fullCod}')">${label} ➜</button></span>`;
                     });
-
 
                     if (txt.includes("[[VOLVER]]")) {
                         txt = txt.replace("[[VOLVER]]", `<span class="nav-link-container"><button class="btn-ritual" onclick="window.irA('VOLVER')">⬅ Regresar</button></span>`);
@@ -202,17 +149,57 @@
                     txt = txt.replace(/\[(.*?)\]/g, '<span class="line-exec">[$1]</span>');
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     
-                    const esOfi = (oficialSel && oficialTur === oficialSel);
+                    const esOfi = (oficialSel && officerTur === oficialSel);
                     if (esOfi && !primeraID) primeraID = idV;
-                    html += `<dt>${oficialTur}∴</dt><dd class="${esOfi ? 'resaltado' : ''}" id="${idV}">${txt}</dd>`;
+                    html += `<dt>${officerTur}∴</dt><dd class="${esOfi ? 'resaltado' : ''}" id="${idV}">${txt}</dd>`;
                 });
             });
             contenedor.innerHTML = `<dl style="counter-reset: line-counter;">${html}</dl>`;
             if (primeraID) { 
                 const el = document.getElementById(primeraID); 
-                if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'center' }), 50);
+                if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
             }
         }
+
+        window.irA = function(codigo) {
+            if (codigo === 'VOLVER') {
+                if (historialNavegacion.length > 0) {
+                    const ant = historialNavegacion.pop();
+                    numLibroActual = ant.libro;
+                    capitulosVisibles = ant.visibilidad;
+                    ejecutarCargaRitual(numLibroActual, ant.capitulo);
+                    setTimeout(() => window.scrollTo(0, ant.scroll), 150);
+                }
+                return;
+            }
+
+            historialNavegacion.push({
+                libro: numLibroActual,
+                capitulo: document.getElementById("chapterFilter").value,
+                scroll: window.scrollY,
+                visibilidad: [...capitulosVisibles]
+            });
+
+            const g = codigo.charAt(0);
+            const c = parseInt(codigo.substring(1, 3), 10).toString();
+            const v = parseInt(codigo.substring(3), 10).toString();
+
+            numLibroActual = g;
+            if (!capitulosVisibles.includes(c)) capitulosVisibles.push(c);
+            
+            ejecutarCargaRitual(numLibroActual, c);
+            
+            if (v !== "0") {
+                setTimeout(() => {
+                    const el = document.getElementById(`v-${c}-${v}`);
+                    if (el) {
+                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        el.classList.add('resaltado');
+                        setTimeout(() => el.classList.remove('resaltado'), 2000);
+                    }
+                }, 400);
+            }
+        };
     </script>
 </body>
 </html>
