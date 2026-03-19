@@ -23,7 +23,8 @@
         dd::before { content: counter(line-counter); position: absolute; left: -40px; color: #5d4037; font-size: 1.0em; font-weight: 800; width: 30px; text-align: right; }
         .resaltado { background: rgba(180, 255, 100, 0.4) !important; border-left: 5px solid #2e7d32 !important; }
         .section-header { font-weight: bold; color: #795548; font-size: 1.1rem; border-bottom: 2px solid #d7ccc8; text-align: right; margin-top: 20px; margin-bottom: 10px; text-transform: uppercase; }
-        .btn-ritual { border: 1px solid #7a5a00; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-size: 0.85em; font-weight: bold; background: #A87C00 !important; color: #ffffff !important; text-decoration: none; display: inline-flex; align-items: center; margin: 5px 0; }
+        .btn-ritual { border: 1px solid #7a5a00; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-size: 0.85em; font-weight: bold; background: #A87C00 !important; color: #ffffff !important; text-decoration: none; display: inline-flex; align-items: center; margin: 5px 2px; }
+        .btn-instancia { background: #546e7a !important; border: 1px solid #263238; }
     </style>
 </head>
 <body onload="inicializar()">
@@ -47,9 +48,9 @@
     <div id="rituales-content"></div>
 
     <script>
-        let xmlDoc, glosarioDoc, libroActivo;
+        let xmlDoc, glosarioDoc, tenidasDoc, libroActivo;
         let numLibroActual = "1";
-        let capitulosVisibles = ["1", "2", "3"]; // RESTRICCIÓN: Solo los 3 primeros al inicio
+        let capitulosVisibles = ["1", "2", "3"]; 
         let historialNavegacion = [];
 
         async function inicializar() {
@@ -57,41 +58,33 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 numLibroActual = (urlParams.get('num') || "1").toString();
                 const capUrl = (urlParams.get('cap') || "1").toString();
-                
-                // Si venimos de un LINK externo a un cap > 3, lo agregamos a la lista permitida
                 if (parseInt(capUrl) > 3 && !capitulosVisibles.includes(capUrl)) {
                     capitulosVisibles.push(capUrl);
                 }
-
                 await cargarDatos();
                 ejecutarCargaRitual(numLibroActual, capUrl);
-            } catch (e) { console.error("Error inicializando:", e); }
+            } catch (e) { console.error("Error:", e); }
         }
 
         async function cargarDatos() {
             const v = new Date().getTime(); 
-            const [glosario, liturgia] = await Promise.all([
+            // Agregamos Tenidas.xml a la carga inicial
+            const [glosario, liturgia, tenidas] = await Promise.all([
                 fetch(`glosario.xml?v=${v}`).then(r => r.text()),
-                fetch(`liturgy.xml?v=${v}`).then(r => r.text())
+                fetch(`liturgy.xml?v=${v}`).then(r => r.text()),
+                fetch(`Tenidas.xml?v=${v}`).then(r => r.text()).catch(() => null)
             ]);
             const parser = new DOMParser();
             glosarioDoc = parser.parseFromString(glosario, "text/xml");
             xmlDoc = parser.parseFromString(liturgia, "text/xml");
+            if(tenidas) tenidasDoc = parser.parseFromString(tenidas, "text/xml");
         }
 
         function ejecutarCargaRitual(libroNum, capituloID) {
-            // Busca <libro> (nuevo) o <book> (viejo) para evitar errores de carga
-            const libros = xmlDoc.getElementsByTagName("libro").length > 0 ? 
-                           xmlDoc.getElementsByTagName("libro") : 
-                           xmlDoc.getElementsByTagName("book");
-
-            libroActivo = Array.from(libros).find(b => 
-                (b.getAttribute("numero") || b.getAttribute("number")) == libroNum.toString()
-            );
-
+            const libros = xmlDoc.getElementsByTagName("libro");
+            libroActivo = Array.from(libros).find(b => b.getAttribute("numero") == libroNum.toString());
             if (libroActivo) {
-                const txtLibro = libroActivo.getAttribute("titulo") || libroActivo.getAttribute("title") || "Ritual";
-                document.getElementById("titulo-ritual-header").textContent = txtLibro;
+                document.getElementById("titulo-ritual-header").textContent = libroActivo.getAttribute("titulo") || "Ritual";
                 actualizarSelectorCapitulos(capituloID);
                 cambioDeCapitulo();
             }
@@ -100,19 +93,12 @@
         function actualizarSelectorCapitulos(idForzado) {
             const cSel = document.getElementById("chapterFilter");
             cSel.innerHTML = "";
-            
-            // Busca <capitulo> o <chapter>
-            const caps = libroActivo.getElementsByTagName("capitulo").length > 0 ? 
-                         libroActivo.getElementsByTagName("capitulo") : 
-                         libroActivo.getElementsByTagName("chapter");
-            
+            const caps = libroActivo.getElementsByTagName("capitulo");
             Array.from(caps).forEach(chap => {
                 const idXml = chap.getAttribute("id");
-                const tituloBoton = chap.getAttribute("titulo") || chap.getAttribute("title") || "Sin Título";
-                
-                // Solo mostramos si está en la lista de permitidos (inicialmente 1, 2, 3)
+                const titulo = chap.getAttribute("titulo") || "Sin Título";
                 if (capitulosVisibles.includes(idXml.toString())) {
-                    cSel.add(new Option(tituloBoton, idXml));
+                    cSel.add(new Option(titulo, idXml));
                 }
             });
             if (idForzado) cSel.value = idForzado;
@@ -122,75 +108,65 @@
             const cId = document.getElementById("chapterFilter").value;
             const oSel = document.getElementById("oficialFilter");
             const ofiPrevio = oSel.value;
-            
-            const caps = libroActivo.getElementsByTagName("capitulo").length > 0 ? 
-                         libroActivo.getElementsByTagName("capitulo") : 
-                         libroActivo.getElementsByTagName("chapter");
-            
-            const chapter = Array.from(caps).find(c => c.getAttribute("id") == cId);
+            const chapter = Array.from(libroActivo.getElementsByTagName("capitulo")).find(c => c.getAttribute("id") == cId);
             const oficialesSet = new Set();
-            
             if (chapter) {
-                const versos = chapter.getElementsByTagName("versiculo").length > 0 ? 
-                               chapter.getElementsByTagName("versiculo") : 
-                               chapter.getElementsByTagName("verse");
-
-                Array.from(versos).forEach(v => { 
+                Array.from(chapter.getElementsByTagName("versiculo")).forEach(v => { 
                     const ofi = v.getAttribute("oficial");
                     if (ofi) oficialesSet.add(ofi.trim()); 
                 });
             }
-
             oSel.innerHTML = '<option value="">---</option>';
             Array.from(glosarioDoc.getElementsByTagName("item")).forEach(item => {
                 const sigla = item.getAttribute("sigla");
                 if (oficialesSet.has(sigla)) oSel.add(new Option(sigla + "∴", sigla));
             });
-            
             if (oficialesSet.has(ofiPrevio)) oSel.value = ofiPrevio;
             renderizarLiturgia();
         }
+
+        // Función para consultar Tenidas.xml
+        window.consultarInstancia = function() {
+            if (!tenidasDoc) {
+                alert("No se encontró el archivo Tenidas.xml");
+                return;
+            }
+            // Supongamos que buscamos el nodo <memo> de la tenida activa
+            const memoNode = tenidasDoc.getElementsByTagName("memo")[0];
+            const contenido = memoNode ? memoNode.textContent : "No hay información disponible.";
+            alert("Información de la Tenida:\n\n" + contenido);
+        };
 
         function renderizarLiturgia() {
             const cId = document.getElementById("chapterFilter").value;
             const oficialSel = document.getElementById("oficialFilter").value; 
             const contenedor = document.getElementById('rituales-content');
-            
-            const caps = libroActivo.getElementsByTagName("capitulo").length > 0 ? 
-                         libroActivo.getElementsByTagName("capitulo") : 
-                         libroActivo.getElementsByTagName("chapter");
-            
-            const chapter = Array.from(caps).find(c => c.getAttribute("id") == cId);
+            const chapter = Array.from(libroActivo.getElementsByTagName("capitulo")).find(c => c.getAttribute("id") == cId);
             if (!chapter) return;
 
             let html = "", verseCounter = 0, primeraID = null;
-            
-            const secciones = chapter.getElementsByTagName("seccion").length > 0 ? 
-                              chapter.getElementsByTagName("seccion") : 
-                              chapter.getElementsByTagName("section");
-
-            Array.from(secciones).forEach(sec => {
-                const tituloSec = sec.getAttribute("titulo") || sec.getAttribute("title") || "";
-                html += `<div class="section-header">${tituloSec}</div>`;
-                
-                const versos = sec.getElementsByTagName("versiculo").length > 0 ? 
-                               sec.getElementsByTagName("versiculo") : 
-                               sec.getElementsByTagName("verse");
-
-                Array.from(versos).forEach(v => {
+            Array.from(chapter.getElementsByTagName("seccion")).forEach(sec => {
+                html += `<div class="section-header">${sec.getAttribute("titulo") || ""}</div>`;
+                Array.from(sec.getElementsByTagName("versiculo")).forEach(v => {
                     verseCounter++;
                     const officerName = (v.getAttribute("oficial") || "Ofi").trim(); 
                     const idV = `v-${cId}-${verseCounter}`;
-                    let txt = v.getAttribute("dialogo") || v.getAttribute("texto") || "";
+                    let txt = v.getAttribute("dialogo") || "";
                     
-                    // REGLA: LINK:LCC (Libro + Capitulo de 2 digitos)
+                    // BOTONES LINK
                     txt = txt.replace(/\[\[LINK:(\d{3,5})(?::([^\]]+))?\]\]/g, (m, cod, desc) => {
                         let label = desc ? desc.trim() : "Ir ➜";
-                        return `<span class="nav-link-container"><button class="btn-ritual" onclick="window.irA('${cod}')">${label}</button></span>`;
+                        return `<button class="btn-ritual" onclick="window.irA('${cod}')">${label}</button>`;
                     });
 
+                    // BOTÓN VOLVER
                     if (txt.includes("[[VOLVER]]")) {
-                        txt = txt.replace("[[VOLVER]]", `<span class="nav-link-container"><button class="btn-ritual" onclick="window.irA('VOLVER')">⬅ Regresar</button></span>`);
+                        txt = txt.replace("[[VOLVER]]", `<button class="btn-ritual" onclick="window.irA('VOLVER')">⬅ Regresar</button>`);
+                    }
+
+                    // BOTÓN INSTANCIA (REVISANDO Tenidas.xml)
+                    if (txt.includes("[[INSTANCIA]]")) {
+                        txt = txt.replace("[[INSTANCIA]]", `<button class="btn-ritual btn-instancia" onclick="window.consultarInstancia()">📄 Consultar Memo</button>`);
                     }
                     
                     txt = txt.replace(/\[(.*?)\]/g, '<span class="line-exec">[$1]</span>');
@@ -198,13 +174,10 @@
                     
                     const esOfi = (oficialSel && officerName === oficialSel);
                     if (esOfi && !primeraID) primeraID = idV;
-                    
                     html += `<dt>${officerName}∴</dt><dd class="${esOfi ? 'resaltado' : ''}" id="${idV}">${txt}</dd>`;
                 });
             });
-            
             contenedor.innerHTML = `<dl style="counter-reset: line-counter;">${html}</dl>`;
-            
             if (primeraID) { 
                 const el = document.getElementById(primeraID); 
                 if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
@@ -222,25 +195,16 @@
                 }
                 return;
             }
-            
             historialNavegacion.push({
                 libro: numLibroActual,
                 capitulo: document.getElementById("chapterFilter").value,
                 scroll: window.scrollY,
                 visibilidad: [...capitulosVisibles]
             });
-
-            // Extraer Libro (1er digito) y Capitulo (siguientes)
             const g = codigo.charAt(0);
             const c = parseInt(codigo.substring(1, 3), 10).toString();
-            
             numLibroActual = g;
-            
-            // Al navegar vía LINK, permitimos ver ese capítulo específico aunque sea > 3
-            if (!capitulosVisibles.includes(c)) {
-                capitulosVisibles.push(c);
-            }
-            
+            if (!capitulosVisibles.includes(c)) capitulosVisibles.push(c);
             ejecutarCargaRitual(numLibroActual, c);
         };
     </script>
