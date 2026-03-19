@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ritual - Colmena No. 8</title>
     <style>
-        /* ESTÉTICA ESTÁNDAR VALIDADA */
+        /* ESTÉTICA SOBRIA VALIDADA (19/03) */
         body { font-family: 'Palatino Linotype', serif; line-height: 1.2; color: #000; margin: 0; padding: 10px; background-color: #fff; }
         .header-container { display: flex; align-items: center; gap: 15px; margin-bottom: 10px; border-bottom: 1px solid #000; padding-bottom: 5px; }
         .logia-info { display: flex; flex-direction: column; }
@@ -24,7 +24,7 @@
 
         .apartado-header { background: #333; color: #fff; padding: 5px 10px; margin-top: 20px; font-weight: bold; text-transform: uppercase; font-size: 0.9rem; }
         dt { font-weight: bold; color: #000; margin-top: 15px; font-size: 1.1rem; }
-        dd { margin-left: 50px; border-left: 2px solid #ccc; padding: 0 10px; position: relative; margin-bottom: 5px; counter-increment: line-counter; text-align: justify; }
+        dd { margin-left: 50px; border-left: 2px solid #ccc; padding: 0; padding-left: 10px; position: relative; margin-bottom: 5px; counter-increment: line-counter; text-align: justify; }
         dd::before { content: counter(line-counter); position: absolute; left: -45px; color: #666; font-size: 0.8rem; font-weight: bold; width: 35px; text-align: right; top: 2px; }
         
         .sigla-texto-azul { color: #0056b3; font-weight: bold; }
@@ -82,8 +82,7 @@
                     actualizarSelectorSecciones(ant.seccion);
                     cambioDeSeccion();
                     setTimeout(() => window.scrollTo(0, ant.scroll), 150);
-                } 
-                else {
+                } else {
                     const retornoGrado = sessionStorage.getItem('puntoRetornoLogia');
                     if (retornoGrado) {
                         sessionStorage.removeItem('puntoRetornoLogia');
@@ -93,7 +92,7 @@
                 return;
             }
 
-            // Lógica de detección de ID de sección para códigos de 3 dígitos
+            // Detección de ID de sección para códigos internos
             const targetIdStr = codigo.length === 3 ? parseInt(codigo.substring(1), 10).toString() : codigo.replace(/\D/g, '');
 
             historialNavegacion.push({
@@ -119,7 +118,6 @@
                 if (parseInt(secUrl) > 3) seccionesVisibles.add(secUrl);
                 ejecutarCargaRitual(numGradoActual, secUrl);
 
-                // Forzar scroll al punto de llamado al cargar
                 setTimeout(() => {
                     const el = document.querySelector('.resaltado');
                     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -196,16 +194,19 @@
                     const idL = `l-${sId}-${i}`;
                     let txt = (paso.getAttribute("texto") || paso.textContent).trim();
 
-                    // CORRECCIÓN REGEX: Captura título del link
-                    txt = txt.replace(/\[\[LINK:(\d+)(?::([^\]]+))?\]\]/g, (m, cod, desc) => {
-                        const targetId = parseInt(cod.substring(1), 10).toString();
-                        const targetSeccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") === targetId);
-                        const label = desc || (targetSeccion ? targetSeccion.getAttribute("titulo") : "Ir");
-                        return `<span class="nav-link-container"><button class="btn-ritual" onclick="irA('${cod}')">${label} ➜</button></span>`;
+                    // REPARACIÓN DEFINITIVA DE TÍTULOS EN LINK
+                    txt = txt.replace(/\[\[LINK:(\d+)(?::([^\]]+))?\]\]/g, (match, cod, titulo) => {
+                        let label = titulo ? titulo.trim() : "";
+                        if (!label) {
+                            const tId = cod.length === 3 ? parseInt(cod.substring(1), 10).toString() : cod;
+                            const targetSec = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") === tId);
+                            label = targetSec ? targetSec.getAttribute("titulo") : "Ir";
+                        }
+                        return `<div class="nav-link-container"><button class="btn-ritual" onclick="irA('${cod}')">${label} ➜</button></div>`;
                     });
 
                     if (txt.includes("[[VOLVER]]")) {
-                        txt = txt.replace("[[VOLVER]]", `<span class="nav-link-container"><button class="btn-ritual" onclick="irA('VOLVER')">⬅ Regresar</button></span>`);
+                        txt = txt.replace("[[VOLVER]]", `<div class="nav-link-container"><button class="btn-ritual" onclick="irA('VOLVER')">⬅ Regresar</button></div>`);
                     }
 
                     if (txt.includes("[[INSTANCIA]]")) {
@@ -246,10 +247,10 @@
                 } 
                 else if (acto === "elevacion" && oficialPaso !== "Sec") {
                     const esOtroRitual = url.indexOf('rituales.html') !== -1;
-                    // PERSISTENCIA: Agregamos la sección de origen (sIdActual) a la URL de retorno
-                    const urlConOrigen = `${window.location.href.split('?')[0]}?num=${numGradoActual}&sec=${sIdActual}&fecha=${fechaTrabajo}`;
+                    // RETORNO EXACTO: Guardamos la URL de origen completa con la sección
+                    const urlOrigen = `${window.location.href.split('?')[0]}?num=${numGradoActual}&sec=${sIdActual}&fecha=${fechaTrabajo}`;
                     const accion = esOtroRitual 
-                        ? `sessionStorage.setItem('puntoRetornoLogia', '${urlConOrigen}'); window.location.href='${url}&fecha=${fechaTrabajo}'` 
+                        ? `sessionStorage.setItem('puntoRetornoLogia', '${urlOrigen}'); window.location.href='${url}&fecha=${fechaTrabajo}'` 
                         : `abrirVisor('${url}')`;
                     contenido += `<button class="btn-instancia-exec" onclick="${accion}">${titulo}</button>`;
                 }
