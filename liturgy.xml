@@ -25,6 +25,7 @@
                 <verse oficial="2V" texto="Hermano 1V∴, los HH∴ que decoran mi Col∴ son masones."/>
                 <verse oficial="1V" texto="VM∴ los HH∴ se hallan al orden, prontos para cumplir con vuestro mandato."/>
             </section>
+            
         </chapter>
 
 
@@ -36,7 +37,14 @@
                 <verse oficial="VM" texto="Pasemos a las proposiciones. [[LINK:10401]]"/>
             </section>          
         </chapter>            
-
+        <chapter id="3" title="Desarrollo de Trabajos">        
+            <section id="1" title="Del Balaustre">
+                <verse oficial="VM" texto="QQHH∴, entramos ahora en el Desarrollo de Trabajos."/>
+                <verse oficial="VM" texto="QH∴ Secretario (Sec∴), servíos dar lectura del último memo."/>
+                <verse oficial="Sec" texto="[Lectura del Trazado] [[INSTANCIA]]"/>
+                <verse oficial="VM" texto="Pasemos a las proposiciones. [[LINK:10401]]"/>
+            </section>          
+        </chapter>            
 
         <chapter id="4" title="De las Proposiciones por Escrito">
             <section id="1" title="Circulación del Saco">
