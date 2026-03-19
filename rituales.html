@@ -189,17 +189,45 @@
 
         // Navegación interna (irA / Volver)
         window.irA = function(codigo) {
-            if (codigo === 'VOLVER') {
-                if (historialNavegacion.length > 0) {
-                    const anterior = historialNavegacion.pop();
-                    seccionesVisibles = anterior.visibilidad;
-                    actualizarSelectorSecciones(anterior.seccion);
-                    cambioDeSeccion();
-                }
-                return;
+    try {
+        // 1. Manejo del retorno (Volver)
+        if (codigo === 'VOLVER') {
+            if (historialNavegacion.length > 0) {
+                const anterior = historialNavegacion.pop();
+                seccionesVisibles = anterior.visibilidad;
+                actualizarSelectorSecciones(anterior.seccion);
+                cambioDeSeccion();
+                setTimeout(() => { window.scrollTo({ top: anterior.scroll, behavior: 'smooth' }); }, 150);
             }
-            // Lógica para saltar a secciones específicas del ritual...
-        };
+            return;
+        }
+
+        // 2. Obtención del ID y búsqueda del Título en el XML
+        const targetIdStr = parseInt(codigo.substring(1), 10).toString();
+        const secciones = Array.from(ritualActivo.getElementsByTagName("seccion"));
+        const seccionDestino = secciones.find(s => s.getAttribute("id") === targetIdStr);
+        
+        // Aquí es donde irA "consigue" el título
+        const nombreSeccion = seccionDestino ? seccionDestino.getAttribute("titulo") : "Sección " + targetIdStr;
+
+        // 3. Gestión del historial y visibilidad
+        historialNavegacion.push({
+            seccion: document.getElementById("seccionFilter").value,
+            scroll: window.scrollY,
+            visibilidad: new Set(seccionesVisibles),
+            nombre: nombreSeccion // Guardamos el nombre en el historial
+        });
+
+        // 4. Ejecución del cambio
+        seccionesVisibles = new Set([targetIdStr]);
+        actualizarSelectorSecciones(targetIdStr);
+        cambioDeSeccion(); // Esto disparará renderizarLiturgia
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    } catch (err) { 
+        console.error("Error en irA:", err); 
+    }
+};
 
         function abrirVisor(url) {
             const overlay = document.createElement('div');
