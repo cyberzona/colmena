@@ -76,7 +76,6 @@
         }
 
         function ejecutarCargaRitual(libroNum, capituloID) {
-            // Sincronizado con <book>
             bookActivo = Array.from(xmlDoc.getElementsByTagName("book")).find(b => b.getAttribute("number") === libroNum.toString());
             if (bookActivo) {
                 document.getElementById("titulo-ritual-header").textContent = bookActivo.getAttribute("title") || "Ritual";
@@ -88,7 +87,6 @@
         function actualizarSelectorCapitulos(idForzado) {
             const cSel = document.getElementById("chapterFilter");
             cSel.innerHTML = "";
-            // Sincronizado con <chapter>
             Array.from(bookActivo.getElementsByTagName("chapter")).forEach(chap => {
                 const idXml = chap.getAttribute("id");
                 if (capitulosVisibles.includes(idXml.toString())) {
@@ -105,7 +103,6 @@
             const chapter = Array.from(bookActivo.getElementsByTagName("chapter")).find(c => c.getAttribute("id") == cId);
             const oficialesSet = new Set();
             if (chapter) {
-                // Sincronizado con atributo 'officer'
                 Array.from(chapter.getElementsByTagName("verse")).forEach(v => { 
                     if (v.getAttribute("officer")) oficialesSet.add(v.getAttribute("officer").trim()); 
                 });
@@ -127,18 +124,14 @@
             if (!chapter) return;
 
             let html = "", verseCounter = 0, primeraID = null;
-            // Sincronizado con <section>
             Array.from(chapter.getElementsByTagName("section")).forEach(sec => {
                 html += `<div class="section-header">${sec.getAttribute("title")}</div>`;
-                // Sincronizado con <verse>
                 Array.from(sec.getElementsByTagName("verse")).forEach(v => {
                     verseCounter++;
                     const officerName = (v.getAttribute("officer") || "Ofi").trim();
                     const idV = `v-${cId}-${verseCounter}`;
-                    // Sincronizado con atributo 'texto'
                     let txt = v.getAttribute("texto") || "";
                     
-                    // PROCESAR TITULOS EN BOTONES [[LINK:Codigo:Titulo]]
                     txt = txt.replace(/\[\[LINK:(\d{3,5})(?::([^\]]+))?\]\]/g, (m, cod, desc) => {
                         let label = desc ? desc.trim() : "Ir ➜";
                         return `<span class="nav-link-container"><button class="btn-ritual" onclick="window.irA('${cod}')">${label}</button></span>`;
