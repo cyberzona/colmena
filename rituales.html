@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+8<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -210,30 +210,213 @@
         // Aquí es donde irA "consigue" el título
         const nombreSeccion = seccionDestino ? seccionDestino.getAttribute("titulo") : "Sección " + targetIdStr;
 
-        // 3. Gestión del historial y visibilidad
-        historialNavegacion.push({
-            seccion: document.getElementById("seccionFilter").value,
-            scroll: window.scrollY,
-            visibilidad: new Set(seccionesVisibles),
-            nombre: nombreSeccion // Guardamos el nombre en el historial
-        });
+window.irA = function(codigo) {
+            try {
+                // 1. GESTIÓN DEL RETORNO (VOLVER)
+                if (codigo === 'VOLVER') {
+                    if (historialNavegacion.length > 0) {
+                        const anterior = historialNavegacion.pop();
+                        seccionesVisibles = anterior.visibilidad;
+                        actualizarSelectorSecciones(anterior.seccion);
+                        cambioDeSeccion();
+                        setTimeout(() => {
+                            window.scrollTo({ top: anterior.scroll, behavior: 'smooth' });
+                        }, 150);
+                    } else {
+                        seccionesVisibles = new Set(["1", "2", "3"]);
+                        actualizarSelectorSecciones("1");
+                        cambioDeSeccion();
+                    }
+                    return;
+                }
 
-        // 4. Ejecución del cambio
-        seccionesVisibles = new Set([targetIdStr]);
-        actualizarSelectorSecciones(targetIdStr);
-        cambioDeSeccion(); // Esto disparará renderizarLiturgia
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+                // 2. OBTENCIÓN DE DATOS DE LA SECCIÓN DESTINO
+                const targetIdStr = parseInt(codigo.substring(1), 10).toString();
+                const secciones = Array.from(ritualActivo.getElementsByTagName("seccion"));
+                const seccionDestino = secciones.find(s => s.getAttribute("id") === targetIdStr);
+                
+                // Aquí irA consigue el título para el historial o validación
+                const tituloDestino = seccionDestino ? seccionDestino.getAttribute("titulo") : `Sección ${targetIdStr}`;
 
-    } catch (err) { 
-        console.error("Error en irA:", err); 
-    }
-};
+                // 3. GUARDAR ESTADO EN EL HISTORIAL
+                historialNavegacion.push({
+                    seccion: document.getElementById("seccionFilter").value,
+                    scroll: window.scrollY,
+                    visibilidad: new Set(seccionesVisibles),
+                    titulo: tituloDestino
+                });
+
+                // 4. EJECUTAR EL SALTO Y ACTUALIZAR INTERFAZ
+                seccionesVisibles = new Set([targetIdStr]);
+                actualizarSelectorSecciones(targetIdStr);
+                
+                // Forzamos el cambio para que el selector superior refleje la nueva sección
+                document.getElementById("seccionFilter").value = targetIdStr;
+                cambioDeSeccion();
+                
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (err) { 
+                console.error("Error en irA:", err); 
+            }
+        };
+
+        async function inicializar() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const hoy = new Date().toISOString().split('T')[0];
+                fechaTrabajo = urlParams.get('fecha') || hoy; 
+                numGradoActual = (urlParams.get('num') || "1").toString();
+                const secUrl = (urlParams.get('sec') || "1").toString();
+                
+                // Las secciones 1, 2 y 3 suelen ser fijas (Apertura, etc.), las superiores son dinámicas
+                seccionesVisibles = (parseInt(secUrl) > 3) ? new Set([secUrl]) : new Set(["1", "2", "3"]);
+
+                await cargarDatos();
+                ejecutarCargaRitual(numGradoActual, secUrl);
+                
+                const oficialUrl = urlParams.get('ofi') || "";
+                if (oficialUrl) {
+                    document.getElementById("oficialFilter").value = oficialUrl;
+                    renderizarLiturgia();
+                }
+            } catch (e) { console.error("Error inicializando:", e); }
+        }
+
+        async function cargarDatos() {
+            const v = new Date().getTime(); 
+            const [glosario, liturgia, tenidas] = await Promise.all([
+                fetch(`glosario.xml?v=${v}`).then(r => r.text()),
+                fetch(`liturgia.xml?v=${v}`).then(r => r.text()),
+                fetch(`tenidas.xml?v=${v}`).then(r => r.text()).catch(() => '<bitacora></bitacora>')
+            ]);
+            const parser = new DOMParser();
+            glosarioDoc = parser.parseFromString(glosario, "text/xml");
+            xmlDoc = parser.parseFromString(liturgia, "text/xml");
+            tenidasXml = parser.parseFromString(tenidas, "text/xml");
+        }
+
+        function ejecutarCargaRitual(grado, seccionID) {
+            ritualActivo = Array.from(xmlDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("grado") === grado);
+            if (ritualActivo) {
+                const titulos = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Maestría" };
+                document.getElementById("titulo-ritual-header").textContent = titulos[grado] || "Ritual";
+                actualizarSelectorSecciones(seccionID);
+                cambioDeSeccion();
+            }
+        }
+
+        function actualizarSelectorSecciones(idForzado) {
+            const sSel = document.getElementById("seccionFilter");
+            sSel.innerHTML = "";
+            Array.from(ritualActivo.getElementsByTagName("seccion")).forEach(sec => {
+                const idXml = sec.getAttribute("id");
+                // Solo añadimos al selector las secciones que deben ser visibles en este momento
+                if (seccionesVisibles.has(idXml.toString())) {
+                    sSel.add(new Option(sec.getAttribute("titulo"), idXml));
+                }
+            });
+            if (idForzado) sSel.value = idForzado;
+        }
+
+        function cambioDeSeccion() {
+            const sId = document.getElementById("seccionFilter").value;
+            const oSel = document.getElementById("oficialFilter");
+            const ofiPrevio = oSel.value;
+            const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
+            
+            const oficialesSet = new Set();
+            if (seccion) {
+                Array.from(seccion.getElementsByTagName("paso")).forEach(p => { 
+                    if (p.getAttribute("oficial")) oficialesSet.add(p.getAttribute("oficial").trim()); 
+                });
+            }
+            
+            oSel.innerHTML = '<option value="">---</option>';
+            Array.from(glosarioDoc.getElementsByTagName("item")).forEach(item => {
+                const sigla = item.getAttribute("sigla");
+                if (oficialesSet.has(sigla)) oSel.add(new Option(sigla + "∴", sigla));
+            });
+            if (oficialesSet.has(ofiPrevio)) oSel.value = ofiPrevio;
+            renderizarLiturgia();
+        }
+
+        function renderizarLiturgia() {
+            const sId = document.getElementById("seccionFilter").value;
+            const oficialSel = document.getElementById("oficialFilter").value; 
+            const contenedor = document.getElementById('rituales-content');
+            const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
+            if (!seccion) return;
+
+            let html = "", counter = 0, primeraID = null;
+            Array.from(seccion.getElementsByTagName("apartado")).forEach(apa => {
+                html += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>`;
+                Array.from(apa.getElementsByTagName("paso")).forEach(paso => {
+                    counter++;
+                    const oficialTur = (paso.getAttribute("oficial") || "Ofi").trim();
+                    const idL = `l-${sId}-${counter}`;
+                    let txt = paso.getAttribute("texto") || paso.textContent || "";
+                    
+                    // PROCESAMIENTO DE LINKS CON TÍTULOS DINÁMICOS DESDE EL XML
+                    txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
+                        const targetIdNum = parseInt(cod.substring(1), 10).toString();
+                        const secciones = Array.from(ritualActivo.getElementsByTagName("seccion"));
+                        const targetSec = secciones.find(s => s.getAttribute("id") === targetIdNum);
+                        const textoBoton = desc || (targetSec ? targetSec.getAttribute("titulo") : `Sección ${targetIdNum}`);
+                        return `<span class="nav-link-container"><button class="btn-ritual" onclick="window.irA('${cod}')">${textoBoton.trim()} ➜</button></span>`;
+                    });
+
+                    if (txt.includes("[[VOLVER]]")) {
+                        txt = txt.replace("[[VOLVER]]", `<span class="nav-link-container"><button class="btn-ritual" onclick="window.irA('VOLVER')">⬅ Regresar</button></span>`);
+                    }
+
+                    if (txt.includes("[[INSTANCIA]]")) {
+                        txt = txt.replace("[[INSTANCIA]]", `<div class="instancia-botones">${procesarInstancia(oficialTur)}</div>`);
+                    }
+                    
+                    txt = txt.replace(/\[(.*?)\]/g, '<span class="line-exec">[$1]</span>');
+                    txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
+                    
+                    const esOfi = (oficialSel && oficialTur === oficialSel);
+                    if (esOfi && !primeraID) primeraID = idL;
+                    html += `<dt>${oficialTur}∴</dt><dd class="${esOfi ? 'resaltado' : ''}" id="${idL}">${txt}</dd>`;
+                });
+            });
+            contenedor.innerHTML = `<dl style="counter-reset: line-counter;">${html}</dl>`;
+            if (primeraID) { 
+                const el = document.getElementById(primeraID); 
+                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+            }
+        }
 
         function abrirVisor(url) {
             const overlay = document.createElement('div');
             overlay.className = 'visor-overlay';
             overlay.innerHTML = `<div class="visor-content"><button class="visor-close" onclick="this.parentElement.parentElement.remove()">✕</button><iframe src="${url}" style="width:100%; height:100%; border:none;"></iframe></div>`;
             document.body.appendChild(overlay);
+        }
+
+        function procesarInstancia(oficialPaso) {
+            if (typeof tenidasXml === 'undefined' || !tenidasXml) return "";
+            const tActiva = Array.from(tenidasXml.getElementsByTagName("tenida")).find(t => t.getAttribute("fecha").trim() === fechaTrabajo.trim());
+            if (!tActiva) return "";            
+            
+            const items = Array.from(tActiva.getElementsByTagName("item"));
+            const filtroSuperior = document.getElementById("oficialFilter").value;
+            let contenido = "";
+
+            items.forEach(item => {
+                const acto = (item.getAttribute("acto") || "").trim();
+                const url = item.getAttribute("url") || "";
+                const titulo = item.getAttribute("titulo") || "Trabajo";
+
+                if (acto === "balaustre" && oficialPaso === "Sec" && filtroSuperior === "Sec") {
+                    contenido += `<button class="btn-ritual" onclick="abrirVisor('${url}')">📜: ${titulo} ➜</button>`;
+                } else if (acto === "elevacion" && oficialPaso !== "Sec") {
+                    const acc = url.indexOf('rituales.html') !== -1 ? `window.location.href='${url}&fecha=${fechaTrabajo}'` : `abrirVisor('${url}')`;
+                    contenido += `<button class="btn-instancia-exec" onclick="${acc}">${titulo}</button>`;
+                }
+            });
+            return contenido;
         }
     </script>
 </body>
