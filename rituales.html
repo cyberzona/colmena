@@ -129,7 +129,12 @@
                 const secUrl = (urlParams.get('sec') || "1").toString();
                 await cargarDatos();
                 if (parseInt(secUrl) > 3) seccionesVisibles.add(secUrl);
+                
+                // POBLAR OFICIALES POR PRIMERA VEZ
+                poblarOficialesGlobal();
+                
                 ejecutarCargaRitual(numGradoActual, secUrl);
+                
                 setTimeout(() => {
                     const el = document.querySelector('.resaltado');
                     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -150,26 +155,23 @@
             tenidasXml = parser.parseFromString(tenidas, "text/xml");
         }
 
-        function ejecutarCargaRitual(grado, seccionID) {
+        // NUEVA FUNCIÓN: Carga todos los oficiales del glosario una sola vez
+        function poblarOficialesGlobal() {
             const oSel = document.getElementById("oficialFilter");
-            const oficialADesplazar = oSel ? oSel.value : ""; // Captura antes del cambio
+            oSel.innerHTML = '<option value="">---</option>';
+            Array.from(glosarioDoc.getElementsByTagName("item")).forEach(i => {
+                const sigla = i.getAttribute("sigla");
+                oSel.add(new Option(sigla + "∴", sigla));
+            });
+        }
 
+        function ejecutarCargaRitual(grado, seccionID) {
             ritualActivo = Array.from(xmlDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("grado") === grado);
             if (ritualActivo) {
                 const titulos = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Maestría" };
                 document.getElementById("titulo-ritual-header").textContent = titulos[grado] || "Ritual";
                 actualizarSelectorSecciones(seccionID);
-                
-                // Reinyeccion tras actualizar estructura
-                if (oficialADesplazar) oSel.value = oficialADesplazar;
-                
-                cambioDeSeccion();
-                
-                // Segundo intento por si el DOM tardó en poblarse
-                if (oficialADesplazar && !oSel.value) {
-                    oSel.value = oficialADesplazar;
-                    renderizarLiturgia();
-                }
+                renderizarLiturgia(); // Solo renderizamos, sin tocar el selector de oficiales
             }
         }
 
@@ -186,28 +188,7 @@
         }
 
         function cambioDeSeccion() {
-            const sId = document.getElementById("seccionFilter").value;
-            const oSel = document.getElementById("oficialFilter");
-            const oficialPrevio = oSel.value; 
-
-            const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
-            const ofis = new Set();
-            if (seccion) {
-                Array.from(seccion.getElementsByTagName("paso")).forEach(p => {
-                    if (p.getAttribute("oficial")) ofis.add(p.getAttribute("oficial").trim());
-                });
-            }
-            
-            oSel.innerHTML = '<option value="">---</option>';
-            Array.from(glosarioDoc.getElementsByTagName("item")).forEach(i => {
-                const sigla = i.getAttribute("sigla");
-                if (ofis.has(sigla)) oSel.add(new Option(sigla + "∴", sigla));
-            });
-
-            if (ofis.has(oficialPrevio)) {
-                oSel.value = oficialPrevio;
-            }
-
+            // Ya no reconstruimos los oficiales aquí para que no se "apague"
             renderizarLiturgia();
         }
 
