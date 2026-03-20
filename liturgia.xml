@@ -13,7 +13,7 @@
                 <paso tipo="dialogo" oficial="VM" texto="Aseguraos de ello, Hermano mío."/>
                 <paso tipo="dialogo" oficial="1V" texto="Hermano Guarda Templo (GT∴) Cumplid con vuestro deber. [El GT da tres golpes en la puerta y la respuesta externa es similar]"/>
                 <paso tipo="dialogo" oficial="GT" texto="Hermano 1V∴, el Temp∴ está a cubierto de toda indiscreción profana."/>
-                <paso tipo="dialogo" oficial="1V" texto="VM∴ el Templo está cubierto de toda indiscreción. [Da tres golpes de Mallete]"/>
+                <paso tipo="dialogo" oficial="1V" texto="VM∴ el Templo está cubierto de toda indiscreción. (Da tres golpes de Mallete)"/>
             </apartado>
             <apartado id="2" titulo="Del Cuerpo del Taller">
                 <paso tipo="dialogo" oficial="VM" texto="¿Cuál es vuestro segundo deber en Hermano 1V∴?"/>
@@ -49,7 +49,7 @@
             </apartado>
             <apartado id="5" titulo="De la Consagración de la Luz">
                 <paso tipo="dialogo" oficial="VM" texto="¡En pie y al Orden, Queridos Hermanos! [Da un golpe de Mallete seguido por los Vigilantes]."/>
-                <paso tipo="dialogo" oficial="VM" texto="QH∴ Maestro de Ceremonias (MC∴) , prended las Luces. [MC∴ , abre el Libro de la Ley y coloca la Escuadra y sobre esta el Compás. Enciende la estrella del VM∴, dice: ¡Que la Sabiduría guie nuestros trabajos! ; MC∴, enciende la estrella del 1V∴ VM∴, dice: ¡Que la Fuerza los sostenga! ; MC∴, enciende la estrella del 2V∴, VM∴ dice: ¡Que la Belleza los adorne!]"/>
+                <paso tipo="dialogo" oficial="VM" texto="QH∴ Maestro de Ceremonias (MC∴) , prended las Luces. (MC∴ , abre el Libro de la Ley y coloca la Escuadra y sobre esta el Compás. Enciende la estrella del VM∴, dice: ¡Que la Sabiduría guie nuestros trabajos! ; MC∴, enciende la estrella del 1V∴ VM∴, dice: ¡Que la Fuerza los sostenga! ; MC∴, enciende la estrella del 2V∴, VM∴ dice: ¡Que la Belleza los adorne!)"/>
                 <paso tipo="dialogo" oficial="VM" texto="Puesto que todo está justo y perfecto, y que es la hora que los AAp∴ MMas∴ empiezan sus trabajos, uníos a mí HH∴ míos, ALGDGADU∴ y en su nombre y bajo la obediencia de la Ser∴ Gran L∴ de Lengua Española para los EE. UU. de A., declaro abiertos los trabajos de esta RL∴ en el grado de Ap∴Mas∴ del REAA∴. Queda prohibido a todo H∴ pasar de una a otra Col∴ ni cubrir el Templo sin permiso de su respectivo V∴; ni tratar asuntos políticos ni religiosos, a mí HH∴ por el signo y Bat∴ de Grado. [Da tres golpes de Mall∴ que repiten los VV∴] Tomad asiento, QQHH∴. [[LINK:102]]"/>
             </apartado>
         </seccion>
@@ -57,7 +57,7 @@
             <apartado id="1" titulo="Del Balaustre del la Sesión Anterior">
                 <paso tipo="dialogo" oficial="VM" texto="QQHH∴, habiéndose cumplido con las formalidades de la apertura, entramos ahora en el Desarrollo de Trabajos."/>
                 <paso tipo="dialogo" oficial="VM" texto="QH∴ Secretario (Sec∴), servíos dar lectura del último Trazado de este Taller."/>
-                <paso tipo="dialogo" oficial="Sec" texto="[QH∴ Sec∴ procede con la lectura.] [[INSTANCIA]]"/>
+                <paso tipo="dialogo" oficial="Sec" texto="(QH∴ Sec∴ procede con la lectura.) [[INSTANCIA]]"/>
                 <paso tipo="dialogo" oficial="1V" texto="Reina el silencio en ambas CCol∴, VM∴."/>
                 <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴, anunciad en vuestras respectivas columnas que el memo está en discusión. Si algún hermano desea hacer una observación, tiene la palabra"/>
                 <paso tipo="dialogo" oficial="1V" texto="QH∴ 2V∴, HH∴ de la Col∴ del Norte, el trazado de la sesión anterior está en discusión por orden del VM∴."/>
@@ -68,7 +68,7 @@
                 <paso tipo="dialogo" oficial="2V" texto="Reina el silencio en mi Columna Hermano 1V∴."/>
                 <paso tipo="dialogo" oficial="1V" texto="Reina el silencio en ambas CCol∴, VM∴."/>
                 <paso tipo="dialogo" oficial="VM" texto="QH∴ OF∴ ¿Queréis darnos vuestras conclusiones respecto a la plancha trazada por nuestro H∴ Sec∴ de nuestros últimos trabajos? [El H∴Ora∴ da las conclusiones]"/>
-                <paso tipo="dialogo" oficial="VM" texto="Después de las conclusiones del H∴ Ora∴, los HH∴ que estén de acuerdo se servirán de hacer la señal de aprobación al primer golpe de Mall∴. [Con golpe de Mallete.] "/>
+                <paso tipo="dialogo" oficial="VM" texto="Después de las conclusiones del H∴ Ora∴, los HH∴ que estén de acuerdo se servirán de hacer la señal de aprobación al primer golpe de Mall∴. (Con golpe de Mallete.) "/>
                 <paso tipo="dialogo" oficial="VM" texto="¡Hermanos míos! El Taller ha ordenado nuestro primer tiempo; ahora, para que el espíritu se manifieste en nueva forma, vamos a cubrir los trabajos de este Grado y proceder a . [Con golpe de Mallete.] [[LINK:103]] [[LINK:104]] [[LINK:105]] [[INSTANCIA]]"/>
             </apartado>          
         </seccion>            
@@ -80,12 +80,12 @@
                 <paso tipo="dialogo" oficial="VM" texto="QH∴ Hos∴, cumplid con vuestro deber. [El H∴ Hos∴ se coloca entre Ccol∴.]."/>
                 <paso tipo="dialogo" oficial="1V" texto="VM∴, el H∴ Hos∴ se encuentra entre Ccol∴ pronto a circular entre los HH∴."/>
                 <paso tipo="dialogo" oficial="VM" texto="Ordenad que circule empezando por la derecha."/>
-                <paso tipo="dialogo" oficial="1V" texto="QH∴ Hos∴, cumplid con vuestro deber. [El H∴ Hos∴ después de haber circulado se coloca entre Ccol∴.]"/>
+                <paso tipo="dialogo" oficial="1V" texto="QH∴ Hos∴, cumplid con vuestro deber. (El H∴ Hos∴ después de haber circulado se coloca entre Ccol∴.)"/>
                 <paso tipo="dialogo" oficial="Hos" texto="QH∴ 1V∴, he cumplido vuestro mandato."/>
                 <paso tipo="dialogo" oficial="1V" texto="VM∴, el tronco de beneficencia después de circular por los cuatro puntos cardinales del templo se encuentra nuevamente entre Ccol∴.."/>
                 <paso tipo="dialogo" oficial="VM" texto="Ordenad que ocupe su puesto y nos de cuenta de su contenido."/>
                 <paso tipo="dialogo" oficial="VM" texto="QH∴ OF∴, ¿Nos queréis dar las conclusiones de los trabajos de la Ten∴ de hoy?"/>
-                <paso tipo="dialogo" oficial="OF" texto="[Da a conocer el resultado del Trazado]."/>
+                <paso tipo="dialogo" oficial="OF" texto="(Da a conocer el resultado del Trazado)."/>
                 <paso tipo="dialogo" oficial="VM" texto="En virtud de haber sido en un todo favorable las conclusiones del H∴ OF∴ a la labor realizada, vamos a proceder al cierre de los trabajos de esta RL∴."/>
                 <paso tipo="dialogo" oficial="VM" texto="QH∴ 1V∴ podéis decirnos. ¿Cuáles son los caracteres distintivos que deben de adornar al verdadero Mas∴?"/>
                 <paso tipo="dialogo" oficial="1V" texto="Ser virtuoso y amante con los HH∴ y tolerante con todos."/>
@@ -112,7 +112,7 @@
                 <paso tipo="dialogo" oficial="MC" texto="[Apaga la estrella de 2V∴ , Apaga la estrella del 1V∴ y Apaga la estrella del VM∴ Retira la Escuadra y el Compás, y cierra el Libro de la Ley]"/>
             </apartado>
         </seccion>
-        <seccion id="4" titulo="De las Proposiciones por Escrito">
+        <seccion id="4" titulo="Proposiciones por Escrito">
             <apartado id="1" titulo="De las Proposiciones por Escrito">
                 <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ como yo lo hago en el Or∴ que nuestro Q∴H∴ M∴ de Cer∴ va a circular el saco de proposiciones. [El MC∴ cumple con su deber y se coloca entre CCol∴.]"/>
                 <paso tipo="dialogo" oficial="1V" texto="VM∴, el saco de proposiciones se encuentra entre CCol∴ para circular."/>
