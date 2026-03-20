@@ -106,12 +106,6 @@
                     actualizarSelectorSecciones(ant.seccion);
                     cambioDeSeccion();
                     setTimeout(() => window.scrollTo(0, ant.scroll), 150);
-                } else {
-                    const retornoGrado = sessionStorage.getItem('puntoRetornoLogia');
-                    if (retornoGrado) {
-                        sessionStorage.removeItem('puntoRetornoLogia');
-                        window.location.href = retornoGrado;
-                    }
                 }
                 return;
             }
@@ -137,11 +131,6 @@
                 if (parseInt(secUrl) > 3) seccionesVisibles.add(secUrl);
                 ejecutarCargaRitual(numGradoActual, secUrl);
                 setTimeout(() => {
-                    const hash = window.location.hash;
-                    if (hash) {
-                        const target = document.querySelector(hash);
-                        if (target) { target.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
-                    }
                     const el = document.querySelector('.resaltado');
                     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }, 800);
@@ -162,12 +151,25 @@
         }
 
         function ejecutarCargaRitual(grado, seccionID) {
+            const oSel = document.getElementById("oficialFilter");
+            const oficialADesplazar = oSel ? oSel.value : ""; // Captura antes del cambio
+
             ritualActivo = Array.from(xmlDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("grado") === grado);
             if (ritualActivo) {
                 const titulos = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Maestría" };
                 document.getElementById("titulo-ritual-header").textContent = titulos[grado] || "Ritual";
                 actualizarSelectorSecciones(seccionID);
+                
+                // Reinyeccion tras actualizar estructura
+                if (oficialADesplazar) oSel.value = oficialADesplazar;
+                
                 cambioDeSeccion();
+                
+                // Segundo intento por si el DOM tardó en poblarse
+                if (oficialADesplazar && !oSel.value) {
+                    oSel.value = oficialADesplazar;
+                    renderizarLiturgia();
+                }
             }
         }
 
@@ -186,8 +188,6 @@
         function cambioDeSeccion() {
             const sId = document.getElementById("seccionFilter").value;
             const oSel = document.getElementById("oficialFilter");
-            
-            // PERSISTENCIA: Guardamos el oficial antes de limpiar
             const oficialPrevio = oSel.value; 
 
             const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
@@ -204,7 +204,6 @@
                 if (ofis.has(sigla)) oSel.add(new Option(sigla + "∴", sigla));
             });
 
-            // Si el oficial previo participa en esta sección, lo re-seleccionamos
             if (ofis.has(oficialPrevio)) {
                 oSel.value = oficialPrevio;
             }
@@ -224,6 +223,7 @@
                     const ofi = (paso.getAttribute("oficial") || "Ofi").trim();
                     const idL = `l-${sId}-${i}`;
                     let txt = (paso.getAttribute("texto") || paso.textContent).trim();
+                    
                     txt = txt.replace(/\[\[LINK:(\d+)(?::([^\]]+))?\]\]/g, (match, cod, titulo) => {
                         let label = titulo ? titulo.trim() : "";
                         if (!label) {
@@ -233,10 +233,13 @@
                         }
                         return `<div class="nav-link-container"><button class="btn-ritual" onclick="irA('${cod}')">${label} ➜</button></div>`;
                     });
+
                     if (txt.includes("[[VOLVER]]")) txt = txt.replace("[[VOLVER]]", `<div class="nav-link-container"><button class="btn-ritual" onclick="irA('VOLVER')">⬅ Regresar</button></div>`);
                     if (txt.includes("[[INSTANCIA]]")) txt = txt.replace("[[INSTANCIA]]", `<div class="instancia-botones">${procesarInstancia(ofi, sId, i)}</div>`);
+                    
                     txt = txt.replace(/\[(.*?)\]/g, '<span class="line-exec">[$1]</span>');
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
+                    
                     const esOfi = ofiSel && ofi === ofiSel;
                     html += `<dt>${ofi}∴</dt><dd class="${esOfi ? 'resaltado' : ''}" id="${idL}">${txt}</dd>`;
                 });
@@ -272,7 +275,7 @@
                 } else if (acto === "elevacion" && oficialPaso !== "Sec") {
                     const esOtroRitual = url.indexOf('rituales.html') !== -1;
                     const urlOrigen = `${window.location.href.split('?')[0]}?num=${numGradoActual}&sec=${sIdActual}&fecha=${fechaTrabajo}#l-${sIdActual}-${indexPaso}`;
-                    const accion = esOtroRitual ? `sessionStorage.setItem('puntoRetornoLogia', '${urlOrigen}'); window.location.href='${url}&fecha=${fechaTrabajo}'` : `abrirVisor('${url}')`;
+                    const accion = esOtroRitual ? `window.location.href='${url}&fecha=${fechaTrabajo}'` : `abrirVisor('${url}')`;
                     contenido += `<button class="btn-instancia-exec" onclick="${accion}">${titulo}</button>`;
                 }
             });
