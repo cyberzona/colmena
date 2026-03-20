@@ -25,6 +25,7 @@
         .line-exec { display: block; font-style: italic; font-size: 0.95em; color: #555; margin: 5px 0; padding-left: 10px; border-left: 2px solid #ddd; }
         .resaltado { background-color: #ffffcc !important; border-left: 4px solid #ffcc00 !important; }
         .btn-ritual { background: #444 !important; color: #fff !important; border: none; padding: 10px 20px; cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 0.75rem; border-radius: 50px; }
+        .instancia-botones { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 5px; }
     </style>
 </head>
 <body onload="inicializar()">
@@ -107,14 +108,15 @@
 
         function cambioDeSeccion() {
             const oSel = document.getElementById("oficialFilter");
-            const sId = document.getElementById("seccionFilter").value;
+            const previo = oSel.value;
             
             oSel.innerHTML = '<option value="">---</option>';
             Array.from(glosarioDoc.getElementsByTagName("item")).forEach(item => {
                 const sigla = item.getAttribute("sigla");
                 oSel.add(new Option(sigla + "∴", sigla));
             });
-
+            
+            oSel.value = previo; 
             renderizarLiturgia();
         }
 
@@ -132,11 +134,17 @@
                     const idL = `l-${sId}-${i}`;
                     let txt = (paso.getAttribute("texto") || paso.textContent).trim();
                     
+                    // 1. Procesar Acciones Especiales
                     if (txt.includes("[[INSTANCIA]]")) {
                         txt = txt.replace("[[INSTANCIA]]", `<div class="instancia-botones">${procesarInstancia(ofi)}</div>`);
                     }
                     txt = txt.replace(/\[\[LINK:(\d+)(?::([^\]]+))?\]\]/g, (m, cod, tit) => `<div class="nav-link-container"><button class="btn-ritual" onclick="irA('${cod}')">${tit || 'Continuar'} ➜</button></div>`);
                     if (txt.includes("[[VOLVER]]")) txt = txt.replace("[[VOLVER]]", `<div class="nav-link-container"><button class="btn-ritual" onclick="irA('VOLVER')">⬅ Regresar</button></div>`);
+                    
+                    // 2. Limpieza Total de corchetes técnicos dobles residuales
+                    txt = txt.replace(/\[\[.*?\]\]/g, "");
+
+                    // 3. Formateo de Texto
                     txt = txt.replace(/\[(.*?)\]/g, '<span class="line-exec">[$1]</span>');
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     
@@ -145,6 +153,7 @@
                 });
             });
             document.getElementById('rituales-content').innerHTML = `<dl style="counter-reset: line-counter;">${html}</dl>`;
+            
             if (ofiSel) {
                 setTimeout(() => {
                     const el = document.querySelector('.resaltado');
@@ -157,12 +166,15 @@
             if (!tenidasXml) return "";
             const tActiva = Array.from(tenidasXml.getElementsByTagName("tenida")).find(t => t.getAttribute("fecha").trim() === fechaTrabajo.trim());
             if (!tActiva) return "";            
+            
             const filtroActual = document.getElementById("oficialFilter").value;
             let btnHtml = "";
+
             Array.from(tActiva.getElementsByTagName("item")).forEach(item => {
                 const acto = item.getAttribute("acto") || "";
                 const url = item.getAttribute("url") || "";
                 const titulo = item.getAttribute("titulo") || "Documento";
+                
                 if (acto === "balaustre" && oficialPaso === "Sec" && filtroActual === "Sec") {
                     btnHtml += `<button class="btn-ritual" onclick="window.open('${url}')">📜 ${titulo}</button>`;
                 } else if (acto === "elevacion" && oficialPaso !== "Sec") {
@@ -184,7 +196,11 @@
                 return;
             }
             const targetIdStr = codigo.replace(/\D/g, '');
-            historialNavegacion.push({ seccion: document.getElementById("seccionFilter").value, scroll: window.scrollY, visibilidad: new Set(seccionesVisibles) });
+            historialNavegacion.push({
+                seccion: document.getElementById("seccionFilter").value,
+                scroll: window.scrollY,
+                visibilidad: new Set(seccionesVisibles)
+            });
             seccionesVisibles.add(targetIdStr);
             actualizarSelectorSecciones(targetIdStr);
             cambioDeSeccion();
