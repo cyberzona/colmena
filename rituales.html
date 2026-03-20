@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -9,15 +10,9 @@
         
         /* ENCABEZADO FIJO */
         .fixed-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background: #fff;
-            z-index: 1000;
-            padding: 10px;
-            box-sizing: border-box;
-            border-bottom: 2px solid #000;
+            position: fixed; top: 0; left: 0; width: 100%;
+            background: #fff; z-index: 1000; padding: 10px;
+            box-sizing: border-box; border-bottom: 2px solid #000;
         }
 
         .header-container { display: flex; align-items: center; gap: 15px; margin-bottom: 5px; }
@@ -38,6 +33,7 @@
         .select-seccion { width: 100%; padding: 6px; font-size: 0.9rem; border: 1px solid #999; border-radius: 4px; }
         .select-oficiales { width: 100%; padding: 6px; font-size: 0.9rem; border: 1px solid #999; border-radius: 4px; }
 
+        /* ESTILOS DE TEXTO */
         .apartado-header { background: #333; color: #fff; padding: 5px 10px; margin-top: 20px; font-weight: bold; text-transform: uppercase; font-size: 0.85rem; border-radius: 4px; }
         dt { font-weight: bold; color: #000; margin-top: 15px; font-size: 1.1rem; }
         dd { margin-left: 50px; border-left: 2px solid #ccc; padding-left: 10px; position: relative; margin-bottom: 5px; counter-increment: line-counter; text-align: justify; }
@@ -50,17 +46,16 @@
         .nav-link-container { display: block; margin: 15px 0; text-align: left; }
         .btn-ritual { 
             background: #444 !important; color: #fff !important; 
-            border: none; padding: 10px 25px; 
-            cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 0.8rem; 
-            border-radius: 50px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            border: none; padding: 10px 25px; cursor: pointer; font-weight: bold; 
+            text-transform: uppercase; font-size: 0.8rem; border-radius: 50px; 
         }
         
         .btn-instancia-exec { 
             background: #666; color: white; border: none; padding: 8px 20px; 
             margin: 5px; cursor: pointer; font-weight: bold; border-radius: 50px; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
+        /* VISOR */
         .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; display: flex; align-items: center; justify-content: center; }
         .visor-content { width: 95%; height: 90%; background: #fff; border: 2px solid #000; position: relative; border-radius: 8px; overflow: hidden; }
         .visor-close { position: absolute; top: 5px; right: 5px; background: #cc0000; color: white; border: none; padding: 8px 12px; cursor: pointer; font-weight: bold; border-radius: 50%; }
@@ -107,7 +102,6 @@
                     cambioDeSeccion();
                     setTimeout(() => window.scrollTo(0, ant.scroll), 150);
                 } else {
-                    // Si no hay historial interno, probamos el retorno de grado
                     const retornoGrado = sessionStorage.getItem('puntoRetornoLogia');
                     if (retornoGrado) {
                         sessionStorage.removeItem('puntoRetornoLogia');
@@ -116,15 +110,12 @@
                 }
                 return;
             }
-            
             const targetIdStr = codigo.length === 3 ? parseInt(codigo.substring(1), 10).toString() : codigo.replace(/\D/g, '');
-            
             historialNavegacion.push({
                 seccion: document.getElementById("seccionFilter").value,
                 scroll: window.scrollY,
                 visibilidad: new Set(seccionesVisibles)
             });
-            
             seccionesVisibles.add(targetIdStr);
             actualizarSelectorSecciones(targetIdStr);
             cambioDeSeccion();
@@ -137,17 +128,9 @@
                 fechaTrabajo = urlParams.get('fecha') || new Date().toISOString().split('T')[0]; 
                 numGradoActual = (urlParams.get('num') || "1").toString();
                 const secUrl = (urlParams.get('sec') || "1").toString();
-                
                 await cargarDatos();
-                poblarOficialesGlobal();
-                
                 if (parseInt(secUrl) > 3) seccionesVisibles.add(secUrl);
                 ejecutarCargaRitual(numGradoActual, secUrl);
-                
-                setTimeout(() => {
-                    const el = document.querySelector('.resaltado');
-                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 800);
             } catch (e) { console.error("Error:", e); }
         }
 
@@ -164,22 +147,13 @@
             tenidasXml = parser.parseFromString(tenidas, "text/xml");
         }
 
-        function poblarOficialesGlobal() {
-            const oSel = document.getElementById("oficialFilter");
-            oSel.innerHTML = '<option value="">---</option>';
-            Array.from(glosarioDoc.getElementsByTagName("item")).forEach(i => {
-                const sigla = i.getAttribute("sigla");
-                oSel.add(new Option(sigla + "∴", sigla));
-            });
-        }
-
         function ejecutarCargaRitual(grado, seccionID) {
             ritualActivo = Array.from(xmlDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("grado") === grado);
             if (ritualActivo) {
                 const titulos = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Maestría" };
                 document.getElementById("titulo-ritual-header").textContent = titulos[grado] || "Ritual";
                 actualizarSelectorSecciones(seccionID);
-                renderizarLiturgia();
+                cambioDeSeccion();
             }
         }
 
@@ -196,6 +170,32 @@
         }
 
         function cambioDeSeccion() {
+            const sId = document.getElementById("seccionFilter").value;
+            const oSel = document.getElementById("oficialFilter");
+            
+            // GUARDAMOS EL OFICIAL ACTUAL ANTES DE RECONSTRUIR LA LISTA
+            const oficialSeleccionado = oSel.value; 
+
+            const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
+            const ofis = new Set();
+            if (seccion) {
+                Array.from(seccion.getElementsByTagName("paso")).forEach(p => {
+                    if (p.getAttribute("oficial")) ofis.add(p.getAttribute("oficial").trim());
+                });
+            }
+
+            // LIMPIAMOS Y POBLAMOS SOLO CON LOS DEL RITUAL (Para que no salga todo el glosario)
+            oSel.innerHTML = '<option value="">---</option>';
+            Array.from(glosarioDoc.getElementsByTagName("item")).forEach(i => {
+                const sigla = i.getAttribute("sigla");
+                if (ofis.has(sigla)) oSel.add(new Option(sigla + "∴", sigla));
+            });
+
+            // RE-SELECCIONAMOS SI EXISTE EN ESTA SECCIÓN
+            if (ofis.has(oficialSeleccionado)) {
+                oSel.value = oficialSeleccionado;
+            }
+
             renderizarLiturgia();
         }
 
@@ -262,7 +262,6 @@
                     contenido += `<button class="btn-ritual" onclick="abrirVisor('${url}')">📜: ${titulo} ➜</button>`;
                 } else if (acto === "elevacion" && oficialPaso !== "Sec") {
                     const esOtroRitual = url.indexOf('rituales.html') !== -1;
-                    // Guardamos el punto de retorno antes de saltar a otro HTML
                     const urlOrigen = `${window.location.href.split('?')[0]}?num=${numGradoActual}&sec=${sIdActual}&fecha=${fechaTrabajo}#l-${sIdActual}-${indexPaso}`;
                     const accion = esOtroRitual ? `sessionStorage.setItem('puntoRetornoLogia', '${urlOrigen}'); window.location.href='${url}&fecha=${fechaTrabajo}'` : `abrirVisor('${url}')`;
                     contenido += `<button class="btn-instancia-exec" onclick="${accion}">${titulo}</button>`;
@@ -273,3 +272,4 @@
     </script>
 </body>
 </html>
+
