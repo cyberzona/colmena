@@ -7,17 +7,9 @@
     <style>
         body { font-family: 'Palatino Linotype', serif; line-height: 1.2; color: #000; margin: 0; padding: 10px; background-color: #fff; }
         
-        /* ENCABEZADO FIJO */
         .fixed-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background: #fff;
-            z-index: 1000;
-            padding: 10px;
-            box-sizing: border-box;
-            border-bottom: 2px solid #000;
+            position: fixed; top: 0; left: 0; width: 100%; background: #fff;
+            z-index: 1000; padding: 10px; box-sizing: border-box; border-bottom: 2px solid #000;
         }
 
         .header-container { display: flex; align-items: center; gap: 15px; margin-bottom: 5px; }
@@ -31,12 +23,11 @@
             display: flex; gap: 10px; border-radius: 8px; 
         }
         
-        #rituales-content { margin-top: 130px; }
+        #rituales-content { margin-top: 135px; }
 
         .container-select { display: flex; flex-direction: column; flex: 1; }
         .select-label { font-size: 0.7rem; color: #333; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; }
-        .select-seccion { width: 100%; padding: 6px; font-size: 0.9rem; border: 1px solid #999; border-radius: 4px; }
-        .select-oficiales { width: 100%; padding: 6px; font-size: 0.9rem; border: 1px solid #999; border-radius: 4px; }
+        .select-seccion, .select-oficiales { width: 100%; padding: 6px; font-size: 0.9rem; border: 1px solid #999; border-radius: 4px; }
 
         .apartado-header { background: #333; color: #fff; padding: 5px 10px; margin-top: 20px; font-weight: bold; text-transform: uppercase; font-size: 0.85rem; border-radius: 4px; }
         dt { font-weight: bold; color: #000; margin-top: 15px; font-size: 1.1rem; }
@@ -50,8 +41,8 @@
         .nav-link-container { display: block; margin: 15px 0; text-align: left; }
         .btn-ritual { 
             background: #444 !important; color: #fff !important; 
-            border: none; padding: 10px 25px; 
-            cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 0.8rem; 
+            border: none; padding: 10px 25px; cursor: pointer; 
+            font-weight: bold; text-transform: uppercase; font-size: 0.8rem; 
             border-radius: 50px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
         
@@ -137,15 +128,10 @@
                 if (parseInt(secUrl) > 3) seccionesVisibles.add(secUrl);
                 ejecutarCargaRitual(numGradoActual, secUrl);
                 setTimeout(() => {
-                    const hash = window.location.hash;
-                    if (hash) {
-                        const target = document.querySelector(hash);
-                        if (target) { target.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
-                    }
                     const el = document.querySelector('.resaltado');
                     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }, 800);
-            } catch (e) { console.error("Error:", e); }
+            } catch (e) { console.error("Error inicializando:", e); }
         }
 
         async function cargarDatos() {
@@ -202,10 +188,7 @@
                 if (ofis.has(sigla)) oSel.add(new Option(sigla + "∴", sigla));
             });
 
-            if (ofis.has(oficialPrevio)) {
-                oSel.value = oficialPrevio;
-            }
-
+            if (ofis.has(oficialPrevio)) oSel.value = oficialPrevio;
             renderizarLiturgia();
         }
 
@@ -223,10 +206,10 @@
                     const idL = `l-${sId}-${i}`;
                     let txt = (paso.getAttribute("texto") || paso.textContent).trim();
 
-                    // 1. EXTRAER BOTONES (Sin insertarlos en el texto todavía para no romper el HTML)
+                    // --- PASO 1: EXTRAER ACCIONES Y CREAR BOTONES (Sin insertarlos en el texto) ---
                     let botonesHtml = "";
                     
-                    // Procesar LINKS
+                    // Procesar LINKS técnicos
                     txt = txt.replace(/\[\[LINK:(\d+)(?::([^\]]+))?\]\]/g, (match, cod, titulo) => {
                         let label = titulo ? titulo.trim() : "";
                         if (!label) {
@@ -235,7 +218,7 @@
                             label = targetSec ? targetSec.getAttribute("titulo") : "Ir";
                         }
                         botonesHtml += `<div class="nav-link-container"><button class="btn-ritual" onclick="irA('${cod}')">${label} ➜</button></div>`;
-                        return ""; 
+                        return ""; // Se elimina del texto visual
                     });
 
                     // Procesar VOLVER
@@ -244,25 +227,26 @@
                         txt = txt.replace("[[VOLVER]]", "");
                     }
 
-                    // Procesar INSTANCIA (Balaustres)
+                    // Procesar INSTANCIA (Balaustres para Sec∴)
                     if (txt.includes("[[INSTANCIA]]")) {
                         botonesHtml += `<div class="instancia-botones">${procesarInstancia(ofi, sId, i)}</div>`;
                         txt = txt.replace("[[INSTANCIA]]", "");
                     }
 
-                    // 2. LIMPIEZA TOTAL: Borrar corchetes dobles residuales (Como [[Sec]])
+                    // --- PASO 2: LIMPIEZA Y FORMATO DEL TEXTO (Seguro, ya no hay tags técnicos) ---
+                    
+                    // Borrar corchetes dobles residuales (ej: [[Sec]])
                     txt = txt.replace(/\[\[.*?\]\]/g, "");
 
-                    // 3. FORMATEO VISUAL: Solo corchetes simples [ ] se vuelven ( ) gris
+                    // Formatear corchetes simples [ ] a ( ) con clase line-exec
                     txt = txt.replace(/\[([^\[\]]+)\]/g, '<span class="line-exec">($1)</span>');
 
-                    // 4. SIGLAS: Azul
+                    // Siglas en azul
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
 
-                    // 5. ENSAMBLAJE: Unimos texto limpio + botones
+                    // --- PASO 3: UNIR TEXTO LIMPIO CON BOTONES ---
                     const textoFinal = txt + botonesHtml;
                     const esOfi = ofiSel && ofi === ofiSel;
-                    
                     html += `<dt>${ofi}∴</dt><dd class="${esOfi ? 'resaltado' : ''}" id="${idL}">${textoFinal}</dd>`;
                 });
             });
@@ -279,7 +263,7 @@
         function abrirVisor(url) {
             const overlay = document.createElement('div');
             overlay.className = 'visor-overlay';
-            overlay.innerHTML = `<div class=\"visor-content\"><button class=\"visor-close\" onclick=\"this.parentElement.parentElement.remove()\">✕</button><iframe src=\"${url}\" style=\"width:100%; height:100%; border:none;\"></iframe></div>`;
+            overlay.innerHTML = `<div class="visor-content"><button class="visor-close" onclick="this.parentElement.parentElement.remove()">✕</button><iframe src="${url}" style="width:100%; height:100%; border:none;"></iframe></div>`;
             document.body.appendChild(overlay);
         }
 
