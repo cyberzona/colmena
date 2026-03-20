@@ -5,119 +5,90 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ritual - Colmena No. 8</title>
     <style>
-        :root {
-            --dorado: #f1c40f; /* Dorado institucional de la web principal */
-            --oscuro: #1a1a1a;
-            --fondo: #fcfcfc;
-        }
-
-        body { 
-            font-family: 'Palatino Linotype', serif; 
-            line-height: 1.3; 
-            color: #222; 
-            margin: 0; 
-            padding: 10px; 
-            background-color: var(--fondo); 
-        }
+        body { font-family: 'Palatino Linotype', serif; line-height: 1.2; color: #000; margin: 0; padding: 10px; background-color: #fff; }
         
-        /* IDENTIDAD INSTITUCIONAL (Desplazable) */
+        /* 1. IDENTIDAD (Se desplaza) */
         .identity-container {
             display: flex;
             align-items: center;
             gap: 15px;
-            padding: 10px 5px;
+            margin-bottom: 5px;
         }
-        .logo-mini { width: 55px; height: auto; border-radius: 50%; }
-        .line-logia { font-size: 1.25rem; font-weight: 900; color: var(--oscuro); letter-spacing: 1px; }
+        .logo-mini { width: 50px; height: auto; }
+        .line-logia { font-size: 1.2rem; font-weight: bold; }
+        
+        #titulo-ritual-header {
+            display: block;
+            font-size: 1.0rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin: 5px 0 10px 0;
+            color: #000;
+        }
 
-        /* CONTROLES STICKY */
+        /* 2. SELECTORES (Sticky - Se quedan fijos al bajar) */
         .sticky-controls {
             position: sticky;
             top: 0;
             background: #fff;
             z-index: 1000;
-            padding: 5px 10px 12px 10px;
-            border-bottom: 3px solid var(--dorado);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            margin: 0 -10px;
+            padding: 5px 0 10px 0;
+            border-bottom: 2px solid #000;
         }
 
-        #titulo-ritual-header {
-            display: block;
-            font-size: 1rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            margin: 5px 0 10px 0;
-            color: #777;
+        #control-panel { 
+            display: flex; 
+            gap: 8px; 
+            align-items: stretch;
         }
-
-        #control-panel { display: flex; gap: 8px; }
-        .container-select { display: flex; flex-direction: column; }
-        .select-label { font-size: 0.65rem; color: #999; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; margin-left: 5px; }
         
+        .container-select { display: flex; flex-direction: column; }
+        .select-label { font-size: 0.65rem; color: #666; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; }
+        
+        /* Misma altura para ambos */
         .select-seccion, .select-oficiales {
             height: 45px; 
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            background-color: #f9f9f9;
-            font-weight: bold;
-            color: var(--oscuro);
+            box-sizing: border-box;
+            border: 1px solid #000;
+            border-radius: 6px;
+            font-family: inherit;
         }
 
-        .container-seccion { flex: 2; }
-        .container-oficial { flex: 1; }
+        .container-seccion { flex: 2; } /* Más largo */
+        .select-seccion { width: 100%; padding: 0 10px; font-size: 1.1rem; font-weight: bold; background-color: #f9f9f9; }
 
-        /* LITURGIA */
-        #rituales-content { margin-top: 20px; padding-bottom: 40px; }
-        .apartado-header { 
-            background: var(--oscuro); 
-            color: var(--dorado); 
-            padding: 8px 15px; 
-            margin-top: 30px; 
-            font-weight: bold; 
-            text-transform: uppercase; 
-            font-size: 0.85rem; 
-            border-radius: 4px;
-            border-left: 5px solid var(--dorado);
-        }
+        .container-oficial { flex: 1; } /* Más corto */
+        .select-oficiales { width: 100%; padding: 0 5px; font-size: 0.95rem; background-color: #fff; }
 
-        dt { font-weight: bold; color: #000; margin-top: 20px; font-size: 1.1rem; }
-        dd { 
-            margin-left: 45px; 
-            border-left: 2px solid var(--dorado); 
-            padding-left: 15px; 
-            position: relative; 
-            margin-bottom: 8px; 
-            counter-increment: line-counter; 
-            text-align: justify; 
-        }
-        dd::before { 
-            content: counter(line-counter); 
-            position: absolute; 
-            left: -40px; 
-            color: #bdc3c7; 
-            font-size: 0.75rem; 
-            width: 30px; 
-            text-align: right; 
-        }
+        /* 3. LITURGIA */
+        #rituales-content { margin-top: 15px; }
+        .apartado-header { background: #333; color: #fff; padding: 6px 12px; margin-top: 25px; font-weight: bold; text-transform: uppercase; font-size: 0.85rem; border-radius: 4px; }
+        dt { font-weight: bold; color: #000; margin-top: 18px; font-size: 1.1rem; }
+        dd { margin-left: 45px; border-left: 2px solid #ddd; padding-left: 12px; position: relative; margin-bottom: 6px; counter-increment: line-counter; text-align: justify; }
+        dd::before { content: counter(line-counter); position: absolute; left: -40px; color: #999; font-size: 0.75rem; font-weight: bold; width: 30px; text-align: right; top: 2px; }
         
-        .sigla-texto-azul { color: #2980b9; font-weight: bold; }
-        .line-exec { display: block; font-style: italic; color: #7f8c8d; margin: 6px 0; font-size: 0.95rem; }
-        .resaltado { background-color: #fff9c4 !important; border-left-width: 4px !important; }
+        .sigla-texto-azul { color: #0056b3; font-weight: bold; }
+        .line-exec { display: block; font-style: italic; color: #555; margin: 4px 0; padding-left: 8px; border-left: 2px solid #eee; }
+        .resaltado { background-color: #fff9c4 !important; border-left: 4px solid #fbc02d !important; }
 
-        /* BOTONES */
+        /* 4. BOTONES REDONDEADOS IZQUIERDA */
+        .nav-link-container { display: block; margin: 15px 0; text-align: left; }
         .btn-ritual { 
-            background: var(--oscuro) !important; 
-            color: #fff !important; 
-            border: 1px solid var(--dorado);
-            padding: 12px 25px; 
-            cursor: pointer; 
-            font-weight: bold; 
-            text-transform: uppercase; 
-            font-size: 0.8rem; 
-            border-radius: 50px; 
-            margin: 10px 0;
+            background: #222 !important; color: #fff !important; 
+            border: none; padding: 10px 25px; 
+            cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 0.8rem; 
+            border-radius: 50px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
+        .btn-instancia-exec { 
+            background: #666; color: white; border: none; padding: 8px 20px; 
+            margin: 5px; cursor: pointer; font-weight: bold; border-radius: 50px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* VISOR */
+        .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; align-items: center; justify-content: center; }
+        .visor-content { width: 95%; height: 92%; background: #fff; border-radius: 12px; overflow: hidden; position: relative; }
+        .visor-close { position: absolute; top: 10px; right: 10px; background: #c62828; color: white; border: none; width: 40px; height: 40px; cursor: pointer; border-radius: 50%; font-weight: bold; }
     </style>
 </head>
 <body onload="inicializar()">
@@ -128,7 +99,7 @@
     </div>
 
     <div class="sticky-controls">
-        <span id="titulo-ritual-header">LIBRO: CARGANDO...</span>
+        <span id="titulo-ritual-header">RITUAL</span>
         <div id="control-panel">
             <div class="container-select container-seccion">
                 <span class="select-label">Sección</span>
@@ -149,64 +120,8 @@
         let seccionesVisibles = new Set(["1", "2", "3"]);
         let historialNavegacion = [];
 
-        async function inicializar() {
-            try {
-                const urlParams = new URLSearchParams(window.location.search);
-                fechaTrabajo = urlParams.get('fecha') || new Date().toISOString().split('T')[0]; 
-                numGradoActual = (urlParams.get('num') || "1").toString();
-                
-                const titulos = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Maestría" };
-                document.getElementById("titulo-ritual-header").textContent = ("Libro: " + (titulos[numGradoActual] || "Ritual")).toUpperCase();
-
-                await cargarDatos();
-                const secUrl = (urlParams.get('sec') || "1").toString();
-                if (parseInt(secUrl) > 3) seccionesVisibles.add(secUrl);
-                ejecutarCargaRitual(numGradoActual, secUrl);
-                
-                setTimeout(() => {
-                    const el = document.querySelector('.resaltado');
-                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 800);
-            } catch (e) { console.error("Error:", e); }
-        }
-
-        async function cargarDatos() {
-            const v = new Date().getTime(); 
-            const [glosario, liturgia, tenidas] = await Promise.all([
-                fetch(`glosario.xml?v=${v}`).then(r => r.text()),
-                fetch(`liturgia.xml?v=${v}`).then(r => r.text()),
-                fetch(`tenidas.xml?v=${v}`).then(r => r.text()).catch(() => '<bitacora></bitacora>')
-            ]);
-            const parser = new DOMParser();
-            glosarioDoc = parser.parseFromString(glosario, "text/xml");
-            xmlDoc = parser.parseFromString(liturgia, "text/xml");
-            tenidasXml = parser.parseFromString(tenidas, "text/xml");
-        }
-
-        function ejecutarCargaRitual(grado, seccionID) {
-            ritualActivo = Array.from(xmlDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("grado") === grado);
-            if (ritualActivo) {
-                actualizarSelectorSecciones(seccionID);
-                cambioDeSeccion();
-            }
-        }
-
-        function actualizarSelectorSecciones(idSel) {
-            const sSel = document.getElementById("seccionFilter");
-            sSel.innerHTML = "";
-            Array.from(ritualActivo.getElementsByTagName("seccion")).forEach(sec => {
-                const id = sec.getAttribute("id");
-                if (id === "1" || id === "2" || id === "3" || seccionesVisibles.has(id)) {
-                    sSel.add(new Option(sec.getAttribute("titulo"), id));
-                }
-            });
-            sSel.value = idSel;
-        }
-
-        function cambioDeSeccion() {
-            const sId = document.getElementById("seccionFilter").value;
-            const oSel = document.getElementById("oficialFilter");
-            const ofiPrevio = oSel.value;
-            const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
-            const ofis
-            
+        window.irA = function(codigo) {
+            if (!ritualActivo) return;
+            if (codigo === 'VOLVER') {
+                if (historialNavegacion
+                    
