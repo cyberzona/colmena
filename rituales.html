@@ -52,7 +52,7 @@
     <div id="rituales-content"></div>
 
     <script>
-        let xmlDoc, tenidasXml, ritualActivo;
+        let xmlDoc, glosarioDoc, tenidasXml, ritualActivo;
         let numGradoActual = "1", fechaTrabajo = "";
         let seccionesVisibles = new Set(["1", "2", "3"]);
         let historialNavegacion = [];
@@ -65,8 +65,6 @@
                 const secUrl = (urlParams.get('sec') || "1").toString();
                 
                 await cargarDatos();
-                poblarOficialesEstaticos(); // Carga única inicial
-                
                 if (parseInt(secUrl) > 3) seccionesVisibles.add(secUrl);
                 ejecutarCargaRitual(numGradoActual, secUrl);
             } catch (e) { console.error(e); }
@@ -74,27 +72,15 @@
 
         async function cargarDatos() {
             const v = new Date().getTime(); 
-            const [liturgia, tenidas] = await Promise.all([
+            const [glosario, liturgia, tenidas] = await Promise.all([
+                fetch(`glosario.xml?v=${v}`).then(r => r.text()),
                 fetch(`liturgia.xml?v=${v}`).then(r => r.text()),
                 fetch(`tenidas.xml?v=${v}`).then(r => r.text()).catch(() => '<bitacora></bitacora>')
             ]);
             const parser = new DOMParser();
+            glosarioDoc = parser.parseFromString(glosario, "text/xml");
             xmlDoc = parser.parseFromString(liturgia, "text/xml");
             tenidasXml = parser.parseFromString(tenidas, "text/xml");
-        }
-
-        function poblarOficialesEstaticos() {
-            const oSel = document.getElementById("oficialFilter");
-            oSel.innerHTML = '<option value="">---</option>';
-            const todosOfis = new Set();
-            Array.from(xmlDoc.getElementsByTagName("paso")).forEach(p => {
-                if (p.getAttribute("oficial")) todosOfis.add(p.getAttribute("oficial").trim());
-            });
-            Array.from(todosOfis).sort().forEach(sigla => {
-                const opt = new Option(sigla + "∴", sigla);
-                opt.style.display = "none"; 
-                oSel.add(opt);
-            });
         }
 
         function ejecutarCargaRitual(grado, seccionID) {
@@ -120,8 +106,10 @@
         }
 
         function cambioDeSeccion() {
-            const sId = document.getElementById("seccionFilter").value;
             const oSel = document.getElementById("oficialFilter");
+            const sId = document.getElementById("seccionFilter").value;
+            const oficialPrevio = oSel.value;
+
             const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
             const participantes = new Set();
             if (seccion) {
@@ -129,10 +117,16 @@
                     if (p.getAttribute("oficial")) participantes.add(p.getAttribute("oficial").trim());
                 });
             }
-            // Solo ocultamos/mostramos, NO borramos el valor seleccionado
-            Array.from(oSel.options).forEach(opt => {
-                opt.style.display = (opt.value === "" || participantes.has(opt.value)) ? "block" : "none";
+
+            oSel.innerHTML = '<option value="">---</option>';
+            Array.from(glosarioDoc.getElementsByTagName("item")).forEach(item => {
+                const sigla = item.getAttribute("sigla");
+                if (participantes.has(sigla)) {
+                    oSel.add(new Option(sigla + "∴", sigla));
+                }
             });
+
+            if (participantes.has(oficialPrevio)) oSel.value = oficialPrevio;
             renderizarLiturgia();
         }
 
