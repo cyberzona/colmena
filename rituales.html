@@ -6,48 +6,25 @@
     <title>Ritual - Colmena No. 8</title>
     <style>
         body { font-family: 'Palatino Linotype', serif; line-height: 1.2; color: #000; margin: 0; padding: 10px; background-color: #fff; }
-        
-        /* ENCABEZADO FIJO */
-        .fixed-header {
-            position: fixed; top: 0; left: 0; width: 100%;
-            background: #fff; z-index: 1000; padding: 10px;
-            box-sizing: border-box; border-bottom: 2px solid #000;
-        }
-
+        .fixed-header { position: fixed; top: 0; left: 0; width: 100%; background: #fff; z-index: 1000; padding: 10px; box-sizing: border-box; border-bottom: 2px solid #000; }
         .header-container { display: flex; align-items: center; gap: 15px; margin-bottom: 5px; }
         .logia-info { display: flex; flex-direction: column; }
         .line-logia { font-size: 1.1rem; color: #000; font-weight: bold; }
         #titulo-ritual-header { font-size: 1.0rem; color: #000; text-transform: uppercase; font-weight: bold; }
         .logo-mini { width: 50px; height: auto; }
-        
-        #control-panel { 
-            background: #f0f0f0; padding: 8px; border: 1px solid #ccc; 
-            display: flex; gap: 10px; border-radius: 8px; 
-        }
-        
+        #control-panel { background: #f0f0f0; padding: 8px; border: 1px solid #ccc; display: flex; gap: 10px; border-radius: 8px; }
         #rituales-content { margin-top: 135px; }
-
         .container-select { display: flex; flex-direction: column; flex: 1; }
         .select-label { font-size: 0.7rem; color: #333; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; }
         .select-seccion, .select-oficiales { width: 100%; padding: 6px; font-size: 0.9rem; border: 1px solid #999; border-radius: 4px; }
-
-        /* ESTILOS DE TEXTO */
         .apartado-header { background: #333; color: #fff; padding: 5px 10px; margin-top: 20px; font-weight: bold; text-transform: uppercase; font-size: 0.85rem; border-radius: 4px; }
         dt { font-weight: bold; color: #000; margin-top: 15px; font-size: 1.1rem; }
         dd { margin-left: 50px; border-left: 2px solid #ccc; padding-left: 10px; position: relative; margin-bottom: 5px; text-align: justify; }
         dd::before { content: counter(line-counter); position: absolute; left: -45px; color: #666; font-size: 0.8rem; font-weight: bold; width: 35px; text-align: right; top: 2px; }
-        
         .sigla-texto-azul { color: #0056b3; font-weight: bold; }
         .line-exec { display: block; font-style: italic; font-size: 0.95em; color: #555; margin: 5px 0; padding-left: 10px; border-left: 2px solid #ddd; }
         .resaltado { background-color: #ffffcc !important; border-left: 4px solid #ffcc00 !important; }
-
-        .nav-link-container { display: block; margin: 15px 0; }
-        .btn-ritual { 
-            background: #444 !important; color: #fff !important; 
-            border: none; padding: 10px 20px; cursor: pointer; font-weight: bold; 
-            text-transform: uppercase; font-size: 0.75rem; border-radius: 50px; 
-        }
-        .instancia-botones { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 5px; }
+        .btn-ritual { background: #444 !important; color: #fff !important; border: none; padding: 10px 20px; cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 0.75rem; border-radius: 50px; }
     </style>
 </head>
 <body onload="inicializar()">
@@ -60,15 +37,14 @@
                 <span id="titulo-ritual-header">Cargando...</span>
             </div>
         </div>
-        
         <div id="control-panel">
             <div class="container-select">
                 <span class="select-label">Sección</span>
-                <select id="seccionFilter" class="select-seccion" onchange="cambioDeSeccion()"></select>
+                <select id="seccionFilter" onchange="cambioDeSeccion()"></select>
             </div>
             <div class="container-select">
                 <span class="select-label">Oficial</span>
-                <select id="oficialFilter" class="select-oficiales" onchange="renderizarLiturgia()"></select>
+                <select id="oficialFilter" onchange="renderizarLiturgia()"></select>
             </div>
         </div>
     </div>
@@ -89,6 +65,8 @@
                 const secUrl = (urlParams.get('sec') || "1").toString();
                 
                 await cargarDatos();
+                poblarOficialesEstaticos(); // Carga única inicial
+                
                 if (parseInt(secUrl) > 3) seccionesVisibles.add(secUrl);
                 ejecutarCargaRitual(numGradoActual, secUrl);
             } catch (e) { console.error(e); }
@@ -103,6 +81,20 @@
             const parser = new DOMParser();
             xmlDoc = parser.parseFromString(liturgia, "text/xml");
             tenidasXml = parser.parseFromString(tenidas, "text/xml");
+        }
+
+        function poblarOficialesEstaticos() {
+            const oSel = document.getElementById("oficialFilter");
+            oSel.innerHTML = '<option value="">---</option>';
+            const todosOfis = new Set();
+            Array.from(xmlDoc.getElementsByTagName("paso")).forEach(p => {
+                if (p.getAttribute("oficial")) todosOfis.add(p.getAttribute("oficial").trim());
+            });
+            Array.from(todosOfis).sort().forEach(sigla => {
+                const opt = new Option(sigla + "∴", sigla);
+                opt.style.display = "none"; 
+                oSel.add(opt);
+            });
         }
 
         function ejecutarCargaRitual(grado, seccionID) {
@@ -128,32 +120,19 @@
         }
 
         function cambioDeSeccion() {
-            const oSel = document.getElementById("oficialFilter");
             const sId = document.getElementById("seccionFilter").value;
-            
-            // MEMORIA: Guardar selección actual
-            const oficialPrevio = oSel.value;
-
+            const oSel = document.getElementById("oficialFilter");
             const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
             const participantes = new Set();
             if (seccion) {
                 Array.from(seccion.getElementsByTagName("paso")).forEach(p => {
-                    const ofi = p.getAttribute("oficial");
-                    if (ofi) participantes.add(ofi.trim());
+                    if (p.getAttribute("oficial")) participantes.add(p.getAttribute("oficial").trim());
                 });
             }
-
-            // POBLAR: Solo con los que están en la sección, ordenados
-            oSel.innerHTML = '<option value="">---</option>';
-            Array.from(participantes).sort().forEach(sigla => {
-                oSel.add(new Option(sigla + "∴", sigla));
+            // Solo ocultamos/mostramos, NO borramos el valor seleccionado
+            Array.from(oSel.options).forEach(opt => {
+                opt.style.display = (opt.value === "" || participantes.has(opt.value)) ? "block" : "none";
             });
-
-            // RESTAURAR: Si el oficial sigue, mantenerlo
-            if (participantes.has(oficialSeleccionado = oficialPrevio)) {
-                oSel.value = oficialPrevio;
-            }
-
             renderizarLiturgia();
         }
 
@@ -171,19 +150,11 @@
                     const idL = `l-${sId}-${i}`;
                     let txt = (paso.getAttribute("texto") || paso.textContent).trim();
                     
-                    // Procesar [[INSTANCIA]] para botones de trabajos/balaustres
                     if (txt.includes("[[INSTANCIA]]")) {
-                        txt = txt.replace("[[INSTANCIA]]", `<div class="instancia-botones">${procesarInstancia(ofi, sId, i)}</div>`);
+                        txt = txt.replace("[[INSTANCIA]]", `<div class="instancia-botones">${procesarInstancia(ofi)}</div>`);
                     }
-                    
-                    txt = txt.replace(/\[\[LINK:(\d+)(?::([^\]]+))?\]\]/g, (m, cod, tit) => {
-                        return `<div class="nav-link-container"><button class="btn-ritual" onclick="irA('${cod}')">${tit || 'Continuar'} ➜</button></div>`;
-                    });
-                    
-                    if (txt.includes("[[VOLVER]]")) {
-                        txt = txt.replace("[[VOLVER]]", `<div class="nav-link-container"><button class="btn-ritual" onclick="irA('VOLVER')">⬅ Regresar</button></div>`);
-                    }
-
+                    txt = txt.replace(/\[\[LINK:(\d+)(?::([^\]]+))?\]\]/g, (m, cod, tit) => `<div class="nav-link-container"><button class="btn-ritual" onclick="irA('${cod}')">${tit || 'Continuar'} ➜</button></div>`);
+                    if (txt.includes("[[VOLVER]]")) txt = txt.replace("[[VOLVER]]", `<div class="nav-link-container"><button class="btn-ritual" onclick="irA('VOLVER')">⬅ Regresar</button></div>`);
                     txt = txt.replace(/\[(.*?)\]/g, '<span class="line-exec">[$1]</span>');
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     
@@ -192,7 +163,6 @@
                 });
             });
             document.getElementById('rituales-content').innerHTML = `<dl style="counter-reset: line-counter;">${html}</dl>`;
-            
             if (ofiSel) {
                 setTimeout(() => {
                     const el = document.querySelector('.resaltado');
@@ -201,25 +171,19 @@
             }
         }
 
-        function procesarInstancia(oficialPaso, sIdActual, indexPaso) {
+        function procesarInstancia(oficialPaso) {
             if (!tenidasXml) return "";
             const tActiva = Array.from(tenidasXml.getElementsByTagName("tenida")).find(t => t.getAttribute("fecha").trim() === fechaTrabajo.trim());
             if (!tActiva) return "";            
-            
             const filtroActual = document.getElementById("oficialFilter").value;
             let btnHtml = "";
-
             Array.from(tActiva.getElementsByTagName("item")).forEach(item => {
                 const acto = item.getAttribute("acto") || "";
                 const url = item.getAttribute("url") || "";
-                const titulo = item.getAttribute("titulo") || "Ver Documento";
-                
-                // Si es Balaustre y el paso pertenece al Sec∴, solo se muestra si el filtro es Sec
+                const titulo = item.getAttribute("titulo") || "Documento";
                 if (acto === "balaustre" && oficialPaso === "Sec" && filtroActual === "Sec") {
                     btnHtml += `<button class="btn-ritual" onclick="window.open('${url}')">📜 ${titulo}</button>`;
-                } 
-                // Para otros actos (trabajos/elevaciones) en otros oficiales
-                else if (acto === "elevacion" && oficialPaso !== "Sec") {
+                } else if (acto === "elevacion" && oficialPaso !== "Sec") {
                     btnHtml += `<button class="btn-ritual" onclick="window.open('${url}')">⚙️ ${titulo}</button>`;
                 }
             });
@@ -238,11 +202,7 @@
                 return;
             }
             const targetIdStr = codigo.replace(/\D/g, '');
-            historialNavegacion.push({
-                seccion: document.getElementById("seccionFilter").value,
-                scroll: window.scrollY,
-                visibilidad: new Set(seccionesVisibles)
-            });
+            historialNavegacion.push({ seccion: document.getElementById("seccionFilter").value, scroll: window.scrollY, visibilidad: new Set(seccionesVisibles) });
             seccionesVisibles.add(targetIdStr);
             actualizarSelectorSecciones(targetIdStr);
             cambioDeSeccion();
