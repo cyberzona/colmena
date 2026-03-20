@@ -141,7 +141,7 @@
                     txt = txt.replace(/\[\[LINK:(\d+)(?::([^\]]+))?\]\]/g, (m, cod, tit) => `<div class="nav-link-container"><button class="btn-ritual" onclick="irA('${cod}')">${tit || 'Continuar'} ➜</button></div>`);
                     if (txt.includes("[[VOLVER]]")) txt = txt.replace("[[VOLVER]]", `<div class="nav-link-container"><button class="btn-ritual" onclick="irA('VOLVER')">⬅ Regresar</button></div>`);
                     
-                    // 2. Limpieza Total de corchetes técnicos dobles residuales
+                    // 2. Limpieza Total de corchetes de acción residuales
                     txt = txt.replace(/\[\[.*?\]\]/g, "");
 
                     // 3. Formateo de Texto
