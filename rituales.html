@@ -235,7 +235,7 @@
                     });
                     if (txt.includes("[[VOLVER]]")) txt = txt.replace("[[VOLVER]]", `<div class="nav-link-container"><button class="btn-ritual" onclick="irA('VOLVER')">⬅ Regresar</button></div>`);
                     if (txt.includes("[[INSTANCIA]]")) txt = txt.replace("[[INSTANCIA]]", `<div class="instancia-botones">${procesarInstancia(ofi, sId, i)}</div>`);
-                    txt = txt.replace(/\((.*?)\)/g, '<span class=line-exec>$1</span>');
+                    txt = txt.replace(/\[(.*?)\]/g, '<span class=line-exec>$1</span>');
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     const esOfi = ofiSel && ofi === ofiSel;
                     html += `<dt>${ofi}∴</dt><dd class="${esOfi ? 'resaltado' : ''}" id="${idL}">${txt}</dd>`;
