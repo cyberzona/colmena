@@ -108,13 +108,14 @@
         function cambioDeSeccion() {
             const oSel = document.getElementById("oficialFilter");
             const sId = document.getElementById("seccionFilter").value;
+            const previo = oSel.value;
             
             oSel.innerHTML = '<option value="">---</option>';
             Array.from(glosarioDoc.getElementsByTagName("item")).forEach(item => {
                 const sigla = item.getAttribute("sigla");
                 oSel.add(new Option(sigla + "∴", sigla));
             });
-
+            oSel.value = previo;
             renderizarLiturgia();
         }
 
@@ -132,11 +133,17 @@
                     const idL = `l-${sId}-${i}`;
                     let txt = (paso.getAttribute("texto") || paso.textContent).trim();
                     
+                    // Procesar Acciones
                     if (txt.includes("[[INSTANCIA]]")) {
                         txt = txt.replace("[[INSTANCIA]]", `<div class="instancia-botones">${procesarInstancia(ofi)}</div>`);
                     }
                     txt = txt.replace(/\[\[LINK:(\d+)(?::([^\]]+))?\]\]/g, (m, cod, tit) => `<div class="nav-link-container"><button class="btn-ritual" onclick="irA('${cod}')">${tit || 'Continuar'} ➜</button></div>`);
                     if (txt.includes("[[VOLVER]]")) txt = txt.replace("[[VOLVER]]", `<div class="nav-link-container"><button class="btn-ritual" onclick="irA('VOLVER')">⬅ Regresar</button></div>`);
+                    
+                    // Limpieza de corchetes de acción residuales
+                    txt = txt.replace(/\[\[.*?\]\]/g, "");
+
+                    // Formateo visual
                     txt = txt.replace(/\[(.*?)\]/g, '<span class="line-exec">[$1]</span>');
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     
