@@ -106,15 +106,25 @@
                     actualizarSelectorSecciones(ant.seccion);
                     cambioDeSeccion();
                     setTimeout(() => window.scrollTo(0, ant.scroll), 150);
+                } else {
+                    // Si no hay historial interno, probamos el retorno de grado
+                    const retornoGrado = sessionStorage.getItem('puntoRetornoLogia');
+                    if (retornoGrado) {
+                        sessionStorage.removeItem('puntoRetornoLogia');
+                        window.location.href = retornoGrado;
+                    }
                 }
                 return;
             }
+            
             const targetIdStr = codigo.length === 3 ? parseInt(codigo.substring(1), 10).toString() : codigo.replace(/\D/g, '');
+            
             historialNavegacion.push({
                 seccion: document.getElementById("seccionFilter").value,
                 scroll: window.scrollY,
                 visibilidad: new Set(seccionesVisibles)
             });
+            
             seccionesVisibles.add(targetIdStr);
             actualizarSelectorSecciones(targetIdStr);
             cambioDeSeccion();
@@ -127,12 +137,11 @@
                 fechaTrabajo = urlParams.get('fecha') || new Date().toISOString().split('T')[0]; 
                 numGradoActual = (urlParams.get('num') || "1").toString();
                 const secUrl = (urlParams.get('sec') || "1").toString();
-                await cargarDatos();
-                if (parseInt(secUrl) > 3) seccionesVisibles.add(secUrl);
                 
-                // POBLAR OFICIALES POR PRIMERA VEZ
+                await cargarDatos();
                 poblarOficialesGlobal();
                 
+                if (parseInt(secUrl) > 3) seccionesVisibles.add(secUrl);
                 ejecutarCargaRitual(numGradoActual, secUrl);
                 
                 setTimeout(() => {
@@ -155,7 +164,6 @@
             tenidasXml = parser.parseFromString(tenidas, "text/xml");
         }
 
-        // NUEVA FUNCIÓN: Carga todos los oficiales del glosario una sola vez
         function poblarOficialesGlobal() {
             const oSel = document.getElementById("oficialFilter");
             oSel.innerHTML = '<option value="">---</option>';
@@ -171,7 +179,7 @@
                 const titulos = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Maestría" };
                 document.getElementById("titulo-ritual-header").textContent = titulos[grado] || "Ritual";
                 actualizarSelectorSecciones(seccionID);
-                renderizarLiturgia(); // Solo renderizamos, sin tocar el selector de oficiales
+                renderizarLiturgia();
             }
         }
 
@@ -188,7 +196,6 @@
         }
 
         function cambioDeSeccion() {
-            // Ya no reconstruimos los oficiales aquí para que no se "apague"
             renderizarLiturgia();
         }
 
@@ -255,8 +262,9 @@
                     contenido += `<button class="btn-ritual" onclick="abrirVisor('${url}')">📜: ${titulo} ➜</button>`;
                 } else if (acto === "elevacion" && oficialPaso !== "Sec") {
                     const esOtroRitual = url.indexOf('rituales.html') !== -1;
+                    // Guardamos el punto de retorno antes de saltar a otro HTML
                     const urlOrigen = `${window.location.href.split('?')[0]}?num=${numGradoActual}&sec=${sIdActual}&fecha=${fechaTrabajo}#l-${sIdActual}-${indexPaso}`;
-                    const accion = esOtroRitual ? `window.location.href='${url}&fecha=${fechaTrabajo}'` : `abrirVisor('${url}')`;
+                    const accion = esOtroRitual ? `sessionStorage.setItem('puntoRetornoLogia', '${urlOrigen}'); window.location.href='${url}&fecha=${fechaTrabajo}'` : `abrirVisor('${url}')`;
                     contenido += `<button class="btn-instancia-exec" onclick="${accion}">${titulo}</button>`;
                 }
             });
