@@ -69,8 +69,8 @@
                 <paso tipo="dialogo" oficial="1V" texto="Reina el silencio en ambas CCol∴, VM∴."/>
                 <paso tipo="dialogo" oficial="VM" texto="QH∴ OF∴ ¿Queréis darnos vuestras conclusiones respecto a la plancha trazada por nuestro H∴ Sec∴ de nuestros últimos trabajos? [El H∴Ora∴ da las conclusiones]"/>
                 <paso tipo="dialogo" oficial="VM" texto="Después de las conclusiones del H∴ Ora∴, los HH∴ que estén de acuerdo se servirán de hacer la señal de aprobación al primer golpe de Mall∴. (Con golpe de Mallete.) "/>
-                <paso tipo="dialogo" oficial="VM" texto="¡Hermanos míos! El Taller ha ordenado nuestro primer tiempo; ahora, para que el espíritu se manifieste en nueva forma, vamos a cubrir los trabajos de este Grado y proceder a . [Con golpe de Mallete.] {LINK:103} {LINK:104} {LINK:105} {INSTANCIA}"/>
-            </apartado>          y
+                <paso tipo="dialogo" oficial="VM" texto="¡Hermanos míos! El Taller ha ordenado nuestro primer tiempo; ahora, para que el espíritu se manifieste en nueva forma, vamos a cubrir los trabajos de este Grado y proceder a . [Con golpe de Mallete.] [[LINK:103]] [[LINK:104]] [[LINK:105]] [[INSTANCIA}]]"/>
+            </apartado>          
         </seccion>            
         <seccion id="3" titulo="Clausura de Trabajos">
              <apartado id="1" titulo="Del Tronco de Beneficencia">
@@ -126,7 +126,7 @@
                 <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ que voy a conceder la palabra en bien general de la orden y en particular de este Tall∴."/>
                 <paso tipo="dialogo" oficial="2V" texto="QH∴ de la Col∴ del Norte, por orden del VM∴ y transmitida a mí por el QH∴ 1V∴ que está concedida la palabra en bien general de la orden y particular de este Tall∴."/>
                 <paso tipo="dialogo" oficial="2V" texto="QH∴ 1V∴, reina el silencio en mi Col∴.."/>
-                <paso tipo="dialogo" oficial="1V" texto="VM∴, reina silencio en ambas CCol∴. {VOLVER}"/>
+                <paso tipo="dialogo" oficial="1V" texto="VM∴, reina silencio en ambas CCol∴. [[VOLVER]]"/>
             </apartado>
         </seccion>    
         <seccion id="5" titulo="De los Asuntos Familiares">
@@ -138,13 +138,13 @@
         <seccion id="6" titulo="Instrucción: Simbolismo">
             <apartado id="1" titulo="Estudio Profundo">
                 <paso tipo="dialogo" oficial="Ora" texto="La Piedra Bruta representa el estado de imperfección..."/>
-                <paso tipo="dialogo" oficial="Ora" texto="Es cuanto, VM∴. {VOLVER}"/>
+                <paso tipo="dialogo" oficial="Ora" texto="Es cuanto, VM∴. [[VOLVER]]"/>
             </apartado>
         </seccion>
         <seccion id="7" titulo="Logia de San Juan">
             <apartado id="1" titulo="Estudio Profundo">
                 <paso tipo="dialogo" oficial="Ora" texto="La Piedra Bruta representa el estado de imperfección..."/>
-                <paso tipo="dialogo" oficial="Ora" texto="Es cuanto, VM∴. {VOLVER}"/>
+                <paso tipo="dialogo" oficial="Ora" texto="Es cuanto, VM∴. [[VOLVER]]"/>
             </apartado>
         </seccion>
     </ritual>
@@ -152,7 +152,7 @@
         <seccion id="1" titulo="Logia de San Juan">
             <apartado id="1" titulo="Estudio Profundo">
                 <paso tipo="dialogo" oficial="VM" texto="La Piedra Bruta representa el estado de imperfección..."/>
-                <paso tipo="dialogo" oficial="VM" texto="Es cuanto, VM∴. {VOLVER}"/>
+                <paso tipo="dialogo" oficial="VM" texto="Es cuanto, VM∴. [[VOLVER]]"/>
             </apartado>
         </seccion>
     </ritual>
