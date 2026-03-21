@@ -58,23 +58,14 @@
     <div id="rituales-content"></div>
 
    <script>
-    /**
-     * EDICTO DEL CANON ALVEARIS - v2026
-     * Sistema de Gestión Ritualística - Logia Colmena No. 8
-     */
-
-    // Global States (6 chars simple / Capitalized Arrays)
-    let Liturgy, Glosry, Events; 
+      let Liturgy, Glosry, Events; 
     let ritual, sectin;         
     let grados = "1", dateid = ""; 
     let Visibl = new Set(["1", "2", "3"]);
     let Tracer = []; 
 
-    // --- NAVIGATION & ROUTING ---
-
-    window.routerSections = function(action) {
+     window.routerSections = function(action) {
         if (!ritual) return;
-
         if (action === 'BACK') {
             if (Tracer.length > 0) {
                 const prev = Tracer.pop(); 
@@ -244,21 +235,31 @@
 
     function getInstance(ofisig, sid, idx) {
         if (!Events) return "";
-        const Day = Array.from(Events.getElementsByTagName("tenida")).find(t => t.getAttribute("fecha").trim() === dateid.trim());
+        
+        // Buscamos la tenida por fecha
+        const Day = Array.from(Events.getElementsByTagName("tenida")).find(t => 
+            t.getAttribute("fecha").trim() === dateid.trim()
+        );
+        
         if (!Day) return "";            
         
         const user = document.getElementById("oficialFilter").value;
         let html = "";
 
+        // Procesamos cada item dentro de la tenida
         Array.from(Day.getElementsByTagName("item")).forEach(node => {
             const act = (node.getAttribute("acto") || "").trim();
-            const url = node.getAttribute("url") || "";
-            // Corregido: Prioridad al atributo "titulo", luego al texto del nodo, y finalmente "Memo"
-            const lab = (node.getAttribute("titulo") || node.textContent || "Memo").trim(); 
+            const url = (node.getAttribute("url") || "").trim();
+            
+            // Restauramos la lectura directa del atributo 'titulo'
+            // Si tus versiones anteriores usaban otro nombre (ej. 'name'), cámbialo aquí.
+            const lab = (node.getAttribute("titulo") || "Memo").trim(); 
 
+            // Lógica para el Secretario (Balaustres)
             if (act === "balaustre" && ofisig === "Sec" && user === "Sec") {
                 html += `<button class="btn-ritual" onclick="viewPlate('${url}')">📜: ${lab} ➜</button>`;
             } 
+            // Lógica para Elevaciones/Instancias
             else if (act === "elevacion" && ofisig !== "Sec") {
                 const isExt = url.indexOf('rituales.html') !== -1;
                 const base = window.location.href.split('?')[0];
