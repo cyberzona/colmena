@@ -60,21 +60,38 @@
    <script>
     /**
      * EDICTO DEL CANON ALVEARIS - v2026
-     * Traducción Fiel de la Versión 5 con Variables Estandarizadas
+     * Restauración Exacta de la Versión 5 (Standard Compliance)
      */
 
-    let Liturgy, Glosry, Events, ritual; 
-    let sectin; // seccionActiva
-    let grados = "1", dateid = ""; 
-    let Visibl = new Set(); // seccionesVisibles
+    // Variables de Estado (Estándar Alvearis)
+    let Liturgy, Glosry, Events; 
+    let ritual, sectin; // sectin = ritualActivo
+    let grados = "1", dateid = ""; // dateid = fechaTrabajo
+    let Visibl = new Set(); // Visibl = seccionesVisibles
 
-    // --- NAVEGACIÓN (Lógica irA de V5) ---
+    // --- CARGA DE DATOS ---
+    async function fetchData() {
+        const v = Date.now();
+        try {
+            const [gls, lit, ten] = await Promise.all([
+                fetch(`glosario.xml?v=${v}`).then(r => r.text()),
+                fetch(`liturgia.xml?v=${v}`).then(r => r.text()),
+                fetch(`tenidas.xml?v=${v}`).then(r => r.text()).catch(() => '<tenidas></tenidas>')
+            ]);
+            const parser = new DOMParser();
+            Glosry = parser.parseFromString(gls, "text/xml");
+            Liturgy = parser.parseFromString(lit, "text/xml");
+            Events = parser.parseFromString(ten, "text/xml");
+        } catch (e) { console.error("Error XML:", e); }
+    }
 
+    // --- NAVEGACIÓN (Lógica pura v5) ---
     window.routerSections = function(codigo) {
         try {
-            // Traducido de irA(codigo) en V5
+            // Conversión de S00X a X
             const targetIdStr = parseInt(codigo.substring(1), 10).toString();
             
+            // Lógica de visibilidad v5
             if (parseInt(targetIdStr) > 3) {
                 Visibl = new Set([targetIdStr]);
             } else {
@@ -84,28 +101,10 @@
             updateSections(targetIdStr);
             cambioDeSeccion();
             window.scrollTo({ top: 0, behavior: 'smooth' });
-        } catch (err) { 
-            console.error("Error en navegación:", err); 
-        }
+        } catch (err) { console.error("Error Navigation:", err); }
     };
 
-    // --- CARGA DE DATOS (fetchData) ---
-
-    async function fetchData() {
-        const v = Date.now();
-        const [gls, lit, ten] = await Promise.all([
-            fetch(`glosario.xml?v=${v}`).then(r => r.text()),
-            fetch(`liturgia.xml?v=${v}`).then(r => r.text()),
-            fetch(`tenidas.xml?v=${v}`).then(r => r.text()).catch(() => '<tenidas></tenidas>')
-        ]);
-        const parser = new DOMParser();
-        Glosry = parser.parseFromString(gls, "text/xml");
-        Liturgy = parser.parseFromString(lit, "text/xml");
-        Events = parser.parseFromString(ten, "text/xml");
-    }
-
-    // --- LÓGICA DE CONTROL (Traducido de V5) ---
-
+    // --- GESTIÓN DE INTERFAZ ---
     function updateSections(idForzado) {
         const sSel = document.getElementById("seccionFilter");
         if (!sSel || !ritual) return;
@@ -113,9 +112,8 @@
         sSel.innerHTML = "";
         Array.from(ritual.getElementsByTagName("seccion")).forEach(sec => {
             const idXml = sec.getAttribute("id");
-            // Mantiene la lógica de visibilidad estricta de V5
             if (Visibl.has(idXml.toString())) {
-                sSel.add(new Option(sec.getAttribute("titulo"), idXml));
+                sSel.add(new Option(sec.getAttribute("titulo") || "Sección " + idXml, idXml));
             }
         });
         if (idForzado) sSel.value = idForzado;
@@ -144,62 +142,61 @@
 
         if (oficialesSet.has(ofiPrevio)) oSel.value = ofiPrevio;
         renderizarLiturgia();
-    }
+    };
 
-    // --- RENDERIZADO (Motor V5) ---
-
+    // --- MOTOR DE RENDERIZADO (v5) ---
     window.renderizarLiturgia = function() {
         const oficialSel = document.getElementById("oficialFilter").value; 
         const contenedor = document.getElementById('rituales-content');
         if (!sectin || !contenedor) return;
 
         let html = "", counter = 0, primeraID = null;
-        const sId = sectin.getAttribute("id");
+        const sid = sectin.getAttribute("id");
 
         Array.from(sectin.getElementsByTagName("apartado")).forEach(apa => {
             html += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>`;
             Array.from(apa.getElementsByTagName("paso")).forEach(paso => {
                 counter++;
-                const oficialTur = paso.getAttribute("oficial") || "Ofi";
-                const idL = `l-${sId}-${counter}`;
-                let txt = paso.getAttribute("texto") || paso.textContent || "";
+                const oficialTur = (paso.getAttribute("oficial") || "Ofi").trim();
+                const idL = `l-${sid}-${counter}`;
+                let txt = (paso.getAttribute("texto") || paso.textContent || "").trim();
                 
-                // Regex de LINK traducido a routerSections
+                // LINK (Lógica v5)
                 txt = txt.replace(/\[\[LINK:(\d{3})(?::([^\]]+))?\]\]/g, (match, cod, desc) => {
-                    const targetIdNum = parseInt(cod.substring(1), 10).toString();
-                    const secciones = Array.from(ritual.getElementsByTagName("seccion"));
-                    const targetSec = secciones.find(s => s.getAttribute("id") === targetIdNum);
-                    const textoBoton = desc || (targetSec ? targetSec.getAttribute("titulo") : `Sección ${targetIdNum}`);
-                    return `<br><button class="btn-ritual" onclick="window.routerSections('${cod}')">${textoBoton.trim()} ➜</button>`;
+                    const label = desc ? desc.trim() : "Ir";
+                    return `<br><button class="btn-ritual" onclick="window.routerSections('${cod}')">${label} ➜</button>`;
                 });
 
+                // INSTANCIA
                 if (txt.includes("[[INSTANCIA]]")) {
-                    txt = txt.replace("[[INSTANCIA]]", `<br>${procesarInstancia(oficialTur, sId, counter)}`);
+                    txt = txt.replace("[[INSTANCIA]]", `<br>${getInstance(oficialTur, sid, counter)}`);
                 }
 
+                // VOLVER (A la sección 1 por defecto en v5)
                 if (txt.includes("[[VOLVER]]")) {
-                    txt = txt.replace("[[VOLVER]]", `<br><button class="btn-ritual" onclick="window.routerSections('S001')">⬅ Regresar al Flujo Principal</button>`);
+                    txt = txt.replace("[[VOLVER]]", `<br><button class="btn-ritual" onclick="window.routerSections('S001')">⬅ Regresar</button>`);
                 }
                 
+                // Estética Masónica
                 txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                 txt = txt.replace(/\[(.*?)\]/g, '<span class="line-exec">[$1]</span>');
                 
                 const esOfi = (oficialSel && oficialTur === oficialSel);
                 if (esOfi && !primeraID) primeraID = idL;
+                
                 html += `<dt>${oficialTur}∴</dt><dd class="${esOfi ? 'resaltado' : ''}" id="${idL}">${txt}</dd>`;
             });
         });
 
-        contenedor.innerHTML = `<dl style="counter-reset: line-counter;">${html}</dl>`;
+        contenedor.innerHTML = `<dl>${html}</dl>`;
         if (primeraID) { 
             const el = document.getElementById(primeraID); 
-            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+            if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100); 
         }
-    }
+    };
 
-    // --- INSTANCIAS (Memos/Balaustres) ---
-
-    function procesarInstancia(oficialPaso, sid, idx) {
+    // --- GESTIÓN DE INSTANCIAS ---
+    function getInstance(oficialPaso, sid, idx) {
         if (!Events) return "";
         const tActiva = Array.from(Events.getElementsByTagName("tenida")).find(t => t.getAttribute("fecha") === dateid.trim());
         if (!tActiva) return "";            
@@ -232,16 +229,16 @@
         overlay.className = 'visor-overlay';
         overlay.innerHTML = `<div class="visor-content"><button class="visor-close" onclick="this.parentElement.parentElement.remove()">✕</button><iframe src="${url}" style="width:100%; height:100%; border:none;"></iframe></div>`;
         document.body.appendChild(overlay);
-    }
+    };
 
-    // --- INICIALIZAR ---
-
+    // --- INICIALIZACIÓN ---
     window.inicializar = async function() {
         const urlParams = new URLSearchParams(window.location.search);
         dateid = urlParams.get('fecha') || new Date().toISOString().split('T')[0];
         grados = (urlParams.get('num') || "1").toString();
         const secUrl = (urlParams.get('sec') || "1").toString();
 
+        // Aplicar visibilidad inicial v5
         if (parseInt(secUrl) > 3) {
             Visibl = new Set([secUrl]);
         } else {
@@ -249,21 +246,25 @@
         }
 
         await fetchData();
+        if (!Liturgy) return;
         ritual = Array.from(Liturgy.getElementsByTagName("ritual")).find(r => r.getAttribute("grado") === grados);
         
         if (ritual) {
-            const titulos = { "1": "Aprendiz", "2": "Compañero", "3": "Maestro" };
-            document.getElementById("titulo-ritual-header").textContent = titulos[grados] || "Ritual";
+            const header = document.getElementById("titulo-ritual-header");
+            if (header) {
+                const titulos = { "1": "Aprendiz", "2": "Compañero", "3": "Maestro" };
+                header.textContent = titulos[grados] || "Ritual";
+            }
             updateSections(secUrl);
             cambioDeSeccion();
             
-            const oficialUrl = urlParams.get('ofi') || "";
-            if (oficialUrl) {
-                document.getElementById("oficialFilter").value = oficialUrl;
+            const ofiUrl = urlParams.get('ofi') || "";
+            if (ofiUrl) {
+                document.getElementById("oficialFilter").value = ofiUrl;
                 renderizarLiturgia();
             }
         }
-    }
+    };
 </script>
 </body>
 </html>
