@@ -165,41 +165,58 @@
 
         // --- RENDERING ---
 
-        function loadLiturgy() {
-            const ofiId = document.getElementById("oficialFilter").value;
-            if (!sectin) return;
-            let output = "";
-            const sid = sectin.getAttribute("id");
-            Array.from(sectin.getElementsByTagName("apartado")).forEach(apa => {
-                output += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>`;
-                Array.from(apa.getElementsByTagName("paso")).forEach((p, i) => {
-                    const ofi = (p.getAttribute("oficial") || "Ofi").trim();
-                    const lineId = `l-${sid}-${i}`;
-                    let body = (p.getAttribute("texto") || p.textContent).trim();
-                    
-                    body = body.replace(/\[\[LINK:(\d+)(?::([^\]]+))?\]\]/g, (m, c, t) => {
-                        return `<button class="btn-ritual" onclick="routerSections('${c}')">${t ? t.trim() : "Ir"} ➜</button>`;
-                    });
-                    if (body.includes("[[VOLVER]]")) {
-                        body = body.replace("[[VOLVER]]", `<button class="btn-ritual" onclick="routerSections('BACK')">⬅ Regresar</button>`);
-                    }
-                    if (body.includes("[[INSTANCIA]]")) {
-                        body = body.replace("[[INSTANCIA]]", `<div class="instancia-botones">${getInstance(ofi, sid, i)}</div>`);
-                    }
-                    body = body.replace(/\[(.*?)\]/g, '<span class="line-exec">[$1]</span>');
-                    body = body.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
-                    const active = ofiId && ofi === ofiId;
-                    output += `<dt>${ofi}∴</dt><dd class="${active ? 'resaltado' : ''}" id="${lineId}">${body}</dd>`;
+        /**
+     * Carga y procesa la liturgia para su visualización.
+     * Corregido para evitar el error de inyección de 'class="line-exec"'
+     */
+    function loadLiturgy() {
+        const sid = document.getElementById("seccionFilter").value;
+        const ofiId = document.getElementById("oficialFilter").value;
+        if (!sectin) return;
+
+        let output = "";
+        Array.from(sectin.getElementsByTagName("apartado")).forEach(apa => {
+            output += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>`;
+            Array.from(apa.getElementsByTagName("paso")).forEach((p, i) => {
+                const ofi = (p.getAttribute("oficial") || "Ofi").trim();
+                const lineId = `l-${sid}-${i}`;
+                let body = (p.getAttribute("texto") || p.textContent).trim();
+
+                // 1. Procesamiento de Enlaces y Retornos
+                body = body.replace(/\[\[LINK:(\d+)(?::([^\]]+))?\]\]/g, (m, c, t) => {
+                    let label = t ? t.trim() : "Ir";
+                    return `<div class="nav-link-container"><button class="btn-ritual" onclick="routerSections('${c}')">${label} ➜</button></div>`;
                 });
+
+                if (body.includes("[[VOLVER]]")) {
+                    body = body.replace("[[VOLVER]]", `<div class="nav-link-container"><button class="btn-ritual" onclick="routerSections('BACK')">⬅ Regresar</button></div>`);
+                }
+                
+                if (body.includes("[[INSTANCIA]]")) {
+                    body = body.replace("[[INSTANCIA]]", `<div class="instancia-botones">${getInstance(ofi, sid, i)}</div>`);
+                }
+
+                // 2. ESTÉTICA MASÓNICA (Aquí estaba el error de la versión 19)
+                // Primero aplicamos las siglas en azul
+                body = body.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
+                
+                // Luego las rúbricas entre corchetes, asegurando que no rompa el HTML
+                body = body.replace(/\[(.*?)\]/g, '<span class="line-exec">[$1]</span>');
+
+                const active = ofiId && ofi === ofiId;
+                output += `<dt>${ofi}∴</dt><dd class="${active ? 'resaltado' : ''}" id="${lineId}">${body}</dd>`;
             });
-            document.getElementById('rituales-content').innerHTML = `<dl>${output}</dl>`;
-            if (ofiId) {
-                setTimeout(() => {
-                    const target = document.querySelector('.resaltado');
-                    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 100);
-            }
+        });
+        
+        document.getElementById('rituales-content').innerHTML = `<dl>${output}</dl>`;
+        
+        if (ofiId) {
+            setTimeout(() => {
+                const target = document.querySelector('.resaltado');
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
         }
+    }
 
         function getInstance(ofisig, sid, idx) {
             if (!Events) return "";
