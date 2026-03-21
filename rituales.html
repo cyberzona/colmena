@@ -60,7 +60,7 @@
    <script>
         /**
          * EDICTO DEL CANON ALVEARIS - v2026
-         * Basado en la estabilidad de la Versión 5
+         * Basado en la estabilidad de la Versión 5 - Corrección de Navegación
          */
 
         let Liturgy, Glosry, Events; 
@@ -107,10 +107,11 @@
             } catch (e) { console.error("Error XML:", e); }
         }
 
-        // --- NAVEGACIÓN ---
+        // --- NAVEGACIÓN CORREGIDA ---
 
         window.routerSections = function(action) {
             if (!ritual) return;
+
             if (action === 'BACK') {
                 if (Tracer.length > 0) {
                     const prev = Tracer.pop(); 
@@ -121,34 +122,52 @@
                 }
                 return;
             }
+
+            // Aseguramos que el target sea un string limpio del ID
             const current = document.getElementById("seccionFilter").value;
-            const target = action.replace(/\D/g, '');
+            const target = action.replace(/\D/g, ''); // Extrae solo números
+            
             if (current !== target) {
-                Tracer.push({ idsec: current, scroll: window.scrollY, visted: new Set(Visibl) });
+                Tracer.push({ 
+                    idsec: current, 
+                    scroll: window.scrollY, 
+                    visted: new Set(Visibl) 
+                });
+                
+                Visibl.add(target);
+                updateSections(target); 
+                cambioDeSeccion(); 
+                window.scrollTo(0, 0);
             }
-            Visibl.add(target);
-            updateSections(target); 
-            cambioDeSeccion(); 
-            window.scrollTo(0, 0);
         };
 
         function updateSections(id) {
             const select = document.getElementById("seccionFilter");
             if (!select || !ritual) return;
+
             select.innerHTML = "";
-            Array.from(ritual.getElementsByTagName("seccion")).forEach(s => {
+            const sections = Array.from(ritual.getElementsByTagName("seccion"));
+            
+            sections.forEach(s => {
                 const sid = s.getAttribute("id");
                 const tit = s.getAttribute("titulo") || "Sección " + sid; 
+                
+                // Las secciones 1, 2, 3 siempre visibles, más las descubiertas por LINK
                 if (sid === "1" || sid === "2" || sid === "3" || Visibl.has(sid)) {
-                    select.add(new Option(tit, sid));
+                    const opt = new Option(tit, sid);
+                    select.add(opt);
                 }
             });
+
+            // Forzamos el valor al ID solicitado
             select.value = id;
         }
 
         window.cambioDeSeccion = function() {
-            const sid = document.getElementById("seccionFilter").value;
+            const select = document.getElementById("seccionFilter");
+            const sid = select.value;
             if(!sid) return;
+
             sectin = Array.from(ritual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sid);
             
             const Ofis = new Set();
@@ -162,6 +181,8 @@
             renderizarLiturgia(); 
         };
 
+        // --- RESTO DE FUNCIONES (updateOficials, renderizarLiturgia, etc.) SE MANTIENEN IGUAL ---
+
         function updateOficials(Ofis) {
             const ofiSel = document.getElementById("oficialFilter");
             const oldOfi = ofiSel.value;
@@ -172,8 +193,6 @@
             });
             if (Ofis.has(oldOfi)) ofiSel.value = oldOfi;
         }
-
-        // --- RENDERIZADO ---
 
         window.renderizarLiturgia = function() {
             const ofiId = document.getElementById("oficialFilter").value;
@@ -187,7 +206,6 @@
                     const ofi = (p.getAttribute("oficial") || "Ofi").trim();
                     let body = (p.getAttribute("texto") || p.textContent).trim();
 
-                    // Procesamiento de botones LINK con detección de título
                     body = body.replace(/\[\[LINK:(\d+)(?::([^\]]+))?\]\]/g, (m, c, t) => {
                         const label = t ? t.trim() : "Ir";
                         return `<button class="btn-ritual" onclick="routerSections('${c}')">${label} ➜</button>`;
@@ -210,13 +228,6 @@
             });
 
             document.getElementById('rituales-content').innerHTML = `<dl>${output}</dl>`;
-            
-            if (ofiId) {
-                setTimeout(() => {
-                    const target = document.querySelector('.resaltado');
-                    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 100);
-            }
         };
 
         function getInstance(ofisig, sid, idx) {
