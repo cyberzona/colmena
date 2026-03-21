@@ -160,7 +160,7 @@
                 });
             }
             
-            oSel.innerHTML = '<option value="">--- TODOS ---</option>';
+            oSel.innerHTML = '<option value="">--- </option>';
             Array.from(glosarioDoc.getElementsByTagName("item")).forEach(i => {
                 const sigla = i.getAttribute("sigla");
                 if (ofisEnSeccion.has(sigla)) oSel.add(new Option(sigla + "∴", sigla));
