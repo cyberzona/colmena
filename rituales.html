@@ -40,7 +40,7 @@
         <img src="./images/logo-mini.png" alt="Logo" class="logo-mini">
         <div class="logia-info">
             <span class="line-logia">RLS∴ COLMENA # 8</span>
-            <span id="titulo-ritual-header">Cargando...</span>
+            <span id="titulo-ritual-header">...</span>
         </div>
     </div>
     <div id="control-panel">
@@ -56,25 +56,28 @@
     <div id="rituales-content"></div>
 
     <script>
-        let xmlDoc, glosarioDoc, tenidasXml, ritualActivo;
-        let numGradoActual = "1", fechaTrabajo = "";
-        let seccionesVisibles = new Set(["1", "2", "3"]);
+        /**
+         * CANON ALVEARIS v38 - ESTABLE
+         */
+        let Liturgy, Glosry, Events;
+        let grados = "1", dateid = "";
+        let Visibl = new Set(["1", "2", "3"]);
         let historialNavegacion = [];
 
         window.irA = function(codigo) {
-            if (!ritualActivo) return;
+            if (!Liturgy) return;
             if (codigo === 'VOLVER') {
                 if (historialNavegacion.length > 0) {
                     const ant = historialNavegacion.pop();
-                    seccionesVisibles = ant.visibilidad;
+                    Visibl = ant.visibilidad;
                     actualizarSelectorSecciones(ant.seccion);
                     cambioDeSeccion();
                     setTimeout(() => window.scrollTo(0, ant.scroll), 150);
                 } else {
-                    const retornoGrado = sessionStorage.getItem('puntoRetornoLogia');
-                    if (retornoGrado) {
+                    const retorno = sessionStorage.getItem('puntoRetornoLogia');
+                    if (retorno) {
                         sessionStorage.removeItem('puntoRetornoLogia');
-                        window.location.href = retornoGrado;
+                        window.location.href = retorno;
                     }
                 }
                 return;
@@ -83,9 +86,9 @@
             historialNavegacion.push({
                 seccion: document.getElementById("seccionFilter").value,
                 scroll: window.scrollY,
-                visibilidad: new Set(seccionesVisibles)
+                visibilidad: new Set(Visibl)
             });
-            seccionesVisibles.add(targetIdStr);
+            Visibl.add(targetIdStr);
             actualizarSelectorSecciones(targetIdStr);
             cambioDeSeccion();
             window.scrollTo(0, 0);
@@ -94,27 +97,24 @@
         async function inicializar() {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
-                fechaTrabajo = urlParams.get('fecha') || new Date().toISOString().split('T')[0]; 
-                numGradoActual = (urlParams.get('num') || "1").toString();
+                dateid = urlParams.get('fecha') || new Date().toISOString().split('T')[0]; 
+                grados = (urlParams.get('num') || "1").toString();
                 const secUrl = (urlParams.get('sec') || "1").toString();
                 
                 await cargarDatos();
-                if (parseInt(secUrl) > 3) seccionesVisibles.add(secUrl);
+                if (parseInt(secUrl) > 3) Visibl.add(secUrl);
                 
-                // Recuperar oficial guardado antes del renderizado
+                // Persistencia: Recuperar oficial de la sesión
                 const ofiGuardado = sessionStorage.getItem('oficialRetornoLogia');
                 
-                ritualActivo = Array.from(xmlDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("grado") === numGradoActual);
-                if (ritualActivo) {
+                if (Liturgy) {
                     const titulos = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Maestría" };
-                    document.getElementById("titulo-ritual-header").textContent = titulos[numGradoActual] || "Ritual";
+                    document.getElementById("titulo-ritual-header").textContent = titulos[grados] || "Ritual";
                     
                     actualizarSelectorSecciones(secUrl);
                     
-                    // Aplicar oficial guardado al selector si existe
                     if (ofiGuardado) {
-                        const oSel = document.getElementById("oficialFilter");
-                        oSel.dataset.pendingOfi = ofiGuardado; // Marca temporal
+                        document.getElementById("oficialFilter").dataset.pendingOfi = ofiGuardado;
                     }
                     
                     cambioDeSeccion();
@@ -129,28 +129,30 @@
                     const el = document.querySelector('.resaltado');
                     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }, 800);
-            } catch (e) { console.error("Error en inicialización:", e); }
+            } catch (e) { console.error("Error Alvearis Init:", e); }
         }
 
         async function cargarDatos() {
             const v = new Date().getTime(); 
-            const [glosario, liturgia, tenidas] = await Promise.all([
-                fetch(`glosario.xml?v=${v}`).then(r => r.text()),
-                fetch(`liturgia.xml?v=${v}`).then(r => r.text()),
-                fetch(`tenidas.xml?v=${v}`).then(r => r.text()).catch(() => '<bitacora></bitacora>')
+            const fetchText = url => fetch(`${url}?v=${v}`).then(r => r.text());
+            const [gls, lit, ten] = await Promise.all([
+                fetchText('glosario.xml'),
+                fetchText('liturgia.xml'),
+                fetchText('tenidas.xml').catch(() => '<b/>')
             ]);
             const parser = new DOMParser();
-            glosarioDoc = parser.parseFromString(glosario, "text/xml");
-            xmlDoc = parser.parseFromString(liturgia, "text/xml");
-            tenidasXml = parser.parseFromString(tenidas, "text/xml");
+            Glosry = parser.parseFromString(gls, "text/xml");
+            Events = parser.parseFromString(ten, "text/xml");
+            const fullXml = parser.parseFromString(lit, "text/xml");
+            Liturgy = Array.from(fullXml.getElementsByTagName("ritual")).find(r => r.getAttribute("grado") === grados);
         }
 
         function actualizarSelectorSecciones(idSel) {
             const sSel = document.getElementById("seccionFilter");
             sSel.innerHTML = "";
-            Array.from(ritualActivo.getElementsByTagName("seccion")).forEach(sec => {
+            Array.from(Liturgy.getElementsByTagName("seccion")).forEach(sec => {
                 const id = sec.getAttribute("id");
-                if (id === "1" || id === "2" || id === "3" || seccionesVisibles.has(id)) {
+                if (id === "1" || id === "2" || id === "3" || Visibl.has(id)) {
                     sSel.add(new Option(sec.getAttribute("titulo"), id));
                 }
             });
@@ -161,25 +163,24 @@
             const sId = document.getElementById("seccionFilter").value;
             const oSel = document.getElementById("oficialFilter");
             
-            // Lógica de persistencia: Prioriza valor actual o el guardado en dataset
             const ofiPrevio = oSel.value || oSel.dataset.pendingOfi || "";
             delete oSel.dataset.pendingOfi;
 
-            const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
-            const ofis = new Set();
-            if (seccion) {
-                Array.from(seccion.getElementsByTagName("paso")).forEach(p => {
-                    if (p.getAttribute("oficial")) ofis.add(p.getAttribute("oficial").trim());
+            const sectin = Array.from(Liturgy.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
+            const ofisSet = new Set();
+            if (sectin) {
+                Array.from(sectin.getElementsByTagName("paso")).forEach(p => {
+                    if (p.getAttribute("oficial")) ofisSet.add(p.getAttribute("oficial").trim());
                 });
             }
 
             oSel.innerHTML = '<option value="">---</option>';
-            Array.from(glosarioDoc.getElementsByTagName("item")).forEach(i => {
+            Array.from(Glosry.getElementsByTagName("item")).forEach(i => {
                 const sigla = i.getAttribute("sigla");
-                if (ofis.has(sigla)) oSel.add(new Option(sigla + "∴", sigla));
+                if (ofisSet.has(sigla)) oSel.add(new Option(sigla + "∴", sigla));
             });
 
-            if (ofis.has(ofiPrevio)) {
+            if (ofisSet.has(ofiPrevio)) {
                 oSel.value = ofiPrevio;
             }
             renderizarLiturgia();
@@ -188,57 +189,57 @@
         function renderizarLiturgia() {
             const sId = document.getElementById("seccionFilter").value;
             const ofiSel = document.getElementById("oficialFilter").value;
-            const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
-            if (!seccion) return;
+            const sectin = Array.from(Liturgy.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
+            if (!sectin) return;
 
             let html = "";
-            Array.from(seccion.getElementsByTagName("apartado")).forEach(apa => {
+            Array.from(sectin.getElementsByTagName("apartado")).forEach(apa => {
                 html += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>`;
                 Array.from(apa.getElementsByTagName("paso")).forEach((paso, i) => {
                     const ofi = (paso.getAttribute("oficial") || "Ofi").trim();
                     const idL = `l-${sId}-${i}`;
                     let txt = (paso.getAttribute("texto") || paso.textContent).trim();
-                    let botones = "";
+                    let btns = "";
 
-                    // 1. Extraer marcadores (LINK, VOLVER, INSTANCIA)
-                    txt = txt.replace(/\[\[LINK:(\d+)(?::([^\]]+))?\]\]/g, (match, cod, titulo) => {
-                        let label = titulo ? titulo.trim() : "";
+                    // 1. Procesar Marcadores Dinámicos
+                    txt = txt.replace(/\[\[LINK:(\d+)(?::([^\]]+))?\]\]/g, (m, cod, tit) => {
+                        let label = tit ? tit.trim() : "";
                         if (!label) {
                             const tId = cod.length === 3 ? parseInt(cod.substring(1), 10).toString() : cod;
-                            const targetSec = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") === tId);
-                            label = targetSec ? targetSec.getAttribute("titulo") : "Ir";
+                            const target = Array.from(Liturgy.getElementsByTagName("seccion")).find(s => s.getAttribute("id") === tId);
+                            label = target ? target.getAttribute("titulo") : "Ir";
                         }
-                        botones += `<div class="nav-link-container"><button class="btn-ritual" onclick="irA('${cod}')">${label} ➜</button></div>`;
+                        btns += `<div class="nav-link-container"><button class="btn-ritual" onclick="irA('${cod}')">${label} ➜</button></div>`;
                         return "";
                     });
 
                     if (txt.includes("[[VOLVER]]")) {
-                        botones += `<div class="nav-link-container"><button class="btn-ritual" onclick="irA('VOLVER')">⬅ Regresar</button></div>`;
+                        btns += `<div class="nav-link-container"><button class="btn-ritual" onclick="irA('VOLVER')">⬅ Regresar</button></div>`;
                         txt = txt.replace("[[VOLVER]]", "");
                     }
 
                     if (txt.includes("[[INSTANCIA]]")) {
-                        botones += `<div class="instancia-botones">${procesarInstancia(ofi, sId, i)}</div>`;
+                        btns += `<div class="instancia-botones">${procesarInstancia(ofi, sId, i)}</div>`;
                         txt = txt.replace("[[INSTANCIA]]", "");
                     }
 
-                    // 2. Tokenización para proteger el line-exec de las siglas azules
-                    let execTokens = [];
+                    // 2. Blindaje de Formato (Protección de corchetes)
+                    let execContent = [];
                     txt = txt.replace(/\[(.*?)\]/g, (m, content) => {
-                        execTokens.push(content);
-                        return `___EXEC_${execTokens.length - 1}___`;
+                        execContent.push(content);
+                        return `___EX_${execContent.length - 1}___`;
                     });
 
-                    // 3. Aplicar siglas azules
+                    // 3. Siglas Azules
                     txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
 
-                    // 4. Restaurar line-exec con corchetes correctos
-                    txt = txt.replace(/___EXEC_(\d+)___/g, (m, idx) => {
-                        return `<span class="line-exec">[${execTokens[idx]}]</span>`;
+                    // 4. Restauración de Instrucciones de Ejecución [line-exec]
+                    txt = txt.replace(/___EX_(\d+)___/g, (m, idx) => {
+                        return `<span class="line-exec">[${execContent[idx]}]</span>`;
                     });
 
                     const esOfi = ofiSel && ofi === ofiSel;
-                    html += `<dt>${ofi}∴</dt><dd class="${esOfi ? 'resaltado' : ''}" id="${idL}">${txt}${botones}</dd>`;
+                    html += `<dt>${ofi}∴</dt><dd class="${esOfi ? 'resaltado' : ''}" id="${idL}">${txt}${btns}</dd>`;
                 });
             });
 
@@ -246,44 +247,42 @@
             
             if (ofiSel) {
                 setTimeout(() => {
-                    const primera = document.querySelector('.resaltado');
-                    if (primera) primera.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    const el = document.querySelector('.resaltado');
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }, 100);
             }
         }
 
-        function procesarInstancia(oficialPaso, sId, index) {
-            if (!tenidasXml) return "";
-            const tActiva = Array.from(tenidasXml.getElementsByTagName("tenida")).find(t => t.getAttribute("fecha").trim() === fechaTrabajo.trim());
+        function procesarInstancia(oficialPaso, sId, idx) {
+            if (!Events) return "";
+            const tActiva = Array.from(Events.getElementsByTagName("tenida")).find(t => t.getAttribute("fecha").trim() === dateid.trim());
             if (!tActiva) return "";            
             
-            const filtroOfi = document.getElementById("oficialFilter").value;
-            let btnHtml = "";
+            const ofiFiltro = document.getElementById("oficialFilter").value;
+            let btnsHtml = "";
 
             Array.from(tActiva.getElementsByTagName("item")).forEach(item => {
                 const acto = (item.getAttribute("acto") || "").trim();
                 const url = item.getAttribute("url") || "";
                 const tit = item.getAttribute("titulo") || "Memo";
 
-                if (acto === "balaustre" && oficialPaso === "Sec" && filtroOfi === "Sec") {
-                    btnHtml += `<button class="btn-ritual" onclick="abrirVisor('${url}')">📜: ${tit} ➜</button>`;
+                if (acto === "balaustre" && oficialPaso === "Sec" && ofiFiltro === "Sec") {
+                    btnsHtml += `<button class="btn-ritual" onclick="abrirVisor('${url}')">📜: ${tit} ➜</button>`;
                 } else if (acto === "elevacion" && oficialPaso !== "Sec") {
-                    const esOtroRitual = url.indexOf('rituales.html') !== -1;
-                    const ref = `${window.location.pathname}?num=${numGradoActual}&sec=${sId}&fecha=${fechaTrabajo}#l-${sId}-${index}`;
+                    const esRitual = url.indexOf('rituales.html') !== -1;
+                    const ref = `${window.location.pathname}?num=${grados}&sec=${sId}&fecha=${dateid}#l-${sId}-${idx}`;
                     
                     let action;
-                    if (esOtroRitual) {
-                        // Guardar oficial antes de la redirección
+                    if (esRitual) {
                         const ofiActual = document.getElementById("oficialFilter").value;
-                        action = `sessionStorage.setItem('oficialRetornoLogia', '${ofiActual}'); sessionStorage.setItem('puntoRetornoLogia', '${ref}'); window.location.href='${url}&fecha=${fechaTrabajo}'`;
+                        action = `sessionStorage.setItem('oficialRetornoLogia', '${ofiActual}'); sessionStorage.setItem('puntoRetornoLogia', '${ref}'); window.location.href='${url}&fecha=${dateid}'`;
                     } else {
                         action = `abrirVisor('${url}')`;
                     }
-                    
-                    btnHtml += `<button class="btn-instancia-exec" onclick="${action}">${tit}</button>`;
+                    btnsHtml += `<button class="btn-instancia-exec" onclick="${action}">${tit}</button>`;
                 }
             });
-            return btnHtml;
+            return btnsHtml;
         }
 
         function abrirVisor(url) {
