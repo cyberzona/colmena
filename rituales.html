@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Codex Alvearis v40 - Portal de Rituales</title>
+    <title>Codex Alvearis v41 - Portal de Rituales</title>
     <style>
         body { font-family: 'Palatino Linotype', serif; line-height: 1.1; color: #2c2c2c; margin: 0; padding: 10px; background-color: #fdfaf3; }
         .header-container { display: flex; align-items: center; gap: 20px; margin-bottom: 8px; border-bottom: 2px solid #5d4037; padding-bottom: 8px; }
@@ -21,8 +21,24 @@
         .sigla-texto-azul { color: #0277bd; font-weight: bold; }
         .line-exec { font-style: italic; font-size: 0.95em; color: rgba(0, 0, 0, 0.4); font-weight: normal; margin-left: 3px; }
         dt { font-weight: bold; color: #5d4037; margin-top: 8px; }
+        
         dd { margin-left: 55px; border-left: 3px solid #d7ccc8; padding-left: 10px; padding-right: 10px; position: relative; margin-bottom: 4px; counter-increment: line-counter; text-align: justify; text-justify: inter-word; hyphens: auto; }
-        dd::before { content: counter(line-counter); position: absolute; left: -45px; color: #666; font-size: 0.8rem; font-weight: bold; width: 35px; text-align: right; top: 2px; }
+        
+        /* Numeración de Alto Impacto Estilo v19 */
+        dd::before { 
+            content: counter(line-counter); 
+            position: absolute; 
+            left: -48px; 
+            color: #5d4037; 
+            font-family: Arial, Helvetica, sans-serif; 
+            font-size: 1.5em; 
+            font-weight: 900; 
+            line-height: 0.8; 
+            width: 40px; 
+            text-align: right; 
+            opacity: 0.8; 
+        }
+
         .resaltado { background: rgba(180, 255, 100, 0.4) !important; border-left: 5px solid #2e7d32 !important; }
         .apartado-header { font-weight: bold; color: #795548; font-size: 1.1rem; border-bottom: 2px solid #d7ccc8; text-align: right; margin-top: 20px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
         
@@ -56,7 +72,7 @@
 
     <script>
         /**
-         * CANON ALVEARIS v40 - REVISIÓN ESTABLE
+         * CANON ALVEARIS v41 - RECURSIVIDAD DE OFICIAL
          */
         let RitualActual, GlosarioMaestro, BitacoraEventos;
         let gradoActivo = "1", fechaSesion = "";
@@ -65,10 +81,17 @@
 
         window.irA = function(codigoDestino) {
             if (!RitualActual) return;
+            
+            const comboOficial = document.getElementById("oficialFilter");
+
             if (codigoDestino === 'VOLVER') {
                 if (PilaNavegacion.length > 0) {
                     const estadoAnterior = PilaNavegacion.pop();
                     SeccionesDesbloqueadas = estadoAnterior.visibilidad;
+                    
+                    // Restaurar Oficial antes de cambiar sección (Recursividad)
+                    comboOficial.dataset.oficialPendiente = estadoAnterior.oficial;
+                    
                     actualizarSelectorSecciones(estadoAnterior.seccion);
                     gestionarCambioSeccion();
                     setTimeout(() => window.scrollTo(0, estadoAnterior.scroll), 150);
@@ -81,12 +104,17 @@
                 }
                 return;
             }
+
             const idDestino = codigoDestino.length === 3 ? parseInt(codigoDestino.substring(1), 10).toString() : codigoDestino.replace(/\D/g, '');
+            
+            // Guardamos el oficial actual en la pila para la recursividad
             PilaNavegacion.push({
                 seccion: document.getElementById("seccionFilter").value,
+                oficial: comboOficial.value,
                 scroll: window.scrollY,
                 visibilidad: new Set(SeccionesDesbloqueadas)
             });
+
             SeccionesDesbloqueadas.add(idDestino);
             actualizarSelectorSecciones(idDestino);
             gestionarCambioSeccion();
@@ -157,7 +185,9 @@
         function gestionarCambioSeccion() {
             const idActual = document.getElementById("seccionFilter").value;
             const comboOficial = document.getElementById("oficialFilter");
-            const oficialPrevio = comboOficial.value || comboOficial.dataset.oficialPendiente || "";
+            
+            // Priorizamos el oficial pendiente de la recursividad o persistencia
+            const oficialAEntrar = comboOficial.dataset.oficialPendiente || comboOficial.value || "";
             delete comboOficial.dataset.oficialPendiente;
 
             const nodoSeccion = Array.from(RitualActual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == idActual);
@@ -174,7 +204,7 @@
                 if (OficialesPresentes.has(sigla)) comboOficial.add(new Option(sigla + "∴", sigla));
             });
 
-            if (OficialesPresentes.has(oficialPrevio)) comboOficial.value = oficialPrevio;
+            if (OficialesPresentes.has(oficialAEntrar)) comboOficial.value = oficialAEntrar;
             renderizarLiturgia();
         }
 
@@ -193,7 +223,6 @@
                     let textoPaso = (nodoPaso.getAttribute("texto") || nodoPaso.textContent).trim();
                     let MapaBotones = "";
 
-                    // 1. Marcadores de Navegación e Instancia
                     textoPaso = textoPaso.replace(/\[\[LINK:(\d+)(?::([^\]]+))?\]\]/g, (match, codigo, etiqueta) => {
                         let nombreLink = etiqueta ? etiqueta.trim() : "";
                         if (!nombreLink) {
@@ -215,7 +244,6 @@
                         textoPaso = textoPaso.replace("[[INSTANCIA]]", "");
                     }
 
-                    // 2. Blindaje Tipográfico y Siglas
                     let coleccionInstrucciones = [];
                     textoPaso = textoPaso.replace(/\[(.*?)\]/g, (match, contenido) => {
                         coleccionInstrucciones.push(contenido);
@@ -225,7 +253,6 @@
                     textoPaso = textoPaso.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
 
                     textoPaso = textoPaso.replace(/___TOKEN_ALVEARIS_(\d+)___/g, (match, idx) => {
-                        // Salida final con Paréntesis según Canon v40
                         return `<span class="line-exec">(${coleccionInstrucciones[idx]})</span>`;
                     });
 
