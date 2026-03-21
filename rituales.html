@@ -69,7 +69,28 @@
         let Visibl = new Set(["1", "2", "3"]);
         let Tracer = []; 
 
-        // --- INFRAESTRUCTURA DE DATOS ---
+        // --- INICIALIZACIÓN ---
+
+        window.inicializar = async function() {
+            const params = new URLSearchParams(window.location.search);
+            dateid = params.get('fecha') || new Date().toISOString().split('T')[0]; 
+            grados = (params.get('num') || "1").toString();
+            const startS = (params.get('sec') || "1").toString();
+
+            await fetchData();
+            if (!Liturgy) return;
+
+            ritual = Array.from(Liturgy.getElementsByTagName("ritual")).find(r => r.getAttribute("grado") === grados);
+            
+            if (ritual) {
+                const Titles = { "1": "Aprendiz", "2": "Compañero", "3": "Maestro" };
+                document.getElementById("titulo-ritual-header").textContent = Titles[grados] || "Ritual";
+                
+                if (parseInt(startS) > 3) Visibl.add(startS);
+                updateSections(startS);
+                cambioDeSeccion(); 
+            }
+        };
 
         async function fetchData() {
             const v = Date.now(); 
@@ -86,7 +107,7 @@
             } catch (e) { console.error("Error XML:", e); }
         }
 
-        // --- LÓGICA DE NAVEGACIÓN (CANON ALVEARIS) ---
+        // --- NAVEGACIÓN ---
 
         window.routerSections = function(action) {
             if (!ritual) return;
@@ -94,12 +115,9 @@
                 if (Tracer.length > 0) {
                     const prev = Tracer.pop(); 
                     Visibl = prev.visted;
-                    updateSectios(prev.idsec); 
-                    playSection(); 
+                    updateSections(prev.idsec); 
+                    cambioDeSeccion(); 
                     setTimeout(() => window.scrollTo(0, prev.scroll), 50);
-                } else {
-                    const backUr = sessionStorage.getItem('RETRN');
-                    if (backUr) { window.location.href = backUr; }
                 }
                 return;
             }
@@ -109,14 +127,12 @@
                 Tracer.push({ idsec: current, scroll: window.scrollY, visted: new Set(Visibl) });
             }
             Visibl.add(target);
-            updateSectios(target); 
-            playSection(); 
+            updateSections(target); 
+            cambioDeSeccion(); 
             window.scrollTo(0, 0);
         };
 
-        // --- GESTIÓN DE INTERFAZ ---
-
-        function updateSectios(id) {
+        function updateSections(id) {
             const select = document.getElementById("seccionFilter");
             if (!select || !ritual) return;
             select.innerHTML = "";
@@ -130,6 +146,22 @@
             select.value = id;
         }
 
+        window.cambioDeSeccion = function() {
+            const sid = document.getElementById("seccionFilter").value;
+            if(!sid) return;
+            sectin = Array.from(ritual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sid);
+            
+            const Ofis = new Set();
+            if (sectin) {
+                Array.from(sectin.getElementsByTagName("paso")).forEach(p => {
+                    const o = p.getAttribute("oficial");
+                    if (o) Ofis.add(o.trim());
+                });
+            }
+            updateOficials(Ofis);
+            renderizarLiturgia(); 
+        };
+
         function updateOficials(Ofis) {
             const ofiSel = document.getElementById("oficialFilter");
             const oldOfi = ofiSel.value;
@@ -141,24 +173,9 @@
             if (Ofis.has(oldOfi)) ofiSel.value = oldOfi;
         }
 
-        window.playSection = function() {
-            const sid = document.getElementById("seccionFilter").value;
-            if(!sid) return;
-            sectin = Array.from(ritual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sid);
-            const Ofis = new Set();
-            if (sectin) {
-                Array.from(sectin.getElementsByTagName("paso")).forEach(p => {
-                    const o = p.getAttribute("oficial");
-                    if (o) Ofis.add(o.trim());
-                });
-            }
-            updateOficials(Ofis);
-            loadLiturgy(); 
-        };
+        // --- RENDERIZADO ---
 
-        // --- MOTOR DE RENDERIZADO (VERSIÓN 5) ---
-
-        function loadLiturgy() {
+        window.renderizarLiturgia = function() {
             const ofiId = document.getElementById("oficialFilter").value;
             if (!sectin) return;
             let output = "";
@@ -170,9 +187,10 @@
                     const ofi = (p.getAttribute("oficial") || "Ofi").trim();
                     let body = (p.getAttribute("texto") || p.textContent).trim();
 
-                    // Procesamiento simple de la Versión 5
+                    // Procesamiento de botones LINK con detección de título
                     body = body.replace(/\[\[LINK:(\d+)(?::([^\]]+))?\]\]/g, (m, c, t) => {
-                        return `<button class="btn-ritual" onclick="routerSections('${c}')">${t ? t.trim() : "Ir"} ➜</button>`;
+                        const label = t ? t.trim() : "Ir";
+                        return `<button class="btn-ritual" onclick="routerSections('${c}')">${label} ➜</button>`;
                     });
                     
                     if (body.includes("[[VOLVER]]")) {
@@ -183,7 +201,6 @@
                         body = body.replace("[[INSTANCIA]]", `<div class="instancia-botones">${getInstance(ofi, sid, i)}</div>`);
                     }
 
-                    // Aplicación de Estética sin romper etiquetas
                     body = body.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                     body = body.replace(/\[(.*?)\]/g, '<span class="line-exec">[$1]</span>');
 
@@ -200,7 +217,7 @@
                     if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }, 100);
             }
-        }
+        };
 
         function getInstance(ofisig, sid, idx) {
             if (!Events) return "";
@@ -216,7 +233,8 @@
                 if (act === "balaustre" && ofisig === "Sec" && user === "Sec") {
                     html += `<button class="btn-ritual" onclick="viewPlate('${url}')">📜: ${lab} ➜</button>`;
                 } else if (act === "elevacion" && ofisig !== "Sec") {
-                    const uri = `${window.location.href.split('?')[0]}?num=${grados}&sec=${sid}&fecha=${dateid}#l-${sid}-${idx}`;
+                    const base = window.location.href.split('?')[0];
+                    const uri = `${base}?num=${grados}&sec=${sid}&fecha=${dateid}#l-${sid}-${idx}`;
                     const cmd = url.includes('rituales.html') 
                         ? `sessionStorage.setItem('RETRN', '${uri}'); window.location.href='${url}&fecha=${dateid}'` 
                         : `viewPlate('${url}')`;
@@ -231,25 +249,6 @@
             box.className = 'visor-overlay';
             box.innerHTML = `<div class="visor-content"><button class="visor-close" onclick="this.parentElement.parentElement.remove()">✕</button><iframe src="${uri}" style="width:100%; height:100%; border:none;"></iframe></div>`;
             document.body.appendChild(box);
-        };
-
-        window.onload = async () => {
-            const params = new URLSearchParams(window.location.search);
-            dateid = params.get('fecha') || new Date().toISOString().split('T')[0]; 
-            grados = (params.get('num') || "1").toString();
-            const startS = (params.get('sec') || "1").toString();
-
-            await fetchData();
-            if (!Liturgy) return;
-            ritual = Array.from(Liturgy.getElementsByTagName("ritual")).find(r => r.getAttribute("grado") === grados);
-            
-            if (ritual) {
-                const Titles = { "1": "Aprendiz", "2": "Compañero", "3": "Maestro" };
-                document.getElementById("titulo-ritual-header").textContent = Titles[grados] || "Ritual";
-                if (parseInt(startS) > 3) Visibl.add(startS);
-                updateSectios(startS);
-                playSection(); 
-            }
         };
     </script>
 </body>
