@@ -56,179 +56,183 @@
     <div id="rituales-content"></div>
 
      <script>
-    /**
-     * EDICTO DEL CANON ALVEARIS - v2026.4
-     * Versión Final: Corrección de Títulos de Botones y Persistencia
-     */
+        let xmlDoc, glosarioDoc, tenidasXml, ritualActivo;
+        let numGradoActual = "1", fechaTrabajo = "";
+        let seccionesVisibles = new Set(["1", "2", "3"]);
+        let historialNavegacion = [];
 
-    let Liturgy, Glosry, Events; 
-    let grados = "1", dateid = ""; 
-    let Visibl = new Set(["1", "2", "3"]);
-    let historialNavegacion = [];
-
-    // --- NAVEGACIÓN ---
-    window.irA = function(codigo) {
-        if (!Liturgy) return;
-        if (codigo === 'VOLVER') {
-            if (historialNavegacion.length > 0) {
-                const ant = historialNavegacion.pop();
-                Visibl = ant.visibilidad;
-                actualizarSelectorSecciones(ant.seccion);
-                cambioDeSeccion();
-                setTimeout(() => window.scrollTo(0, ant.scroll), 150);
-            } else {
-                const retorno = sessionStorage.getItem('puntoRetornoLogia');
-                if (retorno) { sessionStorage.removeItem('puntoRetornoLogia'); window.location.href = retorno; }
-            }
-            return;
-        }
-        const targetIdStr = codigo.length === 3 ? parseInt(codigo.substring(1), 10).toString() : codigo.replace(/\D/g, '');
-        historialNavegacion.push({ seccion: document.getElementById("seccionFilter").value, scroll: window.scrollY, visibilidad: new Set(Visibl) });
-        Visibl.add(targetIdStr);
-        actualizarSelectorSecciones(targetIdStr);
-        cambioDeSeccion();
-        window.scrollTo(0, 0);
-    };
-
-    // --- CARGA DE DATOS ---
-    async function inicializar() {
-        try {
-            const urlParams = new URLSearchParams(window.location.search);
-            dateid = urlParams.get('fecha') || new Date().toISOString().split('T')[0]; 
-            grados = (urlParams.get('num') || "1").toString();
-            const secUrl = (urlParams.get('sec') || "1").toString();
-            await cargarDatos();
-            if (parseInt(secUrl) > 3) Visibl.add(secUrl);
-            if (Liturgy) {
-                const titulos = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Maestría" };
-                document.getElementById("titulo-ritual-header").textContent = titulos[grados] || "Ritual";
-                actualizarSelectorSecciones(secUrl);
-                cambioDeSeccion();
-            }
-            setTimeout(() => {
-                const el = document.querySelector('.resaltado') || document.querySelector(window.location.hash);
-                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 800);
-        } catch (e) { console.error("Error Alvearis:", e); }
-    }
-
-    async function cargarDatos() {
-        const v = new Date().getTime();
-        const fetchText = url => fetch(`${url}?v=${v}`).then(r => r.text());
-        const [gls, lit, ten] = await Promise.all([fetchText('glosario.xml'), fetchText('liturgia.xml'), fetchText('tenidas.xml').catch(() => '<b/>')]);
-        const parser = new DOMParser();
-        Glosry = parser.parseFromString(gls, "text/xml");
-        Events = parser.parseFromString(ten, "text/xml");
-        const fullXml = parser.parseFromString(lit, "text/xml");
-        Liturgy = Array.from(fullXml.getElementsByTagName("ritual")).find(r => r.getAttribute("grado") === grados);
-    }
-
-    function actualizarSelectorSecciones(idSel) {
-        const sSel = document.getElementById("seccionFilter");
-        if (!sSel || !Liturgy) return;
-        sSel.innerHTML = "";
-        Array.from(Liturgy.getElementsByTagName("seccion")).forEach(sec => {
-            const id = sec.getAttribute("id");
-            if (id === "1" || id === "2" || id === "3" || Visibl.has(id)) sSel.add(new Option(sec.getAttribute("titulo"), id));
-        });
-        sSel.value = idSel;
-    }
-
-    window.cambioDeSeccion = function() {
-        const oSel = document.getElementById("oficialFilter");
-        const oficialPrevio = oSel.value; 
-        const sId = document.getElementById("seccionFilter").value;
-        const sectin = Array.from(Liturgy.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
-        const ofisSet = new Set();
-        if (sectin) Array.from(sectin.getElementsByTagName("paso")).forEach(p => { if (p.getAttribute("oficial")) ofisSet.add(p.getAttribute("oficial").trim()); });
-        oSel.innerHTML = '<option value="">---</option>';
-        Array.from(Glosry.getElementsByTagName("item")).forEach(i => {
-            const sigla = i.getAttribute("sigla");
-            if (ofisSet.has(sigla)) oSel.add(new Option(sigla + "∴", sigla));
-        });
-        if (oficialPrevio && ofisSet.has(oficialPrevio)) oSel.value = oficialPrevio;
-        renderizarLiturgia();
-    };
-
-    // --- RENDERIZADO CORREGIDO ---
-    window.renderizarLiturgia = function() {
-        const sId = document.getElementById("seccionFilter").value;
-        const ofiSel = document.getElementById("oficialFilter").value;
-        const sectin = Array.from(Liturgy.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
-        if (!sectin) return;
-
-        let html = "";
-        Array.from(sectin.getElementsByTagName("apartado")).forEach(apa => {
-            html += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>`;
-            Array.from(apa.getElementsByTagName("paso")).forEach((paso, i) => {
-                const ofi = (paso.getAttribute("oficial") || "Ofi").trim();
-                let txt = (paso.getAttribute("texto") || paso.textContent).trim();
-                let btnsHtml = "";
-
-                // 1. Extraer LINKs sin destruir el texto original para no perder el título
-                txt = txt.replace(/\[\[LINK:(\d+)(?::([^\]]+))?\]\]/g, (match, cod, titulo) => {
-                    let label = titulo ? titulo.trim() : "";
-                    if (!label) {
-                        const tId = cod.length === 3 ? parseInt(cod.substring(1), 10).toString() : cod;
-                        const target = Array.from(Liturgy.getElementsByTagName("seccion")).find(s => s.getAttribute("id") === tId);
-                        label = target ? target.getAttribute("titulo") : "Ir ➜";
+        window.irA = function(codigo) {
+            if (!ritualActivo) return;
+            if (codigo === 'VOLVER') {
+                if (historialNavegacion.length > 0) {
+                    const ant = historialNavegacion.pop();
+                    seccionesVisibles = ant.visibilidad;
+                    actualizarSelectorSecciones(ant.seccion);
+                    cambioDeSeccion();
+                    setTimeout(() => window.scrollTo(0, ant.scroll), 150);
+                } else {
+                    const retornoGrado = sessionStorage.getItem('puntoRetornoLogia');
+                    if (retornoGrado) {
+                        sessionStorage.removeItem('puntoRetornoLogia');
+                        window.location.href = retornoGrado;
                     }
-                    btnsHtml += `<div class="nav-link-container"><button class="btn-ritual" onclick="irA('${cod}')">${label}</button></div>`;
-                    return ""; 
-                });
-
-                // 2. Extraer VOLVER e INSTANCIA
-                if (txt.includes("[[VOLVER]]")) {
-                    btnsHtml += `<div class="nav-link-container"><button class="btn-ritual" onclick="irA('VOLVER')">⬅ Regresar</button></div>`;
-                    txt = txt.replace("[[VOLVER]]", "");
                 }
-                if (txt.includes("[[INSTANCIA]]")) {
-                    btnsHtml += `<div class="instancia-botones">${procesarInstancia(ofi, sId, i)}</div>`;
-                    txt = txt.replace("[[INSTANCIA]]", "");
-                }
-
-                // 3. Aplicar estilos visuales (orden crítico: line-exec primero)
-                txt = txt.replace(/\[(.*?)\]/g, '<span class="line-exec">[$1]</span>');
-                txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
-                
-                const esOfi = ofiSel && ofi === ofiSel;
-                html += `<dt>${ofi}∴</dt><dd class="${esOfi ? 'resaltado' : ''}" id="l-${sId}-${i}">${txt}${btnsHtml}</dd>`;
-            });
-        });
-        document.getElementById('rituales-content').innerHTML = `<dl>${html}</dl>`;
-        if (ofiSel) {
-            const el = document.querySelector('.resaltado');
-            if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
-        }
-    };
-
-    function procesarInstancia(oficialPaso, sId, idx) {
-        if (!Events) return "";
-        const tActiva = Array.from(Events.getElementsByTagName("tenida")).find(t => t.getAttribute("fecha").trim() === dateid.trim());
-        if (!tActiva) return "";
-        let contenido = "";
-        const filtroSup = document.getElementById("oficialFilter").value;
-        Array.from(tActiva.getElementsByTagName("item")).forEach(item => {
-            const acto = (item.getAttribute("acto") || "").trim();
-            const url = item.getAttribute("url") || "";
-            const titulo = item.getAttribute("titulo") || "Memo";
-            if (acto === "balaustre" && oficialPaso === "Sec" && filtroSup === "Sec") {
-                contenido += `<button class="btn-ritual" onclick="abrirVisor('${url}')">📜: ${titulo} ➜</button>`;
-            } else if (acto === "elevacion" && oficialPaso !== "Sec") {
-                const origen = `${window.location.href.split('?')[0]}?num=${grados}&sec=${sId}&fecha=${dateid}#l-${sId}-${idx}`;
-                const accion = url.includes('rituales.html') ? `sessionStorage.setItem('puntoRetornoLogia', '${origen}'); window.location.href='${url}&fecha=${dateid}'` : `abrirVisor('${url}')`;
-                contenido += `<button class="btn-instancia-exec" onclick="${accion}">${titulo}</button>`;
+                return;
             }
-        });
-        return contenido;
-    }
+            const targetIdStr = codigo.length === 3 ? parseInt(codigo.substring(1), 10).toString() : codigo.replace(/\D/g, '');
+            historialNavegacion.push({
+                seccion: document.getElementById("seccionFilter").value,
+                scroll: window.scrollY,
+                visibilidad: new Set(seccionesVisibles)
+            });
+            seccionesVisibles.add(targetIdStr);
+            actualizarSelectorSecciones(targetIdStr);
+            cambioDeSeccion();
+            window.scrollTo(0, 0);
+        };
 
-    window.abrirVisor = function(url) {
-        const overlay = document.createElement('div');
-        overlay.className = 'visor-overlay';
-        overlay.innerHTML = `<div class="visor-content"><button class="visor-close" onclick="this.parentElement.parentElement.remove()">✕</button><iframe src="${url}" style="width:100%; height:100%; border:none;"></iframe></div>`;
-        document.body.appendChild(overlay);
-    };
-</script>
+        async function inicializar() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                fechaTrabajo = urlParams.get('fecha') || new Date().toISOString().split('T')[0]; 
+                numGradoActual = (urlParams.get('num') || "1").toString();
+                const secUrl = (urlParams.get('sec') || "1").toString();
+                await cargarDatos();
+                if (parseInt(secUrl) > 3) seccionesVisibles.add(secUrl);
+                ejecutarCargaRitual(numGradoActual, secUrl);
+                setTimeout(() => {
+                    const hash = window.location.hash;
+                    if (hash) {
+                        const target = document.querySelector(hash);
+                        if (target) { target.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+                    }
+                    const el = document.querySelector('.resaltado');
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 800);
+            } catch (e) { console.error("Error:", e); }
+        }
+
+        async function cargarDatos() {
+            const v = new Date().getTime(); 
+            const [glosario, liturgia, tenidas] = await Promise.all([
+                fetch(`glosario.xml?v=${v}`).then(r => r.text()),
+                fetch(`liturgia.xml?v=${v}`).then(r => r.text()),
+                fetch(`tenidas.xml?v=${v}`).then(r => r.text()).catch(() => '<bitacora></bitacora>')
+            ]);
+            const parser = new DOMParser();
+            glosarioDoc = parser.parseFromString(glosario, "text/xml");
+            xmlDoc = parser.parseFromString(liturgia, "text/xml");
+            tenidasXml = parser.parseFromString(tenidas, "text/xml");
+        }
+
+        function ejecutarCargaRitual(grado, seccionID) {
+            ritualActivo = Array.from(xmlDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("grado") === grado);
+            if (ritualActivo) {
+                const titulos = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Maestría" };
+                document.getElementById("titulo-ritual-header").textContent = titulos[grado] || "Ritual";
+                actualizarSelectorSecciones(seccionID);
+                cambioDeSeccion();
+            }
+        }
+
+        function actualizarSelectorSecciones(idSel) {
+            const sSel = document.getElementById("seccionFilter");
+            sSel.innerHTML = "";
+            Array.from(ritualActivo.getElementsByTagName("seccion")).forEach(sec => {
+                const id = sec.getAttribute("id");
+                if (id === "1" || id === "2" || id === "3" || seccionesVisibles.has(id)) {
+                    sSel.add(new Option(sec.getAttribute("titulo"), id));
+                }
+            });
+            sSel.value = idSel;
+        }
+
+        function cambioDeSeccion() {
+            const sId = document.getElementById("seccionFilter").value;
+            const oSel = document.getElementById("oficialFilter");
+            const ofiPrevio = oSel.value;
+            const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
+            const ofis = new Set();
+            if (seccion) {
+                Array.from(seccion.getElementsByTagName("paso")).forEach(p => {
+                    if (p.getAttribute("oficial")) ofis.add(p.getAttribute("oficial").trim());
+                });
+            }
+            oSel.innerHTML = '<option value="">---</option>';
+            Array.from(glosarioDoc.getElementsByTagName("item")).forEach(i => {
+                const sigla = i.getAttribute("sigla");
+                if (ofis.has(sigla)) oSel.add(new Option(sigla + "∴", sigla));
+            });
+            if (ofis.has(ofiPrevio)) oSel.value = ofiPrevio;
+            renderizarLiturgia();
+        }
+
+        function renderizarLiturgia() {
+            const sId = document.getElementById("seccionFilter").value;
+            const ofiSel = document.getElementById("oficialFilter").value;
+            const seccion = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == sId);
+            if (!seccion) return;
+            let html = "";
+            Array.from(seccion.getElementsByTagName("apartado")).forEach(apa => {
+                html += `<div class="apartado-header">${apa.getAttribute("titulo")}</div>`;
+                Array.from(apa.getElementsByTagName("paso")).forEach((paso, i) => {
+                    const ofi = (paso.getAttribute("oficial") || "Ofi").trim();
+                    const idL = `l-${sId}-${i}`;
+                    let txt = (paso.getAttribute("texto") || paso.textContent).trim();
+                    txt = txt.replace(/\[\[LINK:(\d+)(?::([^\]]+))?\]\]/g, (match, cod, titulo) => {
+                        let label = titulo ? titulo.trim() : "";
+                        if (!label) {
+                            const tId = cod.length === 3 ? parseInt(cod.substring(1), 10).toString() : cod;
+                            const targetSec = Array.from(ritualActivo.getElementsByTagName("seccion")).find(s => s.getAttribute("id") === tId);
+                            label = targetSec ? targetSec.getAttribute("titulo") : "Ir";
+                        }
+                        return `<div class="nav-link-container"><button class="btn-ritual" onclick="irA('${cod}')">${label} ➜</button></div>`;
+                    });
+                    if (txt.includes("[[VOLVER]]")) txt = txt.replace("[[VOLVER]]", `<div class="nav-link-container"><button class="btn-ritual" onclick="irA('VOLVER')">⬅ Regresar</button></div>`);
+                    if (txt.includes("[[INSTANCIA]]")) txt = txt.replace("[[INSTANCIA]]", `<div class="instancia-botones">${procesarInstancia(ofi, sId, i)}</div>`);
+                    txt = txt.replace(/\[(.*?)\]/g, '<span class="line-exec">[$1]</span>');
+                    txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
+                    const esOfi = ofiSel && ofi === ofiSel;
+                    html += `<dt>${ofi}∴</dt><dd class="${esOfi ? 'resaltado' : ''}" id="${idL}">${txt}</dd>`;
+                });
+            });
+            document.getElementById('rituales-content').innerHTML = `<dl>${html}</dl>`;
+            if (ofiSel) {
+                setTimeout(() => {
+                    const primera = document.querySelector('.resaltado');
+                    if (primera) primera.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 100);
+            }
+        }
+
+        function abrirVisor(url) {
+            const overlay = document.createElement('div');
+            overlay.className = 'visor-overlay';
+            overlay.innerHTML = `<div class="visor-content"><button class="visor-close" onclick="this.parentElement.parentElement.remove()">✕</button><iframe src="${url}" style="width:100%; height:100%; border:none;"></iframe></div>`;
+            document.body.appendChild(overlay);
+        }
+
+        function procesarInstancia(oficialPaso, sIdActual, indexPaso) {
+            if (!tenidasXml) return "";
+            const tActiva = Array.from(tenidasXml.getElementsByTagName("tenida")).find(t => t.getAttribute("fecha").trim() === fechaTrabajo.trim());
+            if (!tActiva) return "";            
+            const filtroSuperior = document.getElementById("oficialFilter").value;
+            let contenido = "";
+            Array.from(tActiva.getElementsByTagName("item")).forEach(item => {
+                const acto = (item.getAttribute("acto") || "").trim();
+                const url = item.getAttribute("url") || "";
+                const titulo = item.getAttribute("titulo") || "Trabajo";
+                if (acto === "balaustre" && oficialPaso === "Sec" && filtroSuperior === "Sec") {
+                    contenido += `<button class="btn-ritual" onclick="abrirVisor('${url}')">📜: ${titulo} ➜</button>`;
+                } else if (acto === "elevacion" && oficialPaso !== "Sec") {
+                    const esOtroRitual = url.indexOf('rituales.html') !== -1;
+                    const urlOrigen = `${window.location.href.split('?')[0]}?num=${numGradoActual}&sec=${sIdActual}&fecha=${fechaTrabajo}#l-${sIdActual}-${indexPaso}`;
+                    const accion = esOtroRitual ? `sessionStorage.setItem('puntoRetornoLogia', '${urlOrigen}'); window.location.href='${url}&fecha=${fechaTrabajo}'` : `abrirVisor('${url}')`;
+                    contenido += `<button class="btn-instancia-exec" onclick="${accion}">${titulo}</button>`;
+                }
+            });
+            return contenido;
+        }
+    </script>
 </body>
 </html>
