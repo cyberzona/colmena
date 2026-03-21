@@ -55,33 +55,26 @@
     </div>
     <div id="rituales-content"></div>
 
-    <script>
+   <script>
     // Global States (6 chars simple / Capitalized Arrays)
     let Liturgy, Glosry, Events; 
     let ritual, sectin;         
     let grados = "1", dateid = ""; 
     let Visibl = new Set(["1", "2", "3"]);
-    let Tracer = []; // Pila de historial para retorno exacto
+    let Tracer = []; 
 
-    // --- NAVIGATION (Optimized Flow) ---
+    // --- NAVIGATION ---
     window.irA = function(codeid) {
         if (!ritual) return;
 
-        // Lógica de Retorno a la Fuente
         if (codeid === 'BACK') {
             if (Tracer.length > 0) {
-                const prev = Tracer.pop(); // Recupera el último estado guardado
+                const prev = Tracer.pop(); 
                 Visibl = prev.visted;
-                
-                // Restauración silenciosa antes de renderizar
-                const select = document.getElementById("seccionFilter");
                 setSec(prev.idsec); 
                 runSec();
-
-                // Restaurar scroll con leve retraso para permitir carga de DOM
                 setTimeout(() => window.scrollTo(0, prev.scroll), 50);
             } else {
-                // Si no hay historial interno, verificar si venimos de otro Grado
                 const backUr = sessionStorage.getItem('RETRN');
                 if (backUr) {
                     sessionStorage.removeItem('RETRN');
@@ -91,14 +84,12 @@
             return;
         }
 
-        // Navegación hacia adelante: Guardar estado actual antes del salto
-        const currentSec = document.getElementById("seccionFilter").value;
+        const current = document.getElementById("seccionFilter").value;
         const target = codeid.length === 3 ? parseInt(codeid.substring(1), 10).toString() : codeid.replace(/\D/g, '');
         
-        // Solo guardamos en Tracer si realmente estamos cambiando de sección
-        if (currentSec !== target) {
+        if (current !== target) {
             Tracer.push({
-                idsec: currentSec,
+                idsec: current,
                 scroll: window.scrollY,
                 visted: new Set(Visibl)
             });
@@ -119,21 +110,8 @@
             const startS = (params.get('sec') || "1").toString();
 
             await loadUp();
-            
             if (parseInt(startS) > 3) Visibl.add(startS);
             loadRit(grados, startS);
-
-            // Ajuste de scroll inicial
-            setTimeout(() => {
-                const hash = window.location.hash;
-                if (hash) {
-                    const el = document.querySelector(hash);
-                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                } else {
-                    const main = document.querySelector('.resaltado');
-                    if (main) main.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            }, 500);
         } catch (e) { console.error("Err:", e); }
     }
 
@@ -160,7 +138,7 @@
         }
     }
 
-    // --- RENDERING & EVENTS ---
+    // --- RENDERING ---
     function setSec(id) {
         const select = document.getElementById("seccionFilter");
         select.innerHTML = "";
@@ -208,23 +186,19 @@
                 const lineId = `l-${sid}-${i}`;
                 let body = (p.getAttribute("texto") || p.textContent).trim();
 
-                // Detección de enlaces dinámicos
                 body = body.replace(/\[\[LINK:(\d+)(?::([^\]]+))?\]\]/g, (m, c, t) => {
                     let label = t ? t.trim() : "Ir";
                     return `<div class="nav-link-container"><button class="btn-ritual" onclick="irA('${c}')">${label} ➜</button></div>`;
                 });
 
-                // Botón Regresar (BACK)
                 if (body.includes("[[VOLVER]]")) {
                     body = body.replace("[[VOLVER]]", `<div class="nav-link-container"><button class="btn-ritual" onclick="irA('BACK')">⬅ Regresar</button></div>`);
                 }
                 
-                // Inserción de Memos/Instancias
                 if (body.includes("[[INSTANCIA]]")) {
                     body = body.replace("[[INSTANCIA]]", `<div class="instancia-botones">${getMemo(ofi, sid, i)}</div>`);
                 }
 
-                // Estética de ritos
                 body = body.replace(/\[(.*?)\]/g, '<span class="line-exec">[$1]</span>');
                 body = body.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
 
@@ -243,7 +217,7 @@
         }
     }
 
-    // --- UTILS ---
+    // --- UTILS (Fix for Button Titles) ---
     function getMemo(ofisig, sid, idx) {
         if (!Events) return "";
         const day = Array.from(Events.getElementsByTagName("tenida")).find(t => t.getAttribute("fecha").trim() === dateid.trim());
@@ -255,7 +229,7 @@
         Array.from(day.getElementsByTagName("item")).forEach(it => {
             const act = (it.getAttribute("acto") || "").trim();
             const url = it.getAttribute("url") || "";
-            const lab = it.getAttribute("titulo") || "Memo";
+            const lab = it.getAttribute("titulo") || "Memo"; // Recuperamos el título del XML
 
             if (act === "balaustre" && ofisig === "Sec" && user === "Sec") {
                 html += `<button class="btn-ritual" onclick="view('${url}')">📜: ${lab} ➜</button>`;
