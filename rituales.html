@@ -229,7 +229,7 @@
                 }
 
                 // CORRECCIÓN: El formateo de corchetes se aplica antes de las siglas azules para evitar conflictos de tags
-                txt = txt.replace(/\[(.*?)\]/g, '<span class="line-exec">[$1]</span>');
+                txt = txt.replace(/\[(.*?)\]/g, '<span class="line-exec">($1)</span>');
                 txt = txt.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
                 
                 const esOfi = ofiSel && ofi === ofiSel;
