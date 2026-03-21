@@ -138,7 +138,7 @@
         }
     }
 
-    // --- RENDERING ---
+    // --- RENDERING & EVENTS ---
     function setSec(id) {
         const select = document.getElementById("seccionFilter");
         select.innerHTML = "";
@@ -196,7 +196,7 @@
                 }
                 
                 if (body.includes("[[INSTANCIA]]")) {
-                    body = body.replace("[[INSTANCIA]]", `<div class="instancia-botones">${getMemo(ofi, sid, i)}</div>`);
+                    body = body.replace("[[INSTANCIA]]", `<div class="instancia-botones">${getInstance(ofi, sid, i)}</div>`);
                 }
 
                 body = body.replace(/\[(.*?)\]/g, '<span class="line-exec">[$1]</span>');
@@ -217,19 +217,19 @@
         }
     }
 
-    // --- UTILS (Fix for Button Titles) ---
-    function getMemo(ofisig, sid, idx) {
+    // --- INSTANCE LOGIC (Titles Fixed) ---
+    function getInstance(ofisig, sid, idx) {
         if (!Events) return "";
-        const day = Array.from(Events.getElementsByTagName("tenida")).find(t => t.getAttribute("fecha").trim() === dateid.trim());
-        if (!day) return "";            
+        const Day = Array.from(Events.getElementsByTagName("tenida")).find(t => t.getAttribute("fecha").trim() === dateid.trim());
+        if (!Day) return "";            
         
         const user = document.getElementById("oficialFilter").value;
         let html = "";
 
-        Array.from(day.getElementsByTagName("item")).forEach(it => {
-            const act = (it.getAttribute("acto") || "").trim();
-            const url = it.getAttribute("url") || "";
-            const lab = it.getAttribute("titulo") || "Memo"; // Recuperamos el título del XML
+        Array.from(Day.getElementsByTagName("item")).forEach(node => {
+            const act = (node.getAttribute("acto") || "").trim();
+            const url = node.getAttribute("url") || "";
+            const lab = (node.getAttribute("titulo") || "Memo").trim(); 
 
             if (act === "balaustre" && ofisig === "Sec" && user === "Sec") {
                 html += `<button class="btn-ritual" onclick="view('${url}')">📜: ${lab} ➜</button>`;
