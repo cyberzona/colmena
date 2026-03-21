@@ -50,23 +50,31 @@
         </div>
         <div class="container-select">
             <span class="select-label">Oficial</span>
-            <select id="oficialFilter" class="select-oficiales" onchange="renderizarLiturgia()"></select>
+            <select id="oficialFilter" class="select-oficiales" onchange="actualizarOficialYRenderizar()"></select>
         </div>
     </div>
     <div id="rituales-content"></div>
 
     <script>
         /**
-         * CANON ALVEARIS v41 - RECURSIVIDAD DE OFICIAL
+         * CANON ALVEARIS v41 - RECURSIVIDAD TOTAL (INTERNA Y ENTRE GRADOS)
          */
         let RitualActual, GlosarioMaestro, BitacoraEventos;
         let gradoActivo = "1", fechaSesion = "";
         let SeccionesDesbloqueadas = new Set(["1", "2", "3"]);
         let PilaNavegacion = [];
 
+        // Función para guardar el oficial globalmente cada vez que cambia
+        function actualizarOficialYRenderizar() {
+            const oficial = document.getElementById("oficialFilter").value;
+            if (oficial) {
+                sessionStorage.setItem('oficialGlobalAlvearis', oficial);
+            }
+            renderizarLiturgia();
+        }
+
         window.irA = function(codigoDestino) {
             if (!RitualActual) return;
-            
             const comboOficial = document.getElementById("oficialFilter");
 
             if (codigoDestino === 'VOLVER') {
@@ -74,7 +82,7 @@
                     const estadoAnterior = PilaNavegacion.pop();
                     SeccionesDesbloqueadas = estadoAnterior.visibilidad;
                     
-                    // Restaurar Oficial antes de cambiar sección (Recursividad)
+                    // Restaurar Oficial antes de cambiar sección
                     comboOficial.dataset.oficialPendiente = estadoAnterior.oficial;
                     
                     actualizarSelectorSecciones(estadoAnterior.seccion);
@@ -92,7 +100,6 @@
 
             const idDestino = codigoDestino.length === 3 ? parseInt(codigoDestino.substring(1), 10).toString() : codigoDestino.replace(/\D/g, '');
             
-            // Guardamos el oficial actual en la pila para la recursividad
             PilaNavegacion.push({
                 seccion: document.getElementById("seccionFilter").value,
                 oficial: comboOficial.value,
@@ -116,14 +123,18 @@
                 await cargarArchivosBase();
                 if (parseInt(seccionInicial) > 3) SeccionesDesbloqueadas.add(seccionInicial);
                 
-                const oficialPersistente = sessionStorage.getItem('oficialRetornoLogia');
+                // Recuperar el oficial del grado anterior (Persistencia entre archivos)
+                const oficialRecuperado = sessionStorage.getItem('oficialGlobalAlvearis');
                 
                 if (RitualActual) {
                     const DiccionarioTitulos = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Maestría" };
                     document.getElementById("titulo-ritual-header").textContent = DiccionarioTitulos[gradoActivo] || "Ritual";
                     
                     actualizarSelectorSecciones(seccionInicial);
-                    if (oficialPersistente) document.getElementById("oficialFilter").dataset.oficialPendiente = oficialPersistente;
+                    
+                    if (oficialRecuperado) {
+                        document.getElementById("oficialFilter").dataset.oficialPendiente = oficialRecuperado;
+                    }
                     
                     gestionarCambioSeccion();
                 }
@@ -171,8 +182,8 @@
             const idActual = document.getElementById("seccionFilter").value;
             const comboOficial = document.getElementById("oficialFilter");
             
-            // Priorizamos el oficial pendiente de la recursividad o persistencia
-            const oficialAEntrar = comboOficial.dataset.oficialPendiente || comboOficial.value || "";
+            // Prioridad: 1. Pendiente de navegación interna, 2. Selección actual, 3. Global de sesión
+            const oficialAEntrar = comboOficial.dataset.oficialPendiente || comboOficial.value || sessionStorage.getItem('oficialGlobalAlvearis') || "";
             delete comboOficial.dataset.oficialPendiente;
 
             const nodoSeccion = Array.from(RitualActual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == idActual);
@@ -189,7 +200,10 @@
                 if (OficialesPresentes.has(sigla)) comboOficial.add(new Option(sigla + "∴", sigla));
             });
 
-            if (OficialesPresentes.has(oficialAEntrar)) comboOficial.value = oficialAEntrar;
+            if (OficialesPresentes.has(oficialAEntrar)) {
+                comboOficial.value = oficialAEntrar;
+                sessionStorage.setItem('oficialGlobalAlvearis', oficialAEntrar);
+            }
             renderizarLiturgia();
         }
 
@@ -238,7 +252,7 @@
                     textoPaso = textoPaso.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
 
                     textoPaso = textoPaso.replace(/___TOKEN_ALVEARIS_(\d+)___/g, (match, idx) => {
-                        return `<span class="line-exec">(${coleccionInstrucciones[idx]})</span>`;
+                        return `<span class="line-exec">(${coleccionInstructions[idx]})</span>`;
                     });
 
                     const esOficialActivo = oficialSeleccionado && oficialPaso === oficialSeleccionado;
@@ -278,7 +292,7 @@
                     let disparador;
                     if (esCambioRitual) {
                         const oficialActual = document.getElementById("oficialFilter").value;
-                        disparador = `sessionStorage.setItem('oficialRetornoLogia', '${oficialActual}'); sessionStorage.setItem('puntoRetornoLogia', '${retornoSeguro}'); window.location.href='${direccionUrl}&fecha=${fechaSesion}'`;
+                        disparador = `sessionStorage.setItem('oficialGlobalAlvearis', '${oficialActual}'); sessionStorage.setItem('puntoRetornoLogia', '${retornoSeguro}'); window.location.href='${direccionUrl}&fecha=${fechaSesion}'`;
                     } else {
                         disparador = `mostrarVisorExterno('${direccionUrl}')`;
                     }
