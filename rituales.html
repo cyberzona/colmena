@@ -16,7 +16,6 @@
         .container-select { display: flex; flex-direction: column; }
         .select-label { font-size: 0.65rem; color: #4e342e; font-weight: 800; text-transform: uppercase; margin-bottom: 2px; }
         
-        /* Selectores sin borde dorado, solo borde sutil neutro */
         .select-seccion, .select-oficiales { padding: 8px; font-size: 0.95rem; border-radius: 4px; border: 1px solid #a1887f; font-weight: bold; outline: none; background: #fff; }
         .select-seccion { width: 200px; }
         .select-oficiales { width: 100px; }
@@ -28,16 +27,16 @@
         dd { margin-left: 55px; border-left: 3px solid #d7ccc8; padding-left: 10px; position: relative; margin-bottom: 8px; text-align: justify; counter-increment: line-counter; min-height: 1.2em; }
         dd::before { content: counter(line-counter); position: absolute; left: -45px; color: #8d6e63; font-size: 0.75rem; font-weight: bold; width: 35px; text-align: right; top: 0; }
         
-        .resaltado { background: rgba(168, 124, 0, 0.15) !important; border-left: 5px solid #A87C00 !important; }
+        /* Resaltado para el oficial enfocado */
+        .resaltado { background: rgba(168, 124, 0, 0.12) !important; border-left: 5px solid #A87C00 !important; }
         
-        /* Botones de acción sólidos */
-        .btn-ritual, .btn-instancia-exec { border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em; font-weight: bold; background: #A87C00 !important; color: #fff !important; }
+        .btn-ritual, .btn-instancia-exec { border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em; font-weight: bold; background: #A87C00 !important; color: #fff !important; margin: 4px 2px; }
         
-        /* Navegación Neutra SIN BORDES */
+        /* Navegación Neutra y Limpia */
         .nav-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 40px; padding: 20px 15px; border-top: 1px solid #d7ccc8; }
         .btn-nav-neutro { 
             background: transparent !important; 
-            border: none !important; /* Eliminado el borde dorado */
+            border: none !important; 
             color: #A87C00 !important; 
             width: 45px; height: 45px; border-radius: 10px; font-size: 1.6rem; 
             display: flex; align-items: center; justify-content: center; 
@@ -85,6 +84,7 @@
                 fechaSesion = parametros.get('fecha') || new Date().toLocaleDateString('en-CA');
                 gradoActivo = (parametros.get('num') || "1").toString();
                 
+                // Si es Grado 1, intentamos recuperar posición de retorno
                 let seccionInicial = "1";
                 if (gradoActivo === "1") {
                     seccionInicial = parametros.get('sec') || sessionStorage.getItem('seccionRetornoLogia') || "1";
@@ -94,10 +94,11 @@
                 
                 if (RitualActual) {
                     const Dic = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Ritual de Maestro" };
-                    document.getElementById("titulo-ritual-header").textContent = Dic[gradoActivo] || "Ritual";
+                    document.getElementById("titulo-ritual-header").textContent = Dic[gradoActivo];
                     
                     actualizarSelectorSecciones(seccionInicial);
                     
+                    // Preparamos el oficial para el scroll
                     const ofiMemoria = sessionStorage.getItem('oficialRetornoLogia');
                     if (ofiMemoria) document.getElementById("oficialFilter").dataset.oficialPendiente = ofiMemoria;
                     
@@ -134,11 +135,12 @@
         function actualizarSeccionGlobal() {
             if (gradoActivo === "1") sessionStorage.setItem('seccionRetornoLogia', document.getElementById("seccionFilter").value);
             gestionarCambioSeccion();
+            window.scrollTo(0, 0);
         }
 
         function actualizarOficialGlobal() {
             sessionStorage.setItem('oficialRetornoLogia', document.getElementById("oficialFilter").value);
-            renderizarLiturgia();
+            renderizarLiturgia(true);
         }
 
         function gestionarCambioSeccion() {
@@ -199,23 +201,22 @@
             const sel = document.getElementById("seccionFilter");
             const i = sel.selectedIndex;
             let nav = `<div class="nav-footer">`;
-            
             if (i > 0) nav += `<button class="btn-nav-neutro" onclick="navRelativa(-1)"><span class="flip-h">➤</span></button>`;
             else nav += `<span></span>`;
 
             if (i < sel.options.length - 1) nav += `<button class="btn-nav-neutro" onclick="navRelativa(1)">➤</button>`;
-            else if (gradoActivo > "1") nav += `<button class="btn-nav-neutro" onclick="irA('VOLVER')" style="font-size: 1.6rem;">✖</button>`;
+            else if (gradoActivo > "1") nav += `<button class="btn-nav-neutro" onclick="irA('VOLVER')">✖</button>`;
             else nav += `<span></span>`;
-            
             nav += `</div>`;
 
             document.getElementById('rituales-content').innerHTML = `<dl>${html}</dl>${nav}`;
             
+            // EJECUCIÓN DEL SCROLLING
             if (hacerScroll && ofiSel) {
                 setTimeout(() => {
-                    const target = document.querySelector('.resaltado');
-                    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 300);
+                    const el = document.querySelector('.resaltado');
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 350);
             }
         }
 
@@ -223,14 +224,13 @@
             const s = document.getElementById("seccionFilter");
             s.selectedIndex += d;
             actualizarSeccionGlobal();
-            window.scrollTo(0, 0);
         }
 
         window.irA = function(dest) {
             if (dest === 'VOLVER') {
                 if (gradoActivo > "1") {
-                    const secRegreso = sessionStorage.getItem('seccionRetornoLogia') || "1";
-                    location.href = `rituales.html?num=1&fecha=${fechaSesion}&sec=${secRegreso}`;
+                    const secRet = sessionStorage.getItem('seccionRetornoLogia') || "1";
+                    location.href = `rituales.html?num=1&fecha=${fechaSesion}&sec=${secRet}`;
                 } else { location.href = 'index.html'; }
                 return;
             }
@@ -244,14 +244,14 @@
             const t = Array.from(BitacoraEventos.getElementsByTagName("tenida")).find(x => x.getAttribute("fecha") === fechaSesion);
             if (!t) return "";
             let h = "";
-            const ofiSeleccionado = document.getElementById("oficialFilter").value;
+            const ofiActual = document.getElementById("oficialFilter").value;
             Array.from(t.getElementsByTagName("item")).forEach(i => {
                 const acto = i.getAttribute("acto"), url = i.getAttribute("url"), tit = i.getAttribute("titulo") || "Memo";
-                if (acto === "balaustre" && ofiDelPaso === "Sec" && ofiSeleccionado === "Sec") {
+                if (acto === "balaustre" && ofiDelPaso === "Sec" && ofiActual === "Sec") {
                     h += `<button class="btn-ritual" onclick="mostrarVisor('${url}')">📜 ${tit}</button>`;
-                } else if (acto === "elevacion" && ofiDelPaso !== "Sec" && ofiSeleccionado !== "Sec") {
+                } else if (acto === "elevacion" && ofiDelPaso !== "Sec" && ofiActual !== "Sec") {
                     if (url.includes('rituales.html')) {
-                        const disp = `sessionStorage.setItem('oficialRetornoLogia', '${ofiSeleccionado}'); sessionStorage.setItem('seccionRetornoLogia', '${sec}'); window.location.href='${url}';`;
+                        const disp = `sessionStorage.setItem('oficialRetornoLogia', '${ofiActual}'); sessionStorage.setItem('seccionRetornoLogia', '${sec}'); window.location.href='${url}';`;
                         h += `<button class="btn-instancia-exec" onclick="${disp}">${tit}</button>`;
                     } else { h += `<button class="btn-instancia-exec" onclick="mostrarVisor('${url}')">${tit}</button>`; }
                 }
@@ -262,7 +262,7 @@
         function mostrarVisor(url) {
             const v = document.createElement('div');
             v.className = 'visor-overlay';
-            v.innerHTML = `<div class=\"visor-content\"><button class=\"visor-close\" onclick=\"this.parentElement.parentElement.remove()\">✕</button><iframe src=\"${url}\" style=\"width:100%; height:100%; border:none;\"></iframe></div>`;
+            v.innerHTML = `<div class="visor-content"><button class="visor-close" onclick="this.parentElement.parentElement.remove()">✕</button><iframe src="${url}" style="width:100%; height:100%; border:none;"></iframe></div>`;
             document.body.appendChild(v);
         }
     </script>
