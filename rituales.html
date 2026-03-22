@@ -16,7 +16,8 @@
         .container-select { display: flex; flex-direction: column; }
         .select-label { font-size: 0.65rem; color: #4e342e; font-weight: 800; text-transform: uppercase; margin-bottom: 2px; }
         
-        .select-seccion, .select-oficiales { padding: 8px; font-size: 0.95rem; border-radius: 4px; border: 2px solid #A87C00; font-weight: bold; outline: none; background: #fff; }
+        /* Selectores sin borde dorado, solo borde sutil neutro */
+        .select-seccion, .select-oficiales { padding: 8px; font-size: 0.95rem; border-radius: 4px; border: 1px solid #a1887f; font-weight: bold; outline: none; background: #fff; }
         .select-seccion { width: 200px; }
         .select-oficiales { width: 100px; }
 
@@ -29,21 +30,20 @@
         
         .resaltado { background: rgba(168, 124, 0, 0.15) !important; border-left: 5px solid #A87C00 !important; }
         
-        /* Botones de acción (Memos/Instancias) */
+        /* Botones de acción sólidos */
         .btn-ritual, .btn-instancia-exec { border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em; font-weight: bold; background: #A87C00 !important; color: #fff !important; }
         
-        /* Navegación Neutra (Color de fondo del body, tamaño reducido) */
+        /* Navegación Neutra SIN BORDES */
         .nav-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 40px; padding: 20px 15px; border-top: 1px solid #d7ccc8; }
         .btn-nav-neutro { 
-            background: #fdfaf3 !important; /* Mismo color que el fondo */
-            border: 1.5px solid #A87C00 !important; 
+            background: transparent !important; 
+            border: none !important; /* Eliminado el borde dorado */
             color: #A87C00 !important; 
-            width: 45px; height: 45px; border-radius: 10px; font-size: 1.4rem; 
+            width: 45px; height: 45px; border-radius: 10px; font-size: 1.6rem; 
             display: flex; align-items: center; justify-content: center; 
             transition: all 0.2s ease; cursor: pointer;
-            box-shadow: none; /* Sin sombras para que sea neutro */
         }
-        .btn-nav-neutro:active { background: #e0e0e0 !important; transform: scale(0.92); }
+        .btn-nav-neutro:active { background: rgba(168, 124, 0, 0.1) !important; transform: scale(0.9); }
         .flip-h { transform: scaleX(-1); }
 
         .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; align-items: center; justify-content: center; }
@@ -204,7 +204,7 @@
             else nav += `<span></span>`;
 
             if (i < sel.options.length - 1) nav += `<button class="btn-nav-neutro" onclick="navRelativa(1)">➤</button>`;
-            else if (gradoActivo > "1") nav += `<button class="btn-nav-neutro" onclick="irA('VOLVER')" style="font-size: 1.3rem;">✖</button>`;
+            else if (gradoActivo > "1") nav += `<button class="btn-nav-neutro" onclick="irA('VOLVER')" style="font-size: 1.6rem;">✖</button>`;
             else nav += `<span></span>`;
             
             nav += `</div>`;
@@ -262,7 +262,7 @@
         function mostrarVisor(url) {
             const v = document.createElement('div');
             v.className = 'visor-overlay';
-            v.innerHTML = `<div class="visor-content"><button class="visor-close" onclick="this.parentElement.parentElement.remove()">✕</button><iframe src="${url}" style="width:100%; height:100%; border:none;"></iframe></div>`;
+            v.innerHTML = `<div class=\"visor-content\"><button class=\"visor-close\" onclick=\"this.parentElement.parentElement.remove()\">✕</button><iframe src=\"${url}\" style=\"width:100%; height:100%; border:none;\"></iframe></div>`;
             document.body.appendChild(v);
         }
     </script>
