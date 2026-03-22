@@ -31,10 +31,8 @@
         .nav-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 40px; padding: 20px 15px; border-top: 2px solid #d7ccc8; }
         .btn-flecha { background: #d7ccc8; border: 1px solid #a1887f; width: 60px; height: 60px; border-radius: 12px; color: #5d4037; font-size: 2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .btn-flecha:active { transform: scale(0.9); background: #A87C00; color: #fff; }
-        
-        /* Alternativa para salida de grado */
-        .btn-salida { background: #fbe9e7; border-color: #d32f2f; color: #d32f2f; }
-        .btn-salida:active { background: #d32f2f; color: #fff; }
+        .btn-salida { color: #d32f2f; font-weight: bold; font-size: 2.5rem; border: 2px solid #d32f2f; background: #ffebee; }
+        .flip-h { transform: scaleX(-1); }
 
         .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; align-items: center; justify-content: center; }
         .visor-content { width: 95%; height: 90%; background: #fff; border-radius: 8px; position: relative; }
@@ -68,14 +66,16 @@
         let RitualActual, GlosarioMaestro, BitacoraEventos;
         let gradoActivo = "1", fechaSesion = "";
         let SeccionesDesbloqueadas = new Set(["1", "2", "3"]);
-        let PilaNavegacion = [];
 
         async function inicializarPortal() {
             try {
                 const parametros = new URLSearchParams(window.location.search);
                 fechaSesion = parametros.get('fecha') || new Date().toLocaleDateString('en-CA');
                 gradoActivo = (parametros.get('num') || "1").toString();
-                const seccionInicial = parametros.get('sec') || "1";
+                
+                // Prioridad 1: Parámetro URL | Prioridad 2: Memoria de sesión | Prioridad 3: Defecto 1
+                const seccionMemoria = sessionStorage.getItem('seccionRetornoLogia');
+                const seccionInicial = parametros.get('sec') || seccionMemoria || "1";
 
                 await cargarArchivosBase();
                 
@@ -88,12 +88,10 @@
                     if (parseInt(seccionInicial) > 3) SeccionesDesbloqueadas.add(seccionInicial.toString());
                     actualizarSelectorSecciones(seccionInicial);
                     
-                    // RECURSIVIDAD: Recupera el oficial guardado antes del cambio de grado [cite: 2026-03-07]
-                    const ofiPrevio = sessionStorage.getItem('oficialRetornoLogia');
-                    if (ofiPrevio) {
-                        document.getElementById("oficialFilter").dataset.oficialPendiente = ofiPrevio;
-                    }
-
+                    // RECURSIVIDAD DE OFICIAL: Recuperar oficial exacto del llamado
+                    const ofiMemoria = sessionStorage.getItem('oficialRetornoLogia');
+                    if (ofiMemoria) document.getElementById("oficialFilter").dataset.oficialPendiente = ofiMemoria;
+                    
                     gestionarCambioSeccion();
                 }
             } catch (e) { console.error(e); }
@@ -125,6 +123,7 @@
         }
 
         function actualizarSeccionGlobal() {
+            sessionStorage.setItem('seccionRetornoLogia', document.getElementById("seccionFilter").value);
             gestionarCambioSeccion();
         }
 
@@ -136,8 +135,7 @@
         function gestionarCambioSeccion() {
             const idSec = document.getElementById("seccionFilter").value;
             const comboOfi = document.getElementById("oficialFilter");
-            // Prioridad: 1. Pendiente de carga recursiva, 2. Selección actual
-            const ofiARecuperar = comboOfi.dataset.oficialPendiente || comboOfi.value;
+            const ofiPendiente = comboOfi.dataset.oficialPendiente || comboOfi.value;
             delete comboOfi.dataset.oficialPendiente;
 
             const nodoSec = Array.from(RitualActual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == idSec);
@@ -154,9 +152,7 @@
                 if (ofisEnSec.has(s)) comboOfi.add(new Option(s + "∴", s));
             });
 
-            if (ofisEnSec.has(ofiARecuperar)) {
-                comboOfi.value = ofiARecuperar;
-            }
+            if (ofisEnSec.has(ofiPendiente)) comboOfi.value = ofiPendiente;
             renderizarLiturgia();
         }
 
@@ -206,8 +202,8 @@
             if (i < sel.options.length - 1) {
                 nav += `<button class="btn-flecha" onclick="navRelativa(1)">➤</button>`;
             } else if (gradoActivo > "1") {
-                // Alternativa Salida: Icono ✖ en rojo para indicar fin de grado
-                nav += `<button class="btn-flecha btn-salida" onclick="irA('VOLVER')" title="Salir del Grado">✖</button>`;
+                // Símbolo de Salida/Cierre: ⎋ (Escape/Salida) o ✖ (Cerrar)
+                nav += `<button class="btn-flecha btn-salida" onclick="irA('VOLVER')">⎋</button>`;
             } else { nav += `<span></span>`; }
             nav += `</div>`;
 
@@ -224,17 +220,15 @@
 
         window.irA = function(dest) {
             if (dest === 'VOLVER') {
-                if (PilaNavegacion.length > 0) {
-                    const ant = PilaNavegacion.pop();
-                    SeccionesDesbloqueadas = ant.v;
-                    actualizarSelectorSecciones(ant.s);
-                    gestionarCambioSeccion();
-                } else if (gradoActivo > "1") {
-                    location.href = `rituales.html?num=1&fecha=${fechaSesion}`;
-                } else { location.href = 'index.html'; }
+                if (gradoActivo > "1") {
+                    // RETORNO AL SITIO QUE LE LLAMÓ: Secciones y Oficial guardados en sessionStorage
+                    const secRegreso = sessionStorage.getItem('seccionRetornoLogia') || "1";
+                    location.href = `rituales.html?num=1&fecha=${fechaSesion}&sec=${secRegreso}`;
+                } else {
+                    location.href = 'index.html';
+                }
                 return;
             }
-            PilaNavegacion.push({ s: document.getElementById("seccionFilter").value, v: new Set(SeccionesDesbloqueadas) });
             SeccionesDesbloqueadas.add(dest);
             actualizarSelectorSecciones(dest);
             gestionarCambioSeccion();
@@ -256,8 +250,12 @@
                 } 
                 else if (acto === "elevacion" && ofiDelPaso !== "Sec" && ofiSeleccionado !== "Sec") {
                     if (url.includes('rituales.html')) {
-                        // RECURSIVIDAD: Guardamos oficial antes de saltar [cite: 2026-03-07]
-                        const disp = `sessionStorage.setItem('oficialRetornoLogia', '${ofiSeleccionado}'); window.location.href='${url}'`;
+                        // RECURSIVIDAD: Guardamos sección y oficial actuales antes de la elevación
+                        const disp = `
+                            sessionStorage.setItem('oficialRetornoLogia', '${ofiSeleccionado}'); 
+                            sessionStorage.setItem('seccionRetornoLogia', '${sec}'); 
+                            window.location.href='${url}';
+                        `;
                         h += `<button class="btn-instancia-exec" onclick="${disp}">${tit}</button>`;
                     } else { 
                         h += `<button class="btn-instancia-exec" onclick="mostrarVisor('${url}')">${tit}</button>`; 
