@@ -69,7 +69,7 @@
                 <paso tipo="dialogo" oficial="1V" texto="Reina el silencio en ambas CCol∴, VM∴."/>
                 <paso tipo="dialogo" oficial="VM" texto="QH∴ OF∴ ¿Queréis darnos vuestras conclusiones respecto a la plancha trazada por nuestro H∴ Sec∴ de nuestros últimos trabajos? [El H∴Ora∴ da las conclusiones]"/>
                 <paso tipo="dialogo" oficial="VM" texto="Después de las conclusiones del H∴ Ora∴, los HH∴ que estén de acuerdo se servirán de hacer la señal de aprobación al primer golpe de Mall∴. (Con golpe de Mallete.) "/>
-                <paso tipo="dialogo" oficial="VM" texto="¡Hermanos míos! El Taller ha ordenado nuestro primer tiempo; ahora, para que el espíritu se manifieste en nueva forma, vamos a cubrir los trabajos de este Grado y proceder a . [Con golpe de Mallete.] [[LINK:103]] [[LINK:104]] [[LINK:105]] [[INSTANCIA]]"/>
+                <paso tipo="dialogo" oficial="VM" texto="¡Hermanos míos! El Taller ha ordenado nuestro primer tiempo; ahora, para que el espíritu se manifieste en nueva forma, vamos a cubrir los trabajos de este Grado y proceder a . [Con golpe de Mallete.] [[LINK:104]] [[LINK:105]] [[INSTANCIA]] [[LINK:103]]"/>
             </apartado>          
         </seccion>            
         <seccion id="3" titulo="Clausura de Trabajos">
@@ -149,6 +149,17 @@
         </seccion>
     </ritual>
     <ritual taller="Colmena No. 8" grado="2">
+        <seccion id="1" titulo="Logia de San Juan">
+            <apartado id="1" titulo="Estudio Profundo">
+                <paso tipo="dialogo" oficial="VM" texto="HH∴ 1V∴ y 2V∴ Servios anunciar alo HH∴ de vuestras respectivas columnas, como yo lo hago en el Or∴ que voy a suspender los trabajos con un solo golpe de Mall∴ para abrir la de Compañero."/>
+                <paso tipo="dialogo" oficial="1V" texto="H∴ 2V∴ y HH∴ de mi columna, nuestro VM∴ va a suspender los trabajos por un solo golpe de Mall∴"/>
+                <paso tipo="dialogo" oficial="2V" texto="HH∴ de la Col∴ del Sur os anuncio que el VM∴ va a suspender los Trbajos con un solo golpe de Mall∴"/>
+                <paso tipo="dialogo" oficial="1V" texto="Anunciado VM∴"/>
+                <paso tipo="dialogo" oficial="VM" texto="[Da un golpe de Maellete y clausura los trabajos invitando a los HH∴ Aprendices a que cubran el Tempo [[VOLVER]]"/>
+            </apartado>
+        </seccion>
+    </ritual>
+        <ritual taller="Colmena No. 8" grado="3">
         <seccion id="1" titulo="Logia de San Juan">
             <apartado id="1" titulo="Estudio Profundo">
                 <paso tipo="dialogo" oficial="VM" texto="La Piedra Bruta representa el estado de imperfección..."/>
