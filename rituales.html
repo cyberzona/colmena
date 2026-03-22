@@ -96,20 +96,27 @@
                     const ofiMemoria = sessionStorage.getItem('oficialRetornoLogia');
                     if (ofiMemoria) document.getElementById("oficialFilter").dataset.oficialPendiente = ofiMemoria;
                     
-                    // Esperamos a que la liturgia se dibuje completamente
                     await gestionarCambioSeccion();
 
-                    // RESTAURACIÓN DE SCROLL RECUPERADO
                     const posGuardada = sessionStorage.getItem('posicionRetornoScroll');
                     if (posGuardada) {
-                        const target = parseInt(posGuardada);
-                        setTimeout(() => {
-                            window.scrollTo({ top: target, behavior: 'smooth' });
-                            sessionStorage.removeItem('posicionRetornoScroll');
-                        }, 250); 
+                        ejecutarScrollPersistente(parseInt(posGuardada));
                     }
                 }
             } catch (e) { console.error(e); }
+        }
+
+        function ejecutarScrollPersistente(target) {
+            let intentos = 0;
+            const intervalo = setInterval(() => {
+                window.scrollTo({ top: target, behavior: 'smooth' });
+                intentos++;
+                // Si la posición real es cercana al objetivo o fallan muchos intentos, paramos
+                if (Math.abs(window.scrollY - target) < 5 || intentos > 10) {
+                    clearInterval(intervalo);
+                    sessionStorage.removeItem('posicionRetornoScroll');
+                }
+            }, 150);
         }
 
         async function cargarArchivosBase() {
@@ -218,7 +225,7 @@
                         const el = document.querySelector('.resaltado');
                         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         resolve();
-                    }, 150);
+                    }, 200);
                 } else {
                     resolve();
                 }
@@ -242,8 +249,16 @@
             SeccionesDesbloqueadas.add(dest);
             actualizarSelectorSecciones(dest);
             gestionarCambioSeccion();
-            //window.scrollTo({ top: 0, behavior: 'smooth' });
         };
+
+        function capturarPosicionYSalir(url, ofi, sec) {
+            // Capturamos el scroll actual antes de la redirección
+            const y = window.pageYOffset || document.documentElement.scrollTop;
+            sessionStorage.setItem('posicionRetornoScroll', Math.round(y));
+            sessionStorage.setItem('oficialRetornoLogia', ofi);
+            sessionStorage.setItem('seccionRetornoLogia', sec);
+            window.location.href = url + '&sec=1';
+        }
 
         function inyectarInstancia(ofiDelPaso, sec, idx) {
             const t = Array.from(BitacoraEventos.getElementsByTagName("tenida")).find(x => x.getAttribute("fecha") === fechaSesion);
@@ -256,8 +271,8 @@
                     h += `<button class="btn-ritual" onclick="mostrarVisor('${url}')">📜 ${tit}</button>`;
                 } else if (acto === "elevacion" && ofiDelPaso !== "Sec" && ofiActual !== "Sec") {
                     if (url.includes('rituales.html')) {
-                        const logic = `sessionStorage.setItem('posicionRetornoScroll', window.pageYOffset || document.documentElement.scrollTop); sessionStorage.setItem('oficialRetornoLogia', '${ofiActual}'); sessionStorage.setItem('seccionRetornoLogia', '${sec}'); window.location.href='${url}&sec=1';`;
-                        h += `<button class="btn-instancia-exec" onclick="${logic}">${tit}</button>`;
+                        // Llamamos a la nueva función de captura limpia
+                        h += `<button class="btn-instancia-exec" onclick="capturarPosicionYSalir('${url}', '${ofiActual}', '${sec}')">${tit}</button>`;
                     } else { h += `<button class="btn-instancia-exec" onclick="mostrarVisor('${url}')">${tit}</button>`; }
                 }
             });
