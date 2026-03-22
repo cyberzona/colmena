@@ -27,23 +27,16 @@
         dd { margin-left: 55px; border-left: 3px solid #d7ccc8; padding-left: 10px; position: relative; margin-bottom: 8px; text-align: justify; counter-increment: line-counter; min-height: 1.2em; }
         dd::before { content: counter(line-counter); position: absolute; left: -45px; color: #8d6e63; font-size: 0.75rem; font-weight: bold; width: 35px; text-align: right; top: 0; }
         
-        /* Resaltado para el oficial enfocado */
         .resaltado { background: rgba(168, 124, 0, 0.12) !important; border-left: 5px solid #A87C00 !important; }
         
         .btn-ritual, .btn-instancia-exec { border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em; font-weight: bold; background: #A87C00 !important; color: #fff !important; margin: 4px 2px; }
         
-        /* Navegación Neutra y Limpia */
-        .nav-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 40px; padding: 20px 15px; border-top: 1px solid #d7ccc8; }
-        .btn-nav-neutro { 
-            background: transparent !important; 
-            border: none !important; 
-            color: #A87C00 !important; 
-            width: 45px; height: 45px; border-radius: 10px; font-size: 1.6rem; 
-            display: flex; align-items: center; justify-content: center; 
-            transition: all 0.2s ease; cursor: pointer;
-        }
+        .nav-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 40px; padding: 10px 15px; border-top: 1px solid #d7ccc8; }
+        .btn-nav-neutro { background: transparent !important; color: #A87C00 !important; width: 45px; height: 32px; border-radius: 10px; font-size: 1.4rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; cursor: pointer; }
         .btn-nav-neutro:active { background: rgba(168, 124, 0, 0.1) !important; transform: scale(0.9); }
         .flip-h { transform: scaleX(-1); }
+
+        .btn-cerrar-x { color: #A87C00; font-weight: bold; cursor: pointer; font-size: 1.4rem; padding: 5px; }
 
         .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; align-items: center; justify-content: center; }
         .visor-content { width: 95%; height: 90%; background: #fff; border-radius: 8px; position: relative; }
@@ -56,7 +49,9 @@
         <img src="./images/logo-mini.png" class="logo-mini">
         <div class="logia-info">
             <span class="line-logia">RLS∴ COLMENA # 8</span>
-            <span id="titulo-ritual-header">Cargando...</span>
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 250px;">
+                <span id="titulo-ritual-header">Cargando...</span>
+            </div>
         </div>
     </div>
 
@@ -84,7 +79,6 @@
                 fechaSesion = parametros.get('fecha') || new Date().toLocaleDateString('en-CA');
                 gradoActivo = (parametros.get('num') || "1").toString();
                 
-                // Si es Grado 1, intentamos recuperar posición de retorno
                 let seccionInicial = "1";
                 if (gradoActivo === "1") {
                     seccionInicial = parametros.get('sec') || sessionStorage.getItem('seccionRetornoLogia') || "1";
@@ -98,11 +92,19 @@
                     
                     actualizarSelectorSecciones(seccionInicial);
                     
-                    // Preparamos el oficial para el scroll
                     const ofiMemoria = sessionStorage.getItem('oficialRetornoLogia');
                     if (ofiMemoria) document.getElementById("oficialFilter").dataset.oficialPendiente = ofiMemoria;
                     
                     gestionarCambioSeccion();
+                    
+                    // Si viene de una transición, recuperamos el scroll de la memoria
+                    const scrollPos = sessionStorage.getItem('lastScrollPos');
+                    if(scrollPos) {
+                        setTimeout(() => {
+                            window.scrollTo(0, scrollPos);
+                            sessionStorage.removeItem('lastScrollPos');
+                        }, 400);
+                    }
                 }
             } catch (e) { console.error(e); }
         }
@@ -211,7 +213,6 @@
 
             document.getElementById('rituales-content').innerHTML = `<dl>${html}</dl>${nav}`;
             
-            // EJECUCIÓN DEL SCROLLING
             if (hacerScroll && ofiSel) {
                 setTimeout(() => {
                     const el = document.querySelector('.resaltado');
@@ -251,8 +252,9 @@
                     h += `<button class="btn-ritual" onclick="mostrarVisor('${url}')">📜 ${tit}</button>`;
                 } else if (acto === "elevacion" && ofiDelPaso !== "Sec" && ofiActual !== "Sec") {
                     if (url.includes('rituales.html')) {
-                        const disp = `sessionStorage.setItem('oficialRetornoLogia', '${ofiActual}'); sessionStorage.setItem('seccionRetornoLogia', '${sec}'); window.location.href='${url}';`;
-                        h += `<button class="btn-instancia-exec" onclick="${disp}">${tit}</button>`;
+                        // Capturamos el scroll antes de la transición
+                        const clickAction = `sessionStorage.setItem('lastScrollPos', window.scrollY); sessionStorage.setItem('oficialRetornoLogia', '${ofiActual}'); sessionStorage.setItem('seccionRetornoLogia', '${sec}'); window.location.href='${url}&sec=1';`;
+                        h += `<button class="btn-instancia-exec" onclick="${clickAction}">${tit}</button>`;
                     } else { h += `<button class="btn-instancia-exec" onclick="mostrarVisor('${url}')">${tit}</button>`; }
                 }
             });
