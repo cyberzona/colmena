@@ -64,7 +64,6 @@
         let SeccionesDesbloqueadas = new Set(["1", "2", "3"]);
         let PilaNavegacion = [];
 
-        // NUEVA FUNCIÓN: Sincroniza el oficial con la memoria para que persista entre archivos
         function actualizarOficialGlobal() {
             const ofi = document.getElementById("oficialFilter").value;
             sessionStorage.setItem('oficialRetornoLogia', ofi);
@@ -117,16 +116,13 @@
                 await cargarArchivosBase();
                 if (parseInt(seccionInicial) > 3) SeccionesDesbloqueadas.add(seccionInicial);
                 
-                // Recuperamos el oficial de la memoria (esto permite que persista al cambiar de grado/archivo)
                 const oficialPersistente = sessionStorage.getItem('oficialRetornoLogia');
                 
                 if (RitualActual) {
                     const DiccionarioTitulos = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Maestría" };
                     document.getElementById("titulo-ritual-header").textContent = DiccionarioTitulos[gradoActivo] || "Ritual";
-                    
                     actualizarSelectorSecciones(seccionInicial);
                     if (oficialPersistente) document.getElementById("oficialFilter").dataset.oficialPendiente = oficialPersistente;
-                    
                     gestionarCambioSeccion();
                 }
 
@@ -199,7 +195,6 @@
             const oficialSeleccionado = document.getElementById("oficialFilter").value;
             const nodoSeccion = Array.from(RitualActual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == idSeccion);
             if (!nodoSeccion) return;
-
             let bufferHtml = "";
             Array.from(nodoSeccion.getElementsByTagName("apartado")).forEach(nodoApartado => {
                 bufferHtml += `<div class="apartado-header">${nodoApartado.getAttribute("titulo")}</div>`;
@@ -237,7 +232,6 @@
                     });
 
                     textoPaso = textoPaso.replace(/(\b\S+∴)/gi, '<span class="sigla-texto-azul">$1</span>');
-
                     textoPaso = textoPaso.replace(/___TOKEN_ALVEARIS_(\d+)___/g, (match, idx) => {
                         return `<span class="line-exec">(${coleccionInstrucciones[idx]})</span>`;
                     });
@@ -246,7 +240,6 @@
                     bufferHtml += `<dt>${oficialPaso}∴</dt><dd class="${esOficialActivo ? 'resaltado' : ''}" id="${idLinea}">${textoPaso}${MapaBotones}</dd>`;
                 });
             });
-
             document.getElementById('rituales-content').innerHTML = `<dl>${bufferHtml}</dl>`;
             
             if (oficialSeleccionado) {
@@ -279,7 +272,6 @@
                     let disparador;
                     if (esCambioRitual) {
                         const oficialActual = document.getElementById("oficialFilter").value;
-                        // Guardamos el oficial antes de saltar a otro archivo rituales.html
                         disparador = `sessionStorage.setItem('oficialRetornoLogia', '${oficialActual}'); sessionStorage.setItem('puntoRetornoLogia', '${retornoSeguro}'); window.location.href='${direccionUrl}&fecha=${fechaSesion}'`;
                     } else {
                         disparador = `mostrarVisorExterno('${direccionUrl}')`;
