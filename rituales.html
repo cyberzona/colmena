@@ -15,24 +15,35 @@
         #control-panel { background: #d7ccc8; padding: 10px; border-radius: 8px; border: 1px solid #a1887f; position: sticky; top: 0; z-index: 1000; display: flex; gap: 10px; }
         .container-select { display: flex; flex-direction: column; }
         .select-label { font-size: 0.65rem; color: #4e342e; font-weight: 800; text-transform: uppercase; margin-bottom: 2px; }
-        .select-seccion { width: 220px; padding: 8px; font-size: 0.95rem; border-radius: 4px; border: 1px solid #8d6e63; font-weight: bold; outline: none; }
-        .select-oficiales { width: 100px; padding: 8px; font-size: 0.95rem; border-radius: 4px; border: 1px solid #8d6e63; font-weight: bold; outline: none; }
+        
+        .select-seccion, .select-oficiales { padding: 8px; font-size: 0.95rem; border-radius: 4px; border: 2px solid #A87C00; font-weight: bold; outline: none; background: #fff; }
+        .select-seccion { width: 200px; }
+        .select-oficiales { width: 100px; }
 
-        .apartado-header { font-weight: bold; color: #795548; font-size: 1.1rem; border-bottom: 2px solid #d7ccc8; text-align: right; margin-top: 20px; margin-bottom: 10px; text-transform: none; }
+        .apartado-header { font-weight: bold; color: #795548; font-size: 1.1rem; border-bottom: 2px solid #d7ccc8; text-align: right; margin-top: 20px; margin-bottom: 10px; }
         
         dl { counter-reset: line-counter; }
         dt { font-weight: bold; color: #5d4037; margin-top: 12px; font-size: 0.9rem; }
         dd { margin-left: 55px; border-left: 3px solid #d7ccc8; padding-left: 10px; position: relative; margin-bottom: 8px; text-align: justify; counter-increment: line-counter; min-height: 1.2em; }
         dd::before { content: counter(line-counter); position: absolute; left: -45px; color: #8d6e63; font-size: 0.75rem; font-weight: bold; width: 35px; text-align: right; top: 0; }
         
-        .resaltado { background: rgba(180, 255, 100, 0.3) !important; border-left: 5px solid #2e7d32 !important; }
+        .resaltado { background: rgba(168, 124, 0, 0.15) !important; border-left: 5px solid #A87C00 !important; }
         
-        /* Botones y Navegación en Dorado */
-        .btn-ritual, .btn-instancia-exec, .btn-flecha { border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em; font-weight: bold; background: #A87C00 !important; color: #fff !important; }
+        /* Botones de acción (Memos/Instancias) */
+        .btn-ritual, .btn-instancia-exec { border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em; font-weight: bold; background: #A87C00 !important; color: #fff !important; }
         
-        .nav-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 40px; padding: 20px 15px; border-top: 2px solid #d7ccc8; }
-        .btn-flecha { width: 60px; height: 60px; border-radius: 12px; font-size: 2rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .btn-flecha:active { transform: scale(0.9); background: #8e6900 !important; }
+        /* Navegación Neutra (Color de fondo del body, tamaño reducido) */
+        .nav-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 40px; padding: 20px 15px; border-top: 1px solid #d7ccc8; }
+        .btn-nav-neutro { 
+            background: #fdfaf3 !important; /* Mismo color que el fondo */
+            border: 1.5px solid #A87C00 !important; 
+            color: #A87C00 !important; 
+            width: 45px; height: 45px; border-radius: 10px; font-size: 1.4rem; 
+            display: flex; align-items: center; justify-content: center; 
+            transition: all 0.2s ease; cursor: pointer;
+            box-shadow: none; /* Sin sombras para que sea neutro */
+        }
+        .btn-nav-neutro:active { background: #e0e0e0 !important; transform: scale(0.92); }
         .flip-h { transform: scaleX(-1); }
 
         .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; align-items: center; justify-content: center; }
@@ -74,7 +85,6 @@
                 fechaSesion = parametros.get('fecha') || new Date().toLocaleDateString('en-CA');
                 gradoActivo = (parametros.get('num') || "1").toString();
                 
-                // REGLA: Grado > 1 siempre entra en sección 1. Grado 1 puede usar memoria.
                 let seccionInicial = "1";
                 if (gradoActivo === "1") {
                     seccionInicial = parametros.get('sec') || sessionStorage.getItem('seccionRetornoLogia') || "1";
@@ -84,13 +94,10 @@
                 
                 if (RitualActual) {
                     const Dic = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Ritual de Maestro" };
-                    const tit = Dic[gradoActivo] || "Ritual";
-                    document.getElementById("titulo-ritual-header").textContent = tit;
-                    document.title = tit;
+                    document.getElementById("titulo-ritual-header").textContent = Dic[gradoActivo] || "Ritual";
                     
                     actualizarSelectorSecciones(seccionInicial);
                     
-                    // Recursividad del oficial
                     const ofiMemoria = sessionStorage.getItem('oficialRetornoLogia');
                     if (ofiMemoria) document.getElementById("oficialFilter").dataset.oficialPendiente = ofiMemoria;
                     
@@ -116,7 +123,6 @@
             let existe = false;
             Array.from(RitualActual.getElementsByTagName("seccion")).forEach(s => {
                 const id = s.getAttribute("id");
-                // En grado 1 respetamos desbloqueos, en grados superiores mostramos todo lo disponible
                 if (gradoActivo !== "1" || id <= 3 || SeccionesDesbloqueadas.has(id)) {
                     combo.add(new Option(s.getAttribute("titulo"), id));
                     if (id === sel) existe = true;
@@ -155,11 +161,15 @@
                 if (ofisEnSec.has(s)) comboOfi.add(new Option(s + "∴", s));
             });
 
-            if (ofisEnSec.has(ofiPendiente)) comboOfi.value = ofiPendiente;
-            renderizarLiturgia();
+            if (ofisEnSec.has(ofiPendiente)) {
+                comboOfi.value = ofiPendiente;
+                renderizarLiturgia(true); 
+            } else {
+                renderizarLiturgia(false);
+            }
         }
 
-        function renderizarLiturgia() {
+        function renderizarLiturgia(hacerScroll = false) {
             const idSec = document.getElementById("seccionFilter").value;
             const ofiSel = document.getElementById("oficialFilter").value;
             const nodoSec = Array.from(RitualActual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == idSec);
@@ -189,21 +199,24 @@
             const sel = document.getElementById("seccionFilter");
             const i = sel.selectedIndex;
             let nav = `<div class="nav-footer">`;
+            
+            if (i > 0) nav += `<button class="btn-nav-neutro" onclick="navRelativa(-1)"><span class="flip-h">➤</span></button>`;
+            else nav += `<span></span>`;
 
-            if (i > 0) {
-                nav += `<button class="btn-flecha" onclick="navRelativa(-1)"><span class="flip-h">➤</span></button>`;
-            } else { nav += `<span></span>`; }
-
-            if (i < sel.options.length - 1) {
-                nav += `<button class="btn-flecha" onclick="navRelativa(1)">➤</button>`;
-            } else if (gradoActivo > "1") {
-                // X en Dorado para salida de grado
-                nav += `<button class="btn-flecha" onclick="irA('VOLVER')" style="font-size: 1.8rem;">✖</button>`;
-            } else { nav += `<span></span>`; }
+            if (i < sel.options.length - 1) nav += `<button class="btn-nav-neutro" onclick="navRelativa(1)">➤</button>`;
+            else if (gradoActivo > "1") nav += `<button class="btn-nav-neutro" onclick="irA('VOLVER')" style="font-size: 1.3rem;">✖</button>`;
+            else nav += `<span></span>`;
+            
             nav += `</div>`;
 
             document.getElementById('rituales-content').innerHTML = `<dl>${html}</dl>${nav}`;
-            if (ofiSel) setTimeout(() => document.querySelector('.resaltado')?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+            
+            if (hacerScroll && ofiSel) {
+                setTimeout(() => {
+                    const target = document.querySelector('.resaltado');
+                    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 300);
+            }
         }
 
         function navRelativa(d) {
@@ -218,9 +231,7 @@
                 if (gradoActivo > "1") {
                     const secRegreso = sessionStorage.getItem('seccionRetornoLogia') || "1";
                     location.href = `rituales.html?num=1&fecha=${fechaSesion}&sec=${secRegreso}`;
-                } else {
-                    location.href = 'index.html';
-                }
+                } else { location.href = 'index.html'; }
                 return;
             }
             SeccionesDesbloqueadas.add(dest);
@@ -232,27 +243,17 @@
         function inyectarInstancia(ofiDelPaso, sec, idx) {
             const t = Array.from(BitacoraEventos.getElementsByTagName("tenida")).find(x => x.getAttribute("fecha") === fechaSesion);
             if (!t) return "";
-            
             let h = "";
             const ofiSeleccionado = document.getElementById("oficialFilter").value;
-
             Array.from(t.getElementsByTagName("item")).forEach(i => {
                 const acto = i.getAttribute("acto"), url = i.getAttribute("url"), tit = i.getAttribute("titulo") || "Memo";
-                
                 if (acto === "balaustre" && ofiDelPaso === "Sec" && ofiSeleccionado === "Sec") {
                     h += `<button class="btn-ritual" onclick="mostrarVisor('${url}')">📜 ${tit}</button>`;
-                } 
-                else if (acto === "elevacion" && ofiDelPaso !== "Sec" && ofiSeleccionado !== "Sec") {
+                } else if (acto === "elevacion" && ofiDelPaso !== "Sec" && ofiSeleccionado !== "Sec") {
                     if (url.includes('rituales.html')) {
-                        const disp = `
-                            sessionStorage.setItem('oficialRetornoLogia', '${ofiSeleccionado}'); 
-                            sessionStorage.setItem('seccionRetornoLogia', '${sec}'); 
-                            window.location.href='${url}';
-                        `;
+                        const disp = `sessionStorage.setItem('oficialRetornoLogia', '${ofiSeleccionado}'); sessionStorage.setItem('seccionRetornoLogia', '${sec}'); window.location.href='${url}';`;
                         h += `<button class="btn-instancia-exec" onclick="${disp}">${tit}</button>`;
-                    } else { 
-                        h += `<button class="btn-instancia-exec" onclick="mostrarVisor('${url}')">${tit}</button>`; 
-                    }
+                    } else { h += `<button class="btn-instancia-exec" onclick="mostrarVisor('${url}')">${tit}</button>`; }
                 }
             });
             return h;
