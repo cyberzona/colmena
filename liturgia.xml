@@ -155,16 +155,16 @@
                 <paso tipo="dialogo" oficial="1V" texto="H∴ 2V∴ y HH∴ de mi columna, nuestro VM∴ va a suspender los trabajos por un solo golpe de Mall∴"/>
                 <paso tipo="dialogo" oficial="2V" texto="HH∴ de la Col∴ del Sur os anuncio que el VM∴ va a suspender los Trbajos con un solo golpe de Mall∴"/>
                 <paso tipo="dialogo" oficial="1V" texto="Anunciado VM∴"/>
-                <paso tipo="dialogo" oficial="VM" texto="[Da un golpe de Maellete y clausura los trabajos invitando a los HH∴ Aprendices a que cubran el Tempo"/>
+                <paso tipo="dialogo" oficial="VM" texto="[Da un golpe de Maellete]... y clausura los trabajos invitando a los HH∴ Aprendices a que cubran el Tempo"/>
             </apartado>
         </seccion>
          <seccion id="2" titulo="Cámara de Compañeros">
-            <apartado id="1" titulo="Estudio Profundo">
-                <paso tipo="dialogo" oficial="VM" texto="HH∴ 1V∴ y 2V∴ Servios anunciar alo HH∴ de vuestras respectivas columnas, como yo lo hago en el Or∴ que voy a suspender los trabajos con un solo golpe de Mall∴ para abrir la de Compañero."/>
-                <paso tipo="dialogo" oficial="1V" texto="H∴ 2V∴ y HH∴ de mi columna, nuestro VM∴ va a suspender los trabajos por un solo golpe de Mall∴"/>
-                <paso tipo="dialogo" oficial="2V" texto="HH∴ de la Col∴ del Sur os anuncio que el VM∴ va a suspender los Trbajos con un solo golpe de Mall∴"/>
-                <paso tipo="dialogo" oficial="1V" texto="Anunciado VM∴"/>
-                <paso tipo="dialogo" oficial="VM" texto="[Da un golpe de Maellete y clausura los trabajos invitando a los HH∴ Aprendices a que cubran el Tempo"/>
+            <apartado id="1" titulo="Inicio de Trabajos">
+                <paso tipo="dialogo" oficial="VM" texto="Servios H∴ GT∴ avisar al H∴ GTE∴ que voy a abrir la Log∴ en el Grado de Compañero y que vigile en consecuencia."/>
+                <paso tipo="dialogo" oficial="GT" texto="Seguimos a cubierto y el GTE∴ esta avisado Muy VM∴"/>
+                <paso tipo="dialogo" oficial="VM" texto="H∴ 1V∴ ¿Cuál es el primer deber de un Vigilante en Cámara de Compañeros?"/>
+                <paso tipo="dialogo" oficial="1V" texto="Asegurarse que el Templo esté cubierto de las indiscreciones de profanos y Aprendices."/>
+                <paso tipo="dialogo" oficial="VM" texto="Aseguraos de ello, querido hermano"/>
             </apartado>
         </seccion>
     </ritual>
