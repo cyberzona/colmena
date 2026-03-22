@@ -31,7 +31,10 @@
         .nav-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 40px; padding: 20px 15px; border-top: 2px solid #d7ccc8; }
         .btn-flecha { background: #d7ccc8; border: 1px solid #a1887f; width: 60px; height: 60px; border-radius: 12px; color: #5d4037; font-size: 2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .btn-flecha:active { transform: scale(0.9); background: #A87C00; color: #fff; }
-        .flip-h { transform: scaleX(-1); }
+        
+        /* Alternativa para salida de grado */
+        .btn-salida { background: #fbe9e7; border-color: #d32f2f; color: #d32f2f; }
+        .btn-salida:active { background: #d32f2f; color: #fff; }
 
         .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; align-items: center; justify-content: center; }
         .visor-content { width: 95%; height: 90%; background: #fff; border-radius: 8px; position: relative; }
@@ -72,7 +75,6 @@
                 const parametros = new URLSearchParams(window.location.search);
                 fechaSesion = parametros.get('fecha') || new Date().toLocaleDateString('en-CA');
                 gradoActivo = (parametros.get('num') || "1").toString();
-                
                 const seccionInicial = parametros.get('sec') || "1";
 
                 await cargarArchivosBase();
@@ -85,6 +87,13 @@
                     
                     if (parseInt(seccionInicial) > 3) SeccionesDesbloqueadas.add(seccionInicial.toString());
                     actualizarSelectorSecciones(seccionInicial);
+                    
+                    // RECURSIVIDAD: Recupera el oficial guardado antes del cambio de grado [cite: 2026-03-07]
+                    const ofiPrevio = sessionStorage.getItem('oficialRetornoLogia');
+                    if (ofiPrevio) {
+                        document.getElementById("oficialFilter").dataset.oficialPendiente = ofiPrevio;
+                    }
+
                     gestionarCambioSeccion();
                 }
             } catch (e) { console.error(e); }
@@ -120,13 +129,16 @@
         }
 
         function actualizarOficialGlobal() {
+            sessionStorage.setItem('oficialRetornoLogia', document.getElementById("oficialFilter").value);
             renderizarLiturgia();
         }
 
         function gestionarCambioSeccion() {
             const idSec = document.getElementById("seccionFilter").value;
             const comboOfi = document.getElementById("oficialFilter");
-            const ofiSeleccionadoActual = comboOfi.value;
+            // Prioridad: 1. Pendiente de carga recursiva, 2. Selección actual
+            const ofiARecuperar = comboOfi.dataset.oficialPendiente || comboOfi.value;
+            delete comboOfi.dataset.oficialPendiente;
 
             const nodoSec = Array.from(RitualActual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == idSec);
             const ofisEnSec = new Set();
@@ -142,7 +154,9 @@
                 if (ofisEnSec.has(s)) comboOfi.add(new Option(s + "∴", s));
             });
 
-            if (ofisEnSec.has(ofiSeleccionadoActual)) comboOfi.value = ofiSeleccionadoActual;
+            if (ofisEnSec.has(ofiARecuperar)) {
+                comboOfi.value = ofiARecuperar;
+            }
             renderizarLiturgia();
         }
 
@@ -185,17 +199,15 @@
             const i = sel.selectedIndex;
             let nav = `<div class="nav-footer">`;
 
-            // Flecha Izquierda: Navegación interna
             if (i > 0) {
                 nav += `<button class="btn-flecha" onclick="navRelativa(-1)"><span class="flip-h">➤</span></button>`;
             } else { nav += `<span></span>`; }
 
-            // Flecha Derecha: Navegación interna o Retorno al final
             if (i < sel.options.length - 1) {
                 nav += `<button class="btn-flecha" onclick="navRelativa(1)">➤</button>`;
             } else if (gradoActivo > "1") {
-                // Al final del grado 2 (última sección), aparece el botón de retorno al grado anterior
-                nav += `<button class="btn-flecha" onclick="irA('VOLVER')"><span class="flip-h">➤</span></button>`;
+                // Alternativa Salida: Icono ✖ en rojo para indicar fin de grado
+                nav += `<button class="btn-flecha btn-salida" onclick="irA('VOLVER')" title="Salir del Grado">✖</button>`;
             } else { nav += `<span></span>`; }
             nav += `</div>`;
 
@@ -218,7 +230,6 @@
                     actualizarSelectorSecciones(ant.s);
                     gestionarCambioSeccion();
                 } else if (gradoActivo > "1") {
-                    // Retorno limpio al Grado 1 (Sección 1 por defecto)
                     location.href = `rituales.html?num=1&fecha=${fechaSesion}`;
                 } else { location.href = 'index.html'; }
                 return;
@@ -245,8 +256,9 @@
                 } 
                 else if (acto === "elevacion" && ofiDelPaso !== "Sec" && ofiSeleccionado !== "Sec") {
                     if (url.includes('rituales.html')) {
-                        // Salto directo al Grado 2 sin parámetros de sección ni fecha (limpio)
-                        h += `<button class="btn-instancia-exec" onclick="window.location.href='${url}'">${tit}</button>`;
+                        // RECURSIVIDAD: Guardamos oficial antes de saltar [cite: 2026-03-07]
+                        const disp = `sessionStorage.setItem('oficialRetornoLogia', '${ofiSeleccionado}'); window.location.href='${url}'`;
+                        h += `<button class="btn-instancia-exec" onclick="${disp}">${tit}</button>`;
                     } else { 
                         h += `<button class="btn-instancia-exec" onclick="mostrarVisor('${url}')">${tit}</button>`; 
                     }
