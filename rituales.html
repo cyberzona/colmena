@@ -75,21 +75,16 @@
                 fechaSesion = parametros.get('fecha') || new Date().toLocaleDateString('en-CA');
                 gradoActivo = (parametros.get('num') || "1").toString();
                 
-                let seccionInicial = "1";
-                if (gradoActivo === "1") {
-                    seccionInicial = parametros.get('sec') || sessionStorage.getItem('seccionRetornoLogia') || "1";
-                }
-
+                let seccionInicial = parametros.get('sec') || sessionStorage.getItem('seccionRetornoLogia') || "1";
+                fechaSesion = parametros.get('fecha') || new Date().toLocaleDateString('en-CA');
                 await cargarArchivosBase();
                 
                 if (RitualActual) {
                     const Dic = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Ritual de Maestro" };
                     document.getElementById("titulo-ritual-header").textContent = Dic[gradoActivo];
-                    actualizarSelectorSecciones(seccionInicial);
-                    
+                    actualizarSelectorSecciones(seccionInicial);                    
                     const ofiMemoria = sessionStorage.getItem('oficialRetornoLogia');
-                    if (ofiMemoria) document.getElementById("oficialFilter").dataset.oficialPendiente = ofiMemoria;
-                    
+                    if (ofiMemoria) document.getElementById("oficialFilter").dataset.oficialPendiente = ofiMemoria;                    
                     gestionarCambioSeccion();
 
                     // RESTAURACIÓN DE SCROLL ROBUSTA
@@ -105,9 +100,8 @@
                             }
                         }, 100);
                     }
-                }
-            } catch (e) { console.error(e); }
-        }
+                } catch (e) { console.error(e); }
+            }
 
         async function cargarArchivosBase() {
             const t = new Date().getTime();
