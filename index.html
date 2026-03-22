@@ -572,11 +572,7 @@
         
         const ritualesImg = document.getElementById('rituales-img');
         if (ritualesImg) {
-            ritualesImg.setAttribute('data-rituales', JSON.stringify([
-                { titulo: 'Ritual de Aprendiz', url: 'rituales.html?num=1' },
-                { titulo: 'Ritual de Compañero', url: 'rituales.html?num=2' },
-                { titulo: 'Ritual de Maestro', url: 'rituales.html?num=3' }
-            ]));
+            ritualesImg.setAttribute('data-rituales', JSON.stringify([ { titulo: 'Rituales', url: 'rituales.html?num=1' } ]));
             ritualesImg.onclick = openLightboxHandler;
         }
     }
