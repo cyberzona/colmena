@@ -149,7 +149,7 @@
         </seccion>
     </ritual>
     <ritual taller="Colmena No. 8" grado="2">
-        <seccion id="1" titulo="Logia de San Juan">
+        <seccion id="1" titulo="Apertura de Trabajos">
             <apartado id="1" titulo="Estudio Profundo">
                 <paso tipo="dialogo" oficial="VM" texto="HH∴ 1V∴ y 2V∴ Servios anunciar alo HH∴ de vuestras respectivas columnas, como yo lo hago en el Or∴ que voy a suspender los trabajos con un solo golpe de Mall∴ para abrir la de Compañero."/>
                 <paso tipo="dialogo" oficial="1V" texto="H∴ 2V∴ y HH∴ de mi columna, nuestro VM∴ va a suspender los trabajos por un solo golpe de Mall∴"/>
