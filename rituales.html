@@ -20,7 +20,6 @@
 
         .apartado-header { font-weight: bold; color: #795548; font-size: 1.1rem; border-bottom: 2px solid #d7ccc8; text-align: right; margin-top: 20px; margin-bottom: 10px; text-transform: none; }
         
-        /* Numeración Restaurada */
         dl { counter-reset: line-counter; }
         dt { font-weight: bold; color: #5d4037; margin-top: 12px; font-size: 0.9rem; }
         dd { margin-left: 55px; border-left: 3px solid #d7ccc8; padding-left: 10px; position: relative; margin-bottom: 8px; text-align: justify; counter-increment: line-counter; min-height: 1.2em; }
@@ -29,11 +28,12 @@
         .resaltado { background: rgba(180, 255, 100, 0.3) !important; border-left: 5px solid #2e7d32 !important; }
         .btn-ritual, .btn-instancia-exec { border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em; margin: 4px 2px; font-weight: bold; background: #A87C00 !important; color: #fff !important; }
         
-        /* Footer de Navegación */
-        .nav-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 30px; padding: 20px 10px; border-top: 1px solid #d7ccc8; background: rgba(215, 204, 200, 0.2); }
-        .btn-flecha { background: #5d4037; border: none; width: 50px; height: 50px; border-radius: 50%; color: #fff; font-size: 1.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
-        .btn-flecha:disabled { background: #d7ccc8; cursor: default; }
-        .btn-flecha:active { background: #A87C00; }
+        /* Footer con Flechas Proporcionadas y Opuestas */
+        .nav-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 40px; padding: 20px 15px; border-top: 2px solid #d7ccc8; }
+        .btn-flecha { background: #5d4037; border: none; width: 60px; height: 60px; border-radius: 12px; color: #fff; font-size: 2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn-flecha:active { transform: scale(0.9); background: #A87C00; }
+        .btn-flecha:disabled { background: #efebe9; color: #d7ccc8; cursor: default; box-shadow: none; }
+        .flip-h { transform: scaleX(-1); } /* Para hacerla idéntica pero opuesta */
 
         .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; align-items: center; justify-content: center; }
         .visor-content { width: 95%; height: 90%; background: #fff; border-radius: 8px; position: relative; }
@@ -194,9 +194,11 @@
             const sel = document.getElementById("seccionFilter");
             const i = sel.selectedIndex;
             let nav = `<div class="nav-footer">`;
-            nav += `<button class="btn-flecha" onclick="navRelativa(-1)">⬅</button>`;
+            // Botón Retroceder (siempre igual pero opuesta a la derecha)
+            nav += `<button class="btn-flecha" onclick="navRelativa(-1)"><span class="flip-h">➤</span></button>`;
+            
             if (i < sel.options.length - 1) {
-                nav += `<button class="btn-flecha" onclick="navRelativa(1)">➡</button>`;
+                nav += `<button class="btn-flecha" onclick="navRelativa(1)">➤</button>`;
             } else { nav += `<span></span>`; }
             nav += `</div>`;
 
@@ -221,7 +223,8 @@
                     actualizarSelectorSecciones(ant.s);
                     gestionarCambioSeccion();
                 } else if (gradoActivo > "1") {
-                    sessionStorage.setItem('seccionRetornoLogia', "2"); // Vuelve a Desarrollo del Grado 1
+                    // Retorno a Desarrollo de Trabajos (ID 2) del Grado 1
+                    sessionStorage.setItem('seccionRetornoLogia', "2");
                     location.href = `rituales.html?num=1&fecha=${fechaSesion}`;
                 } else { location.href = 'index.html'; }
                 return;
