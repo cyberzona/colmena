@@ -223,26 +223,44 @@
         }
 
         window.irA = function(dest) {
-            if (dest === 'VOLVER') {
-                if (PilaNavegacion.length > 0) {
-                    const ant = PilaNavegacion.pop();
-                    SeccionesDesbloqueadas = ant.v;
-                    document.getElementById("oficialFilter").dataset.oficialPendiente = ant.o;
-                    actualizarSelectorSecciones(ant.s);
-                    gestionarCambioSeccion();
-                } else if (gradoActivo > "1") {
-                    // Retorno a Desarrollo de Trabajos (ID 2) del Grado 1
-                    sessionStorage.setItem('seccionRetornoLogia', "2");
-                    location.href = `rituales.html?num=1&fecha=${fechaSesion}`;
-                } else { location.href = 'index.html'; }
-                return;
-            }
-            PilaNavegacion.push({ s: document.getElementById("seccionFilter").value, o: document.getElementById("oficialFilter").value, v: new Set(SeccionesDesbloqueadas) });
-            SeccionesDesbloqueadas.add(dest);
-            actualizarSelectorSecciones(dest);
+    if (dest === 'VOLVER') {
+        if (PilaNavegacion.length > 0) {
+            const ant = PilaNavegacion.pop();
+            SeccionesDesbloqueadas = ant.v;
+            document.getElementById("oficialFilter").dataset.oficialPendiente = ant.o;
+            actualizarSelectorSecciones(ant.s);
             gestionarCambioSeccion();
-            window.scrollTo(0, 0);
-        };
+        } else if (gradoActivo > "1") {
+            // RETORNO DINÁMICO: Regresa al Grado 1 a la sección guardada en memoria
+            const secRegreso = sessionStorage.getItem('seccionRetornoLogia') || "1";
+            location.href = `rituales.html?num=1&fecha=${fechaSesion}&sec=${secRegreso}`;
+        } else { 
+            location.href = 'index.html'; 
+        }
+        return;
+    }
+
+    // Guardar contexto actual antes de saltar
+    PilaNavegacion.push({ 
+        s: document.getElementById("seccionFilter").value, 
+        o: document.getElementById("oficialFilter").value, 
+        v: new Set(SeccionesDesbloqueadas) 
+    });
+
+    // Si el destino es una URL (cambio de grado)
+    if (dest.includes('rituales.html')) {
+        // Forzamos que al ir al nuevo grado, empiece en la sección 1
+        const urlLimpia = dest.split('&sec=')[0]; 
+        location.href = `${urlLimpia}&sec=1&fecha=${fechaSesion}`;
+        return;
+    }
+
+    // Navegación interna en el mismo grado
+    SeccionesDesbloqueadas.add(dest);
+    actualizarSelectorSecciones(dest);
+    gestionarCambioSeccion();
+    window.scrollTo(0, 0);
+};
 
         function inyectarInstancia(ofi, sec, idx) {
             const t = Array.from(BitacoraEventos.getElementsByTagName("tenida")).find(x => x.getAttribute("fecha") === fechaSesion);
