@@ -50,7 +50,7 @@
             <apartado id="5" titulo="De la Consagración de la Luz">
                 <paso tipo="dialogo" oficial="VM" texto="¡En pie y al Orden, Queridos Hermanos! [Da un golpe de Mallete seguido por los Vigilantes]."/>
                 <paso tipo="dialogo" oficial="VM" texto="QH∴ Maestro de Ceremonias (MC∴) , prended las Luces. (MC∴ , abre el Libro de la Ley y coloca la Escuadra y sobre esta el Compás. Enciende la estrella del VM∴, dice: ¡Que la Sabiduría guie nuestros trabajos! ; MC∴, enciende la estrella del 1V∴ VM∴, dice: ¡Que la Fuerza los sostenga! ; MC∴, enciende la estrella del 2V∴, VM∴ dice: ¡Que la Belleza los adorne!)"/>
-                <paso tipo="dialogo" oficial="VM" texto="Puesto que todo está justo y perfecto, y que es la hora que los AAp∴ MMas∴ empiezan sus trabajos, uníos a mí HH∴ míos, ALGDGADU∴ y en su nombre y bajo la obediencia de la Ser∴ Gran L∴ de Lengua Española para los EE. UU. de A., declaro abiertos los trabajos de esta RL∴ en el grado de Ap∴Mas∴ del REAA∴. Queda prohibido a todo H∴ pasar de una a otra Col∴ ni cubrir el Templo sin permiso de su respectivo V∴; ni tratar asuntos políticos ni religiosos, a mí HH∴ por el signo y Bat∴ de Grado. [Da tres golpes de Mall∴ que repiten los VV∴] Tomad asiento, QQHH∴. [[LINK:102]]"/>
+                <paso tipo="dialogo" oficial="VM" texto="Puesto que todo está justo y perfecto, y que es la hora que los AAp∴ MMas∴ empiezan sus trabajos, uníos a mí HH∴ míos, ALGDGADU∴ y en su nombre y bajo la obediencia de la Ser∴ Gran L∴ de Lengua Española para los EE. UU. de A., declaro abiertos los trabajos de esta RL∴ en el grado de Ap∴Mas∴ del REAA∴. Queda prohibido a todo H∴ pasar de una a otra Col∴ ni cubrir el Templo sin permiso de su respectivo V∴; ni tratar asuntos políticos ni religiosos, a mí HH∴ por el signo y Bat∴ de Grado. [Da tres golpes de Mall∴ que repiten los VV∴] Tomad asiento, QQHH∴."/>
             </apartado>
         </seccion>
         <seccion id="2" titulo="Desarrollo de Trabajos">        
@@ -69,7 +69,7 @@
                 <paso tipo="dialogo" oficial="1V" texto="Reina el silencio en ambas CCol∴, VM∴."/>
                 <paso tipo="dialogo" oficial="VM" texto="QH∴ OF∴ ¿Queréis darnos vuestras conclusiones respecto a la plancha trazada por nuestro H∴ Sec∴ de nuestros últimos trabajos? [El H∴Ora∴ da las conclusiones]"/>
                 <paso tipo="dialogo" oficial="VM" texto="Después de las conclusiones del H∴ Ora∴, los HH∴ que estén de acuerdo se servirán de hacer la señal de aprobación al primer golpe de Mall∴. (Con golpe de Mallete.) "/>
-                <paso tipo="dialogo" oficial="VM" texto="¡Hermanos míos! El Taller ha ordenado nuestro primer tiempo; ahora, para que el espíritu se manifieste en nueva forma, vamos a cubrir los trabajos de este Grado y proceder a . [Con golpe de Mallete.] [[LINK:104]] [[LINK:105]] [[INSTANCIA]] [[LINK:103]]"/>
+                <paso tipo="dialogo" oficial="VM" texto="¡Hermanos míos! El Taller ha ordenado nuestro primer tiempo; ahora, para que el espíritu se manifieste en nueva forma, vamos a cubrir los trabajos de este Grado y proceder a . [Con golpe de Mallete.] [[INSTANCIA]]"/>
             </apartado>          
         </seccion>            
         <seccion id="3" titulo="Clausura de Trabajos">
@@ -126,25 +126,25 @@
                 <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ que voy a conceder la palabra en bien general de la orden y en particular de este Tall∴."/>
                 <paso tipo="dialogo" oficial="2V" texto="QH∴ de la Col∴ del Norte, por orden del VM∴ y transmitida a mí por el QH∴ 1V∴ que está concedida la palabra en bien general de la orden y particular de este Tall∴."/>
                 <paso tipo="dialogo" oficial="2V" texto="QH∴ 1V∴, reina el silencio en mi Col∴.."/>
-                <paso tipo="dialogo" oficial="1V" texto="VM∴, reina silencio en ambas CCol∴. [[VOLVER]]"/>
+                <paso tipo="dialogo" oficial="1V" texto="VM∴, reina silencio en ambas CCol∴."/>
             </apartado>
         </seccion>    
         <seccion id="5" titulo="Asuntos Familiares y Otros">
             <apartado id="1" titulo="De los Asuntos Familiares y Otros">
                 <paso tipo="dialogo" oficial="VM" texto="QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ como yo lo hago en el Or∴ que vamos a tratar asuntos familiares."/>
-                <paso tipo="dialogo" oficial="VM" texto="Invitad al MC∴.. a que dé un paseo al salón de pasos perdidos a ver si hay algún visitante. [[VOLVER]]"/>
+                <paso tipo="dialogo" oficial="VM" texto="Invitad al MC∴.. a que dé un paseo al salón de pasos perdidos a ver si hay algún visitante."/>
             </apartado>
         </seccion>
         <seccion id="6" titulo="Instrucción: Simbolismo">
             <apartado id="1" titulo="Estudio Profundo">
                 <paso tipo="dialogo" oficial="Ora" texto="La Piedra Bruta representa el estado de imperfección..."/>
-                <paso tipo="dialogo" oficial="Ora" texto="Es cuanto, VM∴. [[VOLVER]]"/>
+                <paso tipo="dialogo" oficial="Ora" texto="Es cuanto, VM∴."/>
             </apartado>
         </seccion>
         <seccion id="7" titulo="Logia de San Juan">
             <apartado id="1" titulo="Estudio Profundo">
                 <paso tipo="dialogo" oficial="Ora" texto="La Piedra Bruta representa el estado de imperfección..."/>
-                <paso tipo="dialogo" oficial="Ora" texto="Es cuanto, VM∴. [[VOLVER]]"/>
+                <paso tipo="dialogo" oficial="Ora" texto="Es cuanto, VM∴"/>
             </apartado>
         </seccion>
     </ritual>
@@ -164,7 +164,7 @@
                 <paso tipo="dialogo" oficial="1V" texto="H∴ 2V∴ y HH∴ de mi columna, nuestro VM∴ va a suspender los trabajos por un solo golpe de Mall∴"/>
                 <paso tipo="dialogo" oficial="2V" texto="HH∴ de la Col∴ del Sur os anuncio que el VM∴ va a suspender los Trbajos con un solo golpe de Mall∴"/>
                 <paso tipo="dialogo" oficial="1V" texto="Anunciado VM∴"/>
-                <paso tipo="dialogo" oficial="VM" texto="[Da un golpe de Maellete y clausura los trabajos invitando a los HH∴ Aprendices a que cubran el Tempo [[VOLVER]]"/>
+                <paso tipo="dialogo" oficial="VM" texto="[Da un golpe de Maellete y clausura los trabajos invitando a los HH∴ Aprendices a que cubran el Tempo"/>
             </apartado>
         </seccion>
     </ritual>
@@ -172,7 +172,7 @@
         <seccion id="1" titulo="Logia de San Juan">
             <apartado id="1" titulo="Estudio Profundo">
                 <paso tipo="dialogo" oficial="VM" texto="La Piedra Bruta representa el estado de imperfección..."/>
-                <paso tipo="dialogo" oficial="VM" texto="Es cuanto, VM∴. [[VOLVER]]"/>
+                <paso tipo="dialogo" oficial="VM" texto="Es cuanto, VM∴."/>
             </apartado>
         </seccion>
     </ritual>
