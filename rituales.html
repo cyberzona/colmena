@@ -109,7 +109,7 @@
         async function inicializarPortal() {
             try {
                 const parametros = new URLSearchParams(window.location.search);
-                fechaSesion = parametros.get('fecha') || new Date().toISOString().split('T')[0]; 
+                fechaSesion = parametros.get('fecha') || new Date().toLocaleDateString('en-CA'); 
                 gradoActivo = (parametros.get('num') || "1").toString();
                 const seccionInicial = (parametros.get('sec') || "1").toString();
                 
