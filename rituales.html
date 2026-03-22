@@ -28,11 +28,9 @@
         .resaltado { background: rgba(180, 255, 100, 0.3) !important; border-left: 5px solid #2e7d32 !important; }
         .btn-ritual, .btn-instancia-exec { border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em; margin: 4px 2px; font-weight: bold; background: #A87C00 !important; color: #fff !important; }
         
-        /* Footer y Flechas con color café claro coincidente */
         .nav-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 40px; padding: 20px 15px; border-top: 2px solid #d7ccc8; }
         .btn-flecha { background: #d7ccc8; border: 1px solid #a1887f; width: 60px; height: 60px; border-radius: 12px; color: #5d4037; font-size: 2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .btn-flecha:active { transform: scale(0.9); background: #A87C00; color: #fff; }
-        .btn-flecha:disabled { background: #efebe9; color: #d7ccc8; cursor: default; box-shadow: none; }
         .flip-h { transform: scaleX(-1); }
 
         .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; align-items: center; justify-content: center; }
@@ -75,8 +73,7 @@
                 fechaSesion = parametros.get('fecha') || new Date().toLocaleDateString('en-CA');
                 gradoActivo = (parametros.get('num') || "1").toString();
                 
-                const secMemoria = sessionStorage.getItem('seccionRetornoLogia');
-                const seccionInicial = parametros.get('sec') || secMemoria || "1";
+                const seccionInicial = parametros.get('sec') || "1";
 
                 await cargarArchivosBase();
                 
@@ -84,14 +81,10 @@
                     const Dic = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Ritual de Maestro" };
                     const tit = Dic[gradoActivo] || "Ritual";
                     document.getElementById("titulo-ritual-header").textContent = tit;
-                    document.title = tit; // Actualiza el nombre del marco de la ventana
+                    document.title = tit;
                     
                     if (parseInt(seccionInicial) > 3) SeccionesDesbloqueadas.add(seccionInicial.toString());
                     actualizarSelectorSecciones(seccionInicial);
-                    
-                    const ofiMemoria = sessionStorage.getItem('oficialRetornoLogia');
-                    if (ofiMemoria) document.getElementById("oficialFilter").dataset.oficialPendiente = ofiMemoria;
-                    
                     gestionarCambioSeccion();
                 }
             } catch (e) { console.error(e); }
@@ -123,20 +116,17 @@
         }
 
         function actualizarSeccionGlobal() {
-            sessionStorage.setItem('seccionRetornoLogia', document.getElementById("seccionFilter").value);
             gestionarCambioSeccion();
         }
 
         function actualizarOficialGlobal() {
-            sessionStorage.setItem('oficialRetornoLogia', document.getElementById("oficialFilter").value);
             renderizarLiturgia();
         }
 
         function gestionarCambioSeccion() {
             const idSec = document.getElementById("seccionFilter").value;
             const comboOfi = document.getElementById("oficialFilter");
-            const ofiPendiente = comboOfi.dataset.oficialPendiente || comboOfi.value || "";
-            delete comboOfi.dataset.oficialPendiente;
+            const ofiSeleccionadoActual = comboOfi.value;
 
             const nodoSec = Array.from(RitualActual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == idSec);
             const ofisEnSec = new Set();
@@ -152,7 +142,7 @@
                 if (ofisEnSec.has(s)) comboOfi.add(new Option(s + "∴", s));
             });
 
-            if (ofisEnSec.has(ofiPendiente)) comboOfi.value = ofiPendiente;
+            if (ofisEnSec.has(ofiSeleccionadoActual)) comboOfi.value = ofiSeleccionadoActual;
             renderizarLiturgia();
         }
 
@@ -166,7 +156,7 @@
             Array.from(nodoSec.getElementsByTagName("apartado")).forEach(apt => {
                 html += `<div class="apartado-header">${apt.getAttribute("titulo")}</div>`;
                 Array.from(apt.getElementsByTagName("paso")).forEach((paso, idx) => {
-                    const ofi = (paso.getAttribute("oficial") || "Ofi").trim();
+                    const ofiPaso = (paso.getAttribute("oficial") || "Ofi").trim();
                     let txt = (paso.getAttribute("texto") || paso.textContent).trim();
                     let btns = "";
 
@@ -179,15 +169,15 @@
                         txt = txt.replace("[[VOLVER]]", "");
                     }
                     if (txt.includes("[[INSTANCIA]]")) {
-                        btns += inyectarInstancia(idSec, idx);
+                        btns += inyectarInstancia(ofiPaso, idSec, idx);
                         txt = txt.replace("[[INSTANCIA]]", "");
                     }
 
                     txt = txt.replace(/(\b\S+∴)/gi, '<span style="color:#0277bd; font-weight:bold;">$1</span>');
                     txt = txt.replace(/\[(.*?)\]/g, '<span style="font-style:italic; color:rgba(0,0,0,0.4);">($1)</span>');
 
-                    const esFoco = ofiSel && ofi === ofiSel;
-                    html += `<dt>${ofi}∴</dt><dd class="${esFoco ? 'resaltado' : ''}">${txt}${btns}</dd>`;
+                    const esFoco = ofiSel && ofiPaso === ofiSel;
+                    html += `<dt>${ofiPaso}∴</dt><dd class="${esFoco ? 'resaltado' : ''}">${txt}${btns}</dd>`;
                 });
             });
 
@@ -195,16 +185,17 @@
             const i = sel.selectedIndex;
             let nav = `<div class="nav-footer">`;
 
-            // Lógica de flechas: no aparecen en los extremos
+            // Flecha Izquierda: Navegación interna
             if (i > 0) {
                 nav += `<button class="btn-flecha" onclick="navRelativa(-1)"><span class="flip-h">➤</span></button>`;
-            } else if (gradoActivo > "1") {
-                // Si es la primera sección de un grado superior, el retorno es al grado anterior
-                nav += `<button class="btn-flecha" onclick="irA('VOLVER')"><span class="flip-h">➤</span></button>`;
             } else { nav += `<span></span>`; }
 
+            // Flecha Derecha: Navegación interna o Retorno al final
             if (i < sel.options.length - 1) {
                 nav += `<button class="btn-flecha" onclick="navRelativa(1)">➤</button>`;
+            } else if (gradoActivo > "1") {
+                // Al final del grado 2 (última sección), aparece el botón de retorno al grado anterior
+                nav += `<button class="btn-flecha" onclick="irA('VOLVER')"><span class="flip-h">➤</span></button>`;
             } else { nav += `<span></span>`; }
             nav += `</div>`;
 
@@ -224,38 +215,41 @@
                 if (PilaNavegacion.length > 0) {
                     const ant = PilaNavegacion.pop();
                     SeccionesDesbloqueadas = ant.v;
-                    document.getElementById("oficialFilter").dataset.oficialPendiente = ant.o;
                     actualizarSelectorSecciones(ant.s);
                     gestionarCambioSeccion();
                 } else if (gradoActivo > "1") {
-                    const secRegreso = sessionStorage.getItem('seccionRetornoLogia') || "1";
-                    location.href = `rituales.html?num=1&fecha=${fechaSesion}&sec=${secRegreso}`;
+                    // Retorno limpio al Grado 1 (Sección 1 por defecto)
+                    location.href = `rituales.html?num=1&fecha=${fechaSesion}`;
                 } else { location.href = 'index.html'; }
                 return;
             }
-            PilaNavegacion.push({ s: document.getElementById("seccionFilter").value, o: document.getElementById("oficialFilter").value, v: new Set(SeccionesDesbloqueadas) });
+            PilaNavegacion.push({ s: document.getElementById("seccionFilter").value, v: new Set(SeccionesDesbloqueadas) });
             SeccionesDesbloqueadas.add(dest);
             actualizarSelectorSecciones(dest);
             gestionarCambioSeccion();
             window.scrollTo(0, 0);
         };
 
-        function inyectarInstancia(sec, idx) {
+        function inyectarInstancia(ofiDelPaso, sec, idx) {
             const t = Array.from(BitacoraEventos.getElementsByTagName("tenida")).find(x => x.getAttribute("fecha") === fechaSesion);
             if (!t) return "";
+            
             let h = "";
-            const ofiActual = document.getElementById("oficialFilter").value;
+            const ofiSeleccionado = document.getElementById("oficialFilter").value;
 
             Array.from(t.getElementsByTagName("item")).forEach(i => {
                 const acto = i.getAttribute("acto"), url = i.getAttribute("url"), tit = i.getAttribute("titulo") || "Memo";
-                if (acto === "balaustre" && ofiActual === "Sec") {
+                
+                if (acto === "balaustre" && ofiDelPaso === "Sec" && ofiSeleccionado === "Sec") {
                     h += `<button class="btn-ritual" onclick="mostrarVisor('${url}')">📜 ${tit}</button>`;
-                } else if (acto === "elevacion" && ofiActual !== "Sec") {
+                } 
+                else if (acto === "elevacion" && ofiDelPaso !== "Sec" && ofiSeleccionado !== "Sec") {
                     if (url.includes('rituales.html')) {
-                        const seccionActual = document.getElementById("seccionFilter").value;
-                        const disp = `sessionStorage.setItem('oficialRetornoLogia', '${ofiActual}'); sessionStorage.setItem('seccionRetornoLogia', '${seccionActual}'); window.location.href='${url}&sec=1&fecha=${fechaSesion}'`;
-                        h += `<button class="btn-instancia-exec" onclick="${disp}">${tit}</button>`;
-                    } else { h += `<button class="btn-instancia-exec" onclick="mostrarVisor('${url}')">${tit}</button>`; }
+                        // Salto directo al Grado 2 sin parámetros de sección ni fecha (limpio)
+                        h += `<button class="btn-instancia-exec" onclick="window.location.href='${url}'">${tit}</button>`;
+                    } else { 
+                        h += `<button class="btn-instancia-exec" onclick="mostrarVisor('${url}')">${tit}</button>`; 
+                    }
                 }
             });
             return h;
