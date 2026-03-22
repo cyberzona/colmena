@@ -150,6 +150,15 @@
     </ritual>
     <ritual taller="Colmena No. 8" grado="2">
         <seccion id="1" titulo="Apertura de Trabajos">
+            <apartado id="1" titulo="Apertura de Trabajos">
+                <paso tipo="dialogo" oficial="VM" texto="HH∴ 1V∴ y 2V∴ Servios anunciar alo HH∴ de vuestras respectivas columnas, como yo lo hago en el Or∴ que voy a suspender los trabajos con un solo golpe de Mall∴ para abrir la de Compañero."/>
+                <paso tipo="dialogo" oficial="1V" texto="H∴ 2V∴ y HH∴ de mi columna, nuestro VM∴ va a suspender los trabajos por un solo golpe de Mall∴"/>
+                <paso tipo="dialogo" oficial="2V" texto="HH∴ de la Col∴ del Sur os anuncio que el VM∴ va a suspender los Trbajos con un solo golpe de Mall∴"/>
+                <paso tipo="dialogo" oficial="1V" texto="Anunciado VM∴"/>
+                <paso tipo="dialogo" oficial="VM" texto="[Da un golpe de Maellete y clausura los trabajos invitando a los HH∴ Aprendices a que cubran el Tempo"/>
+            </apartado>
+        </seccion>
+         <seccion id="2" titulo="Cámara de Compañeros">
             <apartado id="1" titulo="Estudio Profundo">
                 <paso tipo="dialogo" oficial="VM" texto="HH∴ 1V∴ y 2V∴ Servios anunciar alo HH∴ de vuestras respectivas columnas, como yo lo hago en el Or∴ que voy a suspender los trabajos con un solo golpe de Mall∴ para abrir la de Compañero."/>
                 <paso tipo="dialogo" oficial="1V" texto="H∴ 2V∴ y HH∴ de mi columna, nuestro VM∴ va a suspender los trabajos por un solo golpe de Mall∴"/>
