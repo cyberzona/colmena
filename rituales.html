@@ -73,45 +73,53 @@
             try {
                 const parametros = new URLSearchParams(window.location.search);
                 
-                // 1. Grado por defecto (Prioridad URL > 1)
-                gradoActivo = (parametros.get('num') || "1").toString();
-                
-                // 2. Sección por defecto (Prioridad URL > Memoria > 1)
-                let seccionInicial = parametros.get('sec') || sessionStorage.getItem('seccionRetornoLogia') || "1";
-                
-                // 3. Forzar Sección 1 si es Grado > 1
-                if (gradoActivo !== "1") seccionInicial = "1";
+                // LIMPIEZA INTELIGENTE: Si entramos de cero (sin venir de otro ritual), limpiamos memoria
+                if (!parametros.get('sec') && !document.referrer.includes('rituales.html')) {
+                    sessionStorage.clear();
+                }
 
                 fechaSesion = parametros.get('fecha') || new Date().toLocaleDateString('en-CA');
+                gradoActivo = (parametros.get('num') || "1").toString();
                 
+                let seccionInicial = "1";
+                if (gradoActivo === "1") {
+                    seccionInicial = parametros.get('sec') || sessionStorage.getItem('seccionRetornoLogia') || "1";
+                }
+
                 await cargarArchivosBase();
                 
                 if (RitualActual) {
                     const Dic = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Ritual de Maestro" };
                     document.getElementById("titulo-ritual-header").textContent = Dic[gradoActivo];
-                    
-                    actualizarSelectorSecciones(seccionInicial);                    
+                    actualizarSelectorSecciones(seccionInicial);
                     
                     const ofiMemoria = sessionStorage.getItem('oficialRetornoLogia');
-                    if (ofiMemoria) document.getElementById("oficialFilter").dataset.oficialPendiente = ofiMemoria;                    
+                    if (ofiMemoria) document.getElementById("oficialFilter").dataset.oficialPendiente = ofiMemoria;
                     
                     gestionarCambioSeccion();
 
-                    // RESTAURACIÓN DE SCROLL ROBUSTA (8 intentos cada 100ms)
+                    // RESTAURACIÓN DE SCROLL INSTANTÁNEA
                     const posGuardada = sessionStorage.getItem('posicionRetornoScroll');
                     if (posGuardada) {
                         let intentos = 0;
                         const scrollInt = setInterval(() => {
-                            window.scrollTo({ top: parseInt(posGuardada), behavior: 'instant' });
-                            intentos++;
-                            if (intentos > 8) { 
-                                clearInterval(scrollInt);
-                                sessionStorage.removeItem('posicionRetornoScroll');
+                            const contenido = document.getElementById('rituales-content');
+                            if (contenido && contenido.offsetHeight > 200) {
+                                const target = parseInt(posGuardada);
+                                window.scrollTo({ top: target, behavior: 'instant' });
+                                document.documentElement.scrollTop = target;
+                                document.body.scrollTop = target;
+
+                                intentos++;
+                                if (Math.abs(window.scrollY - target) < 10 || intentos > 15) {
+                                    clearInterval(scrollInt);
+                                    sessionStorage.removeItem('posicionRetornoScroll');
+                                }
                             }
                         }, 100);
                     }
                 }
-            } catch (e) { console.error("Error en inicialización:", e); }
+            } catch (e) { console.error(e); }
         }
 
         async function cargarArchivosBase() {
@@ -257,7 +265,8 @@
                     h += `<button class="btn-ritual" onclick="mostrarVisor('${url}')">📜 ${tit}</button>`;
                 } else if (acto === "elevacion" && ofiDelPaso !== "Sec" && ofiActual !== "Sec") {
                     if (url.includes('rituales.html')) {
-                        const logic = `sessionStorage.setItem('posicionRetornoScroll', Math.round(window.scrollY)); sessionStorage.setItem('oficialRetornoLogia', '${ofiActual}'); sessionStorage.setItem('seccionRetornoLogia', '${sec}'); window.location.href='${url}&sec=1';`;
+                        // CAPTURA DE POSICIÓN ROBUSTA
+                        const logic = `sessionStorage.setItem('posicionRetornoScroll', window.pageYOffset || document.documentElement.scrollTop); sessionStorage.setItem('oficialRetornoLogia', '${ofiActual}'); sessionStorage.setItem('seccionRetornoLogia', '${sec}'); window.location.href='${url}&sec=1';`;
                         h += `<button class="btn-instancia-exec" onclick="${logic}">${tit}</button>`;
                     } else { h += `<button class="btn-instancia-exec" onclick="mostrarVisor('${url}')">${tit}</button>`; }
                 }
