@@ -35,6 +35,7 @@
         .btn-flechas { background: transparent !important; color: #A87C00 !important; width: 45px; height: 32px; font-size: 1.4rem; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; outline: none; padding: 0; margin: 0; }
         .btn-flechas:active { background: rgba(168, 124, 0, 0.05) !important; transform: scale(0.95); }
         .flip-h { transform: scaleX(-1); }
+        .icon-exit { color: #A87C00; font-weight: bold; font-size: 1.2rem; }
 
         .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; align-items: center; justify-content: center; }
         .visor-content { width: 95%; height: 90%; background: #fff; border-radius: 8px; position: relative; }
@@ -73,7 +74,6 @@
             try {
                 const parametros = new URLSearchParams(window.location.search);
                 
-                // LIMPIEZA INTELIGENTE: Si entramos de cero (sin venir de otro ritual), limpiamos memoria
                 if (!parametros.get('sec') && !document.referrer.includes('rituales.html')) {
                     sessionStorage.clear();
                 }
@@ -96,27 +96,17 @@
                     const ofiMemoria = sessionStorage.getItem('oficialRetornoLogia');
                     if (ofiMemoria) document.getElementById("oficialFilter").dataset.oficialPendiente = ofiMemoria;
                     
-                    gestionarCambioSeccion();
+                    // Esperamos a que la liturgia se dibuje completamente
+                    await gestionarCambioSeccion();
 
-                    // RESTAURACIÓN DE SCROLL INSTANTÁNEA
+                    // RESTAURACIÓN DE SCROLL RECUPERADO
                     const posGuardada = sessionStorage.getItem('posicionRetornoScroll');
                     if (posGuardada) {
-                        let intentos = 0;
-                        const scrollInt = setInterval(() => {
-                            const contenido = document.getElementById('rituales-content');
-                            if (contenido && contenido.offsetHeight > 200) {
-                                const target = parseInt(posGuardada);
-                                window.scrollTo({ top: target, behavior: 'instant' });
-                                document.documentElement.scrollTop = target;
-                                document.body.scrollTop = target;
-
-                                intentos++;
-                                if (Math.abs(window.scrollY - target) < 10 || intentos > 15) {
-                                    clearInterval(scrollInt);
-                                    sessionStorage.removeItem('posicionRetornoScroll');
-                                }
-                            }
-                        }, 100);
+                        const target = parseInt(posGuardada);
+                        setTimeout(() => {
+                            window.scrollTo({ top: target, behavior: 'smooth' });
+                            sessionStorage.removeItem('posicionRetornoScroll');
+                        }, 250); 
                     }
                 }
             } catch (e) { console.error(e); }
@@ -150,7 +140,7 @@
         function actualizarSeccionGlobal() {
             if (gradoActivo === "1") sessionStorage.setItem('seccionRetornoLogia', document.getElementById("seccionFilter").value);
             gestionarCambioSeccion();
-            window.scrollTo(0, 0);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function actualizarOficialGlobal() {
@@ -158,7 +148,7 @@
             renderizarLiturgia(true);
         }
 
-        function gestionarCambioSeccion() {
+        async function gestionarCambioSeccion() {
             const idSec = document.getElementById("seccionFilter").value;
             const comboOfi = document.getElementById("oficialFilter");
             const ofiPendiente = comboOfi.dataset.oficialPendiente || comboOfi.value;
@@ -180,58 +170,59 @@
 
             if (ofisEnSec.has(ofiPendiente)) {
                 comboOfi.value = ofiPendiente;
-                renderizarLiturgia(true); 
+                return renderizarLiturgia(true); 
             } else {
-                renderizarLiturgia(false);
+                return renderizarLiturgia(false);
             }
         }
 
         function renderizarLiturgia(hacerScroll = false) {
-            const idSec = document.getElementById("seccionFilter").value;
-            const ofiSel = document.getElementById("oficialFilter").value;
-            const nodoSec = Array.from(RitualActual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == idSec);
-            if (!nodoSec) return;
+            return new Promise((resolve) => {
+                const idSec = document.getElementById("seccionFilter").value;
+                const ofiSel = document.getElementById("oficialFilter").value;
+                const nodoSec = Array.from(RitualActual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == idSec);
+                if (!nodoSec) { resolve(); return; }
 
-            let html = "";
-            Array.from(nodoSec.getElementsByTagName("apartado")).forEach(apt => {
-                html += `<div class="apartado-header">${apt.getAttribute("titulo")}</div>`;
-                Array.from(apt.getElementsByTagName("paso")).forEach((paso, idx) => {
-                    const ofiPaso = (paso.getAttribute("oficial") || "Ofi").trim();
-                    let txt = (paso.getAttribute("texto") || paso.textContent).trim();
-                    let btns = "";
-
-                    if (txt.includes("[[INSTANCIA]]")) {
-                        btns += inyectarInstancia(ofiPaso, idSec, idx);
-                        txt = txt.replace("[[INSTANCIA]]", "");
-                    }
-
-                    txt = txt.replace(/(\b\S+∴)/gi, '<span style="color:#0277bd; font-weight:bold;">$1</span>');
-                    txt = txt.replace(/\[(.*?)\]/g, '<span style="font-style:italic; color:rgba(0,0,0,0.4);">($1)</span>');
-
-                    const esFoco = ofiSel && ofiPaso === ofiSel;
-                    html += `<dt>${ofiPaso}∴</dt><dd class="${esFoco ? 'resaltado' : ''}">${txt}${btns}</dd>`;
+                let html = "";
+                Array.from(nodoSec.getElementsByTagName("apartado")).forEach(apt => {
+                    html += `<div class="apartado-header">${apt.getAttribute("titulo")}</div>`;
+                    Array.from(apt.getElementsByTagName("paso")).forEach((paso, idx) => {
+                        const ofiPaso = (paso.getAttribute("oficial") || "Ofi").trim();
+                        let txt = (paso.getAttribute("texto") || paso.textContent).trim();
+                        let btns = "";
+                        if (txt.includes("[[INSTANCIA]]")) {
+                            btns += inyectarInstancia(ofiPaso, idSec, idx);
+                            txt = txt.replace("[[INSTANCIA]]", "");
+                        }
+                        txt = txt.replace(/(\b\S+∴)/gi, '<span style="color:#0277bd; font-weight:bold;">$1</span>');
+                        txt = txt.replace(/\[(.*?)\]/g, '<span style="font-style:italic; color:rgba(0,0,0,0.4);">($1)</span>');
+                        const esFoco = ofiSel && ofiPaso === ofiSel;
+                        html += `<dt>${ofiPaso}∴</dt><dd class="${esFoco ? 'resaltado' : ''}">${txt}${btns}</dd>`;
+                    });
                 });
+
+                const sel = document.getElementById("seccionFilter");
+                const i = sel.selectedIndex;
+                let nav = `<div class="nav-footer">`;
+                if (i > 0) nav += `<button class="btn-flechas" onclick="navRelativa(-1)"><span class="flip-h">➤</span></button>`;
+                else nav += `<span></span>`;
+                if (i < sel.options.length - 1) nav += `<button class="btn-flechas" onclick="navRelativa(1)">➤</button>`;
+                else if (gradoActivo > "1") nav += `<button class="btn-flechas" onclick="irA('VOLVER')"><span class="icon-exit">✖</span></button>`;
+                else nav += `<span></span>`;
+                nav += `</div>`;
+
+                document.getElementById('rituales-content').innerHTML = `<dl>${html}</dl>${nav}`;
+                
+                if (hacerScroll && ofiSel) {
+                    setTimeout(() => {
+                        const el = document.querySelector('.resaltado');
+                        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        resolve();
+                    }, 150);
+                } else {
+                    resolve();
+                }
             });
-
-            const sel = document.getElementById("seccionFilter");
-            const i = sel.selectedIndex;
-            let nav = `<div class="nav-footer">`;
-            if (i > 0) nav += `<button class="btn-flechas" onclick="navRelativa(-1)"><span class="flip-h">➤</span></button>`;
-            else nav += `<span></span>`;
-
-            if (i < sel.options.length - 1) nav += `<button class="btn-flechas" onclick="navRelativa(1)">➤</button>`;
-            else if (gradoActivo > "1") nav += `<button class="btn-flechas" onclick="irA('VOLVER')">✖</button>`;
-            else nav += `<span></span>`;
-            nav += `</div>`;
-
-            document.getElementById('rituales-content').innerHTML = `<dl>${html}</dl>${nav}`;
-            
-            if (hacerScroll && ofiSel) {
-                setTimeout(() => {
-                    const el = document.querySelector('.resaltado');
-                    if (el) el.scrollIntoView({ behavior: 'instant', block: 'center' });
-                }, 300);
-            }
         }
 
         function navRelativa(d) {
@@ -251,7 +242,7 @@
             SeccionesDesbloqueadas.add(dest);
             actualizarSelectorSecciones(dest);
             gestionarCambioSeccion();
-            window.scrollTo(0, 0);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         };
 
         function inyectarInstancia(ofiDelPaso, sec, idx) {
@@ -265,7 +256,6 @@
                     h += `<button class="btn-ritual" onclick="mostrarVisor('${url}')">📜 ${tit}</button>`;
                 } else if (acto === "elevacion" && ofiDelPaso !== "Sec" && ofiActual !== "Sec") {
                     if (url.includes('rituales.html')) {
-                        // CAPTURA DE POSICIÓN ROBUSTA
                         const logic = `sessionStorage.setItem('posicionRetornoScroll', window.pageYOffset || document.documentElement.scrollTop); sessionStorage.setItem('oficialRetornoLogia', '${ofiActual}'); sessionStorage.setItem('seccionRetornoLogia', '${sec}'); window.location.href='${url}&sec=1';`;
                         h += `<button class="btn-instancia-exec" onclick="${logic}">${tit}</button>`;
                     } else { h += `<button class="btn-instancia-exec" onclick="mostrarVisor('${url}')">${tit}</button>`; }
