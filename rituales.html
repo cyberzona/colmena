@@ -26,12 +26,13 @@
         dd::before { content: counter(line-counter); position: absolute; left: -45px; color: #8d6e63; font-size: 0.75rem; font-weight: bold; width: 35px; text-align: right; top: 0; }
         
         .resaltado { background: rgba(180, 255, 100, 0.3) !important; border-left: 5px solid #2e7d32 !important; }
-        .btn-ritual, .btn-instancia-exec { border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em; margin: 4px 2px; font-weight: bold; background: #A87C00 !important; color: #fff !important; }
+        
+        /* Botones y Navegación en Dorado */
+        .btn-ritual, .btn-instancia-exec, .btn-flecha { border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em; font-weight: bold; background: #A87C00 !important; color: #fff !important; }
         
         .nav-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 40px; padding: 20px 15px; border-top: 2px solid #d7ccc8; }
-        .btn-flecha { background: #d7ccc8; border: 1px solid #a1887f; width: 60px; height: 60px; border-radius: 12px; color: #5d4037; font-size: 2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .btn-flecha:active { transform: scale(0.9); background: #A87C00; color: #fff; }
-        .btn-salida { color: #d32f2f; font-weight: bold; font-size: 2.5rem; border: 2px solid #d32f2f; background: #ffebee; }
+        .btn-flecha { width: 60px; height: 60px; border-radius: 12px; font-size: 2rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn-flecha:active { transform: scale(0.9); background: #8e6900 !important; }
         .flip-h { transform: scaleX(-1); }
 
         .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; align-items: center; justify-content: center; }
@@ -73,9 +74,11 @@
                 fechaSesion = parametros.get('fecha') || new Date().toLocaleDateString('en-CA');
                 gradoActivo = (parametros.get('num') || "1").toString();
                 
-                // Prioridad 1: Parámetro URL | Prioridad 2: Memoria de sesión | Prioridad 3: Defecto 1
-                const seccionMemoria = sessionStorage.getItem('seccionRetornoLogia');
-                const seccionInicial = parametros.get('sec') || seccionMemoria || "1";
+                // REGLA: Grado > 1 siempre entra en sección 1. Grado 1 puede usar memoria.
+                let seccionInicial = "1";
+                if (gradoActivo === "1") {
+                    seccionInicial = parametros.get('sec') || sessionStorage.getItem('seccionRetornoLogia') || "1";
+                }
 
                 await cargarArchivosBase();
                 
@@ -85,10 +88,9 @@
                     document.getElementById("titulo-ritual-header").textContent = tit;
                     document.title = tit;
                     
-                    if (parseInt(seccionInicial) > 3) SeccionesDesbloqueadas.add(seccionInicial.toString());
                     actualizarSelectorSecciones(seccionInicial);
                     
-                    // RECURSIVIDAD DE OFICIAL: Recuperar oficial exacto del llamado
+                    // Recursividad del oficial
                     const ofiMemoria = sessionStorage.getItem('oficialRetornoLogia');
                     if (ofiMemoria) document.getElementById("oficialFilter").dataset.oficialPendiente = ofiMemoria;
                     
@@ -114,7 +116,8 @@
             let existe = false;
             Array.from(RitualActual.getElementsByTagName("seccion")).forEach(s => {
                 const id = s.getAttribute("id");
-                if (id <= 3 || SeccionesDesbloqueadas.has(id)) {
+                // En grado 1 respetamos desbloqueos, en grados superiores mostramos todo lo disponible
+                if (gradoActivo !== "1" || id <= 3 || SeccionesDesbloqueadas.has(id)) {
                     combo.add(new Option(s.getAttribute("titulo"), id));
                     if (id === sel) existe = true;
                 }
@@ -123,7 +126,7 @@
         }
 
         function actualizarSeccionGlobal() {
-            sessionStorage.setItem('seccionRetornoLogia', document.getElementById("seccionFilter").value);
+            if (gradoActivo === "1") sessionStorage.setItem('seccionRetornoLogia', document.getElementById("seccionFilter").value);
             gestionarCambioSeccion();
         }
 
@@ -170,14 +173,6 @@
                     let txt = (paso.getAttribute("texto") || paso.textContent).trim();
                     let btns = "";
 
-                    txt = txt.replace(/\[\[LINK:(\d+)(?::([^\]]+))?\]\]/g, (m, cod, etq) => {
-                        btns += `<button class="btn-ritual" onclick="irA('${cod}')">${etq || 'Ir'} ➜</button>`;
-                        return "";
-                    });
-                    if (txt.includes("[[VOLVER]]")) {
-                        btns += `<button class="btn-ritual" onclick="irA('VOLVER')">⬅ Regresar</button>`;
-                        txt = txt.replace("[[VOLVER]]", "");
-                    }
                     if (txt.includes("[[INSTANCIA]]")) {
                         btns += inyectarInstancia(ofiPaso, idSec, idx);
                         txt = txt.replace("[[INSTANCIA]]", "");
@@ -202,8 +197,8 @@
             if (i < sel.options.length - 1) {
                 nav += `<button class="btn-flecha" onclick="navRelativa(1)">➤</button>`;
             } else if (gradoActivo > "1") {
-                // Símbolo de Salida/Cierre: ⎋ (Escape/Salida) o ✖ (Cerrar)
-                nav += `<button class="btn-flecha btn-salida" onclick="irA('VOLVER')">⎋</button>`;
+                // X en Dorado para salida de grado
+                nav += `<button class="btn-flecha" onclick="irA('VOLVER')" style="font-size: 1.8rem;">✖</button>`;
             } else { nav += `<span></span>`; }
             nav += `</div>`;
 
@@ -221,7 +216,6 @@
         window.irA = function(dest) {
             if (dest === 'VOLVER') {
                 if (gradoActivo > "1") {
-                    // RETORNO AL SITIO QUE LE LLAMÓ: Secciones y Oficial guardados en sessionStorage
                     const secRegreso = sessionStorage.getItem('seccionRetornoLogia') || "1";
                     location.href = `rituales.html?num=1&fecha=${fechaSesion}&sec=${secRegreso}`;
                 } else {
@@ -250,7 +244,6 @@
                 } 
                 else if (acto === "elevacion" && ofiDelPaso !== "Sec" && ofiSeleccionado !== "Sec") {
                     if (url.includes('rituales.html')) {
-                        // RECURSIVIDAD: Guardamos sección y oficial actuales antes de la elevación
                         const disp = `
                             sessionStorage.setItem('oficialRetornoLogia', '${ofiSeleccionado}'); 
                             sessionStorage.setItem('seccionRetornoLogia', '${sec}'); 
