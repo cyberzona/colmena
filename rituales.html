@@ -195,12 +195,19 @@
             const sel = document.getElementById("seccionFilter");
             const i = sel.selectedIndex;
             let nav = `<div class="nav-footer">`;
-            // Flecha Izquierda (Retroceso)
-            nav += `<button class="btn-flecha" onclick="navRelativa(-1)"><span class="flip-h">➤</span></button>`;
-            // Flecha Derecha (Avance) - Desaparece en la última sección
+
+            // Flecha Izquierda: Solo aparece si NO estás en la primera sección (índice 0)
+            if (i > 0) {
+                nav += `<button class="btn-flecha" onclick="navRelativa(-1)"><span class="flip-h">➤</span></button>`;
+            } else {
+                nav += `<span></span>`; // Espacio vacío para mantener el equilibrio visual
+            }
+
             if (i < sel.options.length - 1) {
                 nav += `<button class="btn-flecha" onclick="navRelativa(1)">➤</button>`;
-            } else { nav += `<span></span>`; }
+            } else {
+                nav += `<span></span>`;
+            }
             nav += `</div>`;
 
             document.getElementById('rituales-content').innerHTML = `<dl>${html}</dl>${nav}`;
