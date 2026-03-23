@@ -10,7 +10,7 @@
         <item acto="elevacion" titulo="Ir a Sección 4" url="rituales.html?num=1&amp;sec=4" />
         
     </tenida>
-    tenida fecha="2026-03-23">  
+    <tenida fecha="2026-03-23">  
         <item acto="balaustre" titulo="Tenida Ordinaria (Feb-21)" url="https://drive.google.com/file/d/1Jr6xYTM6FAyYTWhSwrCJApxKhk3KelMA/preview" />       
         <item acto="elevacion" titulo="CÁMARA DE COMPAÑERO" url="rituales.html?num=2" />   
         <item acto="elevacion" titulo="CÁMARA DE MAESTRO" url="rituales.html?num=3" />  
