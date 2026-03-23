@@ -67,6 +67,7 @@
                 fechaSesion = params.get('fecha') || new Date().toLocaleDateString('en-CA');
                 libroActivo = (params.get('num') || "1").toString();
                 const secURL = params.get('sec');
+                const actURL = params.get('act'); // ID del verso para el scroll
 
                 await cargarArchivosBase();
                 
@@ -83,14 +84,18 @@
                     
                     await gestionarCambioSeccion();
 
-                    // Lógica de Scroll al retornar
-                    setTimeout(() => {
-                        const pos = sessionStorage.getItem('posicionRetornoScroll');
-                        if (pos) {
-                            window.scrollTo({ top: parseInt(pos), behavior: 'smooth' });
-                            sessionStorage.removeItem('posicionRetornoScroll');
-                        }
-                    }, 800);
+                    // Lógica de Scroll al retornar o por URL
+                    const versoDestino = actURL || sessionStorage.getItem('versoRetornoLogia');
+                    if (versoDestino) {
+                        setTimeout(() => {
+                            const el = document.getElementById(`verso-${versoDestino}`);
+                            if (el) {
+                                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                el.classList.add('resaltado');
+                                sessionStorage.removeItem('versoRetornoLogia');
+                            }
+                        }, 800);
+                    }
                 }
             } catch (e) { console.error(e); }
         }
@@ -188,11 +193,10 @@
             let nav = `<div class="nav-footer">`;
             nav += idx > 0 ? `<button class="btn-flechas" onclick="navRelativa(-1)"><span class="flip-h">➤</span></button>` : `<span></span>`;
             
-            // REGLA: Si la sección es 3 (Clausura), no hay botón X. Si es > 3 o final de 1/2, sí hay X.
             if (parseInt(idSec) < 3 && idx < sel.options.length - 1) {
                 nav += `<button class="btn-flechas" onclick="navRelativa(1)">➤</button>`;
             } else if (parseInt(idSec) === 3) {
-                nav += `<span></span>`; // Sin botón X en Clausura
+                nav += `<span></span>`; 
             } else {
                 nav += `<button class="btn-flechas" onclick="irA('VOLVER')"><span class="icon-exit">✖</span></button>`;
             }
@@ -215,14 +219,15 @@
 
         window.irA = function(dest) {
             if (dest === 'VOLVER') {
-                // Al salir con X, siempre volvemos al punto de origen guardado en memoria
                 const secDest = sessionStorage.getItem('seccionRetornoLogia') || "2";
-                location.href = `rituales.html?num=1&fecha=${fechaSesion}&sec=${secDest}`;
+                const vDest = sessionStorage.getItem('versoRetornoLogia') || "";
+                location.href = `rituales.html?num=1&fecha=${fechaSesion}&sec=${secDest}&act=${vDest}`;
             }
         };
 
-        function capturarPosicionYSalir(url, actor, sec, verso) {
-            sessionStorage.setItem('posicionRetornoScroll', Math.round(window.pageYOffset));
+        function capturarOrigenYSalir(url, actor, sec, verso) {
+            // Guardamos el punto de llamado (verso) para el scrolling al volver
+            sessionStorage.setItem('versoRetornoLogia', verso);
             sessionStorage.setItem('actorRetornoLogia', actor);
             sessionStorage.setItem('seccionRetornoLogia', sec);
             window.location.href = url;
@@ -239,8 +244,10 @@
                     h += `<button class="btn-ritual" onclick="mostrarVisor('${url}')">📜 ${tit}</button>`;
                 } else if (tipo === "elevacion" && actorDelPaso !== "Sec") {
                     if (url.includes('rituales.html')) {
-                        h += `<button class="btn-instancia-exec" onclick="capturarPosicionYSalir('${url}', '${actorActual}', '${sec}', '${verso}')">${tit}</button>`;
-                    } else { h += `<button class="btn-instancia-exec" onclick="mostrarVisor('${url}')">${tit}</button>`; }
+                        h += `<button class="btn-instancia-exec" onclick="capturarOrigenYSalir('${url}', '${actorActual}', '${sec}', '${verso}')">${tit}</button>`;
+                    } else { 
+                        h += `<button class="btn-instancia-exec" onclick="mostrarVisor('${url}')">${tit}</button>`; 
+                    }
                 }
             });
             return h;
@@ -249,7 +256,7 @@
         function mostrarVisor(url) {
             const v = document.createElement('div');
             v.className = 'visor-overlay';
-            v.innerHTML = `<div class=\"visor-content\"><button class=\"visor-close\" onclick=\"this.parentElement.parentElement.remove()\">✕</button><iframe src=\"${url}\" style=\"width:100%; height:100%; border:none;\"></iframe></div>`;
+            v.innerHTML = `<div class="visor-content"><button class="visor-close" onclick="this.parentElement.parentElement.remove()">✕</button><iframe src="${url}" style="width:100%; height:100%; border:none;"></iframe></div>`;
             document.body.appendChild(v);
         }
     </script>
