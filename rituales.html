@@ -16,11 +16,11 @@
         .container-select { display: flex; flex-direction: column; }
         .select-label { font-size: 0.65rem; color: #4e342e; font-weight: 800; text-transform: uppercase; margin-bottom: 2px; }
         
-        .select-secciones, .select-oficiales { padding: 8px; font-size: 0.95rem; border-radius: 4px; border: 1px solid #a1887f; font-weight: bold; outline: none; background: #fff; }
+        .select-secciones, .select-actores { padding: 8px; font-size: 0.95rem; border-radius: 4px; border: 1px solid #a1887f; font-weight: bold; outline: none; background: #fff; }
         .select-secciones { width: 200px; }
-        .select-oficiales { width: 100px; }
+        .select-actores { width: 100px; }
 
-        .apartado-header { font-weight: bold; color: #795548; font-size: 1.1rem; border-bottom: 2px solid #d7ccc8; text-align: right; margin-top: 20px; margin-bottom: 10px; }
+        .parte-header { font-weight: bold; color: #795548; font-size: 1.1rem; border-bottom: 2px solid #d7ccc8; text-align: right; margin-top: 20px; margin-bottom: 10px; }
         
         dl { counter-reset: line-counter; }
         dt { font-weight: bold; color: #5d4037; margin-top: 12px; font-size: 0.9rem; }
@@ -58,8 +58,8 @@
             <select id="seccionFilter" class="select-secciones" onchange="actualizarSeccionGlobal()"></select>
         </div>
         <div class="container-select">
-            <span class="select-label">Oficial</span>
-            <select id="oficialFilter" class="select-oficiales" onchange="actualizarOficialGlobal()"></select>
+            <span class="select-label">Actor</span>
+            <select id="actorFilter" class="select-actores" onchange="actualizarActorGlobal()"></select>
         </div>
     </div>
 
@@ -67,7 +67,7 @@
 
     <script>
         let RitualActual, GlosarioMaestro, BitacoraEventos;
-        let gradoActivo = "1", fechaSesion = "";
+        let libroActivo = "1", fechaSesion = "";
         let SeccionesDesbloqueadas = new Set(["1", "2", "3"]);
 
         async function inicializarPortal() {
@@ -79,34 +79,33 @@
                 }
 
                 fechaSesion = parametros.get('fecha') || new Date().toLocaleDateString('en-CA');
-                gradoActivo = (parametros.get('num') || "1").toString();
+                libroActivo = (parametros.get('num') || "1").toString();
                 
-                let seccionInicial = parametros.get('sec') || (gradoActivo === "1" ? sessionStorage.getItem('seccionRetornoLogia') : null) || "1";
+                let seccionInicial = parametros.get('sec') || (libroActivo === "1" ? sessionStorage.getItem('seccionRetornoLogia') : null) || "1";
 
                 await cargarArchivosBase();
                 
                 if (RitualActual) {
-                    const Dic = { "1": "Ritual de Aprendiz", "2": "Ritual de Compañero", "3": "Ritual de Maestro" };
-                    document.getElementById("titulo-ritual-header").textContent = Dic[gradoActivo];
+                    const Dic = { "1": "Libro de Aprendiz", "2": "Libro de Compañero", "3": "Libro de Maestro" };
+                    document.getElementById("titulo-ritual-header").textContent = Dic[libroActivo];
                     actualizarSelectorSecciones(seccionInicial);
                     
-                    const ofiMemoria = sessionStorage.getItem('oficialRetornoLogia');
-                    if (ofiMemoria) document.getElementById("oficialFilter").dataset.oficialPendiente = ofiMemoria;
+                    const actorMemoria = sessionStorage.getItem('actorRetornoLogia');
+                    if (actorMemoria) document.getElementById("actorFilter").dataset.actorPendiente = actorMemoria;
                     
                     await gestionarCambioSeccion();
 
-                    // GESTIÓN DE SALTO A ACTO ESPECÍFICO O RETORNO
-                    const actoDestino = parametros.get('act');
+                    const versoDestino = parametros.get('act');
                     const posGuardada = sessionStorage.getItem('posicionRetornoScroll');
 
                     setTimeout(() => {
-                        if (actoDestino) {
-                            const elemento = document.getElementById(`acto-${actoDestino}`);
+                        if (versoDestino) {
+                            const elemento = document.getElementById(`verso-${versoDestino}`);
                             if (elemento) {
                                 elemento.scrollIntoView({ behavior: 'smooth', block: 'center' });
                                 elemento.classList.add('resaltado');
                             }
-                        } else if (posGuardada && gradoActivo === "1") {
+                        } else if (posGuardada && libroActivo === "1") {
                             window.scrollTo({ top: parseInt(posGuardada), behavior: 'smooth' });
                             sessionStorage.removeItem('posicionRetornoScroll');
                         }
@@ -123,7 +122,7 @@
             GlosarioMaestro = dp.parseFromString(dg, "text/xml");
             BitacoraEventos = dp.parseFromString(de, "text/xml");
             const xmlLit = dp.parseFromString(dl, "text/xml");
-            RitualActual = Array.from(xmlLit.getElementsByTagName("ritual")).find(r => r.getAttribute("grado") === gradoActivo);
+            RitualActual = Array.from(xmlLit.getElementsByTagName("ritual")).find(r => r.getAttribute("libro") === libroActivo);
         }
 
         function actualizarSelectorSecciones(sel) {
@@ -132,7 +131,7 @@
             let existe = false;
             Array.from(RitualActual.getElementsByTagName("seccion")).forEach(s => {
                 const id = s.getAttribute("id");
-                if (gradoActivo !== "1" || id <= 3 || SeccionesDesbloqueadas.has(id)) {
+                if (libroActivo !== "1" || id <= 3 || SeccionesDesbloqueadas.has(id)) {
                     combo.add(new Option(s.getAttribute("titulo"), id));
                     if (id === sel) existe = true;
                 }
@@ -141,38 +140,38 @@
         }
 
         function actualizarSeccionGlobal() {
-            if (gradoActivo === "1") sessionStorage.setItem('seccionRetornoLogia', document.getElementById("seccionFilter").value);
+            if (libroActivo === "1") sessionStorage.setItem('seccionRetornoLogia', document.getElementById("seccionFilter").value);
             gestionarCambioSeccion();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function actualizarOficialGlobal() {
-            sessionStorage.setItem('oficialRetornoLogia', document.getElementById("oficialFilter").value);
+        function actualizarActorGlobal() {
+            sessionStorage.setItem('actorRetornoLogia', document.getElementById("actorFilter").value);
             renderizarLiturgia(true);
         }
 
         async function gestionarCambioSeccion() {
             const idSec = document.getElementById("seccionFilter").value;
-            const comboOfi = document.getElementById("oficialFilter");
-            const ofiPendiente = comboOfi.dataset.oficialPendiente || comboOfi.value;
-            delete comboOfi.dataset.oficialPendiente;
+            const comboActor = document.getElementById("actorFilter");
+            const actorPendiente = comboActor.dataset.actorPendiente || comboActor.value;
+            delete comboActor.dataset.actorPendiente;
 
             const nodoSec = Array.from(RitualActual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == idSec);
-            const ofisEnSec = new Set();
+            const actoresEnSec = new Set();
             if (nodoSec) {
-                Array.from(nodoSec.getElementsByTagName("paso")).forEach(p => {
-                    if (p.getAttribute("oficial")) ofisEnSec.add(p.getAttribute("oficial").trim());
+                Array.from(nodoSec.getElementsByTagName("acto")).forEach(p => {
+                    if (p.getAttribute("actor")) actoresEnSec.add(p.getAttribute("actor").trim());
                 });
             }
 
-            comboOfi.innerHTML = '<option value="">---</option>';
+            comboActor.innerHTML = '<option value="">---</option>';
             Array.from(GlosarioMaestro.getElementsByTagName("item")).forEach(i => {
                 const s = i.getAttribute("sigla");
-                if (ofisEnSec.has(s)) comboOfi.add(new Option(s + "∴", s));
+                if (actoresEnSec.has(s)) comboActor.add(new Option(s + "∴", s));
             });
 
-            if (ofisEnSec.has(ofiPendiente)) {
-                comboOfi.value = ofiPendiente;
+            if (actoresEnSec.has(actorPendiente)) {
+                comboActor.value = actorPendiente;
                 return renderizarLiturgia(true); 
             } else {
                 return renderizarLiturgia(false);
@@ -182,32 +181,29 @@
         function renderizarLiturgia(hacerScroll = false) {
             return new Promise((resolve) => {
                 const idSec = document.getElementById("seccionFilter").value;
-                const ofiSel = document.getElementById("oficialFilter").value;
+                const actorSel = document.getElementById("actorFilter").value;
                 const nodoSec = Array.from(RitualActual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == idSec);
                 if (!nodoSec) { resolve(); return; }
 
                 let html = "";
-                let contadorActos = 1; // Para generar los IDs dinámicos
+                let contadorVersos = 1;
 
-                Array.from(nodoSec.getElementsByTagName("apartado")).forEach(apt => {
-                    html += `<div class="apartado-header">${apt.getAttribute("titulo")}</div>`;
-                    Array.from(apt.getElementsByTagName("paso")).forEach((paso, idx) => {
-                        const ofiPaso = (paso.getAttribute("oficial") || "Ofi").trim();
-                        let txt = (paso.getAttribute("texto") || paso.textContent).trim();
+                Array.from(nodoSec.getElementsByTagName("parte")).forEach(parteElemento => {
+                    html += `<div class="parte-header">${parteElemento.getAttribute("titulo")}</div>`;
+                    Array.from(parteElemento.getElementsByTagName("acto")).forEach((actoElemento) => {
+                        const actorPaso = (actoElemento.getAttribute("actor") || "Actor").trim();
+                        let temaContenido = (actoElemento.getAttribute("tema") || actoElemento.textContent).trim();
                         let btns = "";
                         
-                        if (txt.includes("[[INSTANCIA]]")) {
-                            btns += inyectarInstancia(ofiPaso, idSec, contadorActos);
-                            txt = txt.replace("[[INSTANCIA]]", "");
+                        if (temaContenido.includes("[[INSTANCIA]]")) {
+                            btns += inyectarInstancia(actorPaso, idSec, contadorVersos);
+                            temaContenido = temaContenido.replace("[[INSTANCIA]]", "");
                         }
-
-                        txt = txt.replace(/(\b\S+∴)/gi, '<span style="color:#0277bd; font-weight:bold;">$1</span>');
-                        txt = txt.replace(/\[(.*?)\]/g, '<span class="acotacion">($1)</span>');
-
-                        const esFoco = ofiSel && ofiPaso === ofiSel;
-                        // ASIGNAMOS EL ID PARA NAVEGACIÓN DIRECTA
-                        html += `<dt>${ofiPaso}∴</dt><dd id="acto-${contadorActos}" class="${esFoco ? 'resaltado' : ''}">${txt}${btns}</dd>`;
-                        contadorActos++;
+                        temaContenido = temaContenido.replace(/(\b\S+∴)/gi, '<span style="color:#0277bd; font-weight:bold;">$1</span>');
+                        temaContenido = temaContenido.replace(/\[(.*?)\]/g, '<span class="acotacion">($1)</span>');
+                        const esFoco = actorSel && actorPaso === actorSel;
+                        html += `<dt>${actorPaso}∴</dt><dd id="verso-${contadorVersos}" class="${esFoco ? 'resaltado' : ''}">${temaContenido}${btns}</dd>`;
+                        contadorVersos++;
                     });
                 });
 
@@ -217,13 +213,13 @@
                 if (i > 0) nav += `<button class="btn-flechas" onclick="navRelativa(-1)"><span class="flip-h">➤</span></button>`;
                 else nav += `<span></span>`;
                 if (i < sel.options.length - 1) nav += `<button class="btn-flechas" onclick="navRelativa(1)">➤</button>`;
-                else if (gradoActivo > "1") nav += `<button class="btn-flechas" onclick="irA('VOLVER')"><span class="icon-exit">✖</span></button>`;
+                else if (libroActivo > "1") nav += `<button class="btn-flechas" onclick="irA('VOLVER')"><span class="icon-exit">✖</span></button>`;
                 else nav += `<span></span>`;
                 nav += `</div>`;
 
                 document.getElementById('rituales-content').innerHTML = `<dl>${html}</dl>${nav}`;
                 
-                if (hacerScroll && ofiSel) {
+                if (hacerScroll && actorSel) {
                     setTimeout(() => {
                         const el = document.querySelector('.resaltado');
                         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -241,7 +237,7 @@
 
         window.irA = function(dest) {
             if (dest === 'VOLVER') {
-                if (gradoActivo > "1") {
+                if (libroActivo > "1") {
                     const secRet = sessionStorage.getItem('seccionRetornoLogia') || "1";
                     location.href = `rituales.html?num=1&fecha=${fechaSesion}&sec=${secRet}`;
                 } else { location.href = 'index.html'; }
@@ -252,28 +248,26 @@
             gestionarCambioSeccion();
         };
 
-        function capturarPosicionYSalir(url, ofi, sec, acto) {
+        function capturarPosicionYSalir(url, actor, sec, verso) {
             const y = window.pageYOffset || document.documentElement.scrollTop;
             sessionStorage.setItem('posicionRetornoScroll', Math.round(y));
-            sessionStorage.setItem('oficialRetornoLogia', ofi);
+            sessionStorage.setItem('actorRetornoLogia', actor);
             sessionStorage.setItem('seccionRetornoLogia', sec);
-            // Si el URL ya incluye un destino de acto, lo respetamos
             window.location.href = url + (url.includes('?') ? '&' : '?') + 'sec=1';
         }
 
-        function inyectarInstancia(ofiDelPaso, sec, acto) {
+        function inyectarInstancia(actorDelPaso, sec, verso) {
             const t = Array.from(BitacoraEventos.getElementsByTagName("tenida")).find(x => x.getAttribute("fecha") === fechaSesion);
             if (!t) return "";
             let h = "";
-            const ofiActual = document.getElementById("oficialFilter").value;
+            const actorActual = document.getElementById("actorFilter").value;
             Array.from(t.getElementsByTagName("item")).forEach(i => {
-                const actoBit = i.getAttribute("acto"), url = i.getAttribute("url"), tit = i.getAttribute("titulo") || "Memo";
-                if (actoBit === "balaustre" && ofiDelPaso === "Sec" && ofiActual === "Sec") {
+                const versoBit = i.getAttribute("acto"), url = i.getAttribute("url"), tit = i.getAttribute("titulo") || "Memo";
+                if (versoBit === "balaustre" && actorDelPaso === "Sec" && actorActual === "Sec") {
                     h += `<button class="btn-ritual" onclick="mostrarVisor('${url}')">📜 ${tit}</button>`;
-                } else if (actoBit === "elevacion" && ofiDelPaso !== "Sec") {
+                } else if (versoBit === "elevacion" && actorDelPaso !== "Sec") {
                     if (url.includes('rituales.html')) {
-                        // Pasamos el acto actual para que el sistema sepa de dónde venimos
-                        h += `<button class="btn-instancia-exec" onclick="capturarPosicionYSalir('${url}', '${ofiActual}', '${sec}', '${acto}')">${tit}</button>`;
+                        h += `<button class="btn-instancia-exec" onclick="capturarPosicionYSalir('${url}', '${actorActual}', '${sec}', '${verso}')">${tit}</button>`;
                     } else { h += `<button class="btn-instancia-exec" onclick="mostrarVisor('${url}')">${tit}</button>`; }
                 }
             });
