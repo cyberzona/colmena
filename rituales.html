@@ -27,14 +27,19 @@
         dd { margin-left: 55px; border-left: 3px solid #d7ccc8; padding-left: 10px; position: relative; margin-bottom: 8px; text-align: justify; counter-increment: line-counter; min-height: 1.2em; }
         dd::before { content: counter(line-counter); position: absolute; left: -45px; color: #8d6e63; font-size: 0.75rem; font-weight: bold; width: 35px; text-align: right; top: 0; }
         
-        .acotacion { display: block; font-style: italic; color: rgba(0,0,0,0.45); font-size: 0.85rem; margin-top: 4px; margin-bottom: 4px; }
-        .resaltado { background: rgba(168, 124, 0, 0.12) !important; border-left: 5px solid #A87C00 !important; }
+        .acotacion { display: block; font-style: italic; color: rgba(0,0,0,0.5); font-size: 0.85rem; margin-top: 4px; margin-bottom: 4px; }
+        .resaltado { background: rgba(168, 124, 0, 0.12) !important; border-left: 5px solid #A87C00 !important; transition: background 0.5s ease; }
         
         .btn-ritual, .btn-instancia-exec { border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em; font-weight: bold; background: #A87C00 !important; color: #fff !important; margin: 4px 2px; }
         
-        .nav-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding: 15px; border-top: 1px solid #d7ccc8; }
-        .btn-flechas { background: transparent !important; color: #A87C00 !important; font-size: 1.4rem; border: none; cursor: pointer; }
-        .flip-h { display: inline-block; transform: scaleX(-1); }
+        .nav-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding: 2px 15px; border-top: 1px solid #d7ccc8; }
+        .btn-flechas { background: transparent !important; color: #A87C00 !important; width: 45px; height: 32px; font-size: 1.4rem; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; outline: none; padding: 0; margin: 0; }
+        .flip-h { transform: scaleX(-1); }
+        .icon-exit { color: #A87C00; font-weight: bold; font-size: 1.2rem; }
+
+        .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; align-items: center; justify-content: center; }
+        .visor-content { width: 95%; height: 90%; background: #fff; border-radius: 8px; position: relative; }
+        .visor-close { position: absolute; top: -10px; right: -10px; background: #ff0000; color: #fff; border: 2px solid #fff; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; z-index: 2001; }
     </style>
 </head>
 <body onload="inicializarPortal()">
@@ -62,37 +67,58 @@
 
     <script>
         let RitualActual, GlosarioMaestro, BitacoraEventos;
-        let libroActivo = "1", fechaSesion = "", actoDestino = null; // Incorporado actoDestino
+        let libroActivo = "1", fechaSesion = "";
+        let SeccionesDesbloqueadas = new Set(["1", "2", "3"]);
 
         async function inicializarPortal() {
             try {
                 const parametros = new URLSearchParams(window.location.search);
-                fechaSesion = parametros.get('fecha') || "2026-03-23"; // Hoy
+                
+                if (!parametros.get('sec') && !document.referrer.includes('rituales.html')) {
+                    sessionStorage.clear();
+                }
+
+                fechaSesion = parametros.get('fecha') || new Date().toLocaleDateString('en-CA');
                 libroActivo = (parametros.get('num') || "1").toString();
-                actoDestino = parametros.get('act'); // Capturamos act
-                let seccionInicial = parametros.get('sec') || "1";
+                
+                let seccionInicial = parametros.get('sec') || (libroActivo === "1" ? sessionStorage.getItem('seccionRetornoLogia') : null) || "1";
 
                 await cargarArchivosBase();
                 
                 if (RitualActual) {
                     const Dic = { "1": "Libro de Aprendiz", "2": "Libro de Compañero", "3": "Libro de Maestro" };
                     document.getElementById("titulo-ritual-header").textContent = Dic[libroActivo];
-                    
                     actualizarSelectorSecciones(seccionInicial);
+                    
+                    const actorMemoria = sessionStorage.getItem('actorRetornoLogia');
+                    if (actorMemoria) document.getElementById("actorFilter").dataset.actorPendiente = actorMemoria;
+                    
                     await gestionarCambioSeccion();
+
+                    const versoDestino = parametros.get('act');
+                    const posGuardada = sessionStorage.getItem('posicionRetornoScroll');
+
+                    setTimeout(() => {
+                        if (versoDestino) {
+                            const elemento = document.getElementById(`verso-${versoDestino}`);
+                            // Validación del acto en la inicialización
+                            if (elemento) {
+                                elemento.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                elemento.classList.add('resaltado');
+                            }
+                        } else if (posGuardada && libroActivo === "1") {
+                            window.scrollTo({ top: parseInt(posGuardada), behavior: 'smooth' });
+                            sessionStorage.removeItem('posicionRetornoScroll');
+                        }
+                    }, 500);
                 }
-            } catch (e) { console.error("Error al inicializar:", e); }
+            } catch (e) { console.error(e); }
         }
 
         async function cargarArchivosBase() {
             const t = new Date().getTime();
-            const fetchText = u => fetch(`${u}?v=${t}`).then(r => r.text());
-            const [dg, dl, de] = await Promise.all([
-                fetchText('glosario.xml'), 
-                fetchText('liturgia.xml'), 
-                fetchText('tenidas.xml').catch(() => '<bitacora/>')
-            ]);
-            
+            const f = u => fetch(`${u}?v=${t}`).then(r => r.text());
+            const [dg, dl, de] = await Promise.all([f('glosario.xml'), f('liturgia.xml'), f('tenidas.xml').catch(() => '<bitacora/>')]);
             const dp = new DOMParser();
             GlosarioMaestro = dp.parseFromString(dg, "text/xml");
             BitacoraEventos = dp.parseFromString(de, "text/xml");
@@ -103,105 +129,119 @@
         function actualizarSelectorSecciones(sel) {
             const combo = document.getElementById("seccionFilter");
             combo.innerHTML = "";
+            let existe = false;
             Array.from(RitualActual.getElementsByTagName("seccion")).forEach(s => {
-                combo.add(new Option(s.getAttribute("titulo"), s.getAttribute("id")));
+                const id = s.getAttribute("id");
+                if (libroActivo !== "1" || id <= 3 || SeccionesDesbloqueadas.has(id)) {
+                    combo.add(new Option(s.getAttribute("titulo"), id));
+                    if (id === sel) existe = true;
+                }
             });
-            combo.value = sel;
+            combo.value = existe ? sel : "1";
         }
 
         function actualizarSeccionGlobal() {
-            actoDestino = null; // Reset al cambiar sección
+            if (libroActivo === "1") sessionStorage.setItem('seccionRetornoLogia', document.getElementById("seccionFilter").value);
             gestionarCambioSeccion();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function actualizarActorGlobal() {
+            sessionStorage.setItem('actorRetornoLogia', document.getElementById("actorFilter").value);
             renderizarLiturgia(true);
         }
 
         async function gestionarCambioSeccion() {
             const idSec = document.getElementById("seccionFilter").value;
             const comboActor = document.getElementById("actorFilter");
-            const actorPrevio = comboActor.value;
+            const actorPendiente = comboActor.dataset.actorPendiente || comboActor.value;
+            delete comboActor.dataset.actorPendiente;
 
             const nodoSec = Array.from(RitualActual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == idSec);
             const actoresEnSec = new Set();
-            
             if (nodoSec) {
-                Array.from(nodoSec.getElementsByTagName("acto")).forEach(a => {
-                    if (a.getAttribute("actor")) actoresEnSec.add(a.getAttribute("actor").trim());
+                Array.from(nodoSec.getElementsByTagName("acto")).forEach(p => {
+                    if (p.getAttribute("actor")) actoresEnSec.add(p.getAttribute("actor").trim());
                 });
             }
 
             comboActor.innerHTML = '<option value="">---</option>';
             Array.from(GlosarioMaestro.getElementsByTagName("item")).forEach(i => {
-                const sigla = i.getAttribute("sigla");
-                if (actoresEnSec.has(sigla)) comboActor.add(new Option(sigla + "∴", sigla));
+                const s = i.getAttribute("sigla");
+                if (actoresEnSec.has(s)) comboActor.add(new Option(s + "∴", s));
             });
 
-            if (actoresEnSec.has(actorPrevio)) comboActor.value = actorPrevio;
-            renderizarLiturgia();
+            if (actoresEnSec.has(actorPendiente)) {
+                comboActor.value = actorPendiente;
+                return renderizarLiturgia(true); 
+            } else {
+                return renderizarLiturgia(false);
+            }
         }
 
         function renderizarLiturgia(hacerScroll = false) {
-            const idSec = document.getElementById("seccionFilter").value;
-            const actorSel = document.getElementById("actorFilter").value;
-            const nodoSec = Array.from(RitualActual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == idSec);
-            
-            if (!nodoSec) return;
+            return new Promise((resolve) => {
+                const idSec = document.getElementById("seccionFilter").value;
+                const actorSel = document.getElementById("actorFilter").value;
+                const nodoSec = Array.from(RitualActual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == idSec);
+                if (!nodoSec) { resolve(); return; }
 
-            let html = "";
-            let contadorV = 1;
+                let html = "";
+                let contadorVersos = 1;
 
-            Array.from(nodoSec.getElementsByTagName("parte")).forEach(parte => {
-                html += `<div class="parte-header">${parte.getAttribute("titulo")}</div>`;
-                Array.from(parte.getElementsByTagName("acto")).forEach(acto => {
-                    const actor = (acto.getAttribute("actor") || "").trim();
-                    let contenido = (acto.getAttribute("tema") || acto.textContent).trim();
-                    
-                    let botones = "";
-                    if (contenido.includes("[[INSTANCIA]]")) {
-                        botones = inyectarInstancia(actor, idSec, contadorV);
-                        contenido = contenido.replace("[[INSTANCIA]]", "");
-                    }
-
-                    contenido = contenido.replace(/(\b\S+∴)/gi, '<span style="color:#0277bd; font-weight:bold;">$1</span>');
-                    contenido = contenido.replace(/\[(.*?)\]/g, '<span class="acotacion">($1)</span>');
-
-                    // Prioridad de resaltado: parámetro act o filtro actor
-                    const esDestinoAct = actoDestino && contadorV.toString() === actoDestino;
-                    const esFocoActor = actorSel && actor === actorSel && !actoDestino;
-                    
-                    html += `<dt>${actor}∴</dt>
-                             <dd id="v-${contadorV}" class="${(esDestinoAct || esFocoActor) ? 'resaltado' : ''}">${contenido}${botones}</dd>`;
-                    contadorV++;
+                Array.from(nodoSec.getElementsByTagName("parte")).forEach(parteElemento => {
+                    html += `<div class="parte-header">${parteElemento.getAttribute("titulo")}</div>`;
+                    Array.from(parteElemento.getElementsByTagName("acto")).forEach((actoElemento) => {
+                        const actorPaso = (actoElemento.getAttribute("actor") || "Actor").trim();
+                        let temaContenido = (actoElemento.getAttribute("tema") || actoElemento.textContent).trim();
+                        let btns = "";
+                        
+                        if (temaContenido.includes("[[INSTANCIA]]")) {
+                            btns += inyectarInstancia(actorPaso, idSec, contadorVersos);
+                            temaContenido = temaContenido.replace("[[INSTANCIA]]", "");
+                        }
+                        temaContenido = temaContenido.replace(/(\b\S+∴)/gi, '<span style="color:#0277bd; font-weight:bold;">$1</span>');
+                        temaContenido = temaContenido.replace(/\[(.*?)\]/g, '<span class="acotacion">($1)</span>');
+                        const esFoco = actorSel && actorPaso === actorSel;
+                        html += `<dt>${actorPaso}∴</dt><dd id="verso-${contadorVersos}" class="${esFoco ? 'resaltado' : ''}">${temaContenido}${btns}</dd>`;
+                        contadorVersos++;
+                    });
                 });
-            });
 
-            // Navegación
-            const index = document.getElementById("seccionFilter").selectedIndex;
-            const total = document.getElementById("seccionFilter").options.length;
-            let nav = `<div class="nav-footer">`;
-            nav += index > 0 ? `<button class="btn-flechas" onclick="navRelativa(-1)"><span class="flip-h">➤</span></button>` : `<span></span>`;
-            nav += index < total - 1 ? `<button class="btn-flechas" onclick="navRelativa(1)">➤</button>` : `<span></span>`;
-            nav += `</div>`;
+                const sel = document.getElementById("seccionFilter");
+                const i = sel.selectedIndex;
+                let nav = `<div class="nav-footer">`;
+                if (i > 0) nav += `<button class="btn-flechas" onclick="navRelativa(-1)"><span class="flip-h">➤</span></button>`;
+                else nav += `<span></span>`;
+                if (i < sel.options.length - 1) nav += `<button class="btn-flechas" onclick="navRelativa(1)">➤</button>`;
+                else if (libroActivo > "1") nav += `<button class="btn-flechas" onclick="irA('VOLVER')"><span class="icon-exit">✖</span></button>`;
+                else nav += `<span></span>`;
+                nav += `</div>`;
 
-            const contenedor = document.getElementById('rituales-content');
-            contenedor.innerHTML = `<dl>${html}</dl>${nav}`;
-            
-            // Validación de parámetro act: si no existe en la sección, pantalla en blanco
-            if (actoDestino || actorSel || hacerScroll) {
-                setTimeout(() => {
-                    const idBuscado = actoDestino ? `v-${actoDestino}` : null;
-                    const el = idBuscado ? document.getElementById(idBuscado) : document.querySelector('.resaltado');
-                    
-                    if (actoDestino && !el) {
+                const contenedor = document.getElementById('rituales-content');
+                contenedor.innerHTML = `<dl>${html}</dl>${nav}`;
+                
+                // VALIDACIÓN CRÍTICA DEL ACTO DESTINO
+                const parametros = new URLSearchParams(window.location.search);
+                const versoBuscado = parametros.get('act');
+                if (versoBuscado) {
+                    const elVerso = document.getElementById(`verso-${versoBuscado}`);
+                    // Si el acto no existe en esta sección, se limpia la vista por seguridad
+                    if (!elVerso) {
                         contenedor.innerHTML = "";
+                        resolve();
                         return;
                     }
-                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 300);
-            }
+                }
+
+                if (hacerScroll && actorSel) {
+                    setTimeout(() => {
+                        const el = document.querySelector('.resaltado');
+                        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        resolve();
+                    }, 200);
+                } else { resolve(); }
+            });
         }
 
         function navRelativa(d) {
@@ -210,26 +250,50 @@
             actualizarSeccionGlobal();
         }
 
-        // FUNCIÓN INYECTAR INSTANCIA ORIGINAL V22
-        function inyectarInstancia(actorActo, sec, v) {
+        window.irA = function(dest) {
+            if (dest === 'VOLVER') {
+                if (libroActivo > "1") {
+                    const secRet = sessionStorage.getItem('seccionRetornoLogia') || "1";
+                    location.href = `rituales.html?num=1&fecha=${fechaSesion}&sec=${secRet}`;
+                } else { location.href = 'index.html'; }
+                return;
+            }
+            SeccionesDesbloqueadas.add(dest);
+            actualizarSelectorSecciones(dest);
+            gestionarCambioSeccion();
+        };
+
+        function capturarPosicionYSalir(url, actor, sec, verso) {
+            const y = window.pageYOffset || document.documentElement.scrollTop;
+            sessionStorage.setItem('posicionRetornoScroll', Math.round(y));
+            sessionStorage.setItem('actorRetornoLogia', actor);
+            sessionStorage.setItem('seccionRetornoLogia', sec);
+            window.location.href = url + (url.includes('?') ? '&' : '?') + 'sec=1';
+        }
+
+        function inyectarInstancia(actorDelPaso, sec, verso) {
             const t = Array.from(BitacoraEventos.getElementsByTagName("tenida")).find(x => x.getAttribute("fecha") === fechaSesion);
             if (!t) return "";
-            
             let h = "";
             const actorActual = document.getElementById("actorFilter").value;
-            
             Array.from(t.getElementsByTagName("item")).forEach(i => {
-                const tipo = i.getAttribute("acto"); 
-                const url = i.getAttribute("url");
-                const tit = i.getAttribute("titulo") || "Memo";
-
-                if (tipo === "balaustre" && actorActo === "Sec" && actorActual === "Sec") {
-                    h += `<button class="btn-ritual" onclick="window.location.href='${url}'">📜 ${tit}</button>`;
-                } else if (tipo === "elevacion" && actorActo !== "Sec") {
-                    h += `<button class="btn-instancia-exec" onclick="window.location.href='${url}'">${tit}</button>`;
+                const versoBit = i.getAttribute("acto"), url = i.getAttribute("url"), tit = i.getAttribute("titulo") || "Memo";
+                if (versoBit === "balaustre" && actorDelPaso === "Sec" && actorActual === "Sec") {
+                    h += `<button class="btn-ritual" onclick="mostrarVisor('${url}')">📜 ${tit}</button>`;
+                } else if (versoBit === "elevacion" && actorDelPaso !== "Sec") {
+                    if (url.includes('rituales.html')) {
+                        h += `<button class="btn-instancia-exec" onclick="capturarPosicionYSalir('${url}', '${actorActual}', '${sec}', '${verso}')">${tit}</button>`;
+                    } else { h += `<button class="btn-instancia-exec" onclick="mostrarVisor('${url}')">${tit}</button>`; }
                 }
             });
             return h;
+        }
+
+        function mostrarVisor(url) {
+            const v = document.createElement('div');
+            v.className = 'visor-overlay';
+            v.innerHTML = `<div class="visor-content"><button class="visor-close" onclick="this.parentElement.parentElement.remove()">✕</button><iframe src="${url}" style="width:100%; height:100%; border:none;"></iframe></div>`;
+            document.body.appendChild(v);
         }
     </script>
 </body>
