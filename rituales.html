@@ -26,7 +26,7 @@
         .resaltado { background: rgba(168, 124, 0, 0.12) !important; border-left: 5px solid #A87C00 !important; transition: background 0.5s ease; }
         .btn-ritual, .btn-instancia-exec { border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em; font-weight: bold; background: #A87C00 !important; color: #fff !important; margin: 4px 2px; }
         .nav-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding: 2px 15px; border-top: 1px solid #d7ccc8; }
-        .btn-flechas { background: transparent !important; color: #A87C00 !important; width: 45px; height: 32px; font-size: 1.4rem; display: flex; align-items: center; justify-content: center; border: none; outline: none; }
+        .btn-flechas { background: transparent !important; color: #A87C00 !important; width: 45px; height: 32px; font-size: 1.4rem; display: flex; align-items: center; justify-content: center; border: none; }
         .flip-h { transform: scaleX(-1); }
         .icon-exit { color: #A87C00; font-weight: bold; font-size: 1.2rem; }
         .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; align-items: center; justify-content: center; }
@@ -67,7 +67,6 @@
                 fechaSesion = params.get('fecha') || new Date().toLocaleDateString('en-CA');
                 libroActivo = (params.get('num') || "1").toString();
                 const secURL = params.get('sec');
-                const actURL = params.get('act');
 
                 await cargarArchivosBase();
                 
@@ -75,7 +74,6 @@
                     const Dic = { "1": "Libro de Aprendiz", "2": "Libro de Compañero", "3": "Libro de Maestro" };
                     document.getElementById("titulo-ritual-header").textContent = Dic[libroActivo];
                     
-                    // Prioridad URL sobre memoria
                     let seccionInicial = secURL || (libroActivo === "1" ? sessionStorage.getItem('seccionRetornoLogia') : null) || "1";
                     
                     actualizarSelectorSecciones(seccionInicial);
@@ -85,19 +83,12 @@
                     
                     await gestionarCambioSeccion();
 
+                    // Lógica de Retorno con Scroll
                     setTimeout(() => {
-                        if (actURL) {
-                            const el = document.getElementById(`verso-${actURL}`);
-                            if (el) {
-                                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                el.classList.add('resaltado');
-                            }
-                        } else if (!secURL && libroActivo === "1") {
-                            const pos = sessionStorage.getItem('posicionRetornoScroll');
-                            if (pos) {
-                                window.scrollTo({ top: parseInt(pos), behavior: 'smooth' });
-                                sessionStorage.removeItem('posicionRetornoScroll');
-                            }
+                        const pos = sessionStorage.getItem('posicionRetornoScroll');
+                        if (pos && (secURL === "2" || !secURL)) {
+                            window.scrollTo({ top: parseInt(pos), behavior: 'smooth' });
+                            sessionStorage.removeItem('posicionRetornoScroll');
                         }
                     }, 800);
                 }
@@ -111,20 +102,23 @@
             const dp = new DOMParser();
             GlosarioMaestro = dp.parseFromString(dg, "text/xml");
             BitacoraEventos = dp.parseFromString(de, "text/xml");
-            const xmlLit = dp.parseFromString(dl, "text/xml");
-            RitualActual = Array.from(xmlLit.getElementsByTagName("ritual")).find(r => r.getAttribute("libro") === libroActivo);
+            RitualActual = Array.from(dp.parseFromString(dl, "text/xml").getElementsByTagName("ritual")).find(r => r.getAttribute("libro") === libroActivo);
         }
 
         function actualizarSelectorSecciones(sel) {
             const combo = document.getElementById("seccionFilter");
             combo.innerHTML = "";
-            
+            const numSel = parseInt(sel);
+
+            // REGLA: Si la sección seleccionada es > 3, SOLO se muestra esa sección.
+            // Si es <= 3, se muestran las secciones 1, 2 y 3 (si existen en el libro).
             Array.from(RitualActual.getElementsByTagName("seccion")).forEach(s => {
                 const id = s.getAttribute("id");
-                // REGLA: Visibles hasta el libroActivo (3 o menos). 
-                // La sección actual 'sel' se agrega siempre para que sea visible si es una instancia > 3.
-                if (parseInt(id) <= parseInt(libroActivo) || id === sel) {
-                    combo.add(new Option(s.getAttribute("titulo"), id));
+                const numId = parseInt(id);
+                if (numSel > 3) {
+                    if (id === sel) combo.add(new Option(s.getAttribute("titulo"), id));
+                } else {
+                    if (numId <= 3) combo.add(new Option(s.getAttribute("titulo"), id));
                 }
             });
             combo.value = sel;
@@ -132,10 +126,7 @@
 
         function actualizarSeccionGlobal() {
             const val = document.getElementById("seccionFilter").value;
-            // Solo guardamos retorno si es una de las secciones base (1, 2 o 3)
-            if (libroActivo === "1" && parseInt(val) <= 3) {
-                sessionStorage.setItem('seccionRetornoLogia', val);
-            }
+            if (parseInt(val) <= 3) sessionStorage.setItem('seccionRetornoLogia', val);
             gestionarCambioSeccion();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -172,31 +163,24 @@
         function renderizarLiturgia(hacerScroll = false) {
             const idSec = document.getElementById("seccionFilter").value;
             const actorSel = document.getElementById("actorFilter").value;
-            const params = new URLSearchParams(window.location.search);
-            const actURL = params.get('act');
-            
             const nodoSec = Array.from(RitualActual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == idSec);
             if (!nodoSec) return;
 
             let html = "";
             let contadorV = 1;
-
             Array.from(nodoSec.getElementsByTagName("parte")).forEach(parte => {
                 html += `<div class="parte-header">${parte.getAttribute("titulo")}</div>`;
                 Array.from(parte.getElementsByTagName("acto")).forEach(acto => {
                     const actor = (acto.getAttribute("actor") || "Actor").trim();
                     let texto = (acto.getAttribute("tema") || acto.textContent).trim();
                     let btns = "";
-                    
                     if (texto.includes("[[INSTANCIA]]")) {
                         btns = inyectarInstancia(actor, idSec, contadorV);
                         texto = texto.replace("[[INSTANCIA]]", "");
                     }
-                    
                     texto = texto.replace(/(\b\S+∴)/gi, '<span style="color:#0277bd; font-weight:bold;">$1</span>');
                     texto = texto.replace(/\[(.*?)\]/g, '<span class="acotacion">($1)</span>');
-                    
-                    const esFoco = (actURL && contadorV.toString() === actURL) || (actorSel && actor === actorSel && !actURL);
+                    const esFoco = actorSel && actor === actorSel;
                     html += `<dt>${actor}∴</dt><dd id="verso-${contadorV}" class="${esFoco ? 'resaltado' : ''}">${texto}${btns}</dd>`;
                     contadorV++;
                 });
@@ -207,8 +191,8 @@
             let nav = `<div class="nav-footer">`;
             nav += idx > 0 ? `<button class="btn-flechas" onclick="navRelativa(-1)"><span class="flip-h">➤</span></button>` : `<span></span>`;
             
-            // REGLA: Si la sección actual es > libroActivo (una elevación temporal), el botón siguiente es la salida (✖)
-            if (parseInt(idSec) <= parseInt(libroActivo) && idx < sel.options.length - 1) {
+            // Si la sección es mayor a 3, el botón siguiente es siempre la salida (✖)
+            if (parseInt(idSec) <= 3 && idx < sel.options.length - 1) {
                 nav += `<button class="btn-flechas" onclick="navRelativa(1)">➤</button>`;
             } else {
                 nav += `<button class="btn-flechas" onclick="irA('VOLVER')"><span class="icon-exit">✖</span></button>`;
@@ -216,7 +200,6 @@
             nav += `</div>`;
 
             document.getElementById('rituales-content').innerHTML = `<dl>${html}</dl>${nav}`;
-            
             if (hacerScroll && actorSel) {
                 setTimeout(() => {
                     const el = document.querySelector('.resaltado');
@@ -233,12 +216,12 @@
 
         window.irA = function(dest) {
             if (dest === 'VOLVER') {
-                // REGLA: Retorno forzado a Sección 2 (Desarrollo) del Libro de Aprendiz
                 location.href = `rituales.html?num=1&fecha=${fechaSesion}&sec=2`;
             }
         };
 
         function capturarPosicionYSalir(url, actor, sec, verso) {
+            // Guardar posición exacta antes de saltar a la instancia
             sessionStorage.setItem('posicionRetornoScroll', Math.round(window.pageYOffset));
             sessionStorage.setItem('actorRetornoLogia', actor);
             sessionStorage.setItem('seccionRetornoLogia', sec);
@@ -272,3 +255,4 @@
     </script>
 </body>
 </html>
+
