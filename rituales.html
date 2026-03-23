@@ -26,7 +26,7 @@
         .resaltado { background: rgba(168, 124, 0, 0.12) !important; border-left: 5px solid #A87C00 !important; transition: background 0.5s ease; }
         .btn-ritual, .btn-instancia-exec { border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em; font-weight: bold; background: #A87C00 !important; color: #fff !important; margin: 4px 2px; }
         .nav-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding: 2px 15px; border-top: 1px solid #d7ccc8; }
-        .btn-flechas { background: transparent !important; color: #A87C00 !important; width: 45px; height: 32px; font-size: 1.4rem; display: flex; align-items: center; justify-content: center; border: none; }
+        .btn-flechas { background: transparent !important; color: #A87C00 !important; width: 45px; height: 32px; font-size: 1.4rem; display: flex; align-items: center; justify-content: center; border: none; outline: none; }
         .flip-h { transform: scaleX(-1); }
         .icon-exit { color: #A87C00; font-weight: bold; font-size: 1.2rem; }
         .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; align-items: center; justify-content: center; }
@@ -75,18 +75,18 @@
                     document.getElementById("titulo-ritual-header").textContent = Dic[libroActivo];
                     
                     let seccionInicial = secURL || (libroActivo === "1" ? sessionStorage.getItem('seccionRetornoLogia') : null) || "1";
-                    
                     actualizarSelectorSecciones(seccionInicial);
                     
-                    const actorMemoria = sessionStorage.getItem('actorRetornoLogia');
-                    if (actorMemoria) document.getElementById("actorFilter").dataset.actorPendiente = actorMemoria;
+                    if (sessionStorage.getItem('actorRetornoLogia')) {
+                        document.getElementById("actorFilter").dataset.actorPendiente = sessionStorage.getItem('actorRetornoLogia');
+                    }
                     
                     await gestionarCambioSeccion();
 
-                    // Lógica de Retorno con Scroll
+                    // Lógica de Scroll al retornar
                     setTimeout(() => {
                         const pos = sessionStorage.getItem('posicionRetornoScroll');
-                        if (pos && (secURL === "2" || !secURL)) {
+                        if (pos) {
                             window.scrollTo({ top: parseInt(pos), behavior: 'smooth' });
                             sessionStorage.removeItem('posicionRetornoScroll');
                         }
@@ -110,15 +110,12 @@
             combo.innerHTML = "";
             const numSel = parseInt(sel);
 
-            // REGLA: Si la sección seleccionada es > 3, SOLO se muestra esa sección.
-            // Si es <= 3, se muestran las secciones 1, 2 y 3 (si existen en el libro).
             Array.from(RitualActual.getElementsByTagName("seccion")).forEach(s => {
                 const id = s.getAttribute("id");
-                const numId = parseInt(id);
                 if (numSel > 3) {
                     if (id === sel) combo.add(new Option(s.getAttribute("titulo"), id));
                 } else {
-                    if (numId <= 3) combo.add(new Option(s.getAttribute("titulo"), id));
+                    if (parseInt(id) <= 3) combo.add(new Option(s.getAttribute("titulo"), id));
                 }
             });
             combo.value = sel;
@@ -191,9 +188,11 @@
             let nav = `<div class="nav-footer">`;
             nav += idx > 0 ? `<button class="btn-flechas" onclick="navRelativa(-1)"><span class="flip-h">➤</span></button>` : `<span></span>`;
             
-            // Si la sección es mayor a 3, el botón siguiente es siempre la salida (✖)
-            if (parseInt(idSec) <= 3 && idx < sel.options.length - 1) {
+            // REGLA: Si la sección es 3 (Clausura), no hay botón X. Si es > 3 o final de 1/2, sí hay X.
+            if (parseInt(idSec) < 3 && idx < sel.options.length - 1) {
                 nav += `<button class="btn-flechas" onclick="navRelativa(1)">➤</button>`;
+            } else if (parseInt(idSec) === 3) {
+                nav += `<span></span>`; // Sin botón X en Clausura
             } else {
                 nav += `<button class="btn-flechas" onclick="irA('VOLVER')"><span class="icon-exit">✖</span></button>`;
             }
@@ -216,12 +215,13 @@
 
         window.irA = function(dest) {
             if (dest === 'VOLVER') {
-                location.href = `rituales.html?num=1&fecha=${fechaSesion}&sec=2`;
+                // Al salir con X, siempre volvemos al punto de origen guardado en memoria
+                const secDest = sessionStorage.getItem('seccionRetornoLogia') || "2";
+                location.href = `rituales.html?num=1&fecha=${fechaSesion}&sec=${secDest}`;
             }
         };
 
         function capturarPosicionYSalir(url, actor, sec, verso) {
-            // Guardar posición exacta antes de saltar a la instancia
             sessionStorage.setItem('posicionRetornoScroll', Math.round(window.pageYOffset));
             sessionStorage.setItem('actorRetornoLogia', actor);
             sessionStorage.setItem('seccionRetornoLogia', sec);
@@ -234,10 +234,10 @@
             let h = "";
             const actorActual = document.getElementById("actorFilter").value;
             Array.from(t.getElementsByTagName("item")).forEach(i => {
-                const vBit = i.getAttribute("acto"), url = i.getAttribute("url"), tit = i.getAttribute("titulo") || "Memo";
-                if (vBit === "balaustre" && actorDelPaso === "Sec" && actorActual === "Sec") {
+                const tipo = i.getAttribute("acto"), url = i.getAttribute("url"), tit = i.getAttribute("titulo") || "Memo";
+                if (tipo === "balaustre" && actorDelPaso === "Sec" && actorActual === "Sec") {
                     h += `<button class="btn-ritual" onclick="mostrarVisor('${url}')">📜 ${tit}</button>`;
-                } else if (vBit === "elevacion" && actorDelPaso !== "Sec") {
+                } else if (tipo === "elevacion" && actorDelPaso !== "Sec") {
                     if (url.includes('rituales.html')) {
                         h += `<button class="btn-instancia-exec" onclick="capturarPosicionYSalir('${url}', '${actorActual}', '${sec}', '${verso}')">${tit}</button>`;
                     } else { h += `<button class="btn-instancia-exec" onclick="mostrarVisor('${url}')">${tit}</button>`; }
@@ -249,10 +249,9 @@
         function mostrarVisor(url) {
             const v = document.createElement('div');
             v.className = 'visor-overlay';
-            v.innerHTML = `<div class="visor-content"><button class="visor-close" onclick="this.parentElement.parentElement.remove()">✕</button><iframe src="${url}" style="width:100%; height:100%; border:none;"></iframe></div>`;
+            v.innerHTML = `<div class=\"visor-content\"><button class=\"visor-close\" onclick=\"this.parentElement.parentElement.remove()\">✕</button><iframe src=\"${url}\" style=\"width:100%; height:100%; border:none;\"></iframe></div>`;
             document.body.appendChild(v);
         }
     </script>
 </body>
 </html>
-
