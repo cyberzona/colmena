@@ -27,7 +27,6 @@
         dd { margin-left: 55px; border-left: 3px solid #d7ccc8; padding-left: 10px; position: relative; margin-bottom: 8px; text-align: justify; counter-increment: line-counter; min-height: 1.2em; }
         dd::before { content: counter(line-counter); position: absolute; left: -45px; color: #8d6e63; font-size: 0.75rem; font-weight: bold; width: 35px; text-align: right; top: 0; }
         
-        /* ESTILO PARA LOS MENSAJES ENTRE CORCHETES EN NUEVA LÍNEA */
         .acotacion { 
             display: block; 
             font-style: italic; 
@@ -106,26 +105,19 @@
                     const ofiMemoria = sessionStorage.getItem('oficialRetornoLogia');
                     if (ofiMemoria) document.getElementById("oficialFilter").dataset.oficialPendiente = ofiMemoria;
                     
+                    // Esperamos a que la liturgia se renderice completamente antes de mover el scroll
                     await gestionarCambioSeccion();
 
                     const posGuardada = sessionStorage.getItem('posicionRetornoScroll');
-                    if (posGuardada) {
-                        ejecutarScrollPersistente(parseInt(posGuardada));
+                    if (posGuardada && gradoActivo === "1") {
+                        // Pequeño delay para asegurar que el navegador ha calculado las alturas del DOM
+                        setTimeout(() => {
+                            window.scrollTo({ top: parseInt(posGuardada), behavior: 'smooth' });
+                            sessionStorage.removeItem('posicionRetornoScroll'); // Limpiamos para evitar saltos accidentales luego
+                        }, 400);
                     }
                 }
             } catch (e) { console.error(e); }
-        }
-
-        function ejecutarScrollPersistente(target) {
-            let intentos = 0;
-            const intervalo = setInterval(() => {
-                window.scrollTo({ top: target, behavior: 'smooth' });
-                intentos++;
-                if (Math.abs(window.scrollY - target) < 10 || intentos > 15) {
-                    clearInterval(intervalo);
-                    sessionStorage.removeItem('posicionRetornoScroll');
-                }
-            }, 150);
         }
 
         async function cargarArchivosBase() {
@@ -211,9 +203,7 @@
                             txt = txt.replace("[[INSTANCIA]]", "");
                         }
 
-                        // FORMATEO DE TEXTO
                         txt = txt.replace(/(\b\S+∴)/gi, '<span style="color:#0277bd; font-weight:bold;">$1</span>');
-                        // CORCHETES EN NUEVA LÍNEA USANDO CLASE CSS
                         txt = txt.replace(/\[(.*?)\]/g, '<span class="acotacion">($1)</span>');
 
                         const esFoco = ofiSel && ofiPaso === ofiSel;
@@ -281,7 +271,7 @@
                 const acto = i.getAttribute("acto"), url = i.getAttribute("url"), tit = i.getAttribute("titulo") || "Memo";
                 if (acto === "balaustre" && ofiDelPaso === "Sec" && ofiActual === "Sec") {
                     h += `<button class="btn-ritual" onclick="mostrarVisor('${url}')">📜 ${tit}</button>`;
-                } else if (acto === "elevacion" && ofiDelPaso !== "Sec" && ofiActual !== "Sec") {
+                } else if (acto === "elevacion" && ofiDelPaso !== "Sec") {
                     if (url.includes('rituales.html')) {
                         h += `<button class="btn-instancia-exec" onclick="capturarPosicionYSalir('${url}', '${ofiActual}', '${sec}')">${tit}</button>`;
                     } else { h += `<button class="btn-instancia-exec" onclick="mostrarVisor('${url}')">${tit}</button>`; }
