@@ -67,7 +67,7 @@
                 const parametros = new URLSearchParams(window.location.search);
                 fechaSesion = parametros.get('fecha') || new Date().toLocaleDateString('en-CA');
                 libroActivo = (parametros.get('num') || "1").toString();
-                actoDestino = parametros.get('act'); // Capturamos el parámetro "act"
+                actoDestino = parametros.get('act');
                 
                 let seccionInicial = parametros.get('sec') || "1";
 
@@ -109,7 +109,7 @@
         }
 
         function actualizarSeccionGlobal() {
-            actoDestino = null; // Al cambiar de sección manualmente, reseteamos el destino
+            actoDestino = null;
             gestionarCambioSeccion();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -161,10 +161,8 @@
                     contenido = contenido.replace(/(\b\S+∴)/gi, '<span style="color:#0277bd; font-weight:bold;">$1</span>');
                     contenido = contenido.replace(/\[(.*?)\]/g, '<span class="acotacion">($1)</span>');
 
-                    // Prioridad de resaltado: 1. El parámetro 'act' | 2. El filtro de Actor
                     const esDestinoAct = actoDestino && contadorV.toString() === actoDestino;
                     const esFocoActor = actorSel && actor === actorSel && !actoDestino;
-                    
                     const claseResaltado = (esDestinoAct || esFocoActor) ? 'resaltado' : '';
 
                     html += `<dt>${actor}∴</dt>
@@ -173,7 +171,6 @@
                 });
             });
 
-            // Navegación inferior
             const index = document.getElementById("seccionFilter").selectedIndex;
             const total = document.getElementById("seccionFilter").options.length;
             let nav = `<div class="nav-footer">`;
@@ -181,17 +178,26 @@
             nav += index < total - 1 ? `<button class="btn-flechas" onclick="navRelativa(1)">➤</button>` : `<span></span>`;
             nav += `</div>`;
 
-            document.getElementById('rituales-content').innerHTML = `<dl>${html}</dl>${nav}`;
+            // Inyectamos el contenido generado
+            const contenedor = document.getElementById('rituales-content');
+            contenedor.innerHTML = `<dl>${html}</dl>${nav}`;
             
-            // Si hay un acto de destino o un actor filtrado, hacemos scroll
+            // VALIDACIÓN DE FILTRADO SEGURO
             if (actoDestino || actorSel) {
-                setTimeout(() => {
-                    const idBuscado = actoDestino ? `v-${actoDestino}` : null;
-                    const el = idBuscado ? document.getElementById(idBuscado) : document.querySelector('.resaltado');
-                    if (el) {
+                const idBuscado = actoDestino ? `v-${actoDestino}` : null;
+                const el = idBuscado ? document.getElementById(idBuscado) : document.querySelector('.resaltado');
+
+                // Si se solicitó un acto por URL pero no existe en el HTML generado
+                if (actoDestino && !el) {
+                    contenedor.innerHTML = ""; // Pantalla en blanco absoluta
+                    return; 
+                }
+
+                if (el) {
+                    setTimeout(() => {
                         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }
-                }, 300);
+                    }, 300);
+                }
             }
         }
 
