@@ -74,20 +74,23 @@
             try {
                 const parametros = new URLSearchParams(window.location.search);
                 
-                if (!parametros.get('sec') && !document.referrer.includes('rituales.html')) {
-                    sessionStorage.clear();
-                }
+                // Prioridad máxima a los parámetros de la URL
+                const secURL = parametros.get('sec');
+                const numURL = parametros.get('num');
+                const actURL = parametros.get('act');
 
                 fechaSesion = parametros.get('fecha') || new Date().toLocaleDateString('en-CA');
-                libroActivo = (parametros.get('num') || "1").toString();
+                libroActivo = (numURL || "1").toString();
                 
-                let seccionInicial = parametros.get('sec') || (libroActivo === "1" ? sessionStorage.getItem('seccionRetornoLogia') : null) || "1";
+                // Si hay sec en URL, manda. Si no, busca en memoria si es Libro 1.
+                let seccionInicial = secURL || (libroActivo === "1" ? sessionStorage.getItem('seccionRetornoLogia') : null) || "1";
 
                 await cargarArchivosBase();
                 
                 if (RitualActual) {
                     const Dic = { "1": "Libro de Aprendiz", "2": "Libro de Compañero", "3": "Libro de Maestro" };
                     document.getElementById("titulo-ritual-header").textContent = Dic[libroActivo];
+                    
                     actualizarSelectorSecciones(seccionInicial);
                     
                     const actorMemoria = sessionStorage.getItem('actorRetornoLogia');
@@ -95,20 +98,20 @@
                     
                     await gestionarCambioSeccion();
 
-                    const versoDestino = parametros.get('act');
-                    const posGuardada = sessionStorage.getItem('posicionRetornoScroll');
-
                     setTimeout(() => {
-                        if (versoDestino) {
-                            const elemento = document.getElementById(`verso-${versoDestino}`);
-                            // Validación del acto en la inicialización
+                        if (actURL) {
+                            const elemento = document.getElementById(`verso-${actURL}`);
                             if (elemento) {
                                 elemento.scrollIntoView({ behavior: 'smooth', block: 'center' });
                                 elemento.classList.add('resaltado');
                             }
-                        } else if (posGuardada && libroActivo === "1") {
-                            window.scrollTo({ top: parseInt(posGuardada), behavior: 'smooth' });
-                            sessionStorage.removeItem('posicionRetornoScroll');
+                        } else if (!secURL && libroActivo === "1") { 
+                            // Solo restaurar scroll si no se forzó una sección específica
+                            const posGuardada = sessionStorage.getItem('posicionRetornoScroll');
+                            if (posGuardada) {
+                                window.scrollTo({ top: parseInt(posGuardada), behavior: 'smooth' });
+                                sessionStorage.removeItem('posicionRetornoScroll');
+                            }
                         }
                     }, 500);
                 }
@@ -137,7 +140,7 @@
                     if (id === sel) existe = true;
                 }
             });
-            combo.value = existe ? sel : "1";
+            combo.value = existe ? sel : combo.options[0].value;
         }
 
         function actualizarSeccionGlobal() {
@@ -208,12 +211,20 @@
                     });
                 });
 
+                // Validación de parámetro act
+                const versoBuscado = new URLSearchParams(window.location.search).get('act');
+                if (versoBuscado && !html.includes(`id="verso-${versoBuscado}"`)) {
+                    document.getElementById('rituales-content').innerHTML = "";
+                    resolve();
+                    return;
+                }
+
                 const sel = document.getElementById("seccionFilter");
-                const i = sel.selectedIndex;
+                const idx = sel.selectedIndex;
                 let nav = `<div class="nav-footer">`;
-                if (i > 0) nav += `<button class="btn-flechas" onclick="navRelativa(-1)"><span class="flip-h">➤</span></button>`;
-                else nav += `<span></span>`;
-                if (i < sel.options.length - 1) nav += `<button class="btn-flechas" onclick="navRelativa(1)">➤</button>`;
+                nav += idx > 0 ? `<button class="btn-flechas" onclick="navRelativa(-1)"><span class="flip-h">➤</span></button>` : `<span></span>`;
+                
+                if (idx < sel.options.length - 1) nav += `<button class="btn-flechas" onclick="navRelativa(1)">➤</button>`;
                 else if (libroActivo > "1") nav += `<button class="btn-flechas" onclick="irA('VOLVER')"><span class="icon-exit">✖</span></button>`;
                 else nav += `<span></span>`;
                 nav += `</div>`;
@@ -221,19 +232,6 @@
                 const contenedor = document.getElementById('rituales-content');
                 contenedor.innerHTML = `<dl>${html}</dl>${nav}`;
                 
-                // VALIDACIÓN CRÍTICA DEL ACTO DESTINO
-                const parametros = new URLSearchParams(window.location.search);
-                const versoBuscado = parametros.get('act');
-                if (versoBuscado) {
-                    const elVerso = document.getElementById(`verso-${versoBuscado}`);
-                    // Si el acto no existe en esta sección, se limpia la vista por seguridad
-                    if (!elVerso) {
-                        contenedor.innerHTML = "";
-                        resolve();
-                        return;
-                    }
-                }
-
                 if (hacerScroll && actorSel) {
                     setTimeout(() => {
                         const el = document.querySelector('.resaltado');
@@ -252,10 +250,8 @@
 
         window.irA = function(dest) {
             if (dest === 'VOLVER') {
-                if (libroActivo > "1") {
-                    const secRet = sessionStorage.getItem('seccionRetornoLogia') || "1";
-                    location.href = `rituales.html?num=1&fecha=${fechaSesion}&sec=${secRet}`;
-                } else { location.href = 'index.html'; }
+                const secRet = sessionStorage.getItem('seccionRetornoLogia') || "1";
+                location.href = `rituales.html?num=1&fecha=${fechaSesion}&sec=${secRet}`;
                 return;
             }
             SeccionesDesbloqueadas.add(dest);
