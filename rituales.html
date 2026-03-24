@@ -238,8 +238,8 @@
                 const reglas = {
                     "balaustre": (actor === "Sec" && actorActual === "Sec" ),
                     "elevacion": (actor === "VM"),
-                    "trazables":  (actor === "Sec" || actor === "VM"),
-                    "virtuales":   (actor === "MM")
+                    "trazables": (actor === "VM"),
+                    "virtuales": (actor === "MM")
                 };
 
                 if (reglas[tipo]) {
