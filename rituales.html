@@ -170,6 +170,19 @@
                         btns = inyectarInstancia(actor, idSec, contadorV);
                         texto = texto.replace("[[INSTANCIA]]", "");
                     }
+
+                    texto = texto.replace(/\[\[LINK:(\d+)(?::([^\]]+))?\]\]/g, (match, codigo, etiqueta) => {
+                        let nombreLink = etiqueta ? etiqueta.trim() : "";
+                        if (!nombreLink) {
+                            // Ajuste de lógica para encontrar el título en RitualActual
+                            const tId = codigo.length === 3 ? parseInt(codigo.substring(1), 10).toString() : codigo;
+                            const tNodo = Array.from(RitualActual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") === tId);
+                            nombreLink = tNodo ? tNodo.getAttribute("titulo") : "Ir";
+                        }
+                        // Acumulamos en la variable 'btns' que ya usas para la liturgia
+                        btns += `<div class="nav-link-container"><button class="btn-ritual" onclick="irA('${codigo}')">${nombreLink} ➜</button></div>`;
+                        return ""; // Eliminamos la etiqueta del texto principal
+                    });
                     texto = texto.replace(/(\b\S+∴)/gi, '<span style="color:#0277bd; font-weight:bold;">$1</span>');
                     texto = texto.replace(/\[(.*?)\]/g, '<span class="acotacion">($1)</span>');
                     const esFoco = actorSel && actor === actorSel;
