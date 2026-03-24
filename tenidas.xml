@@ -11,6 +11,8 @@
         <item acto="balaustre" titulo="Tenida Ordinaria (Feb-21)" url="https://drive.google.com/file/d/1Jr6xYTM6FAyYTWhSwrCJApxKhk3KelMA/preview" />       
         <item acto="elevacion" titulo="CÁMARA DE COMPAÑERO" url="rituales.html?num=2" />   
         <item acto="elevacion" titulo="Saco de proposiciones" url="rituales.html?num=1&amp;sec=4" /> 
-        <item acto="trazables" titulo="Tenida Virtual" url="https://meet.google.com/nso-pjde-tis#blank" />          
+        <item acto="trazables" titulo="Tenida Virtual" url="https://meet.google.com/nso-pjde-tis#blank" /> 
+        <item acto="virtuales" titulo="Tenida Virtual" url="https://meet.google.com/nso-pjde-tis#blank" />          
+    </tenida>
     </tenida>
 </bitacora>
