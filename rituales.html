@@ -236,10 +236,10 @@
 
                 // Reglas de visibilidad por tipo y actor del paso
                 const reglas = {
-                    "balaustre": (actor === "Sec"),
+                    "balaustre": (actor === "Sec" && actorActual === "Sec" ),
                     "elevacion": (actor === "VM"),
-                    "trazable":  (actor === "Sec" || actor === "VM"),
-                    "virtual":   (actor === "MM")
+                    "trazables":  (actor === "Sec" || actor === "VM"),
+                    "virtuales":   (actor === "MM")
                 };
 
                 if (reglas[tipo]) {
