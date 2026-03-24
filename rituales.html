@@ -232,7 +232,7 @@
                 const tipo = i.getAttribute("acto"), url = i.getAttribute("url"), tit = i.getAttribute("titulo") || "Memo";
                 if (tipo === "balaustre" && actorDelPaso === "Sec" && actorActual === "Sec") {
                     h += `<button class="btn-ritual" onclick="mostrarVisor('${url}')">📜 ${tit}</button>`;
-                } else if (tipo === "elevacion" && actorDelPaso !== "Sec") {
+                } else if (tipo === "elevacion" && actorDelPaso === "VM") {
                     if (url.includes('rituales.html')) {
                         h += `<button class="btn-instancia-exec" onclick="capturarOrigenYSalir('${url}', '${actorActual}', '${sec}', '${verso}')">${tit}</button>`;
                     } else { 
