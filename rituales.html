@@ -157,35 +157,42 @@
             const idSec = document.getElementById("seccionFilter").value;
             const actorSel = document.getElementById("actorFilter").value;
             const nodoSec = Array.from(RitualActual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == idSec);
-    
             if (!nodoSec) return;
-    
             let html = "";
             let contadorV = 1;
-
             Array.from(nodoSec.getElementsByTagName("parte")).forEach(parte => {
-                html += `<div class="parte-header">${parte.getAttribute("titulo")}</div>`;        
+                html += `<div class="parte-header">${parte.getAttribute("titulo")}</div>`;
                 Array.from(parte.getElementsByTagName("acto")).forEach(acto => {
                     const actor = (acto.getAttribute("actor") || "Actor").trim();
                     let texto = (acto.getAttribute("tema") || acto.textContent).trim();
                     let btns = "";
-
-                    if (texto.includes("[[INSTANCIA]]")) {                
-                        btns += inyectarInstancia(actor, idSec, contadorV);
+                    if (texto.includes("[[INSTANCIA]]")) {
+                        btns = inyectarInstancia(actor, idSec, contadorV);
                         texto = texto.replace("[[INSTANCIA]]", "");
                     }
-
                     texto = texto.replace(/(\b\S+∴)/gi, '<span style="color:#0277bd; font-weight:bold;">$1</span>');
                     texto = texto.replace(/\[(.*?)\]/g, '<span class="acotacion">($1)</span>');
-            
                     const esFoco = actorSel && actor === actorSel;
                     html += `<dt>${actor}∴</dt><dd id="verso-${contadorV}" class="${esFoco ? 'resaltado' : ''}">${texto}${btns}</dd>`;
                     contadorV++;
                 });
             });
 
-            document.getElementById('rituales-content').innerHTML = `<dl>${html}</dl>`;
-    
+            const sel = document.getElementById("seccionFilter");
+            const idx = sel.selectedIndex;
+            let nav = `<div class="nav-footer">`;
+            nav += idx > 0 ? `<button class="btn-flechas" onclick="navRelativa(-1)"><span class="flip-h">➤</span></button>` : `<span></span>`;
+            
+            if (parseInt(idSec) < 3 && idx < sel.options.length - 1) {
+                nav += `<button class="btn-flechas" onclick="navRelativa(1)">➤</button>`;
+            } else if (parseInt(idSec) === 3) {
+                nav += `<span></span>`; 
+            } else {
+                nav += `<button class="btn-flechas" onclick="irA('VOLVER')"><span class="icon-exit">✖</span></button>`;
+            }
+            nav += `</div>`;
+
+            document.getElementById('rituales-content').innerHTML = `<dl>${html}</dl>${nav}`;
             if (hacerScroll && actorSel) {
                 setTimeout(() => {
                     const el = document.querySelector('.resaltado');
@@ -193,7 +200,7 @@
                 }, 200);
             }
         }
-        
+
         function navRelativa(d) {
             const s = document.getElementById("seccionFilter");
             s.selectedIndex += d;
@@ -223,27 +230,14 @@
             const actorActual = document.getElementById("actorFilter").value;
             Array.from(t.getElementsByTagName("item")).forEach(i => {
                 const tipo = i.getAttribute("acto"), url = i.getAttribute("url"), tit = i.getAttribute("titulo") || "Memo";
-                switch (tipo) {
-                    case "balaustre":
-                    case "trazado":
-                    case "arquitectura":
-                       if (actorDelPaso === "Sec" && actorActual === "Sec") {
-                            const icono = (tipo === "balaustre") ? "📜" : "📐";
-                            h += `<button class="btn-ritual" onclick="mostrarVisor('${url}')">${icono} ${tit}</button>`;
-                        } break;
-
-                    case "elevacion":
-                    case "exaltacion":
-                        if (actorDelPaso !== "Sec") {
-                            if (url.includes('rituales.html')) {
-                                h += `<button class="btn-instancia-exec" onclick="capturarOrigenYSalir('${url}', '${actorActual}', '${sec}', '${verso}')">${tit}</button>`;
-                            } else {
-                                h += `<button class="btn-instancia-exec" onclick="mostrarVisor('${url}')">${tit}</button>`;
-                            }
-                        } break;
-                    default:
-                    console.log("Tipo de acto no reconocido:", tipo);
-                    break;
+                if (tipo === "balaustre" && actorDelPaso === "Sec" && actorActual === "Sec") {
+                    h += `<button class="btn-ritual" onclick="mostrarVisor('${url}')">📜 ${tit}</button>`;
+                } else if (tipo === "elevacion" && actorDelPaso !== "Sec") {
+                    if (url.includes('rituales.html')) {
+                        h += `<button class="btn-instancia-exec" onclick="capturarOrigenYSalir('${url}', '${actorActual}', '${sec}', '${verso}')">${tit}</button>`;
+                    } else { 
+                        h += `<button class="btn-instancia-exec" onclick="mostrarVisor('${url}')">${tit}</button>`; 
+                    }
                 }
             });
             return h;
