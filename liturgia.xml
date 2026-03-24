@@ -69,8 +69,8 @@
                 <acto tipo="verso" actor="1V" tema="Reina el silencio en ambas CCol∴, VM∴."/>
                 <acto tipo="verso" actor="VM" tema="QH∴ OF∴ ¿Queréis darnos vuestras conclusiones respecto a la plancha trazada por nuestro H∴ Sec∴ de nuestros últimos trabajos? [El H∴Ora∴ da las conclusiones]"/>
                 <acto tipo="verso" actor="VM" tema="Después de las conclusiones del H∴ Ora∴, los HH∴ que estén de acuerdo se servirán de hacer la señal de aprobación al primer golpe de Mall∴. (Con golpe de Mallete.) "/>
-                <acto tipo="verso" actor="VM" tema="¡Hermanos míos! El logia ha ordenado nuestro primer tiempo; ahora, para que el espíritu se manifieste en nueva forma, vamos a cubrir los trabajos de este Grado y proceder a . [Con golpe de Mallete.] [[INSTANCIA]]"/>
-                <acto tipo="verso" actor="VM" tema="[[INSTANCIA]]"/>
+                <acto tipo="verso" actor="VM" tema="¡Hermanos míos! El logia ha ordenado nuestro primer tiempo; ahora, para que el espíritu se manifieste en nueva forma, vamos a cubrir los trabajos de este Grado y proceder a . [Con golpe de Mallete.]"/>
+                <acto tipo="event" actor="VM" tema="[[INSTANCIA]]"/>
             </parte>          
         </seccion>            
         <seccion id="3" titulo="Clausura de Trabajos">
