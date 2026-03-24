@@ -58,22 +58,22 @@
     <div id="rituales-content"></div>
 
     <script>
-        let RitualActual, GlosarioMaestro, BitacoraEventos;
-        let libroActivo = "1", fechaSesion = "";
+        let Ritual, Glosario, Bitacora;
+        let libURL = "1", fecha = "";
 
         async function inicializarPortal() {
             try {
                 const params = new URLSearchParams(window.location.search);
-                fechaSesion = params.get('fecha') || new Date().toLocaleDateString('en-CA');
-                libroActivo = (params.get('num') || "1").toString();
+                fecha = params.get('fec') || new Date().toLocaleDateString('en-CA');
+                libURL = (params.get('num') || "1").toString();
                 const secURL = params.get('sec');
                 const actURL = params.get('act'); 
 
                 await cargarArchivosBase();                
-                if (RitualActual) {
+                if (Ritual) {
                     const Dic = { "1": "Libro de Aprendiz", "2": "Libro de Compañero", "3": "Libro de Maestro" };
-                    document.getElementById("titulo-ritual-header").textContent = Dic[libroActivo];                    
-                    let seccionInicial = secURL || (libroActivo === "1" ? sessionStorage.getItem('seccionRetornoLogia') : null) || "1";
+                    document.getElementById("titulo-ritual-header").textContent = Dic[libURL];                    
+                    let seccionInicial = secURL || (libURL === "1" ? sessionStorage.getItem('seccionRetornoLogia') : null) || "1";
                     actualizarSelectorSecciones(seccionInicial);                    
                     if (sessionStorage.getItem('actorRetornoLogia')) {
                         document.getElementById("actorFilter").dataset.actorPendiente = sessionStorage.getItem('actorRetornoLogia');
@@ -100,16 +100,16 @@
             const f = u => fetch(`${u}?v=${t}`).then(r => r.text());
             const [dg, dl, de] = await Promise.all([f('glosario.xml'), f('liturgia.xml'), f('tenidas.xml').catch(() => '<bitacora/>')]);
             const dp = new DOMParser();
-            GlosarioMaestro = dp.parseFromString(dg, "text/xml");
-            BitacoraEventos = dp.parseFromString(de, "text/xml");
-            RitualActual = Array.from(dp.parseFromString(dl, "text/xml").getElementsByTagName("ritual")).find(r => r.getAttribute("libro") === libroActivo);
+            Glosario = dp.parseFromString(dg, "text/xml");
+            Bitacora = dp.parseFromString(de, "text/xml");
+            Ritual = Array.from(dp.parseFromString(dl, "text/xml").getElementsByTagName("ritual")).find(r => r.getAttribute("libro") === libURL);
         }
 
         function actualizarSelectorSecciones(sel) {
             const combo = document.getElementById("seccionFilter");
             combo.innerHTML = "";
             const numSel = parseInt(sel);
-            Array.from(RitualActual.getElementsByTagName("seccion")).forEach(s => {
+            Array.from(Ritual.getElementsByTagName("seccion")).forEach(s => {
                 const id = s.getAttribute("id");
                 if (numSel > 3) {
                     if (id === sel) combo.add(new Option(s.getAttribute("titulo"), id));
@@ -137,7 +137,7 @@
             const comboActor = document.getElementById("actorFilter");
             const actorPendiente = comboActor.dataset.actorPendiente || comboActor.value;
             delete comboActor.dataset.actorPendiente;
-            const nodoSec = Array.from(RitualActual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == idSec);
+            const nodoSec = Array.from(Ritual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == idSec);
             const actoresEnSec = new Set();
             if (nodoSec) {
                 Array.from(nodoSec.getElementsByTagName("acto")).forEach(p => {
@@ -145,7 +145,7 @@
                 });
             }
             comboActor.innerHTML = '<option value="">---</option>';
-            Array.from(GlosarioMaestro.getElementsByTagName("item")).forEach(i => {
+            Array.from(Glosario.getElementsByTagName("item")).forEach(i => {
                 const s = i.getAttribute("sigla");
                 if (actoresEnSec.has(s)) comboActor.add(new Option(s + "∴", s));
             });
@@ -156,7 +156,7 @@
         function renderizarLiturgia(hacerScroll = false) {
             const idSec = document.getElementById("seccionFilter").value;
             const actorSel = document.getElementById("actorFilter").value;
-            const nodoSec = Array.from(RitualActual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == idSec);
+            const nodoSec = Array.from(Ritual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == idSec);
             if (!nodoSec) return;
             let html = "";
             let contadorV = 1;
@@ -211,32 +211,43 @@
             if (dest === 'VOLVER') {
                 const secDest = sessionStorage.getItem('seccionRetornoLogia') || "2";
                 const vDest = sessionStorage.getItem('versoRetornoLogia') || "";
-                location.href = `rituales.html?num=1&fecha=${fechaSesion}&sec=${secDest}&act=${vDest}`;
+                location.href = `rituales.html?num=1&fec=${fecha}&sec=${secDest}&act=${vDest}`;
             }
         };
 
         function capturarOrigenYSalir(url, actor, sec, verso) {
-            // Guardamos el punto de llamado (verso) para el scrolling al volver
             sessionStorage.setItem('versoRetornoLogia', verso);
             sessionStorage.setItem('actorRetornoLogia', actor);
             sessionStorage.setItem('seccionRetornoLogia', sec);
             window.location.href = url;
         }
 
-        function inyectarInstancia(actorDelPaso, sec, verso) {
-            const t = Array.from(BitacoraEventos.getElementsByTagName("tenida")).find(x => x.getAttribute("fecha") === fechaSesion);
+        function inyectarInstancia(actor, sec, verso) {
+            const t = Array.from(Bitacora.getElementsByTagName("tenida")).find(x => x.getAttribute("fecha") === fecha);
             if (!t) return "";
+            
             let h = "";
             const actorActual = document.getElementById("actorFilter").value;
+            
             Array.from(t.getElementsByTagName("item")).forEach(i => {
-                const tipo = i.getAttribute("acto"), url = i.getAttribute("url"), tit = i.getAttribute("titulo") || "Memo";
-                if (tipo === "balaustre" && actorDelPaso === "Sec" && actorActual === "Sec") {
-                    h += `<button class="btn-ritual" onclick="mostrarVisor('${url}')">📜 ${tit}</button>`;
-                } else if (tipo === "elevacion" && actorDelPaso === "VM") {
+                const tipo = i.getAttribute("acto");
+                const url = i.getAttribute("url");
+                const tit = i.getAttribute("titulo") || "Memo";
+
+                // Reglas de visibilidad por tipo y actor del paso
+                const reglas = {
+                    "balaustre": (actor === "Sec"),
+                    "elevacion": (actor === "VM"),
+                    "trazable":  (actor === "Sec" || actor === "VM"),
+                    "virtual":   (actor === "MM")
+                };
+
+                if (reglas[tipo]) {
                     if (url.includes('rituales.html')) {
                         h += `<button class="btn-instancia-exec" onclick="capturarOrigenYSalir('${url}', '${actorActual}', '${sec}', '${verso}')">${tit}</button>`;
                     } else { 
-                        h += `<button class="btn-instancia-exec" onclick="mostrarVisor('${url}')">${tit}</button>`; 
+                        const icon = tipo === "balaustre" ? "📜 " : (tipo === "virtual" ? "🌐 " : (tipo === "trazable" ? "📍 " : ""));
+                        h += `<button class="btn-ritual" onclick="mostrarVisor('${url}')">${icon}${tit}</button>`; 
                     }
                 }
             });
@@ -247,7 +258,7 @@
             if (url.includes('blank')) {
                const urlLimpia = url.replace('blank', ''); 
                window.open(urlLimpia, '_blank');
-               return; // Salimos de la función aquí
+               return;
             }
             const v = document.createElement('div');
             v.className = 'visor-overlay';
