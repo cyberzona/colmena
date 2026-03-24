@@ -243,10 +243,11 @@
             return h;
         }
 
-        function mostrarVisor(url, abrirEnPestana = false) {
-            if (abrirEnPestana) {
-                window.open(url, '_blank');
-                return;
+        function mostrarVisor(url) {
+            if (url.includes('blank')) {
+               const urlLimpia = url.replace('blank', ''); 
+               window.open(urlLimpia, '_blank');
+               return; // Salimos de la función aquí
             }
             const v = document.createElement('div');
             v.className = 'visor-overlay';
