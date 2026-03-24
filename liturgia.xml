@@ -147,6 +147,11 @@
                 <acto tipo="verso" actor="Ora" tema="La Piedra Bruta representa el estado de imperfección..."/>
                 <acto tipo="verso" actor="Ora" tema="Es cuanto, VM∴"/>
             </parte>
+        <seccion id="8" titulo="Logia Colmena #8">
+            <parte id="1" titulo="Tenida Virtual">
+                <acto tipo="event" actor="VM" tema="[[LINK:10101]]"/>
+            </parte>
+        </seccion>
         </seccion>
     </ritual>
     <ritual logia="Colmena No. 8" libro="2">
