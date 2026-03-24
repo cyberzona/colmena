@@ -67,24 +67,19 @@
                 fechaSesion = params.get('fecha') || new Date().toLocaleDateString('en-CA');
                 libroActivo = (params.get('num') || "1").toString();
                 const secURL = params.get('sec');
-                const actURL = params.get('act'); // ID del verso para el scroll
+                const actURL = params.get('act'); 
 
-                await cargarArchivosBase();
-                
+                await cargarArchivosBase();                
                 if (RitualActual) {
                     const Dic = { "1": "Libro de Aprendiz", "2": "Libro de Compañero", "3": "Libro de Maestro" };
-                    document.getElementById("titulo-ritual-header").textContent = Dic[libroActivo];
-                    
+                    document.getElementById("titulo-ritual-header").textContent = Dic[libroActivo];                    
                     let seccionInicial = secURL || (libroActivo === "1" ? sessionStorage.getItem('seccionRetornoLogia') : null) || "1";
-                    actualizarSelectorSecciones(seccionInicial);
-                    
+                    actualizarSelectorSecciones(seccionInicial);                    
                     if (sessionStorage.getItem('actorRetornoLogia')) {
                         document.getElementById("actorFilter").dataset.actorPendiente = sessionStorage.getItem('actorRetornoLogia');
-                    }
-                    
+                    }                    
                     await gestionarCambioSeccion();
-
-                    // Lógica de Scroll al retornar o por URL
+                  
                     const versoDestino = actURL || sessionStorage.getItem('versoRetornoLogia');
                     if (versoDestino) {
                         setTimeout(() => {
@@ -114,7 +109,6 @@
             const combo = document.getElementById("seccionFilter");
             combo.innerHTML = "";
             const numSel = parseInt(sel);
-
             Array.from(RitualActual.getElementsByTagName("seccion")).forEach(s => {
                 const id = s.getAttribute("id");
                 if (numSel > 3) {
@@ -143,7 +137,6 @@
             const comboActor = document.getElementById("actorFilter");
             const actorPendiente = comboActor.dataset.actorPendiente || comboActor.value;
             delete comboActor.dataset.actorPendiente;
-
             const nodoSec = Array.from(RitualActual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == idSec);
             const actoresEnSec = new Set();
             if (nodoSec) {
@@ -151,13 +144,11 @@
                     if (p.getAttribute("actor")) actoresEnSec.add(p.getAttribute("actor").trim());
                 });
             }
-
             comboActor.innerHTML = '<option value="">---</option>';
             Array.from(GlosarioMaestro.getElementsByTagName("item")).forEach(i => {
                 const s = i.getAttribute("sigla");
                 if (actoresEnSec.has(s)) comboActor.add(new Option(s + "∴", s));
             });
-
             comboActor.value = actoresEnSec.has(actorPendiente) ? actorPendiente : "";
             renderizarLiturgia(false);
         }
@@ -167,7 +158,6 @@
             const actorSel = document.getElementById("actorFilter").value;
             const nodoSec = Array.from(RitualActual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == idSec);
             if (!nodoSec) return;
-
             let html = "";
             let contadorV = 1;
             Array.from(nodoSec.getElementsByTagName("parte")).forEach(parte => {
