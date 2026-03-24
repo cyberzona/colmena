@@ -223,14 +223,27 @@
             const actorActual = document.getElementById("actorFilter").value;
             Array.from(t.getElementsByTagName("item")).forEach(i => {
                 const tipo = i.getAttribute("acto"), url = i.getAttribute("url"), tit = i.getAttribute("titulo") || "Memo";
-                if (tipo === "balaustre" && actorDelPaso === "Sec" && actorActual === "Sec") {
-                    h += `<button class="btn-ritual" onclick="mostrarVisor('${url}')">📜 ${tit}</button>`;
-                } else if (tipo === "elevacion" && actorDelPaso !== "Sec") {
-                    if (url.includes('rituales.html')) {
-                        h += `<button class="btn-instancia-exec" onclick="capturarOrigenYSalir('${url}', '${actorActual}', '${sec}', '${verso}')">${tit}</button>`;
-                    } else { 
-                        h += `<button class="btn-instancia-exec" onclick="mostrarVisor('${url}')">${tit}</button>`; 
-                    }
+                switch (tipo) {
+                    case "balaustre":
+                    case "trazado":
+                    case "arquitectura":
+                       if (actorDelPaso === "Sec" && actorActual === "Sec") {
+                            const icono = (tipo === "balaustre") ? "📜" : "📐";
+                            h += `<button class="btn-ritual" onclick="mostrarVisor('${url}')">${icono} ${tit}</button>`;
+                        } break;
+
+                    case "elevacion":
+                    case "exaltacion":
+                        if (actorDelPaso !== "Sec") {
+                            if (url.includes('rituales.html')) {
+                                h += `<button class="btn-instancia-exec" onclick="capturarOrigenYSalir('${url}', '${actorActual}', '${sec}', '${verso}')">${tit}</button>`;
+                            } else {
+                                h += `<button class="btn-instancia-exec" onclick="mostrarVisor('${url}')">${tit}</button>`;
+                            }
+                        } break;
+                    default:
+                    console.log("Tipo de acto no reconocido:", tipo);
+                    break;
                 }
             });
             return h;
