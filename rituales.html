@@ -2,169 +2,123 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Rituales - Colmena No. 8</title>
-    <link rel="stylesheet" href="css/estilos.css"> <style>
-        /* --- ESTILOS PARA EL MODO FOCUS --- */
-        body.modo-focus-activo .seccion-contenedor, 
-        body.modo-focus-activo .header-app, 
-        body.modo-focus-activo .nav-menu {
-            display: none !important;
-        }
+    <title>Ritual Colmena No. 8</title>
+    <style>
+        :root { --oro: #A87C00; --cafe: #5d4037; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: #fdfbf7; }
+        
+        /* --- MODO SCROLL (DEFAULT) --- */
+        .seccion-titulo { text-align: center; color: var(--cafe); border-bottom: 2px solid var(--oro); margin: 20px; }
+        .acto-fila { padding: 10px; border-bottom: 1px solid #eee; transition: 0.5s; }
+        .resaltado-temporal { background-color: rgba(168, 124, 0, 0.1); border-left: 5px solid var(--oro); }
+        .acotacion { color: #888; font-style: italic; font-size: 0.9em; }
 
-        #vista-focus {
-            display: none;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #f4f1ea;
+        /* --- MODO FOCUS (VALOR PESADO) --- */
+        body.modo-focus-activo .interfaz-completa { display: none; }
+        #vista-focus { 
+            display: none; height: 100vh; width: 100vw;
+            align-items: center; justify-content: center; background: #2c3e50; 
         }
-
-        body.modo-focus-activo #vista-focus {
-            display: flex;
+        body.modo-focus-activo #vista-focus { display: flex; }
+        .card-focus { 
+            background: white; padding: 40px; border-radius: 12px; 
+            max-width: 700px; width: 85%; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
         }
-
-        .card-focus {
-            background: white;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            border-left: 8px solid #A87C00;
-            max-width: 600px;
-            width: 90%;
-        }
-
-        .actor-focus {
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: #5d4037;
-            margin-bottom: 15px;
-            display: block;
-        }
-
-        .texto-focus {
-            font-size: 1.6rem;
-            line-height: 1.5;
-            color: #2c3e50;
-        }
-
-        .acotacion {
-            font-style: italic;
-            color: #7f8c8d;
-        }
-
-        /* --- ESTILOS PARA EL MODO SCROLL (RESALTADO) --- */
-        .resaltado-temporal {
-            background-color: rgba(168, 124, 0, 0.15);
-            border-radius: 4px;
-            transition: background-color 2s ease;
-        }
+        .actor-focus { font-size: 1.5em; font-weight: bold; color: var(--cafe); border-bottom: 1px solid var(--oro); margin-bottom: 15px; display: block; }
+        .texto-focus { font-size: 1.8em; line-height: 1.4; color: #333; }
     </style>
 </head>
 <body>
 
-    <header class="header-app">
-        <h1>Colmena No. 8</h1>
-    </header>
-
-    <main id="contenedor-principal">
-        <div id="rituales-content" class="seccion-contenedor">
-            </div>
-    </main>
-
-    <div id="vista-focus">
-        <div id="card-render" class="card-focus">
+    <div class="interfaz-completa">
+        <div id="rituales-content">
             </div>
     </div>
 
+    <div id="vista-focus">
+        <div id="card-render" class="card-focus"></div>
+    </div>
+
     <script>
-        // Variables globales
         let xmlDoc = null;
 
-        async function cargarRitual() {
+        async function iniciar() {
             const params = new URLSearchParams(window.location.search);
             const libroNum = params.get('num') || '1';
             const seccionId = params.get('sec') || '1';
-            const actoId = params.get('act');
-            const accion = params.get('do') || 'scroll'; // Default es scroll
+            const actoPos = params.get('act'); // Índice del acto (1, 2, 3...)
+            const modo = params.get('do') || 'scroll';
 
             try {
-                const response = await fetch('liturgia (5).xml');
+                // Cambia 'liturgia.xml' por el nombre exacto de tu archivo
+                const response = await fetch('liturgia (5).xml'); 
                 const text = await response.text();
-                const parser = new DOMParser();
-                xmlDoc = parser.parseFromString(text, "text/xml");
+                xmlDoc = new DOMParser().parseFromString(text, "text/xml");
 
-                if (idActo && accion === 'focus') {
-                    ejecutarModoFocus(idActo);
+                if (modo === 'focus' && actoPos) {
+                    renderFocus(libroNum, seccionId, actoPos);
                 } else {
-                    renderizarRitualCompleto(libroNum, seccionId, actoId);
+                    renderScroll(libroNum, seccionId, actoPos);
                 }
-            } catch (error) {
-                console.error("Error cargando el rito:", error);
+            } catch (e) {
+                document.getElementById('rituales-content').innerHTML = "Error al cargar el Codex Alvearis.";
             }
         }
 
-        function ejecutarModoFocus(id) {
+        function getActoByPos(libro, sec, pos) {
+            const ritual = xmlDoc.querySelector(`ritual[libro="${libro}"]`);
+            const seccion = ritual.querySelector(`seccion[id="${sec}"]`);
+            const actos = seccion.querySelectorAll('acto');
+            return actos[parseInt(pos) - 1]; // Ajuste de índice (act=1 es el primero)
+        }
+
+        function renderFocus(libro, sec, pos) {
             document.body.classList.add('modo-focus-activo');
-            const actoNode = xmlDoc.querySelector(`acto[id="${id}"]`);
-            
-            if (actoNode) {
-                const actor = actoNode.getAttribute('actor');
-                let tema = actoNode.getAttribute('tema');
-                
-                // Formatear acotaciones
-                tema = tema.replace(/\[(.*?)\]/g, '<span class="acotacion">[$1]</span>');
+            const acto = getActoByPos(libro, sec, pos);
+            if (!acto) return;
 
-                document.getElementById('card-render').innerHTML = `
-                    <span class="actor-focus">${actor}∴</span>
-                    <div class="texto-focus">${tema}</div>
-                    <button onclick="window.location.search='?num=1&sec=1&act=${id}'" style="margin-top:20px;">Ver en contexto</button>
-                `;
-            }
+            const actor = acto.getAttribute('actor');
+            const tema = acto.getAttribute('tema').replace(/\[(.*?)\]/g, '<span class="acotacion">[$1]</span>');
+
+            document.getElementById('card-render').innerHTML = `
+                <span class="actor-focus">${actor}∴</span>
+                <div class="texto-focus">${tema}</div>
+                <button onclick="location.href='?num=${libro}&sec=${sec}&act=${pos}'" style="margin-top:20px; cursor:pointer;">Regresar al Ritual</button>
+            `;
         }
 
-        function renderizarRitualCompleto(libro, sec, actoIdDestino) {
+        function renderScroll(libro, sec, actoDestino) {
             const ritual = xmlDoc.querySelector(`ritual[libro="${libro}"]`);
             const seccion = ritual.querySelector(`seccion[id="${sec}"]`);
             const contenedor = document.getElementById('rituales-content');
             
-            let html = `<h2>${seccion.getAttribute('titulo')}</h2>`;
-            
-            const partes = seccion.querySelectorAll('parte');
-            partes.forEach(parte => {
-                html += `<h3>${parte.getAttribute('titulo')}</h3>`;
-                const actos = parte.querySelectorAll('acto');
-                actos.forEach(acto => {
-                    const id = acto.getAttribute('id') || '';
-                    const actor = acto.getAttribute('actor');
-                    const tema = acto.getAttribute('tema').replace(/\[(.*?)\]/g, '<i class="acotacion">[$1]</i>');
-                    
-                    // Si el ID coincide, aplicamos la clase de resaltado
-                    const claseResaltado = (id === actoIdDestino) ? 'resaltado-temporal' : '';
-                    
-                    html += `
-                        <div id="acto-${id}" class="acto-fila ${claseResaltado}" style="margin-bottom:10px;">
-                            <strong>${actor}∴</strong> — ${tema}
-                        </div>
-                    `;
-                });
+            let html = `<h1 class="seccion-titulo">${seccion.getAttribute('titulo')}</h1>`;
+            const actos = seccion.querySelectorAll('acto');
+
+            actos.forEach((acto, index) => {
+                const posActual = index + 1;
+                const actor = acto.getAttribute('actor');
+                const tema = acto.getAttribute('tema').replace(/\[(.*?)\]/g, '<i class="acotacion">[$1]</i>');
+                const esDestino = (posActual == actoDestino) ? 'resaltado-temporal' : '';
+
+                html += `
+                    <div id="acto-${posActual}" class="acto-fila ${esDestino}">
+                        <strong>${actor}∴</strong> — ${tema}
+                    </div>
+                `;
             });
 
             contenedor.innerHTML = html;
 
-            // Si hay un acto destino, hacemos el scroll (comportamiento por defecto)
-            if (actoIdDestino) {
+            if (actoDestino) {
                 setTimeout(() => {
-                    const elemento = document.getElementById(`acto-${actoIdDestino}`);
-                    if (elemento) {
-                        elemento.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }
-                }, 500);
+                    const el = document.getElementById(`acto-${actoDestino}`);
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 300);
             }
         }
 
-        // Iniciar
-        window.onload = cargarRitual;
+        window.onload = iniciar;
     </script>
 </body>
 </html>
