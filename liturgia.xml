@@ -54,8 +54,8 @@
             </parte>
         </seccion>
         <seccion id="2" titulo="Desarrollo de Trabajos">        
-            <parte id="1" titulo="Del Balaustre del la Sesión Anterior">
-                <acto tipo="verso" actor="VM" tema="QQHH∴, habiéndose cumplido con las formalidades de la apertura, entramos ahora en el Desarrollo de Trabajos."/>
+            <parte id="1" titulo="Balaustre Anterior">
+                <acto tipo="verso" actor="VM" tema="QQHH∴, habiéndose cumplido con las formalidades de la apertura, entramos ahora en el Desarrollo de los Trabajos."/>
                 <acto tipo="verso" actor="VM" tema="QH∴ Secretario (Sec∴), servíos dar lectura del último Trazado de este logia."/>
                 <acto tipo="verso" actor="Sec" tema="[QH∴ Sec∴ procede con la lectura.] [[INSTANCIA]]"/>
                 <acto tipo="verso" actor="1V" tema="Reina el silencio en ambas CCol∴, VM∴."/>
