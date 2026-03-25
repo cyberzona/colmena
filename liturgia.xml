@@ -56,10 +56,10 @@
         <seccion id="2" titulo="Desarrollo de Trabajos">        
             <parte id="1" titulo="Balaustre Anterior">
                 <acto tipo="verso" actor="VM" tema="QQHH∴, habiéndose cumplido con las formalidades de la apertura, entramos ahora en el Desarrollo de los Trabajos."/>
+                <acto tipo="verso" actor="VM" tema="En nombre del GADU∴ y bajo los auspicios de la Serenisima Gran Logia de la Lengua Española para orte America, declaro abiertos los trabajos en el grado de Aprendiz. QQHH∴, que así sea.
                 <acto tipo="verso" actor="VM" tema="QH∴ Secretario (Sec∴), servíos dar lectura del último Trazado de este logia."/>
-                <acto tipo="verso" actor="Sec" tema="[QH∴ Sec∴ procede con la lectura.] [[INSTANCIA]]"/>
-                <acto tipo="verso" actor="1V" tema="Reina el silencio en ambas CCol∴, VM∴."/>
-                <acto tipo="verso" actor="VM" tema="QQHH∴ 1V∴ y 2V∴, anunciad en vuestras respectivas columnas que el memo está en discusión. Si algún hermano desea hacer una observación, tiene la palabra"/>
+                <acto tipo="verso" actor="Sec" tema="[QH∴ Sec∴ procede con la lectura.] [[INSTANCIA]]"/>               
+                <acto tipo="verso" actor="VM" tema="QQHH∴ 1V∴ y 2V∴, anunciad en vuestras respectivas columnas que el Trazado está en discusión. Si algún hermano desea hacer una observación, tiene la palabra"/>
                 <acto tipo="verso" actor="1V" tema="QH∴ 2V∴, HH∴ de la Col∴ del Norte, el trazado de la sesión anterior está en discusión por orden del VM∴."/>
                 <acto tipo="verso" actor="2V" tema="HH∴ de la Col∴ del Sur, el trazado está en discusión. La palabra es vuestra."/>
                 <acto tipo="verso" actor="VM" tema="Habiendo agotado los asuntos administrativos del Desarrollo de Trabajos, pasemos ahora a la instrucción del Grado.."/>       
