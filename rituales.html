@@ -98,7 +98,7 @@
         async function cargarArchivosBase() {
             const t = new Date().getTime();
             const f = u => fetch(`${u}?v=${t}`).then(r => r.text());
-            const [dg, dl, de] = await Promise.all([f('glosario.xml'), f('liturgia.xml'), f('tenidas.xml').catch(() => '<bitacora/>')]);
+            const [dg, dl, de] = await Promise.all([f('glosario.xml'), f('liturgia.xml'), f('bitacora.xml').catch(() => '<bitacora/>')]);
             const dp = new DOMParser();
             Glosario = dp.parseFromString(dg, "text/xml");
             Bitacora = dp.parseFromString(de, "text/xml");
@@ -223,25 +223,20 @@
         }
 
         function inyectarInstancia(actor, sec, verso) {
-            const t = Array.from(Bitacora.getElementsByTagName("tenida")).find(x => x.getAttribute("fecha") === fecha);
-            if (!t) return "";
-            
+            const t = Array.from(Bitacora.getElementsByTagName("evento")).find(x => x.getAttribute("fecha") === fecha);
+            if (!t) return "";            
             let h = "";
-            const actorActual = document.getElementById("actorFilter").value;
-            
+            const actorActual = document.getElementById("actorFilter").value;            
             Array.from(t.getElementsByTagName("item")).forEach(i => {
-                const tipo = i.getAttribute("acto");
+                const tipo = i.getAttribute("tipo");
                 const url = i.getAttribute("url");
-                const tit = i.getAttribute("titulo") || "Memo";
-
-                // Reglas de visibilidad por tipo y actor del paso
+                const tit = i.getAttribute("asunto") || "Acta";                
                 const reglas = {
                     "balaustre": (actor === "Sec" && actorActual === "Sec" ),
                     "elevacion": (actor === "VM"),
                     "trazables": (actor === "VM"),
                     "virtuales": (actor === "MM")
                 };
-
                 if (reglas[tipo]) {
                     if (url.includes('rituales.html')) {
                         h += `<button class="btn-instancia-exec" onclick="capturarOrigenYSalir('${url}', '${actorActual}', '${sec}', '${verso}')">${tit}</button>`;
