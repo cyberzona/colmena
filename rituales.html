@@ -25,13 +25,15 @@
         .acotacion { display: block; font-style: italic; color: rgba(0,0,0,0.5); font-size: 0.85rem; margin-top: 4px; margin-bottom: 4px; }
         .resaltado { background: rgba(168, 124, 0, 0.12) !important; border-left: 5px solid #A87C00 !important; transition: background 0.5s ease; }
         .btn-ritual, .btn-instancia-exec { border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em; font-weight: bold; background: #A87C00 !important; color: #fff !important; margin: 4px 2px; }
-        .nav-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding: 2px 15px; border-top: 1px solid #d7ccc8; }
+        .nav-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding: 15px; border-top: 1px solid #d7ccc8; flex-direction: column; gap: 10px; }
         .btn-flechas { background: transparent !important; color: #A87C00 !important; width: 45px; height: 32px; font-size: 1.4rem; display: flex; align-items: center; justify-content: center; border: none; outline: none; }
         .flip-h { transform: scaleX(-1); }
         .icon-exit { color: #A87C00; font-weight: bold; font-size: 1.2rem; }
         .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; align-items: center; justify-content: center; }
         .visor-content { width: 95%; height: 90%; background: #fff; border-radius: 8px; position: relative; }
         .visor-close { position: absolute; top: -10px; right: -10px; background: #ff0000; color: #fff; border: 2px solid #fff; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; z-index: 2001; }
+        .glosario-tags { width: 100%; font-size: 0.75rem; color: #5d4037; border-top: 1px solid #d7ccc8; padding-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+        .tag-item { background: #efebe9; padding: 2px 8px; border-radius: 4px; border: 1px solid #d7ccc8; }
     </style>
 </head>
 <body onload="inicializarPortal()">
@@ -87,6 +89,7 @@
                             if (el) {
                                 el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                                 el.classList.add('resaltado');
+                                // Corrección: Limpiar inmediatamente para evitar herencia en la siguiente navegación
                                 sessionStorage.removeItem('versoRetornoLogia');
                             }
                         }, 800);
@@ -167,6 +170,7 @@
                     let texto = (acto.getAttribute("tema") || acto.textContent).trim();
                     let btns = "";
                     if (texto.includes("[[INSTANCIA]]")) {
+                        // Corrección lógica: Se pasa el contadorV exacto para el retorno preciso
                         btns = inyectarInstancia(actor, idSec, contadorV);
                         texto = texto.replace("[[INSTANCIA]]", "");
                     }
@@ -178,9 +182,27 @@
                 });
             });
 
+            // Integración del Glosario Dinámico al pie
+            const siglasEnTexto = [...new Set(html.match(/\b\S+∴/gi))].map(s => s.replace('∴', ''));
+            let glosarioHTML = "";
+            if (siglasEnTexto.length > 0) {
+                glosarioHTML = `<div class="glosario-tags">`;
+                siglasEnTexto.forEach(sigla => {
+                    const item = Array.from(Glosario.getElementsByTagName("item")).find(i => i.getAttribute("sigla") === sigla);
+                    if (item) {
+                        const desc = item.getAttribute("nombre") || item.textContent;
+                        glosarioHTML += `<span class="tag-item"><strong>${sigla}∴</strong> ${desc}</span>`;
+                    }
+                });
+                glosarioHTML += `</div>`;
+            }
+
             const sel = document.getElementById("seccionFilter");
             const idx = sel.selectedIndex;
+            
+            // Reestructuración del nav-footer para integrar glosario por debajo de las flechas
             let nav = `<div class="nav-footer">`;
+            nav += `<div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">`;
             nav += idx > 0 ? `<button class="btn-flechas" onclick="navRelativa(-1)"><span class="flip-h">➤</span></button>` : `<span></span>`;
             
             if (parseInt(idSec) < 3 && idx < sel.options.length - 1) {
@@ -190,6 +212,8 @@
             } else {
                 nav += `<button class="btn-flechas" onclick="irA('VOLVER')"><span class="icon-exit">✖</span></button>`;
             }
+            nav += `</div>`;
+            nav += glosarioHTML; // El glosario queda debajo de las flechas dentro del mismo contenedor
             nav += `</div>`;
 
             document.getElementById('rituales-content').innerHTML = `<dl>${html}</dl>${nav}`;
