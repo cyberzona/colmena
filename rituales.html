@@ -73,8 +73,11 @@
                 if (Ritual) {
                     const Dic = { "1": "Libro de Aprendiz", "2": "Libro de Compañero", "3": "Libro de Maestro" };
                     document.getElementById("titulo-ritual-header").textContent = Dic[libURL];                    
+                    
+                    // Priorizar el parámetro de la URL para el retorno preciso
                     let seccionInicial = secURL || (libURL === "1" ? sessionStorage.getItem('seccionRetornoLogia') : null) || "1";
                     actualizarSelectorSecciones(seccionInicial);                    
+                    
                     if (sessionStorage.getItem('actorRetornoLogia')) {
                         document.getElementById("actorFilter").dataset.actorPendiente = sessionStorage.getItem('actorRetornoLogia');
                     }                    
@@ -82,6 +85,7 @@
                   
                     const versoDestino = actURL || sessionStorage.getItem('versoRetornoLogia');
                     if (versoDestino) {
+                        // Aumentamos a 1000ms para asegurar que el DOM de la sección 4 cargue completamente
                         setTimeout(() => {
                             const el = document.getElementById(`verso-${versoDestino}`);
                             if (el) {
@@ -89,7 +93,7 @@
                                 el.classList.add('resaltado');
                                 sessionStorage.removeItem('versoRetornoLogia');
                             }
-                        }, 1000); // Tiempo suficiente para renderizar secciones largas
+                        }, 1000);
                     }
                 }
             } catch (e) { console.error(e); }
@@ -111,6 +115,7 @@
             const numSel = parseInt(sel);
             Array.from(Ritual.getElementsByTagName("seccion")).forEach(s => {
                 const id = s.getAttribute("id");
+                // Mantenemos lógica de filtrado por grado
                 if (numSel > 3) {
                     if (id === sel) combo.add(new Option(s.getAttribute("titulo"), id));
                 } else {
@@ -122,6 +127,7 @@
 
         function actualizarSeccionGlobal() {
             const val = document.getElementById("seccionFilter").value;
+            // Solo guardamos en sesión si es una sección base (1-3)
             if (parseInt(val) <= 3) sessionStorage.setItem('seccionRetornoLogia', val);
             gestionarCambioSeccion();
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -158,23 +164,18 @@
             const actorSel = document.getElementById("actorFilter").value;
             const nodoSec = Array.from(Ritual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == idSec);
             if (!nodoSec) return;
-            
             let html = "";
             let contadorV = 1;
-            
             Array.from(nodoSec.getElementsByTagName("parte")).forEach(parte => {
                 html += `<div class="parte-header">${parte.getAttribute("titulo")}</div>`;
                 Array.from(parte.getElementsByTagName("acto")).forEach(acto => {
                     const actor = (acto.getAttribute("actor") || "Actor").trim();
                     let texto = (acto.getAttribute("tema") || acto.textContent).trim();
                     let btns = "";
-                    
                     if (texto.includes("[[INSTANCIA]]")) {
-                        // Crucial: Pasamos el contadorV actual a la instancia
                         btns = inyectarInstancia(actor, idSec, contadorV);
                         texto = texto.replace("[[INSTANCIA]]", "");
                     }
-                    
                     texto = texto.replace(/(\b\S+∴)/gi, '<span style="color:#0277bd; font-weight:bold;">$1</span>');
                     texto = texto.replace(/\[(.*?)\]/g, '<span class="acotacion">($1)</span>');
                     const esFoco = actorSel && actor === actorSel;
@@ -185,7 +186,6 @@
 
             const sel = document.getElementById("seccionFilter");
             const idx = sel.selectedIndex;
-            
             let nav = `<div class="nav-footer">`;
             nav += idx > 0 ? `<button class="btn-flechas" onclick="navRelativa(-1)"><span class="flip-h">➤</span></button>` : `<span></span>`;
             
@@ -213,12 +213,12 @@
             actualizarSeccionGlobal();
         }
 
+        // CORRECCIÓN: Seccion de retorno dinámica
         window.irA = function(dest) {
             if (dest === 'VOLVER') {
                 const secDest = sessionStorage.getItem('seccionRetornoLogia') || "1";
-                const vDest = sessionStorage.getItem('versoRetornoLogia');
-                const actParam = vDest ? `&act=${vDest}` : "";
-                location.href = `rituales.html?num=1&fec=${fecha}&sec=${secDest}${actParam}`;
+                const vDest = sessionStorage.getItem('versoRetornoLogia') || "";
+                location.href = `rituales.html?num=1&fec=${fecha}&sec=${secDest}&act=${vDest}`;
             }
         };
 
