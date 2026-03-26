@@ -69,14 +69,14 @@
                 
                 const secURL = params.get('sec');
                 const actURL = params.get('act'); 
-                const secGuardada = sessionStorage.getItem('seccionRetornoLogia');
 
                 await cargarArchivosBase();                
                 if (Ritual) {
                     const Dic = { "1": "Libro de Aprendiz", "2": "Libro de Compañero", "3": "Libro de Maestro" };
                     document.getElementById("titulo-ritual-header").textContent = Dic[libURL];                    
                     
-                    let seccionInicial = secURL || secGuardada || "1";
+                    // Priorizamos el secURL de la dirección para la navegación directa
+                    let seccionInicial = secURL || sessionStorage.getItem('seccionRetornoLogia') || "1";
                     actualizarSelectorSecciones(seccionInicial);                    
                     
                     if (sessionStorage.getItem('actorRetornoLogia')) {
@@ -84,15 +84,13 @@
                     }                    
                     await gestionarCambioSeccion();
                   
-                    // VALIDACIÓN DE RESALTADO: Solo si estamos en la sección que originó la llamada
-                    if (actURL && seccionInicial === secGuardada) {
+                    // RESALTADO: Solo si 'act' viene en la URL (al volver de una instancia)
+                    if (actURL) {
                         setTimeout(() => {
                             const el = document.getElementById(`verso-${actURL}`);
                             if (el) {
                                 el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                                 el.classList.add('resaltado');
-                                // Limpiamos memoria tras un retorno exitoso
-                                sessionStorage.removeItem('versoRetornoLogia');
                             }
                         }, 1200); 
                     }
@@ -116,6 +114,7 @@
             const numSel = parseInt(sel);
             Array.from(Ritual.getElementsByTagName("seccion")).forEach(s => {
                 const id = s.getAttribute("id");
+                // Mantenemos la lógica de visualización para secciones de instancia (>3)
                 if (numSel > 3) {
                     if (id === sel) combo.add(new Option(s.getAttribute("titulo"), id));
                 } else {
@@ -127,7 +126,10 @@
 
         function actualizarSeccionGlobal() {
             const val = document.getElementById("seccionFilter").value;
-            if (parseInt(val) <= 3) sessionStorage.setItem('seccionRetornoLogia', val);
+            // Solo memorizamos el retorno si estamos en secciones de flujo principal
+            if (parseInt(val) <= 3) {
+                sessionStorage.setItem('seccionRetornoLogia', val);
+            }
             gestionarCambioSeccion();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -212,20 +214,26 @@
             actualizarSeccionGlobal();
         }
 
+        // RETORNO DINÁMICO: Recupera la sección exacta y el verso de origen
         window.irA = function(dest) {
             if (dest === 'VOLVER') {
                 const secDest = sessionStorage.getItem('seccionRetornoLogia') || "1";
                 const vDest = sessionStorage.getItem('versoRetornoLogia') || "";
-                const actParam = vDest ? `&act=${vDest}` : "";
-                location.href = `rituales.html?num=1&fec=${fecha}&sec=${secDest}${actParam}`;
+                
+                // Limpiamos el verso guardado tras usarlo para el retorno
+                sessionStorage.removeItem('versoRetornoLogia');
+                
+                location.href = `rituales.html?num=1&fec=${fecha}&sec=${secDest}&act=${vDest}`;
             }
         };
 
         function capturarOrigenYSalir(url, actor, sec, verso) {
+            // Guardamos el origen antes de saltar a la sección de instancia
             sessionStorage.setItem('versoRetornoLogia', verso);
+            sessionStorage.setItem('seccionRetornoLogia', sec); 
             sessionStorage.setItem('actorRetornoLogia', actor);
-            sessionStorage.setItem('seccionRetornoLogia', sec);
-            // Salimos a la sección 4/5 SIN pasar el act en la URL para que no se ilumine nada allí
+            
+            // Navegamos a la sección 4/5 (la URL no lleva 'act', por lo que no se ilumina nada allí)
             window.location.href = url;
         }
 
