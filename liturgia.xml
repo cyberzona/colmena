@@ -166,12 +166,15 @@
             </parte>
         </seccion>
     </ritual>
-        <ritual logia="Colmena No. 8" libro="3">
-        <seccion id="1" titulo="Logia de San Juan">
-            <parte id="1" titulo="Estudio Profundo">
-                <acto tipo="verso" actor="VM" tema="La Piedra Bruta representa el estado de imperfección..."/>
-                <acto tipo="verso" actor="VM" tema="Es cuanto, VM∴."/>
+    <ritual logia="Colmena No. 8" libro="3">
+        <seccion id="1" titulo="Apertura de Trabajos">
+            <parte id="1" titulo="Apertura de Trabajos">
+                <acto tipo="verso" actor="VM" tema="HH∴ 1V∴ y 2V∴ Servios anunciar alo HH∴ de vuestras respectivas columnas, como yo lo hago en el Or∴ que voy a suspender los trabajos con un solo golpe de Mall∴ para abrir la de Compañero."/>
+                <acto tipo="verso" actor="1V" tema="H∴ 2V∴ y HH∴ de mi columna, nuestro VM∴ va a suspender los trabajos por un solo golpe de Mall∴"/>
+                <acto tipo="verso" actor="2V" tema="HH∴ de la Col∴ del Sur os anuncio que el VM∴ va a suspender los Trbajos con un solo golpe de Mall∴"/>
+                <acto tipo="verso" actor="1V" tema="Anunciado VM∴"/>
+                <acto tipo="verso" actor="VM" tema="[Da un golpe de Maellete]... y clausura los trabajos invitando a los HH∴ Aprendices a que cubran el Tempo"/>
             </parte>
-        </seccion>
-    </ritual>
+        </seccion>        
+    </ritual>    
 </liturgia>
