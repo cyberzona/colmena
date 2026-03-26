@@ -66,15 +66,17 @@
                 const params = new URLSearchParams(window.location.search);
                 fecha = params.get('fec') || new Date().toLocaleDateString('en-CA');
                 libURL = (params.get('num') || "1").toString();
+                
                 const secURL = params.get('sec');
                 const actURL = params.get('act'); 
+                const secGuardada = sessionStorage.getItem('seccionRetornoLogia');
 
                 await cargarArchivosBase();                
                 if (Ritual) {
                     const Dic = { "1": "Libro de Aprendiz", "2": "Libro de Compañero", "3": "Libro de Maestro" };
                     document.getElementById("titulo-ritual-header").textContent = Dic[libURL];                    
                     
-                    let seccionInicial = secURL || (libURL === "1" ? sessionStorage.getItem('seccionRetornoLogia') : null) || "1";
+                    let seccionInicial = secURL || secGuardada || "1";
                     actualizarSelectorSecciones(seccionInicial);                    
                     
                     if (sessionStorage.getItem('actorRetornoLogia')) {
@@ -82,13 +84,14 @@
                     }                    
                     await gestionarCambioSeccion();
                   
-                    const versoDestino = actURL || sessionStorage.getItem('versoRetornoLogia');
-                    if (versoDestino) {
+                    // VALIDACIÓN DE RESALTADO: Solo si estamos en la sección que originó la llamada
+                    if (actURL && seccionInicial === secGuardada) {
                         setTimeout(() => {
-                            const el = document.getElementById(`verso-${versoDestino}`);
+                            const el = document.getElementById(`verso-${actURL}`);
                             if (el) {
                                 el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                                 el.classList.add('resaltado');
+                                // Limpiamos memoria tras un retorno exitoso
                                 sessionStorage.removeItem('versoRetornoLogia');
                             }
                         }, 1200); 
@@ -222,6 +225,7 @@
             sessionStorage.setItem('versoRetornoLogia', verso);
             sessionStorage.setItem('actorRetornoLogia', actor);
             sessionStorage.setItem('seccionRetornoLogia', sec);
+            // Salimos a la sección 4/5 SIN pasar el act en la URL para que no se ilumine nada allí
             window.location.href = url;
         }
 
