@@ -254,7 +254,7 @@
 
             // Si hay items válidos, inyectamos diálogo de apertura + botones
             if (itemsValidos.length > 0) {
-                h = `<p class="dialogo-vm"><strong>VM.:</strong> Acto seguido, daremos curso a los siguientes puntos registrados:</p>`;
+                h = `<p class="dialogo-vm">Acto seguido, daremos curso a los siguientes puntos registrados:</p>`;
                 
                 itemsValidos.forEach(i => {
                     const tipo = i.getAttribute("tipo");
@@ -270,7 +270,7 @@
                 });
             } else {
                 // Si existe el evento pero no hay items para el actor actual
-                h = `<p class="dialogo-vm"><strong>VM.:</strong> No habiendo más asuntos registrados en bitácora para este grado, daremos continuidad al orden del día.</p>`;
+                h = `<p class="dialogo-vm">No habiendo más asuntos registrados, daremos continuidad al orden del día.</p>`;
             }
 
             return h;
