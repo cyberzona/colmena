@@ -25,15 +25,13 @@
         .acotacion { display: block; font-style: italic; color: rgba(0,0,0,0.5); font-size: 0.85rem; margin-top: 4px; margin-bottom: 4px; }
         .resaltado { background: rgba(168, 124, 0, 0.12) !important; border-left: 5px solid #A87C00 !important; transition: background 0.5s ease; }
         .btn-ritual, .btn-instancia-exec { border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em; font-weight: bold; background: #A87C00 !important; color: #fff !important; margin: 4px 2px; }
-        .nav-footer { display: flex; flex-direction: column; margin-top: 20px; padding: 15px; border-top: 1px solid #d7ccc8; gap: 10px; }
+        .nav-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding: 15px; border-top: 1px solid #d7ccc8; }
         .btn-flechas { background: transparent !important; color: #A87C00 !important; width: 45px; height: 32px; font-size: 1.4rem; display: flex; align-items: center; justify-content: center; border: none; outline: none; }
         .flip-h { transform: scaleX(-1); }
         .icon-exit { color: #A87C00; font-weight: bold; font-size: 1.2rem; }
         .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; align-items: center; justify-content: center; }
         .visor-content { width: 95%; height: 90%; background: #fff; border-radius: 8px; position: relative; }
         .visor-close { position: absolute; top: -10px; right: -10px; background: #ff0000; color: #fff; border: 2px solid #fff; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; z-index: 2001; }
-        .glosario-tags { width: 100%; font-size: 0.75rem; color: #5d4037; border-top: 1px solid #d7ccc8; padding-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-        .tag-item { background: #efebe9; padding: 2px 8px; border-radius: 4px; border: 1px solid #d7ccc8; }
     </style>
 </head>
 <body onload="inicializarPortal()">
@@ -91,7 +89,7 @@
                                 el.classList.add('resaltado');
                                 sessionStorage.removeItem('versoRetornoLogia');
                             }
-                        }, 800);
+                        }, 1000); // Tiempo suficiente para renderizar secciones largas
                     }
                 }
             } catch (e) { console.error(e); }
@@ -160,18 +158,23 @@
             const actorSel = document.getElementById("actorFilter").value;
             const nodoSec = Array.from(Ritual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == idSec);
             if (!nodoSec) return;
+            
             let html = "";
             let contadorV = 1;
+            
             Array.from(nodoSec.getElementsByTagName("parte")).forEach(parte => {
                 html += `<div class="parte-header">${parte.getAttribute("titulo")}</div>`;
                 Array.from(parte.getElementsByTagName("acto")).forEach(acto => {
                     const actor = (acto.getAttribute("actor") || "Actor").trim();
                     let texto = (acto.getAttribute("tema") || acto.textContent).trim();
                     let btns = "";
+                    
                     if (texto.includes("[[INSTANCIA]]")) {
+                        // Crucial: Pasamos el contadorV actual a la instancia
                         btns = inyectarInstancia(actor, idSec, contadorV);
                         texto = texto.replace("[[INSTANCIA]]", "");
                     }
+                    
                     texto = texto.replace(/(\b\S+∴)/gi, '<span style="color:#0277bd; font-weight:bold;">$1</span>');
                     texto = texto.replace(/\[(.*?)\]/g, '<span class="acotacion">($1)</span>');
                     const esFoco = actorSel && actor === actorSel;
@@ -180,26 +183,10 @@
                 });
             });
 
-            // Glosario dinámico
-            const siglasEnTexto = [...new Set(html.match(/\b\S+∴/gi))].map(s => s.replace('∴', ''));
-            let glosarioHTML = "";
-            if (siglasEnTexto.length > 0) {
-                glosarioHTML = `<div class="glosario-tags">`;
-                siglasEnTexto.forEach(sigla => {
-                    const item = Array.from(Glosario.getElementsByTagName("item")).find(i => i.getAttribute("sigla") === sigla);
-                    if (item) {
-                        const desc = item.getAttribute("nombre") || item.textContent;
-                        glosarioHTML += `<span class="tag-item"><strong>${sigla}∴</strong> ${desc}</span>`;
-                    }
-                });
-                glosarioHTML += `</div>`;
-            }
-
             const sel = document.getElementById("seccionFilter");
             const idx = sel.selectedIndex;
             
             let nav = `<div class="nav-footer">`;
-            nav += `<div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">`;
             nav += idx > 0 ? `<button class="btn-flechas" onclick="navRelativa(-1)"><span class="flip-h">➤</span></button>` : `<span></span>`;
             
             if (parseInt(idSec) < 3 && idx < sel.options.length - 1) {
@@ -209,8 +196,6 @@
             } else {
                 nav += `<button class="btn-flechas" onclick="irA('VOLVER')"><span class="icon-exit">✖</span></button>`;
             }
-            nav += `</div>`;
-            nav += glosarioHTML;
             nav += `</div>`;
 
             document.getElementById('rituales-content').innerHTML = `<dl>${html}</dl>${nav}`;
@@ -228,13 +213,12 @@
             actualizarSeccionGlobal();
         }
 
-        // Corrección en la función de retorno
         window.irA = function(dest) {
             if (dest === 'VOLVER') {
                 const secDest = sessionStorage.getItem('seccionRetornoLogia') || "1";
-                const vDest = sessionStorage.getItem('versoRetornoLogia') || "";
-                // Construcción de URL asegurando que el act siempre tenga valor si existe
-                location.href = `rituales.html?num=1&fec=${fecha}&sec=${secDest}&act=${vDest}`;
+                const vDest = sessionStorage.getItem('versoRetornoLogia');
+                const actParam = vDest ? `&act=${vDest}` : "";
+                location.href = `rituales.html?num=1&fec=${fecha}&sec=${secDest}${actParam}`;
             }
         };
 
@@ -262,7 +246,6 @@
                 };
                 if (reglas[tipo]) {
                     if (url.includes('rituales.html')) {
-                        // Pasamos explícitamente el verso actual (contadorV)
                         h += `<button class="btn-instancia-exec" onclick="capturarOrigenYSalir('${url}', '${actorActual}', '${sec}', '${verso}')">${tit}</button>`;
                     } else { 
                         const icon = tipo === "balaustre" ? "📜 " : (tipo === "virtual" ? "🌐 " : (tipo === "trazable" ? "📍 " : ""));
