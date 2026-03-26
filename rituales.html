@@ -103,9 +103,10 @@
             const f = u => fetch(`${u}?v=${t}`).then(r => r.text());
             const [dg, dl, de] = await Promise.all([f('glosario.xml'), f('liturgia.xml'), f('bitacora.xml').catch(() => '<bitacora/>')]);
             const dp = new DOMParser();
+            const liturgiaDoc = dp.parseFromString(dl, "text/xml");
             Glosario = dp.parseFromString(dg, "text/xml");
-            Bitacora = dp.parseFromString(de, "text/xml");
-            Ritual = Array.from(dp.parseFromString(dl, "text/xml").getElementsByTagName("ritual")).find(r => r.getAttribute("libro") === libURL);
+            Bitacora = dp.parseFromString(de, "text/xml");            
+            Ritual = Array.from(liturgiaDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("libro") === libURL);           
         }
 
         function actualizarSelectorSecciones(sel) {
