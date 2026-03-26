@@ -94,7 +94,7 @@
                 <acto tipo="verso" actor="2V" tema="Medianoche en punto, VM∴."/>
                 <acto tipo="verso" actor="VM" tema="¿Qué hora es, QH∴ 1V∴?"/>
                 <acto tipo="verso" actor="1V" tema="La hora de cerrar, medianoche en punto, VM∴."/>
-            </parte>     
+            </parte>      
             <parte id="3" titulo="Cierre de los Trabajos">    
                 <acto tipo="verso" actor="VM" tema="Puesto que es la hora en que los AAp∴ MMas∴ cierran sus trabajos, QQHH∴ 1V∴ y 2V∴, invitad a los obreros de vuestras respectivas CCol∴ como yo invito a los de Or∴ para que se unan a vosotros y a mí a fin de cerrar los trabajos de esta Aug∴ RL∴. [El VM∴ da tres golpes de Mall∴ que repiten los VV∴ y dice: de pie y al orden mis HH∴.]."/>
                 <acto tipo="verso" actor="2V" tema="Todo está justo y perfecto, VM∴."/>
@@ -139,11 +139,12 @@
                 <acto tipo="verso" actor="Ora" tema="La Piedra Bruta representa el estado de imperfección..."/>
                 <acto tipo="verso" actor="Ora" tema="Es cuanto, VM∴"/>
             </parte>
+        </seccion>
         <seccion id="8" titulo="Logia Colmena #8">
             <parte id="1" titulo="Tenida Virtual">
                 <acto tipo="event" actor="VM" tema="[[INSTANCIA]]"/>
             </parte>
-        </seccion>        
+        </seccion>
     </ritual>
     <ritual logia="Colmena No. 8" libro="2">
         <seccion id="1" titulo="Apertura de Trabajos">
