@@ -229,18 +229,14 @@
         }
 
         function inyectarInstancia(actor, sec, verso) {
-            const t = Array.from(Bitacora.getElementsByTagName("evento")).find(x => x.getAttribute("fecha") === fecha);
-            
-            // Si no hay evento registrado para la fecha
+            const t = Array.from(Bitacora.getElementsByTagName("evento")).find(x => x.getAttribute("fecha") === fecha);        
             if (!t) {
-                return `<p class="dialogo-vm"><strong>VM.:</strong> No habiendo asuntos registrados en bitácora para el día de hoy, daremos continuidad al orden del día.</p>`;
+                return `<p class="dialogo-vm">No habiendo asuntos registrados, daremos continuidad al orden del día.</p>`;
             }            
             
             let h = "";
             const actorActual = document.getElementById("actorFilter").value;            
-            const items = Array.from(t.getElementsByTagName("item"));
-
-            // Filtrado según reglas de visibilidad
+            const items = Array.from(t.getElementsByTagName("item"));           
             const itemsValidos = items.filter(i => {
                 const tipo = i.getAttribute("tipo");
                 const reglas = {
@@ -252,7 +248,6 @@
                 return reglas[tipo];
             });
 
-            // Si hay items válidos, inyectamos diálogo de apertura + botones
             if (itemsValidos.length > 0) {
                 h = `<p class="dialogo-vm">Acto seguido, daremos curso a los siguientes puntos registrados:</p>`;
                 
@@ -272,7 +267,6 @@
                 // Si existe el evento pero no hay items para el actor actual
                 h = `<p class="dialogo-vm">No habiendo más asuntos registrados, daremos continuidad al orden del día.</p>`;
             }
-
             return h;
         }
 
