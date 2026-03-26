@@ -74,7 +74,7 @@
                     const Dic = { "1": "Libro de Aprendiz", "2": "Libro de Compañero", "3": "Libro de Maestro" };
                     document.getElementById("titulo-ritual-header").textContent = Dic[libURL];                    
                     
-                    // Priorizar el parámetro de la URL para el retorno preciso
+                    // Si venimos de un retorno, priorizamos la sección guardada o recibida por URL
                     let seccionInicial = secURL || (libURL === "1" ? sessionStorage.getItem('seccionRetornoLogia') : null) || "1";
                     actualizarSelectorSecciones(seccionInicial);                    
                     
@@ -85,15 +85,16 @@
                   
                     const versoDestino = actURL || sessionStorage.getItem('versoRetornoLogia');
                     if (versoDestino) {
-                        // Aumentamos a 1000ms para asegurar que el DOM de la sección 4 cargue completamente
+                        // Aumentamos el tiempo de espera para asegurar que el DOM esté listo en secciones largas
                         setTimeout(() => {
                             const el = document.getElementById(`verso-${versoDestino}`);
                             if (el) {
                                 el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                                 el.classList.add('resaltado');
+                                // Limpiamos para evitar resaltados accidentales en futuras recargas
                                 sessionStorage.removeItem('versoRetornoLogia');
                             }
-                        }, 1000);
+                        }, 1200); 
                     }
                 }
             } catch (e) { console.error(e); }
@@ -115,7 +116,6 @@
             const numSel = parseInt(sel);
             Array.from(Ritual.getElementsByTagName("seccion")).forEach(s => {
                 const id = s.getAttribute("id");
-                // Mantenemos lógica de filtrado por grado
                 if (numSel > 3) {
                     if (id === sel) combo.add(new Option(s.getAttribute("titulo"), id));
                 } else {
@@ -127,7 +127,7 @@
 
         function actualizarSeccionGlobal() {
             const val = document.getElementById("seccionFilter").value;
-            // Solo guardamos en sesión si es una sección base (1-3)
+            // Solo memorizamos el retorno si es una de las secciones principales (1-3)
             if (parseInt(val) <= 3) sessionStorage.setItem('seccionRetornoLogia', val);
             gestionarCambioSeccion();
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -194,6 +194,7 @@
             } else if (parseInt(idSec) === 3) {
                 nav += `<span></span>`; 
             } else {
+                // Botón de salida/retorno
                 nav += `<button class="btn-flechas" onclick="irA('VOLVER')"><span class="icon-exit">✖</span></button>`;
             }
             nav += `</div>`;
@@ -213,11 +214,12 @@
             actualizarSeccionGlobal();
         }
 
-        // CORRECCIÓN: Seccion de retorno dinámica
+        // Lógica de retorno corregida para ser dinámica
         window.irA = function(dest) {
             if (dest === 'VOLVER') {
                 const secDest = sessionStorage.getItem('seccionRetornoLogia') || "1";
                 const vDest = sessionStorage.getItem('versoRetornoLogia') || "";
+                // Construimos la URL con los parámetros de retorno guardados
                 location.href = `rituales.html?num=1&fec=${fecha}&sec=${secDest}&act=${vDest}`;
             }
         };
