@@ -24,7 +24,7 @@
         dd::before { content: counter(line-counter); position: absolute; left: -45px; color: #8d6e63; font-size: 0.75rem; font-weight: bold; width: 35px; text-align: right; top: 0; }
         .acotacion { display: block; font-style: italic; color: rgba(0,0,0,0.5); font-size: 0.85rem; margin-top: 4px; margin-bottom: 4px; }
         .resaltado { background: rgba(168, 124, 0, 0.12) !important; border-left: 5px solid #A87C00 !important; transition: background 0.5s ease; }
-        .btn-ritual, .btn-instancia-exec { display: block; padding: 6px 12px; border-radius: 4px;cursor: pointer; font-size: 0.85em; font-weight: bold;background: #A87C00 !important;color: #fff !important;margin: 8px 0;border: none;outline: none;}
+        .btn-ritual, .btn-instancia-exec { display: block; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em; font-weight: bold; background: #A87C00 !important; color: #fff !important; margin: 8px 0; border: none; outline: none; width: 100%; text-align: left; }
         .nav-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding: 15px; border-top: 1px solid #d7ccc8; }
         .btn-flechas { background: transparent !important; color: #A87C00 !important; width: 45px; height: 32px; font-size: 1.4rem; display: flex; align-items: center; justify-content: center; border: none; outline: none; }
         .flip-h { transform: scaleX(-1); }
@@ -32,6 +32,7 @@
         .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; align-items: center; justify-content: center; }
         .visor-content { width: 95%; height: 90%; background: #fff; border-radius: 8px; position: relative; }
         .visor-close { position: absolute; top: -10px; right: -10px; background: #ff0000; color: #fff; border: 2px solid #fff; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; z-index: 2001; }
+        .dialogo-vm { margin-bottom: 10px; font-style: normal; }
     </style>
 </head>
 <body onload="inicializarPortal()">
@@ -75,7 +76,6 @@
                     const Dic = { "1": "Libro de Aprendiz", "2": "Libro de Compañero", "3": "Libro de Maestro" };
                     document.getElementById("titulo-ritual-header").textContent = Dic[libURL];                    
                     
-                    // Priorizamos el secURL de la dirección para la navegación directa
                     let seccionInicial = secURL || sessionStorage.getItem('seccionRetornoLogia') || "1";
                     actualizarSelectorSecciones(seccionInicial);                    
                     
@@ -84,7 +84,6 @@
                     }                    
                     await gestionarCambioSeccion();
                   
-                    // RESALTADO: Solo si 'act' viene en la URL (al volver de una instancia)
                     if (actURL) {
                         setTimeout(() => {
                             const el = document.getElementById(`verso-${actURL}`);
@@ -103,7 +102,7 @@
             const f = u => fetch(`${u}?v=${t}`).then(r => r.text());
             const [dg, dl, de] = await Promise.all([f('glosario.xml'), f('liturgia.xml'), f('bitacora.xml').catch(() => '<bitacora/>')]);
             const dp = new DOMParser();
-            const liturgiaDoc = dp.parseFromString(dl, "text/xml");
+            liturgiaDoc = dp.parseFromString(dl, "text/xml");
             Glosario = dp.parseFromString(dg, "text/xml");
             Bitacora = dp.parseFromString(de, "text/xml");            
             Ritual = Array.from(liturgiaDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("libro") === libURL);           
@@ -115,7 +114,6 @@
             const numSel = parseInt(sel);
             Array.from(Ritual.getElementsByTagName("seccion")).forEach(s => {
                 const id = s.getAttribute("id");
-                // Mantenemos la lógica de visualización para secciones de instancia (>3)
                 if (numSel > 3) {
                     if (id === sel) combo.add(new Option(s.getAttribute("titulo"), id));
                 } else {
@@ -127,7 +125,6 @@
 
         function actualizarSeccionGlobal() {
             const val = document.getElementById("seccionFilter").value;
-            // Solo memorizamos el retorno si estamos en secciones de flujo principal
             if (parseInt(val) <= 3) {
                 sessionStorage.setItem('seccionRetornoLogia', val);
             }
@@ -215,72 +212,69 @@
             actualizarSeccionGlobal();
         }
 
-        // RETORNO DINÁMICO: Recupera la sección exacta y el verso de origen
         window.irA = function(dest) {
             if (dest === 'VOLVER') {
                 const secDest = sessionStorage.getItem('seccionRetornoLogia') || "1";
                 const vDest = sessionStorage.getItem('versoRetornoLogia') || "";
-                
-                // Limpiamos el verso guardado tras usarlo para el retorno
                 sessionStorage.removeItem('versoRetornoLogia');
-                
                 location.href = `rituales.html?num=1&fec=${fecha}&sec=${secDest}&act=${vDest}`;
             }
         };
 
         function capturarOrigenYSalir(url, actor, sec, verso) {
-            // Guardamos el origen antes de saltar a la sección de instancia
             sessionStorage.setItem('versoRetornoLogia', verso);
             sessionStorage.setItem('seccionRetornoLogia', sec); 
             sessionStorage.setItem('actorRetornoLogia', actor);
-            
-            // Navegamos a la sección 4/5 (la URL no lleva 'act', por lo que no se ilumina nada allí)
             window.location.href = url;
         }
 
         function inyectarInstancia(actor, sec, verso) {
-    const t = Array.from(Bitacora.getElementsByTagName("evento")).find(x => x.getAttribute("fecha") === fecha);
-    if (!t) return "";            
-    
-    let h = "";
-    const actorActual = document.getElementById("actorFilter").value;            
-    const items = Array.from(t.getElementsByTagName("item"));
-
-    // Filtramos primero los items que cumplen las reglas para saber si habrá botones
-    const itemsValidos = items.filter(i => {
-        const tipo = i.getAttribute("tipo");
-        const reglas = {
-            "balaustre": (actor === "Sec" && actorActual === "Sec"),
-            "elevacion": (actor === "VM"),
-            "trazables": (actor === "VM"),
-            "virtuales": (actor === "MM")
-        };
-        return reglas[tipo];
-    });
-
-    // DISPARADOR: Definimos el diálogo inicial del VM según si hay items válidos
-    if (itemsValidos.length > 0) {
-        h = `<p class="dialogo-vm"><strong>VM.:</strong> Acto seguido, daremos curso a los siguientes puntos registrados:</p>`;
-        
-        itemsValidos.forEach(i => {
-            const tipo = i.getAttribute("tipo");
-            const url = i.getAttribute("url");
-            const tit = i.getAttribute("asunto") || "Acta";                
+            const t = Array.from(Bitacora.getElementsByTagName("evento")).find(x => x.getAttribute("fecha") === fecha);
             
-            if (url.includes('rituales.html')) {
-                h += `<button class="btn-instancia-exec" onclick="capturarOrigenYSalir('${url}', '${actorActual}', '${sec}', '${verso}')">${tit}</button>`;
-            } else { 
-                const icon = tipo === "balaustre" ? "📜 " : (tipo === "virtual" ? "🌐 " : (tipo === "trazable" ? "📍 " : ""));
-                h += `<button class="btn-ritual" onclick="mostrarVisor('${url}')">${icon}${tit}</button>`; 
-            }
-        });
-    } else {
-        // Texto si la bitácora para este actor/sección está vacía
-        h = `<p class="dialogo-vm"><strong>VM.:</strong> No habiendo más asuntos registrados en bitácora, daremos continuidad al orden del día.</p>`;
-    }
+            // Si no hay evento registrado para la fecha
+            if (!t) {
+                return `<p class="dialogo-vm"><strong>VM.:</strong> No habiendo asuntos registrados en bitácora para el día de hoy, daremos continuidad al orden del día.</p>`;
+            }            
+            
+            let h = "";
+            const actorActual = document.getElementById("actorFilter").value;            
+            const items = Array.from(t.getElementsByTagName("item"));
 
-    return h;
-}
+            // Filtrado según reglas de visibilidad
+            const itemsValidos = items.filter(i => {
+                const tipo = i.getAttribute("tipo");
+                const reglas = {
+                    "balaustre": (actor === "Sec" && actorActual === "Sec"),
+                    "elevacion": (actor === "VM"),
+                    "trazables": (actor === "VM"),
+                    "virtuales": (actor === "MM")
+                };
+                return reglas[tipo];
+            });
+
+            // Si hay items válidos, inyectamos diálogo de apertura + botones
+            if (itemsValidos.length > 0) {
+                h = `<p class="dialogo-vm"><strong>VM.:</strong> Acto seguido, daremos curso a los siguientes puntos registrados:</p>`;
+                
+                itemsValidos.forEach(i => {
+                    const tipo = i.getAttribute("tipo");
+                    const url = i.getAttribute("url");
+                    const tit = i.getAttribute("asunto") || "Acta";                
+                    
+                    if (url.includes('rituales.html')) {
+                        h += `<button class="btn-instancia-exec" onclick="capturarOrigenYSalir('${url}', '${actorActual}', '${sec}', '${verso}')">${tit}</button>`;
+                    } else { 
+                        const icon = tipo === "balaustre" ? "📜 " : (tipo === "virtual" ? "🌐 " : (tipo === "trazable" ? "📍 " : ""));
+                        h += `<button class="btn-ritual" onclick="mostrarVisor('${url}')">${icon}${tit}</button>`; 
+                    }
+                });
+            } else {
+                // Si existe el evento pero no hay items para el actor actual
+                h = `<p class="dialogo-vm"><strong>VM.:</strong> No habiendo más asuntos registrados en bitácora para este grado, daremos continuidad al orden del día.</p>`;
+            }
+
+            return h;
+        }
 
         function mostrarVisor(url) {
             if (url.includes('blank')) {
