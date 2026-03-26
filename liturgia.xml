@@ -143,8 +143,7 @@
             <parte id="1" titulo="Tenida Virtual">
                 <acto tipo="event" actor="VM" tema="[[INSTANCIA]]"/>
             </parte>
-        </seccion>
-        </seccion>
+        </seccion>        
     </ritual>
     <ritual logia="Colmena No. 8" libro="2">
         <seccion id="1" titulo="Apertura de Trabajos">
