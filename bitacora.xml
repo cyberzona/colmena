@@ -17,6 +17,8 @@
     <evento fecha="2026-03-26">  
         <item tipo="balaustre" asunto="evento Ordinaria (Feb-21)" url="https://drive.google.com/file/d/1Jr6xYTM6FAyYTWhSwrCJApxKhk3KelMA/preview" />        
         <item tipo="trazables" asunto="Saco de proposiciones" url="rituales.html?num=1&amp;sec=4"/>   
-        <item tipo="trazables" asunto="Asuntos de familia" url="rituales.html?num=1&amp;sec=5"/>                 
+        <item tipo="trazables" asunto="Asuntos de familia" url="rituales.html?num=1&amp;sec=5"/>  
+        <item tipo="elevacion" asunto="CÁMARA DE COMPAÑERO" url="rituales.html?num=2" />   
+        <item tipo="elevacion" asunto="CÁMARA DEL MEDIO"    url="rituales.html?num=3"/> 
     </evento>
 </bitacora>
