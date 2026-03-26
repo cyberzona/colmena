@@ -239,31 +239,48 @@
         }
 
         function inyectarInstancia(actor, sec, verso) {
-            const t = Array.from(Bitacora.getElementsByTagName("evento")).find(x => x.getAttribute("fecha") === fecha);
-            if (!t) return "";            
-            let h = "";
-            const actorActual = document.getElementById("actorFilter").value;            
-            Array.from(t.getElementsByTagName("item")).forEach(i => {
-                const tipo = i.getAttribute("tipo");
-                const url = i.getAttribute("url");
-                const tit = i.getAttribute("asunto") || "Acta";                
-                const reglas = {
-                    "balaustre": (actor === "Sec" && actorActual === "Sec" ),
-                    "elevacion": (actor === "VM"),
-                    "trazables": (actor === "VM"),
-                    "virtuales": (actor === "MM")
-                };
-                if (reglas[tipo]) {
-                    if (url.includes('rituales.html')) {
-                        h += `<button class="btn-instancia-exec" onclick="capturarOrigenYSalir('${url}', '${actorActual}', '${sec}', '${verso}')">${tit}</button>`;
-                    } else { 
-                        const icon = tipo === "balaustre" ? "📜 " : (tipo === "virtual" ? "🌐 " : (tipo === "trazable" ? "📍 " : ""));
-                        h += `<button class="btn-ritual" onclick="mostrarVisor('${url}')">${icon}${tit}</button>`; 
-                    }
-                }
-            });
-            return h;
-        }
+    const t = Array.from(Bitacora.getElementsByTagName("evento")).find(x => x.getAttribute("fecha") === fecha);
+    if (!t) return "";            
+    
+    let h = "";
+    const actorActual = document.getElementById("actorFilter").value;            
+    const items = Array.from(t.getElementsByTagName("item"));
+
+    // Filtramos primero los items que cumplen las reglas para saber si habrá botones
+    const itemsValidos = items.filter(i => {
+        const tipo = i.getAttribute("tipo");
+        const reglas = {
+            "balaustre": (actor === "Sec" && actorActual === "Sec"),
+            "elevacion": (actor === "VM"),
+            "trazables": (actor === "VM"),
+            "virtuales": (actor === "MM")
+        };
+        return reglas[tipo];
+    });
+
+    // DISPARADOR: Definimos el diálogo inicial del VM según si hay items válidos
+    if (itemsValidos.length > 0) {
+        h = `<p class="dialogo-vm"><strong>VM.:</strong> Acto seguido, daremos curso a los siguientes puntos registrados:</p>`;
+        
+        itemsValidos.forEach(i => {
+            const tipo = i.getAttribute("tipo");
+            const url = i.getAttribute("url");
+            const tit = i.getAttribute("asunto") || "Acta";                
+            
+            if (url.includes('rituales.html')) {
+                h += `<button class="btn-instancia-exec" onclick="capturarOrigenYSalir('${url}', '${actorActual}', '${sec}', '${verso}')">${tit}</button>`;
+            } else { 
+                const icon = tipo === "balaustre" ? "📜 " : (tipo === "virtual" ? "🌐 " : (tipo === "trazable" ? "📍 " : ""));
+                h += `<button class="btn-ritual" onclick="mostrarVisor('${url}')">${icon}${tit}</button>`; 
+            }
+        });
+    } else {
+        // Texto si la bitácora para este actor/sección está vacía
+        h = `<p class="dialogo-vm"><strong>VM.:</strong> No habiendo más asuntos registrados en bitácora, daremos continuidad al orden del día.</p>`;
+    }
+
+    return h;
+}
 
         function mostrarVisor(url) {
             if (url.includes('blank')) {
