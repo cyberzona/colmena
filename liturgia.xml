@@ -43,14 +43,14 @@
                 <acto tipo="verso" actor="VM" tema="¿Qué hora es, Querido Hermano 2V∴?"/>
                 <acto tipo="verso" actor="2V" tema="La hora de empezar, mediodía en punto, VM∴."/>
                 <acto tipo="verso" actor="VM" tema="Siendo mediodía en punto, hora que los Apr∴ Mas∴ abren sus trabajos QQHH∴, 1V∴ y 2V∴, servios invitar a los obreros que decoran vuestras respectivas CCol∴, como yo a los de Oriente, para que se unan a vosotros y a mí a fin de abrir los trabajos de esta Augusta y RL∴"/>
-                <acto tipo="verso" actor="1V" tema="QH∴ 2V∴ y HH∴ que decoráis mi Col∴, por orden del VM∴, os invito que os unáis a él y a mí para abrir los trabajos de esta RL∴ en el grado de Apr∴ Mas∴."/>
-                <acto tipo="verso" actor="2V" tema="QQHH∴ de la Col∴ del Norte, por orden del VM∴ comunicada a mí por nuestro QH∴ 1V∴, que os unáis a él y a nosotros para abrir los trabajos de esta RL∴ en grado de Apr∴Mas∴. [Anunciado en mi Col∴, QH∴ 1V∴.]"/>
+                <acto tipo="verso" actor="1V" tema="QH∴ 2V∴ y HH∴ que decoráis mi Col∴, por orden del VM∴, os invito que os unáis a él y a mí para abrir los trabajos de esta RL∴ en el grado de Apr∴ M∴."/>
+                <acto tipo="verso" actor="2V" tema="QQHH∴ de la Col∴ del Norte, por orden del VM∴ comunicada a mí por nuestro QH∴ 1V∴, que os unáis a él y a nosotros para abrir los trabajos de esta RL∴ en grado de Apr∴M∴. [Anunciado en mi Col∴, QH∴ 1V∴.]"/>
                 <acto tipo="verso" actor="1V" tema="Anunciado en ambas CCol∴, VM∴."/>
             </parte>
             <parte id="5" titulo="La Consagración de la Luz">
                 <acto tipo="verso" actor="VM" tema="¡En pie y al Orden, Queridos Hermanos! [Da un golpe de Mallete seguido por los Vigilantes]."/>
                 <acto tipo="verso" actor="VM" tema="QH∴ Maestro de Ceremonias (MC∴) , prended las Luces. (MC∴ , abre el Libro de la Ley y coloca la Escuadra y sobre esta el Compás. Enciende la estrella del VM∴, dice: ¡Que la Sabiduría guie nuestros trabajos! ; MC∴, enciende la estrella del 1V∴ VM∴, dice: ¡Que la Fuerza los sostenga! ; MC∴, enciende la estrella del 2V∴, VM∴ dice: ¡Que la Belleza los adorne!)"/>
-                <acto tipo="verso" actor="VM" tema="Puesto que todo está justo y perfecto, y que es la hora que los AAp∴ MMas∴ empiezan sus trabajos, uníos a mí HH∴ míos, ALGDGADU∴ y en su nombre y bajo la obediencia de la Ser∴ Gran L∴ de Lengua Española para los EE. UU. de A., declaro abiertos los trabajos de esta RL∴ en el grado de Ap∴Mas∴ del REAA∴. Queda prohibido a todo H∴ pasar de una a otra Col∴ ni cubrir el Templo sin permiso de su respectivo V∴; ni tratar asuntos políticos ni religiosos, a mí HH∴ por el signo y Bat∴ de Grado. [Da tres golpes de Mall∴ que repiten los VV∴] Tomad asiento, QQHH∴."/>
+                <acto tipo="verso" actor="VM" tema="Puesto que todo está justo y perfecto, y que es la hora que los AAp∴ MM∴ empiezan sus trabajos, uníos a mí HH∴ míos, ALGDGADU∴ y en su nombre y bajo la obediencia de la Ser∴ Gran L∴ de Lengua Española para los EE. UU. de A., declaro abiertos los trabajos de esta RL∴ en el grado de Ap∴Mas∴ del REAA∴. Queda prohibido a todo H∴ pasar de una a otra Col∴ ni cubrir el Templo sin permiso de su respectivo V∴; ni tratar asuntos políticos ni religiosos, a mí HH∴ por el signo y Bat∴ de Grado. [Da tres golpes de Mall∴ que repiten los VV∴] Tomad asiento, QQHH∴."/>
             </parte>
         </seccion>
         <seccion id="2" titulo="Desarrollo de Trabajos">        
@@ -61,11 +61,12 @@
                 <acto tipo="verso" actor="2V" tema="Reina el silencio en mi Columna Hermano 1V∴."/>
                 <acto tipo="verso" actor="1V" tema="Reina el silencio en ambas CCol∴, VM∴."/>
                 <acto tipo="verso" actor="VM" tema="QH∴ OF∴ ¿Queréis darnos vuestras conclusiones respecto a la plancha trazada por nuestro H∴ Sec∴ de nuestros últimos trabajos? [El H∴ OF∴ da las conclusiones]"/>
-                <acto tipo="verso" actor="VM" tema="Después de las conclusiones del H∴ OF∴, los HH∴ que estén de acuerdo se servirán de hacer la señal de aprobación al primer golpe de Mall∴. [Con golpe de Mallete] [[INSTANCIA]]"/>
+                <acto tipo="verso" actor="VM" tema="Después de las conclusiones del H∴ OF∴, los HH∴ que estén de acuerdo se servirán de hacer la señal de aprobación al primer golpe de Mall∴. [Con golpe de Mallete]"/>
+                <acto tipo="verso" actor="VM" tema="Acto seguido ... [[INSTANCIA]]"/>
             </parte>          
         </seccion>            
         <seccion id="3" titulo="Clausura de Trabajos">
-             <parte id="1" titulo="Del Tronco de Beneficencia">
+             <parte id="1" titulo="Tronco de Beneficencia">
                 <acto tipo="verso" actor="VM" tema="QQHH∴ 1V∴ y 2V∴ anunciad en vuestras CCol∴ que el H∴ Hos∴ va a circular en tronco de beneficencia."/>
                 <acto tipo="verso" actor="2V" tema="Anunciado en la Col∴ del Mediodía, H∴ 1V∴."/>
                 <acto tipo="verso" actor="1V" tema="Anunciado en ambas Ccol∴, VM∴."/>
@@ -86,7 +87,7 @@
                 <acto tipo="verso" actor="VM" tema="¿Cuál debe ser la conducta del Masón en el mundo profano, QH∴ 1V∴?"/>
                 <acto tipo="verso" actor="1V" tema="Enseñar con la práctica el ejercicio de las virtudes."/>
             </parte>    
-            <parte id="2" titulo="De la Verificación de los Trabajos">
+            <parte id="2" titulo="Verificación de los Trabajos">
                 <acto tipo="verso" actor="VM" tema="QH∴ 1V∴ ¿Qué edad tenéis como Ap∴Mas∴?"/>
                 <acto tipo="verso" actor="1V" tema="Tres años, VM∴."/>
                 <acto tipo="verso" actor="VM" tema="QH∴ 2V∴ ¿A qué hora cierran los trabajos los AAp∴ Mas∴?"/>
@@ -94,7 +95,7 @@
                 <acto tipo="verso" actor="VM" tema="¿Qué hora es, QH∴ 1V∴?"/>
                 <acto tipo="verso" actor="1V" tema="La hora de cerrar, medianoche en punto, VM∴."/>
             </parte>     
-            <parte id="3" titulo="Del Cierre de los Trabajos">    
+            <parte id="3" titulo="Cierre de los Trabajos">    
                 <acto tipo="verso" actor="VM" tema="Puesto que es la hora en que los AAp∴ MMas∴ cierran sus trabajos, QQHH∴ 1V∴ y 2V∴, invitad a los obreros de vuestras respectivas CCol∴ como yo invito a los de Or∴ para que se unan a vosotros y a mí a fin de cerrar los trabajos de esta Aug∴ RL∴. [El VM∴ da tres golpes de Mall∴ que repiten los VV∴ y dice: de pie y al orden mis HH∴.]."/>
                 <acto tipo="verso" actor="2V" tema="Todo está justo y perfecto, VM∴."/>
                 <acto tipo="verso" actor="1V" tema="Reina completa armonía, VM∴ y estamos en condición de luchar por la emancipación Moral y Material de los seres humanos."/>
@@ -106,12 +107,12 @@
         </seccion>
         <seccion id="4" titulo="Proposiciones por Escrito">
             <parte id="1" titulo="De las Proposiciones por Escrito">
-                <acto tipo="verso" actor="VM" tema="QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ como yo lo hago en el Or∴ que nuestro Q∴H∴ M∴ de Cer∴ va a circular el saco de proposiciones. [El MC∴ cumple con su deber y se coloca entre CCol∴.]"/>
+                <acto tipo="verso" actor="VM" tema="QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ como yo lo hago en el Or∴ que nuestro QH∴ MC∴ va a circular el saco de proposiciones. [El MC∴ cumple con su deber y se coloca entre CCol∴.]"/>
                 <acto tipo="verso" actor="1V" tema="VM∴, el saco de proposiciones se encuentra entre CCol∴ para circular."/>
                 <acto tipo="verso" actor="VM" tema="Ordenad que circule empezando por mi derecha."/>
                 <acto tipo="verso" actor="1V" tema="He cumplido con mi deber."/>
                 <acto tipo="verso" actor="1V" tema="VM∴, el saco de proposiciones, después de haber circulado por los cuatro puntos cardinales, se halla nuevamente entre CCol∴."/>
-                <acto tipo="verso" actor="VM" tema="Ordenad que pase a Or∴ y que en compañía del H∴ Ora∴ nos enteremos de su contenido."/>
+                <acto tipo="verso" actor="VM" tema="Ordenad que pase a Or∴ y que en compañía del H∴ OF∴ nos enteremos de su contenido."/>
                 <acto tipo="verso" actor="VM" tema="QQHH∴ 1V∴ y 2V∴ anunciad en vuestras respectivas CCol∴ que vamos a pasar a proposiciones verbales."/>
                 <acto tipo="verso" actor="2V" tema="H∴ 1V∴, reina el silencio en mi Col∴."/>
                 <acto tipo="verso" actor="1V" tema="VM∴, reina silencio en ambas CCol∴."/>
