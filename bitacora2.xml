@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bitacora>
+  <evento fecha="2025-09-20">
+    <item tipo="memo" aunto="Tenida Ordinaria del Equinoccio Autumnal" url="1,2,3,4,5,6" />
+  </evento>
+  <evento fecha="2025-12-20">
+    <item tipo="memo" aunto="Tenida Blanca del Solsticio Invernal" url="Aprendiz" />
+  </evento>
+  <evento fecha="2026-01-18">
+    <item tipo="memo" aunto="Tenida de Pase de Mallete y Transmisión de Luces" url="Venerable" />
+  </evento>
+  <evento fecha="2026-01-31">
+    <item tipo="memo" aunto="Tenida Blanca de Aniversario de la Colmena" url="Vigilante 1" />
+  </evento>
+  <evento fecha="2026-02-21">
+    <item tipo="memo" aunto="Tenida Ordinaria de Febrero" url="Vigilante 2" />
+  </evento>
+</bitacora>
