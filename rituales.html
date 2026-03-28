@@ -236,7 +236,8 @@
             const t = Array.from(Bitacora.getElementsByTagName("evento")).find(x => x.getAttribute("fecha") === fecha);        
             if (!t) { return `<p class="dialogo-vm">No habiendo asuntos registrados, continuemos con orden del día.</p>`; }           
             const actorActual = document.getElementById("actorFilter").value;            
-            const items = Array.from(t.getElementsByTagName("item"));           
+            const items = Array.from(t.getElementsByTagName("item"));  
+            let h = ""; // Inicializamos h como cadena vacía siempre
             const itemsValidos = items.filter(i => {
                 const tipo = i.getAttribute("tipo");
                 const reglas = {
@@ -248,7 +249,7 @@
                 return reglas[tipo];
             });
             if (itemsValidos.length > 0) {
-                let h = `<p class="dialogo-vm">Acto seguido, daremos curso a los siguientes puntos:</p>`;
+                h = `<p class="dialogo-vm">Acto seguido, daremos curso a los siguientes puntos:</p>`;
                 const debeEnumerar = itemsValidos.length > 1;                            
                 itemsValidos.forEach((i, index) => { // Se añadió (i, index) para corregir el error
                     const url = i.getAttribute("url");
