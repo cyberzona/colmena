@@ -14,10 +14,11 @@
         <item tipo="ascensos" asunto="CÁMARA DEL MEDIO"    url="rituales.html?num=3&amp;sec=1"/>               
     </evento>    
     <evento fecha="2026-03-28">  
-        <item tipo="cronicas" asunto="evento Ordinaria (Feb-21)" url="https://drive.google.com/file/d/1Jr6xYTM6FAyYTWhSwrCJApxKhk3KelMA/preview" />        
-        <item tipo="trazados" asunto="Saco de proposiciones" url="rituales.html?num=1&amp;sec=4&amp;ext=https://drive.google.com/file/d/1Wf1Byz7baivKCvulgCbdHtD6dWYQrGZ7/preview"/>    
-        <item tipo="trazados" asunto="Asuntos familiares y otros" url="rituales.html?num=1&amp;sec=5"/>  
-        <item tipo="ascensos" asunto="CÁMARA DE COMPAÑERO" url="rituales.html?num=2&amp;sec=1" />   
-        <item tipo="ascensos" asunto="CÁMARA DEL MEDIO"    url="rituales.html?num=3&amp;sec=1"/>       
+    <evento fecha="2026-03-28">
+        <item tipo="cronicas" asunto="Tenida Ordinaria de Febrero" url="https://drive.google.com/file/d/1Jr6xYTM6FAyYTWhSwrCJApxKhk3KelMA/preview" />
+        <item tipo="trazados" asunto="Saco de Proposiciones" url="rituales.html?num=1&amp;sec=4&amp;ext=https://drive.google.com/file/d/1Rvm41Ubqwxxz5qJ6MMf6nHBLPP6NuCc3/preview" />
+        <item tipo="familiar" asunto="Asuntos Familiares" url="rituales.html?num=1&amp;sec=5" />
+        <item tipo="ascensos" asunto="CÁMARA DE COMPAÑERO" url="rituales.html?num=2" />
+    </evento>      
     </evento>
 </bitacora>
