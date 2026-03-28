@@ -171,10 +171,9 @@
                 Array.from(parte.getElementsByTagName("acto")).forEach(acto => {
                     const actor = (acto.getAttribute("actor") || "Actor").trim();
                     let texto = (acto.getAttribute("tema") || acto.textContent).trim();
-                    let btns = "";
-                    
+                    let btns = "";                    
                     // Validación de sección y actor para mostrar el documento externo
-                    if (extURL && idSec === secURL_ext && actor === actorSel) {
+                    if (extURL && idSec === secURL_ext && actor === "OF") {
                         btns += `<br><button class="btn-ritual" style="margin-top:10px;" onclick="mostrarVisor('${decodeURIComponent(extURL)}')">📄 Ver Documento Adjunto</button>`;
                     }
 
