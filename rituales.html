@@ -24,6 +24,7 @@
         dd::before { content: counter(line-counter); position: absolute; left: -45px; color: #8d6e63; font-size: 0.75rem; font-weight: bold; width: 35px; text-align: right; top: 0; }
         .acotacion { display: block; font-style: italic; color: rgba(0,0,0,0.5); font-size: 0.85rem; margin-top: 4px; margin-bottom: 4px; }
         .resaltado { background: rgba(168, 124, 0, 0.12) !important; border-left: 5px solid #A87C00 !important; transition: background 0.5s ease; }
+        /* Margen de 10px a la derecha para separar botones unidos */
         .btn-ritual, .btn-instancia-exec { display: inline-block; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em; font-weight: bold; background: #A87C00 !important; color: #fff !important; margin: 8px 10px 8px 0; border: none; outline: none; width: auto; text-align: left; }
         .nav-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding: 15px; border-top: 1px solid #d7ccc8; }
         .btn-flechas { background: transparent !important; color: #A87C00 !important; width: 45px; height: 32px; font-size: 1.4rem; display: flex; align-items: center; justify-content: center; border: none; outline: none; }
@@ -60,14 +61,18 @@
 
     <script>
         let Ritual, Glosario, Bitacora;
-        let libURL = "1", fecha = "", extURL = "";
+        let libURL = "1", fecha = "", extURL = "", secURL_ext = "";
 
         async function inicializarPortal() {
             try {
                 const params = new URLSearchParams(window.location.search);
                 fecha = params.get('fec') || new Date().toLocaleDateString('en-CA');
                 libURL = (params.get('num') || "1").toString();
+                
+                // Captura global de parámetros externos para el visor
                 extURL = params.get('ext') || "";
+                secURL_ext = params.get('sec') || ""; 
+
                 const secURL = params.get('sec');
                 const actURL = params.get('act'); 
                 await cargarArchivosBase();                
@@ -155,7 +160,6 @@
         }
 
         function renderizarLiturgia(hacerScroll = false) {
-            //const extURL = new URLSearchParams(window.location.search).get('ext');
             const idSec = document.getElementById("seccionFilter").value;
             const actorSel = document.getElementById("actorFilter").value;
             const nodoSec = Array.from(Ritual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == idSec);
@@ -168,11 +172,14 @@
                     const actor = (acto.getAttribute("actor") || "Actor").trim();
                     let texto = (acto.getAttribute("tema") || acto.textContent).trim();
                     let btns = "";
-                    if (extURL && actor === "OF") {
+                    
+                    // Validación de sección y actor para mostrar el documento externo
+                    if (extURL && idSec === secURL_ext && actor === actorSel) {
                         btns += `<br><button class="btn-ritual" style="margin-top:10px;" onclick="mostrarVisor('${decodeURIComponent(extURL)}')">📄 Ver Documento Adjunto</button>`;
                     }
+
                     if (texto.includes("[[INSTANCIA]]")) {
-                        btns = inyectarInstancia(actor, idSec, contadorV);
+                        btns += inyectarInstancia(actor, idSec, contadorV);
                         texto = texto.replace("[[INSTANCIA]]", "");
                     }
                     texto = texto.replace(/(\b\S+∴)/gi, '<span style="color:#0277bd; font-weight:bold;">$1</span>');
@@ -248,7 +255,7 @@
             if (itemsValidos.length > 0) {
                 let h = `<p class="dialogo-vm">Acto seguido, daremos curso a los siguientes puntos:</p>`;
                 const debeEnumerar = itemsValidos.length > 1;                            
-                itemsValidos.forEach(i => {
+                itemsValidos.forEach((i, index) => { // Se añadió (i, index) para corregir el error
                     const url = i.getAttribute("url");
                     const pre = debeEnumerar ? `${index + 1}. ` : "";
                     const tit = pre + (i.getAttribute("asunto") || "Acta");                                                            
@@ -267,7 +274,6 @@
                     }
                 });
             } else {
-                // Si existe el evento pero no hay items para el actor actual
                 h = `<p class="dialogo-vm">No habiendo más asuntos registrados, daremos continuidad al orden del día.</p>`;
             }
             return h;
