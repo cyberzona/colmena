@@ -246,7 +246,7 @@
                     "ascensos": (actor === "VM"),                   
                     "externos": (actor === "VM")
                 };
-                return reglas[tipo];
+                return reglas[tipo]||false;
             });
             if (itemsValidos.length > 0) {
                 h = `<p class="dialogo-vm">Acto seguido, daremos curso a los siguientes puntos:</p>`;
