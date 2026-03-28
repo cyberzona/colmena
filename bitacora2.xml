@@ -20,11 +20,5 @@
   </evento>
   <evento fecha="2026-03-24">
     <item tipo="memo" aunto="Tenida Ordinaria de Febrero" url="" />
-  </evento> 
-  <evento fecha="2026-03-28">
-    <item tipo="cronicas" asunto="Tenida Ordinaria de Febrero" url="https://drive.google.com/file/d/1afNYmnDfiIFhP2rjMpAbmGBy3DAJZ5v3/view" />
-    <item tipo="trazados" asunto="Saco de Proposiciones" url="rituales.html?num=1&amp;sec=4" />
-    <item tipo="familiar" asunto="Asuntos Familiares" url="rituales.html?num=1&amp;sec=5" />
-    <item tipo="ascensos" asunto="CÁMARA DE COMPAÑERO" url="rituales.html?num=2" />
   </evento>
 </bitacora>
