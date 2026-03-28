@@ -71,8 +71,7 @@
                 
                 // Captura global de parámetros externos para el visor
                 extURL = params.get('ext') || "";
-                secURL_ext = params.get('sec') || ""; 
-
+                secURL_ext = params.get('sec') || "4"; 
                 const secURL = params.get('sec');
                 const actURL = params.get('act'); 
                 await cargarArchivosBase();                
@@ -176,7 +175,6 @@
                     if (extURL && idSec === secURL_ext && actor === "OF") {
                         btns += `<br><button class="btn-ritual" style="margin-top:10px;" onclick="mostrarVisor('${decodeURIComponent(extURL)}')">📄 Ver Documento Adjunto</button>`;
                     }
-
                     if (texto.includes("[[INSTANCIA]]")) {
                         btns += inyectarInstancia(actor, idSec, contadorV);
                         texto = texto.replace("[[INSTANCIA]]", "");
