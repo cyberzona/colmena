@@ -240,10 +240,10 @@
             const itemsValidos = items.filter(i => {
                 const tipo = i.getAttribute("tipo");
                 const reglas = {
-                    "balaustre": (actor === "Sec" && actorActual === "Sec"),
-                    "elevacion": (actor === "VM"),
-                    "trazables": (actor === "VM"),
-                    "virtuales": (actor === "MM")
+                    "cronicas": (actor === "Sec" && actorActual === "Sec"),
+                    "ascensos": (actor === "VM"),
+                    "trazados": (actor === "VM"),
+                    "externos": (actor === "MM")
                 };
                 return reglas[tipo];
             });
