@@ -273,23 +273,12 @@
         }
 
         function mostrarVisor(url) {
-            if (url.includes('blank')) {
-               const urlLimpia = url.replace('blank', ''); 
-               window.open(urlLimpia, '_blank');
-               return;
-            }
+            if (url.includes('blank')) { const urlLimpia = url.replace('blank', ''); window.open(urlLimpia, '_blank'); return; }
             const v = document.createElement('div');
             v.className = 'visor-overlay';
-    
-            // Añadimos un div "capa-bloqueo" para inhabilitar el clic en la esquina superior derecha
-           v.innerHTML = `<div class="visor-content" style="position: relative;">
-                <button class="visor-close" 
-                style="position: absolute; top: 5px; right: 5px; z-index: 2001; width: 40px; height: 40px; font-size: 20px;" 
-                onclick="this.parentElement.parentElement.remove()">✕</button>
-                <iframe src="${url}" style="width:100%; height:10"${url}" style="width:100%; height:100%; border:none;"></iframe>
-            </div>`;
+            v.innerHTML = `<div class="visor-content"><button class="visor-close" onclick="this.parentElement.parentElement.remove()">✕</button><iframe src="${url}" style="width:100%; height:100%; border:none;"></iframe></div>`;
             document.body.appendChild(v);
-        }        
+        }
     </script>
 </body>
 </html>
