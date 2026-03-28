@@ -60,30 +60,26 @@
 
     <script>
         let Ritual, Glosario, Bitacora;
-        let libURL = "1", fecha = "";
+        let libURL = "1", fecha = "", extURL = "";
 
         async function inicializarPortal() {
             try {
                 const params = new URLSearchParams(window.location.search);
                 fecha = params.get('fec') || new Date().toLocaleDateString('en-CA');
                 libURL = (params.get('num') || "1").toString();
-                
+                extURL = params.get('ext') || "";
                 const secURL = params.get('sec');
                 const actURL = params.get('act'); 
-
                 await cargarArchivosBase();                
                 if (Ritual) {
                     const Dic = { "1": "Libro de Aprendiz", "2": "Libro de Compañero", "3": "Libro de Maestro" };
-                    document.getElementById("titulo-ritual-header").textContent = Dic[libURL];                    
-                    
+                    document.getElementById("titulo-ritual-header").textContent = Dic[libURL];                   
                     let seccionInicial = secURL || sessionStorage.getItem('seccionRetornoLogia') || "1";
-                    actualizarSelectorSecciones(seccionInicial);                    
-                    
+                    actualizarSelectorSecciones(seccionInicial);                   
                     if (sessionStorage.getItem('actorRetornoLogia')) {
                         document.getElementById("actorFilter").dataset.actorPendiente = sessionStorage.getItem('actorRetornoLogia');
                     }                    
-                    await gestionarCambioSeccion();
-                  
+                    await gestionarCambioSeccion();                  
                     if (actURL) {
                         setTimeout(() => {
                             const el = document.getElementById(`verso-${actURL}`);
@@ -159,7 +155,7 @@
         }
 
         function renderizarLiturgia(hacerScroll = false) {
-            const extURL = new URLSearchParams(window.location.search).get('ext');
+            //const extURL = new URLSearchParams(window.location.search).get('ext');
             const idSec = document.getElementById("seccionFilter").value;
             const actorSel = document.getElementById("actorFilter").value;
             const nodoSec = Array.from(Ritual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == idSec);
@@ -172,7 +168,7 @@
                     const actor = (acto.getAttribute("actor") || "Actor").trim();
                     let texto = (acto.getAttribute("tema") || acto.textContent).trim();
                     let btns = "";
-                    if (extURL && actor === "MM") {
+                    if (extURL && actor === "OF") {
                         btns += `<br><button class="btn-ritual" style="margin-top:10px;" onclick="mostrarVisor('${decodeURIComponent(extURL)}')">📄 Ver Documento Adjunto</button>`;
                     }
                     if (texto.includes("[[INSTANCIA]]")) {
