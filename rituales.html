@@ -230,10 +230,7 @@
 
         function inyectarInstancia(actor, sec, verso) {
             const t = Array.from(Bitacora.getElementsByTagName("evento")).find(x => x.getAttribute("fecha") === fecha);        
-            if (!t) {
-                return `<p class="dialogo-vm">No habiendo asuntos registrados, daremos continuidad al orden del día.</p>`;
-            }            
-            
+            if (!t) { return `<p class="dialogo-vm">No habiendo asuntos registrados, continuemos con orden del día.</p>`; }           
             let h = "";
             const actorActual = document.getElementById("actorFilter").value;            
             const items = Array.from(t.getElementsByTagName("item"));           
@@ -241,26 +238,23 @@
                 const tipo = i.getAttribute("tipo");
                 const reglas = {
                     "cronicas": (actor === "Sec" && actorActual === "Sec"),
-                    "ascensos": (actor === "VM"),
                     "trazados": (actor === "VM"),
+                    "ascensos": (actor === "VM"),                   
                     "catedras": (actor === "MM"),
                     "escritos": (actor === "MM"),
                     "estudios": (actor === "CM"),
                     "practica": (actor === "AM"),
-                    "foraneos": (actor === "AM"),
+                    "foraneos": (actor === "VM"),
                     "externos": (actor === "MM")
                 };
                 return reglas[tipo];
             });
-
             if (itemsValidos.length > 0) {
-                h = `<p class="dialogo-vm">Acto seguido, daremos curso a los siguientes puntos registrados:</p>`;
-                
+                h = `<p class="dialogo-vm">Acto seguido, daremos curso a los siguientes puntos registrados:</p>`;                
                 itemsValidos.forEach(i => {
                     const tipo = i.getAttribute("tipo");
                     const url = i.getAttribute("url");
-                    const tit = i.getAttribute("asunto") || "Acta";                
-                    
+                    const tit = i.getAttribute("asunto") || "Acta";                    
                     if (url.includes('rituales.html')) {
                         h += `<button class="btn-instancia-exec" onclick="capturarOrigenYSalir('${url}', '${actorActual}', '${sec}', '${verso}')">${tit}</button>`;
                     } else { 
