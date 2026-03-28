@@ -228,7 +228,6 @@
         function inyectarInstancia(actor, sec, verso) {
             const t = Array.from(Bitacora.getElementsByTagName("evento")).find(x => x.getAttribute("fecha") === fecha);        
             if (!t) { return `<p class="dialogo-vm">No habiendo asuntos registrados, continuemos con orden del día.</p>`; }           
-            let h = "";
             const actorActual = document.getElementById("actorFilter").value;            
             const items = Array.from(t.getElementsByTagName("item"));           
             const itemsValidos = items.filter(i => {
@@ -247,11 +246,12 @@
                 return reglas[tipo];
             });
             if (itemsValidos.length > 0) {
-                h = `<p class="dialogo-vm">Acto seguido, daremos curso a los siguientes puntos registrados:</p>`;                
+                let h = `<p class="dialogo-vm">Acto seguido, daremos curso a los siguientes puntos:</p>`;
+                const debeEnumerar = itemsValidos.length > 1;                            
                 itemsValidos.forEach(i => {
-                    const tipo = i.getAttribute("tipo");
                     const url = i.getAttribute("url");
-                    const tit = i.getAttribute("asunto") || "Acta";                    
+                    const pre = debeEnumerar ? `${index + 1}. ` : "";
+                    const tit = pre + (i.getAttribute("asunto") || "Acta");                                                            
                     if (url.includes('rituales.html')) {
                         const urlParams = new URLSearchParams(url.split('?')[1]);
                         const linkExterno = urlParams.get('ext') || "";
@@ -261,7 +261,8 @@
                         }                        
                         h += `<button class="btn-instancia-exec" onclick="capturarOrigenYSalir('${urlDestino}', '${actorActual}', '${sec}', '${verso}')">${tit}</button>`;
                     } else { 
-                        const icon = tipo === "cronicas" ? "📜 " : (tipo === "externos" ? "🌐 " : (tipo === "trazados" ? "📍 " : ""));
+                        const tip = i.getAttribute("tipo");
+                        const icon = tip === "cronicas" ? "📜 " : (tip === "externos" ? "🌐 " : (tip === "trazados" ? "📍 " : ""));
                         h += `<button class="btn-ritual" onclick="mostrarVisor('${url}')">${icon}${tit}</button>`; 
                     }
                 });
