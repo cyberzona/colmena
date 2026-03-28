@@ -159,6 +159,7 @@
         }
 
         function renderizarLiturgia(hacerScroll = false) {
+            const extURL = new URLSearchParams(window.location.search).get('ext');
             const idSec = document.getElementById("seccionFilter").value;
             const actorSel = document.getElementById("actorFilter").value;
             const nodoSec = Array.from(Ritual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == idSec);
