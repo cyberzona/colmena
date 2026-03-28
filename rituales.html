@@ -243,6 +243,11 @@
                     "cronicas": (actor === "Sec" && actorActual === "Sec"),
                     "ascensos": (actor === "VM"),
                     "trazados": (actor === "VM"),
+                    "catedras": (actor === "MM"),
+                    "escritos": (actor === "MM"),
+                    "estudios": (actor === "CM"),
+                    "practica": (actor === "AM"),
+                    "foraneos": (actor === "AM"),
                     "externos": (actor === "MM")
                 };
                 return reglas[tipo];
@@ -259,7 +264,7 @@
                     if (url.includes('rituales.html')) {
                         h += `<button class="btn-instancia-exec" onclick="capturarOrigenYSalir('${url}', '${actorActual}', '${sec}', '${verso}')">${tit}</button>`;
                     } else { 
-                        const icon = tipo === "balaustre" ? "📜 " : (tipo === "virtual" ? "🌐 " : (tipo === "trazable" ? "📍 " : ""));
+                        const icon = tipo === "cronicas" ? "📜 " : (tipo === "externos" ? "🌐 " : (tipo === "trazados" ? "📍 " : ""));
                         h += `<button class="btn-ritual" onclick="mostrarVisor('${url}')">${icon}${tit}</button>`; 
                     }
                 });
