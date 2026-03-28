@@ -172,7 +172,7 @@
                     const actor = (acto.getAttribute("actor") || "Actor").trim();
                     let texto = (acto.getAttribute("tema") || acto.textContent).trim();
                     let btns = "";
-                    if (extURL && actor === actorSel) {
+                    if (extURL && actor === "MM") {
                         btns += `<br><button class="btn-ritual" style="margin-top:10px;" onclick="mostrarVisor('${decodeURIComponent(extURL)}')">📄 Ver Documento Adjunto</button>`;
                     }
                     if (texto.includes("[[INSTANCIA]]")) {
