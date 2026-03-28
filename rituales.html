@@ -263,7 +263,7 @@
                         if (linkExterno && !url.includes('&ext=')) {
                             urlDestino += `&ext=${encodeURIComponent(linkExterno)}`;
                         }                        
-                        h += `<button class="btn-instancia-exec" onclick="capturarOrigenYSalir('${url}', '${actorActual}', '${sec}', '${verso}')">${tit}</button>`;
+                        h += `<button class="btn-instancia-exec" onclick="capturarOrigenYSalir('${urlDestino}', '${actorActual}', '${sec}', '${verso}')">${tit}</button>`;
                     } else { 
                         const icon = tipo === "cronicas" ? "📜 " : (tipo === "externos" ? "🌐 " : (tipo === "trazados" ? "📍 " : ""));
                         h += `<button class="btn-ritual" onclick="mostrarVisor('${url}')">${icon}${tit}</button>`; 
