@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bitacora>
     <evento fecha="2026-02-21">
-        <item tipo="balaustre" asunto="Balaustre de la evento Ordinaria (Feb-21)" url="https://drive.google.com/file/d/1Jr6xYTM6FAyYTWhSwrCJApxKhk3KelMA/preview" />
+        <item tipo="cronicas" asunto="Balaustre de la evento Ordinaria (Feb-21)" url="https://drive.google.com/file/d/1Jr6xYTM6FAyYTWhSwrCJApxKhk3KelMA/preview" />
     </evento>
     <evento fecha="2026-03-21">  
-        <item tipo="balaustre" asunto="Tenida Ordinaria (Feb-21)" url="https://drive.google.com/file/d/1Jr6xYTM6FAyYTWhSwrCJApxKhk3KelMA/preview"/>        
-        <item tipo="virtuales" asunto="Tenida Virtual" url="https://meet.google.com/nso-pjde-tis#blank"/>
-        <item tipo="trazables" asunto="Dignidades Ubicación"   url="https://drive.google.com/file/d/1Wf1Byz7baivKCvulgCbdHtD6dWYQrGZ7/preview"/>
+        <item tipo="cronicas" asunto="Tenida Ordinaria (Feb-21)" url="https://drive.google.com/file/d/1Jr6xYTM6FAyYTWhSwrCJApxKhk3KelMA/preview"/>        
+        <item tipo="externos" asunto="Tenida Virtual" url="https://meet.google.com/nso-pjde-tis#blank"/>
+        <item tipo="trazados" asunto="Dignidades Ubicación"   url="https://drive.google.com/file/d/1Wf1Byz7baivKCvulgCbdHtD6dWYQrGZ7/preview"/>
              
     </evento>
     <evento fecha="2026-03-23">  
-        <item tipo="balaustre" asunto="evento Ordinaria (Feb-21)" url="https://drive.google.com/file/d/1Jr6xYTM6FAyYTWhSwrCJApxKhk3KelMA/preview" />       
-        <item tipo="elevacion" asunto="CÁMARA DE COMPAÑERO" url="rituales.html?num=2" />   
-        <item tipo="elevacion" asunto="CÁMARA DEL MEDIO"    url="rituales.html?num=3"/>                 
+        <item tipo="cronicas" asunto="evento Ordinaria (Feb-21)" url="https://drive.google.com/file/d/1Jr6xYTM6FAyYTWhSwrCJApxKhk3KelMA/preview" />       
+        <item tipo="ascensos" asunto="CÁMARA DE COMPAÑERO" url="rituales.html?num=2" />   
+        <item tipo="ascensos" asunto="CÁMARA DEL MEDIO"    url="rituales.html?num=3"/>                 
     </evento>    
     <evento fecha="2026-03-26">  
-        <item tipo="balaustre" asunto="evento Ordinaria (Feb-21)" url="https://drive.google.com/file/d/1Jr6xYTM6FAyYTWhSwrCJApxKhk3KelMA/preview" />        
-        <item tipo="trazables" asunto="Saco de proposiciones" url="rituales.html?num=1&amp;sec=4"/>   
-        <item tipo="trazables" asunto="Asuntos familiares y otros" url="rituales.html?num=1&amp;sec=5"/>  
-        <item tipo="elevacion" asunto="CÁMARA DE COMPAÑERO" url="rituales.html?num=2&amp;sec=1" />   
-        <item tipo="elevacion" asunto="CÁMARA DEL MEDIO"    url="rituales.html?num=3&amp;sec=1"/> 
+        <item tipo="cronicas" asunto="evento Ordinaria (Feb-21)" url="https://drive.google.com/file/d/1Jr6xYTM6FAyYTWhSwrCJApxKhk3KelMA/preview" />        
+        <item tipo="trazados" asunto="Saco de proposiciones" url="rituales.html?num=1&amp;sec=4"/>   
+        <item tipo="trazados" asunto="Asuntos familiares y otros" url="rituales.html?num=1&amp;sec=5"/>  
+        <item tipo="ascensos" asunto="CÁMARA DE COMPAÑERO" url="rituales.html?num=2&amp;sec=1" />   
+        <item tipo="ascensos" asunto="CÁMARA DEL MEDIO"    url="rituales.html?num=3&amp;sec=1"/>
+        <item tipo="estudios" asunto="Plancha de Trazado"    url="https://drive.google.com/file/d/1Jr6xYTM6FAyYTWhSwrCJApxKhk3KelMA/preview"/>
     </evento>
 </bitacora>
