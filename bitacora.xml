@@ -19,4 +19,17 @@
         <item tipo="trazados" asunto="Asuntos Familiares" url="rituales.html?num=1&amp;sec=5" />
         <item tipo="ascensos" asunto="CÁMARA DE COMPAÑERO" url="rituales.html?num=2" />
     </evento>
+  <evento fecha="2025-09-20">
+    <item tipo="cronicas" asunto="Acta Anterior" url="https://drive.google.com/file/d//preview" />
+  </evento>
+  <evento fecha="2025-12-20">
+    <item tipo="cronicas" asunto="Acta Anterior" url="https://drive.google.com/file/d/1afNYmnDfiIFhP2rjMpAbmGBy3DAJZ5v3/preview" />
+  </evento>
+  <evento fecha="2026-01-18">
+    <item tipo="cronicas" asunto="Acta Anterior" url="https://drive.google.com/file/d/1CwqivGnLMgU6ex3FB9WZ3cDKeyV98Plk/preview" />
+  </evento>
+  <evento fecha="2026-01-31">
+    <item tipo="cronicas" asunto="Acta Anterior" url="https://drive.google.com/file/d/1QN_iL555OXTTcdUzbRdVrNkL893HMGV_/preview" />
+    <item tipo="trazados" asunto="Saco de Proposiciones" url="rituales.html?num=1&amp;sec=4&amp;ext=https://drive.google.com/file/d/14GWitgAOpEuGFp-MW6Y2XdD9CUE46mDt/preview" />
+  </evento>
 </bitacora>
