@@ -15,4 +15,9 @@
   <evento fecha="2026-02-21">
     <item tipo="memo" aunto="Tenida Ordinaria de Febrero" url="Vigilante 2" />
   </evento> 
+  <evento fecha="2026-03-21">
+    <item tipo="cronicas" asunto="Tenida Ordinaria del Solsticio de Verano" url="https://drive.google.com/file/d/1Jr6xYTM6FAyYTWhSwrCJApxKhk3KelMA/preview" />
+    <item tipo="trazados" asunto="Saco de Proposiciones" url="rituales.html?num=1&amp;sec=4&amp;ext=https://drive.google.com/file/d/1Rvm41Ubqwxxz5qJ6MMf6nHBLPP6NuCc3/preview" />
+    <item tipo="ascensos" asunto="CÁMARA DEL MEDIO" url="rituales.html?num=3" />
+  </evento>
 </bitacora>
