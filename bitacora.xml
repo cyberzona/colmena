@@ -1,29 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bitacora>
-    <evento fecha="2026-02-21">
-        <item tipo="cronicas" asunto="Balaustre de la evento Ordinaria (Feb-21)" url="https://drive.google.com/file/d/1Jr6xYTM6FAyYTWhSwrCJApxKhk3KelMA/preview" />
-    </evento>
-    <evento fecha="2026-03-21">  
-        <item tipo="cronicas" asunto="Tenida Ordinaria (Feb-21)" url="https://drive.google.com/file/d/1Jr6xYTM6FAyYTWhSwrCJApxKhk3KelMA/preview"/>        
-        <item tipo="externos" asunto="Tenida Virtual" url="https://meet.google.com/nso-pjde-tis#blank"/>
-        <item tipo="trazados" asunto="Dignidades Ubicación"   url="https://drive.google.com/file/d/1Wf1Byz7baivKCvulgCbdHtD6dWYQrGZ7/preview"/>      
-    </evento>
-    <evento fecha="2026-03-26">  
-        <item tipo="cronicas" asunto="evento Ordinaria (Feb-21)" url="https://drive.google.com/file/d/1Jr6xYTM6FAyYTWhSwrCJApxKhk3KelMA/preview" />       
-        <item tipo="ascensos" asunto="CÁMARA DE COMPAÑERO" url="rituales.html?num=2" />   
-        <item tipo="ascensos" asunto="CÁMARA DEL MEDIO"    url="rituales.html?num=3&amp;sec=1"/>               
-    </evento>
-    <evento fecha="2025-09-20">
-        <item tipo="cronicas" asunto="Acta Anterior" url="https://drive.google.com/file/d//preview" />
-    </evento>
-    <evento fecha="2025-12-20">
-        <item tipo="cronicas" asunto="Acta Anterior" url="https://drive.google.com/file/d/1afNYmnDfiIFhP2rjMpAbmGBy3DAJZ5v3/preview" />
-   </evento>
-   <evento fecha="2026-01-18">
-        <item tipo="cronicas" asunto="Acta Anterior" url="https://drive.google.com/file/d/1CwqivGnLMgU6ex3FB9WZ3cDKeyV98Plk/preview" />
-   </evento>
-   <evento fecha="2026-01-31">
-        <item tipo="cronicas" asunto="Acta Anterior" url="https://drive.google.com/file/d/1QN_iL555OXTTcdUzbRdVrNkL893HMGV_/preview" />
-        <item tipo="trazados" asunto="Saco de Proposiciones" url="rituales.html?num=1&amp;sec=4&amp;ext=https://drive.google.com/file/d/14GWitgAOpEuGFp-MW6Y2XdD9CUE46mDt/preview" />
-  </evento>   
+  <evento fecha="2025-09-20">
+  </evento>
 </bitacora>
