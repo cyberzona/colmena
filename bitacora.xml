@@ -27,4 +27,8 @@
     <item tipo="trazados" asunto="Asuntos Familiares" url="rituales.html?num=1&amp;sec=5" />
     <item tipo="ascensos" asunto="CÁMARA DE COMPAÑERO" url="rituales.html?num=2&amp;sec=1" />
   </evento>
+  <evento fecha="2026-04-25">
+     <item tipo="cronicas" asunto="Acta Anterior" url="https://drive.google.com/file/d/1Jr6xYTM6FAyYTWhSwrCJApxKhk3KelMA/preview" />
+    <item tipo="trazados" asunto="Saco de Proposiciones" url="rituales.html?num=1&amp;sec=4&amp;ext=https://drive.google.com/file/d/1T5e6fOLQ8Tw041Qw6aLJjkENZn6fkVUh/preview" />
+  </evento>
 </bitacora>
