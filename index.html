@@ -443,11 +443,18 @@
                 return;
             }
             trabajos.forEach(trabajo => {                
-                const li = document.createElement('li');                
+                const li = document.createElement('li');   
+                let fechaNormal = "";
+                if (trabajo.fecha && trabajo.fecha.includes("-")) {
+                    const partes = trabajo.fecha.split("-");
+                    fechaNormal = `${partes[2]}/${partes[1]}/${partes[0]}`;
+                }
                 li.innerHTML = `
                     <a href="#" data-url="${trabajo.url}" data-titulo="${trabajo.titulo}">
                     ${trabajo.titulo}
-                   <span>${trabajo.fecha}</span>
+                    <span style="font-size: 0.85em; opacity: 0.8; margin-left: 10px;">
+                        ${fechaNormal}
+                    </span>
                     </a>
                 `;
                 li.querySelector('a').addEventListener('click', openDocumentModal);
