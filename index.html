@@ -292,9 +292,9 @@
         <section class="card trabajos" id="trabajos" aria-labelledby="trabajos-title">
             <h3 id="trabajos-title">Estudios y Trabajos</h3>
             <p class="small muted">Documentos y trazados para el perfeccionamiento de los Hermanos (Se abren en ventana segura).</p>
-            <ul id="trabajos-list">
+            <ol id="trabajos-list">
                 <li style="text-align:center; padding:15px; color:var(--brown);" class="loading-message">Cargando documentos...</li>
-            </ul>
+            </ol>
         </section>
 
         <section class="card" id="galeria" aria-labelledby="galeria-title">
@@ -445,10 +445,7 @@
             trabajos.forEach(trabajo => {
                 const li = document.createElement('li');
                 li.innerHTML = `
-                    <a href="#" data-url="${trabajo.url}" data-titulo="${trabajo.titulo}">
-                       
-                        <span>${trabajo.descripcion}</span>
-                    </a>
+                    <a href="#" data-url="${trabajo.url}" data-titulo="${trabajo.titulo}">${trabajo.descripcion}</a>
                 `;
                 li.querySelector('a').addEventListener('click', openDocumentModal);
                 TRABAJOS_LIST_ELEMENT.appendChild(li);
