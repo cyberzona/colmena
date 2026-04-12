@@ -1,20 +1,12 @@
 [
   {
-    "false": "A8P0-0502",
-    "Fuente": "COL8-2025-020",
-    "Titulos y Referencia": "Tenida Blanca del Solsticio Invernal",
-    "Evento": "Tenida",
-    "Orden": "Cerrada",
-    "Papeles": "Minuta",
-    "Descriptor Google Drive": "1CwqivGnLMgU6ex3FB9WZ3cDKeyV98Plk"
+    "titulo": "Tenida Blanca del Solsticio Invernal",
+    "descripcion": "Tenida",
+    "url": "1CwqivGnLMgU6ex3FB9WZ3cDKeyV98Plk"
   },
   {
-    "false": "A8N2-0501",
-    "Fuente": "COL8-2025-018",
-    "Titulos y Referencia": "Comunicado Oficial de Duelo Masónico",
-    "Evento": "Noticia",
-    "Orden": "Circular",
-    "Papeles": "Circular",
-    "Descriptor Google Drive": "117WYwZ2qubXuwxLwryjjeUxlVip0Qp6b"
+    "titulo": "Comunicado Oficial de Duelo Masónico",
+    "descripcion": "Noticia",
+    "url": "117WYwZ2qubXuwxLwryjjeUxlVip0Qp6b"
   }
 ]
