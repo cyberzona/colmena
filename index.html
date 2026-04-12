@@ -444,11 +444,11 @@
             }
             trabajos.forEach(trabajo => {                
                 const li = document.createElement('li');
-                const fechaTexto = trabajo.fecha ? formatearFechaHumana(trabajo.fecha) : "Fecha no disponible";
+                
                 li.innerHTML = `
                     <a href="#" data-url="${trabajo.url}" data-titulo="${trabajo.titulo}">
                     ${trabajo.titulo}
-                    <span>${fechaTexto}</span>
+                   
                     </a>
                 `;
                 li.querySelector('a').addEventListener('click', openDocumentModal);
