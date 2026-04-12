@@ -1,5 +1,10 @@
 [
   {
+    "titulo": "Leyes",
+    "descripcion": "EDICTO DEL CANON ALVEARIS",
+    "url": "https://drive.google.com/file/d/1w-ub3NZXuXJofkZWaB4GivI6JztnZdf3/preview"
+  },
+  {
     "titulo": "Plancha",
     "descripcion": "Arquitectura La Síntesis de la Piedra",
     "url": "https://drive.google.com/file/d/1v8jN_CeVvP-pod_8vbQru-YpBwBq36N8/preview"
@@ -8,10 +13,5 @@
     "titulo": "Plancha",
     "descripcion": "UBICACIÓN DE LAS DIGNIDADES Y LA TRADICIÓN HISTÓRICA",
     "url": "https://drive.google.com/file/d/1kyAYwuix12ak_Rm489MDltZGZpTB2ILt/preview"
-  },
-  {
-    "titulo": "Plancha",
-    "descripcion": "La Tríada de la Apertura de Trabajos",
-    "url": "https://drive.google.com/file/d/1T5e6fOLQ8Tw041Qw6aLJjkENZn6fkVUh/preview"
   }
 ]
