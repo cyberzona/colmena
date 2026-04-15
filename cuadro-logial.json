@@ -1,0 +1,20 @@
+[
+  {
+    "fecha": "2025-06-24",
+    "oficiales": [
+      { "titulo": "Venerable Maestro", "nombre": "Eduardo Hernández" },
+      { "titulo": "Primer Vigilante", "nombre": "José Guevara" }
+      { "titulo": "Segundo Vigilante", "nombre": "Gustavo Montero" }
+      { "titulo": "Secretario", "nombre": "Juan Hernández" }
+    ]
+  },
+  {
+    "fecha": "2025-06-24",
+    "oficiales": [
+      { "titulo": "Venerable Maestro", "nombre": "Eduardo Hernández" },
+      { "titulo": "Primer Vigilante", "nombre": "José Guevara" }
+      { "titulo": "Segundo Vigilante", "nombre": "Gustavo Montero" }
+      { "titulo": "Secretario", "nombre": "Juan Hernández" }
+    ]
+  }
+]
