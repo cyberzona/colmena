@@ -1,20 +1,43 @@
-[
-  {
-    "fecha": "2025-06-24",
+{
+  "2026-2027": {
+    "fecha_instalacion": "2026-06-24",
     "oficiales": [
-      { "titulo": "Venerable Maestro", "nombre": "Eduardo Hernández" },
-      { "titulo": "Primer Vigilante", "nombre": "José Guevara" }
-      { "titulo": "Segundo Vigilante", "nombre": "Gustavo Montero" }
-      { "titulo": "Secretario", "nombre": "Juan Hernández" }
+      { "cargo": "VENERABLE MAESTRO", "nombre": "Artifex" },
+      { "cargo": "SECRETARIO", "nombre": "Nombre Del Hermano" }
     ]
   },
-  {
-    "fecha": "2025-06-24",
+  "2025-2026": {
+    "fecha_instalacion": "2025-06-24",
     "oficiales": [
-      { "titulo": "Venerable Maestro", "nombre": "Eduardo Hernández" },
-      { "titulo": "Primer Vigilante", "nombre": "José Guevara" }
-      { "titulo": "Segundo Vigilante", "nombre": "Gustavo Montero" }
-      { "titulo": "Secretario", "nombre": "Juan Hernández" }
+      { "cargo": "VENERABLE MAESTRO", "nombre": "José De Jesús Hernández" },
+      { "cargo": "SECRETARIO", "nombre": "Nombre Del Hermano" }
     ]
   }
-]
+}
+
+async function cargarCuadroLogial(periodoDeseado = "2026-2027") {
+    try {
+        const response = await fetch(CUADRO_URL);
+        const datos = await response.json();
+        
+        // Seleccionamos el bloque del periodo específico
+        const cuadroActual = datos[periodoDeseado];
+        if (!cuadroActual) return console.warn("Periodo no encontrado");
+
+        console.log(`Cargando cuadro instalado el: ${cuadroActual.fecha_instalacion}`);
+
+        const buscarNombre = (cargo) => {
+            const o = cuadroActual.oficiales.find(f => f.cargo === cargo.toUpperCase());
+            return o ? o.nombre : "Vacante";
+        };
+
+        // Mapeo a tus IDs de HTML
+        document.getElementById('vm-nombre').textContent = buscarNombre('VENERABLE MAESTRO');
+        document.getElementById('pv-nombre').textContent = buscarNombre('PRIMER VIGILANTE');
+        document.getElementById('sv-nombre').textContent = buscarNombre('SEGUNDO VIGILANTE');
+        document.getElementById('ms-nombre').textContent = buscarNombre('SECRETARIO');
+
+    } catch (error) {
+        console.error("Error al cargar:", error);
+    }
+}
