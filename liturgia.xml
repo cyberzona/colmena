@@ -170,7 +170,7 @@
     <ritual logia="Colmena No. 8" libro="3">
         <seccion id="1" titulo="Apertura de Trabajos">
             <parte id="1" titulo="Apertura de Trabajos">
-                <acto tipo="verso" actor="VM" tema="Venerable Hermano Primer Vigilante, ¿sois Maestro Masón?/>
+                <acto tipo="verso" actor="VM" tema="Venerable Hermano Primer Vigilante, ¿sois Maestro Masón?"/>
                 <acto tipo="verso" actor="1V" tema=" La Acacia me es conocida."/>
                 <acto tipo="verso" actor="VM" tema="¿Cuál es el primer deber de un Vigilante en Cámara del Medio?"/>
                 <acto tipo="verso" actor="1V" tema="Investigar si estamos a cubierto de las indiscreciones de los Profanos, Aprendices y Compañeros"/>
