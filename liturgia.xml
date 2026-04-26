@@ -170,11 +170,16 @@
     <ritual logia="Colmena No. 8" libro="3">
         <seccion id="1" titulo="Apertura de Trabajos">
             <parte id="1" titulo="Apertura de Trabajos">
-                <acto tipo="verso" actor="VM" tema="HH∴ 1V∴ y 2V∴ Servios anunciar alo HH∴ de vuestras respectivas columnas, como yo lo hago en el Or∴ que voy a suspender los trabajos con un solo golpe de Mall∴ para abrir la de Compañero."/>
-                <acto tipo="verso" actor="1V" tema="H∴ 2V∴ y HH∴ de mi columna, nuestro VM∴ va a suspender los trabajos por un solo golpe de Mall∴"/>
-                <acto tipo="verso" actor="2V" tema="HH∴ de la Col∴ del Sur os anuncio que el VM∴ va a suspender los Trbajos con un solo golpe de Mall∴"/>
-                <acto tipo="verso" actor="1V" tema="Anunciado VM∴"/>
-                <acto tipo="verso" actor="VM" tema="[Da un golpe de Maellete]... y clausura los trabajos invitando a los HH∴ Aprendices a que cubran el Tempo"/>
+                <acto tipo="verso" actor="VM" tema="Venerable Hermano Primer Vigilante, ¿sois Maestro Masón?/>
+                <acto tipo="verso" actor="1V" tema=" La Acacia me es conocida."/>
+                <acto tipo="verso" actor="VM" tema="¿Cuál es el primer deber de un Vigilante en Cámara del Medio?"/>
+                <acto tipo="verso" actor="1V" tema="Investigar si estamos a cubierto de las indiscreciones de los Profanos, Aprendices y Compañeros"/>
+                <acto tipo="verso" actor="VM" tema="Aseguraos de ello, Venerable Hermano Segundo Vigilante"/>
+                <acto tipo="verso" actor="2V" tema="[El 2º Vigilante trasmite la orden del Muy Respetable Maestro al Guarda Templo,el cual entre abre la puerta y consulta al Guarda Templo Externo. Informado de que la Cámara esta a cubierto, lo participa al 2º Vigilante y éste al Muy Respetable Maestro]."/>
+                <acto tipo="verso" actor="2V" tema="Muy Respetable Maestro, el Templo se halla a cubierto interior y exteriormente."/>
+                <acto tipo="verso" actor="VM" tema="¿Cuál es el segundo deber de un 1º Vigilante en Cámara de Maestros?"/>
+                <acto tipo="verso" actor="1V" tema="Asegurarse de que todos los Hermanos que decoran las columnas son Maestros Masones"/>
+                <acto tipo="verso" actor="VM" tema="Servios cumplir este deber, Venerables Hermanos Vigilantes. En pie y alorden. Da un golpe de mallete. [Todos se ponen de pie y al orden de maestros. Los Vigilantes recorren sus respectivas columnas, y retejarán uno a uno a todos los Hermanos que se encuentran en ellas, por el toque y la palabra sagrada del grado de Maestro, al mismo tiempo que los Hermanos que se hayan en el Oriente se acercan uno a uno al Muy Respetable Maestro, el que los retejará en la misma forma]"/>  
             </parte>
         </seccion>        
     </ritual>    
