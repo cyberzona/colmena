@@ -171,11 +171,11 @@
         <seccion id="1" titulo="Apertura de Trabajos">
             <parte id="1" titulo="Apertura de Trabajos">
                 <acto tipo="verso" actor="VM" tema="Venerable Hermano Primer Vigilante, ¿sois Maestro Masón?"/>
-                <acto tipo="verso" actor="1V" tema="La Acacia me es conocida."/>
-                <acto tipo="verso" actor="VM" tema="Venerable Hermano Segundo Vigilante, ¿qué significa que la acacia le es conocida al Primer Vigilante?"/>
-                <acto tipo="verso" actor="2V" tema="Que sabe cómo se alcanza la inmortalidad."/>
-                <acto tipo="verso" actor="VM" tema="Venerable Hermano Primer Vigilante, ¿Qué es la inmortalidad?"/>
-                <acto tipo="verso" actor="1V" tema="Es la certeza que tiene el Maestro Masón de que su alma es inmortal y que, al desprenderse de la materia, vuelve al seno del Gran Arquitecto del Universo, de donde salió."/>
+                <acto tipo="verso" actor="1V" tema="La acacia me es conocida."/>
+                <acto tipo="verso" actor="VM" tema="¿Qué significa esa frase Venerable Hermano Segundo Vigilante?"/>
+                <acto tipo="verso" actor="2V" tema="Que sé cómo se alcanza la inmortalidad."/>
+                <acto tipo="verso" actor="VM" tema="¿Qué es la inmortalidad? Venerable Hermano Primer Vigilante"/>
+                <acto tipo="verso" actor="1V" tema="El pensamiento elevándose a su idealidad y tomando posesión de su propia divinidad."/>
                 <acto tipo="verso" actor="VM" tema="¿Cuál es el primer deber de un Vigilante en Cámara del Medio?"/>
                 <acto tipo="verso" actor="1V" tema="Investigar si estamos a cubierto de las indiscreciones de los Profanos, Aprendices y Compañeros"/>
                 <acto tipo="verso" actor="VM" tema="Aseguraos de ello, Venerable Hermano Segundo Vigilante"/>
