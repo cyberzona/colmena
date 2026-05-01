@@ -13,102 +13,101 @@
     <meta http-equiv="pragma" content="no-cache"/>
 
     <style>
-        .staticrypt-hr {
-            margin-top: 20px;
-            margin-bottom: 20px;
-            border: 0;
-            border-top: 1px solid #eee;
-        }
+    :root {
+        --gold: #D4A017;
+        --beige: #F5EFE6;
+        --brown: #7A4F35;
+        --dark: #37271E;
+        --ff-medieval: 'MedievalSharp', serif;
+    }
 
-        .staticrypt-page {
-            width: 360px;
-            padding: 8% 0 0;
-            margin: auto;
-            box-sizing: border-box;
-        }
+    body {
+        margin: 0;
+        height: 100vh;
+        font-family: var(--ff-medieval), sans-serif;
+        color: var(--dark);
+        /* Degradado idéntico al de tu sitio principal */
+        background: linear-gradient(180deg, var(--beige) 0%, #ffffff 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-        .staticrypt-form {
-            position: relative;
-            z-index: 1;
-            background: #FFFFFF;
-            max-width: 360px;
-            margin: 0 auto 100px;
-            padding: 45px;
-            text-align: center;
-            box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
-            border-radius: 10px;
-        }
+    .staticrypt-page {
+        width: 100%;
+        max-width: 400px;
+        padding: 20px;
+    }
 
-        .staticrypt-form input {
-            outline: 0;
-            background: #f2f2f2;
-            width: 100%;
-            border: 0;
-            margin: 0 0 15px;
-            padding: 15px;
-            box-sizing: border-box;
-            font-size: 14px;
-        }
+    .staticrypt-form {
+        background: #ffffff;
+        border-radius: 14px; /* var(--radius) */
+        padding: 40px;
+        box-shadow: 0 8px 22px rgba(55, 39, 30, 0.15);
+        text-align: center;
+        border-top: 6px solid var(--gold);
+    }
 
-        .staticrypt-form .staticrypt-decrypt-button {
-            text-transform: uppercase;
-            outline: 0;
-            background: #4CAF50;
-            width: 100%;
-            border: 0;
-            padding: 15px;
-            color: #FFFFFF;
-            font-size: 14px;
-            cursor: pointer;
-            border-radius: 25px;
-        }
+    h2 {
+        color: var(--dark);
+        margin-bottom: 10px;
+        font-size: 1.8rem;
+    }
 
-        .staticrypt-form .staticrypt-decrypt-button:hover, .staticrypt-form .staticrypt-decrypt-button:active, .staticrypt-form .staticrypt-decrypt-button:focus {
-            background: #43A047;
-        }
+    p {
+        color: var(--brown);
+        font-size: 1rem;
+        margin-bottom: 25px;
+    }
 
-        .staticrypt-html {
-            height: 100%;
-        }
+    .staticrypt-form input {
+        width: 100%;
+        padding: 12px;
+        border-radius: 10px;
+        border: 2px solid var(--beige);
+        background: var(--beige);
+        font-family: sans-serif; /* Mejor legibilidad para passwords */
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+        outline: none;
+        transition: border-color 0.3s;
+    }
 
-        .staticrypt-body {
-            margin-bottom: 1em;
-            background: #e4e4e4; /* fallback for old browsers */
-            font-family: "Arial", sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
+    .staticrypt-form input:focus {
+        border-color: var(--gold);
+    }
 
-        .staticrypt-instructions {
-            margin-top: -1em;
-            margin-bottom: 1em;
-        }
+    .staticrypt-form button {
+        width: 100%;
+        padding: 12px;
+        background: var(--gold);
+        color: #ffffff;
+        border: none;
+        border-radius: 10px;
+        font-family: var(--ff-medieval);
+        font-size: 1.2rem;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 6px 12px rgba(212, 160, 23, 0.2);
+        transition: transform 0.2s, background 0.3s;
+    }
 
-        .staticrypt-title {
-            font-size: 1.5em;
-        }
+    .staticrypt-form button:hover {
+        background: var(--brown);
+        transform: translateY(-2px);
+    }
 
-        .staticrypt-footer {
-            position: fixed;
-            height: 20px;
-            font-size: 16px;
-            padding: 2px;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            margin-bottom: 0;
-        }
+    .staticrypt-hr {
+        display: none; /* Quitamos la línea por estética limpia */
+    }
 
-        .staticrypt-footer p {
-            margin: 2px;
-            text-align: center;
-            float: right;
-        }
-
-        .staticrypt-footer a {
-            text-decoration: none;
-        }
-    </style>
+    footer {
+        margin-top: 20px;
+        font-size: 0.8rem;
+        color: var(--brown);
+        opacity: 0.7;
+    }
+</style>
 </head>
 
 <body class="staticrypt-body">
