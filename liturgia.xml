@@ -198,8 +198,8 @@
         <acto actor="VM" tema="Sentaos Venerables Hermanos. [Lo hacen. Se aunica, lee y sanciona la Plancha de Arquitectura de los últimos trabajos; se circula el saco de proposiciones; en seguida se envía al Maestro de Ceremonia por los candidatos; aquél atará en el brazo derecho del que ha de entrar en el ataúd, un triángulo de oro. En el intermedio se apagan todas las luces, menos las de los transparentes de las tres linternas, que serán las que alumbran la Cámara, con las del Cuadro del Templo en su oscuridad]" />
       </parte>
     </seccion>
-    <seccion id="2" titulo="Exaltación al Grado de Maestro">
-      <parte titulo="Iniciación de la Exaltación">
+    <seccion id="2" titulo="Exaltación a Maestro">
+      <parte titulo="Iniciación de la Ceremonia">
         <acto actor="GT" tema="[El Maestro de Ceremonias hace que los Compañeros toquen en su grado y, al oirle, dice: ] Muy Venerable Hermano Segundo Vigilante, a la puerta de la Cámara toca un Compañero." />
         <acto actor="2V" tema="Muy Venerable Hermano Primer Vigilante, a las puertas de la cámara toca un Compañero." />
         <acto actor="1V" tema="Muy Respetable Maestro, a las puertas de la cámara toca un Compañero." />
