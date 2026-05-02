@@ -1,202 +1,217 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <liturgia>
   <ritual libro="1" logia="Colmena No. 8">
     <seccion id="1" titulo="Apertura de Trabajos">
       <parte titulo="El Espacio Sagrado">
-        <acto actor="VM" tema="- ¡Silencio en Logia, Hermanos (HH∴)! [Golpe de Mallete]" />
-        <acto actor="VM" tema="- Hermano Maestro de Ceremonias (MC∴), ¿los puestos están cubiertos?" />
-        <acto actor="MC" tema="- Si, VM∴ los puestos están cubiertos y los HH∴ prontos a iniciar los trabajos." />
-        <acto actor="VM" tema="- Hermano Primer Vigilante (1V∴): ¿Sois Masón?" />
-        <acto actor="1V" tema="- Mis Hermanos (HH∴) me reconocen como tal, Venerable Maestro (VM∴)" />
-        <acto actor="VM" tema="- ¿Cuál es nuestro primer deber en Logia Hermano 1V∴?" />
-        <acto actor="1V" tema="- Ver si el templo está cubierto de toda indiscreción profana" />
-        <acto actor="VM" tema="- Aseguraos de ello, Hermano mío." />
-        <acto actor="1V" tema="- Hermano Guarda Templo (GT∴) Cumplid con vuestro deber. [El GT da tres golpes en la puerta y la respuesta externa es similar]" />
-        <acto actor="GT" tema="- Hermano 1V∴, el Temp∴ está a cubierto de toda indiscreción profana." />
-        <acto actor="1V" tema="- VM∴ el Templo está cubierto de toda indiscreción. (Da tres golpes de Mallete)" />
+        <acto actor="VM" tema="¡Silencio en Logia, Hermanos (HH∴)! [Golpe de Mallete]" />
+        <acto actor="VM" tema="Hermano Maestro de Ceremonias (MC∴), ¿los puestos están cubiertos?" />
+        <acto actor="MC" tema="Si, VM∴ los puestos están cubiertos y los HH∴ prontos a iniciar los trabajos." />
+        <acto actor="VM" tema="Hermano Primer Vigilante (1V∴): ¿Sois Masón?" />
+        <acto actor="1V" tema="Mis Hermanos (HH∴) me reconocen como tal, Venerable Maestro (VM∴)" />
+        <acto actor="VM" tema="¿Cuál es nuestro primer deber en Logia Hermano 1V∴?" />
+        <acto actor="1V" tema="Ver si el templo está cubierto de toda indiscreción profana" />
+        <acto actor="VM" tema="Aseguraos de ello, Hermano mío." />
+        <acto actor="1V" tema="Hermano Guarda Templo (GT∴) Cumplid con vuestro deber. [El GT da tres golpes en la puerta y la respuesta externa es similar]" />
+        <acto actor="GT" tema="Hermano 1V∴, el Temp∴ está a cubierto de toda indiscreción profana." />
+        <acto actor="1V" tema="VM∴ el Templo está cubierto de toda indiscreción. (Da tres golpes de Mallete)" />
       </parte>
       <parte titulo="El Cuerpo del Taller">
-        <acto actor="VM" tema="- ¿Cuál es vuestro segundo deber en Hermano 1V∴?" />
-        <acto actor="1V" tema="- Ver si todos los HH∴ que decoran ambas columnas son aprendices masones." />
-        <acto actor="VM" tema="- Aseguraos de ello, QQHH∴ Primer y Segundo Vigilantes, de pie y al orden." />
-        <acto actor="2V" tema="- Hermano 1V∴, los HH∴ que decoran mi Col∴ son masones y están de pie y al orden en el Grado de Aprendiz. [Da un golpe de mallete]" />
-        <acto actor="1V" tema="- VM∴ los HH∴ que se cobijan bajo la bóveda de nuestro templo son Masones y se hallan al orden, prontos para cumplir con vuestro mandato, y dispuestos a laborar en la construcción del Templo moral erigido a la ciencia, a la virtud y al trabajo. [Da un golpe de Mallete]." />
-        <acto actor="VM" tema="- HH∴ míos, también son masones los que decoran el Oriente, y están prontos para trabajar en la construcción del Templo Moral que la Masonería eleva en la gloria del perfeccionamiento humano, mediante la conquista de los sublimes principios de Libertad, Igualdad y Fraternidad [Da un golpe de Mallete seguido por los Vigilantes]." />
+        <acto actor="VM" tema="¿Cuál es vuestro segundo deber en Hermano 1V∴?" />
+        <acto actor="1V" tema="Ver si todos los HH∴ que decoran ambas columnas son aprendices masones." />
+        <acto actor="VM" tema="Aseguraos de ello, QQHH∴ Primer y Segundo Vigilantes, de pie y al orden." />
+        <acto actor="2V" tema="Hermano 1V∴, los HH∴ que decoran mi Col∴ son masones y están de pie y al orden en el Grado de Aprendiz. [Da un golpe de mallete]" />
+        <acto actor="1V" tema="VM∴ los HH∴ que se cobijan bajo la bóveda de nuestro templo son Masones y se hallan al orden, prontos para cumplir con vuestro mandato, y dispuestos a laborar en la construcción del Templo moral erigido a la ciencia, a la virtud y al trabajo. [Da un golpe de Mallete]." />
+        <acto actor="VM" tema="HH∴ míos, también son masones los que decoran el Oriente, y están prontos para trabajar en la construcción del Templo Moral que la Masonería eleva en la gloria del perfeccionamiento humano, mediante la conquista de los sublimes principios de Libertad, Igualdad y Fraternidad [Da un golpe de Mallete seguido por los Vigilantes]." />
       </parte>
       <parte titulo="El Propósito del Cuerpo">
-        <acto actor="VM" tema="- ¿Para qué ocupáis ese puesto, Querido Hermano 2V∴?" />
-        <acto actor="2V" tema="- Para mejor observar el Sol en su meridiano, mandar a los obreros al trabajo y llamarlos a la recreación, y de la recreación al trabajo a fin de que la humanidad coseche el resplandor de los principios Masónicos." />
-        <acto actor="VM" tema="- Querido Hermano 2V∴ ¿Donde toma asiento nuestro Querido Hermano 1V∴?" />
-        <acto actor="2V" tema="- Al occidente, VM∴." />
-        <acto actor="VM" tema="- ¿Para qué ocupáis ese puesto Querido Hermano 1V∴?" />
-        <acto actor="1V" tema="- Así como el Sol se oculta en el Occidente al terminar el día, así se sienta aquí el 1V∴, para ayudar al VM∴, abrir y cerrar la Logia, pagar a los obreros y despedirlos contentos y satisfechos de sus actos en la obra de amor y justicia en que estamos empeñados." />
-        <acto actor="VM" tema="- ¿Donde toma asiento el VM∴ Querido Hermano 1V∴?" />
-        <acto actor="1V" tema="- En el Oriente (Or∴)" />
-        <acto actor="VM" tema="- ¿Para qué H∴ mío." />
-        <acto actor="1V" tema="- Así como el Sol nace en Oriente al iniciar su carrera y romper el día, de igual manera se alza allí el asiento del VM∴ para abrir la Logia, dirigirla en sus trabajos e iluminar con sus luces, esclareciendo así los sublimes preceptos de nuestra." />
+        <acto actor="VM" tema="¿Para qué ocupáis ese puesto, Querido Hermano 2V∴?" />
+        <acto actor="2V" tema="Para mejor observar el Sol en su meridiano, mandar a los obreros al trabajo y llamarlos a la recreación, y de la recreación al trabajo a fin de que la humanidad coseche el resplandor de los principios Masónicos." />
+        <acto actor="VM" tema="Querido Hermano 2V∴ ¿Donde toma asiento nuestro Querido Hermano 1V∴?" />
+        <acto actor="2V" tema="Al occidente, VM∴." />
+        <acto actor="VM" tema="¿Para qué ocupáis ese puesto Querido Hermano 1V∴?" />
+        <acto actor="1V" tema="Así como el Sol se oculta en el Occidente al terminar el día, así se sienta aquí el 1V∴, para ayudar al VM∴, abrir y cerrar la Logia, pagar a los obreros y despedirlos contentos y satisfechos de sus actos en la obra de amor y justicia en que estamos empeñados." />
+        <acto actor="VM" tema="¿Donde toma asiento el VM∴ Querido Hermano 1V∴?" />
+        <acto actor="1V" tema="En el Oriente (Or∴)" />
+        <acto actor="VM" tema="¿Para qué H∴ mío." />
+        <acto actor="1V" tema="Así como el Sol nace en Oriente al iniciar su carrera y romper el día, de igual manera se alza allí el asiento del VM∴ para abrir la Logia, dirigirla en sus trabajos e iluminar con sus luces, esclareciendo así los sublimes preceptos de nuestra." />
       </parte>
       <parte titulo="La Experiencia del Cuerpo">
-        <acto actor="VM" tema="- Querido Hermano 2V∴ ¿Qué edad tenéis como Apr∴ Mas∴?" />
-        <acto actor="2V" tema="- Tres años, VM∴." />
-        <acto actor="VM" tema="- ¿A qué hora empiezan los trabajos de Apr∴ Mas∴, QH∴ 1V∴?" />
-        <acto actor="1V" tema="- Al mediodía, VM∴." />
-        <acto actor="VM" tema="- ¿Qué hora es, Querido Hermano 2V∴?" />
-        <acto actor="2V" tema="- La hora de empezar, mediodía en punto, VM∴." />
-        <acto actor="VM" tema="- Siendo mediodía en punto, hora que los Apr∴ Mas∴ abren sus trabajos QQHH∴, 1V∴ y 2V∴, servios invitar a los obreros que decoran vuestras respectivas CCol∴, como yo a los de Oriente, para que se unan a vosotros y a mí a fin de abrir los trabajos de esta Augusta y RL∴" />
-        <acto actor="1V" tema="- QH∴ 2V∴ y HH∴ que decoráis mi Col∴, por orden del VM∴, os invito que os unáis a él y a mí para abrir los trabajos de esta RL∴ en el grado de Apr∴ M∴." />
-        <acto actor="2V" tema="- QQHH∴ de la Col∴ del Norte, por orden del VM∴ comunicada a mí por nuestro QH∴ 1V∴, que os unáis a él y a nosotros para abrir los trabajos de esta RL∴ en grado de Apr∴M∴. [Anunciado en mi Col∴, QH∴ 1V∴.]" />
-        <acto actor="1V" tema="- Anunciado en ambas CCol∴, VM∴." />
+        <acto actor="VM" tema="Querido Hermano 2V∴ ¿Qué edad tenéis como Apr∴ Mas∴?" />
+        <acto actor="2V" tema="Tres años, VM∴." />
+        <acto actor="VM" tema="¿A qué hora empiezan los trabajos de Apr∴ Mas∴, QH∴ 1V∴?" />
+        <acto actor="1V" tema="Al mediodía, VM∴." />
+        <acto actor="VM" tema="¿Qué hora es, Querido Hermano 2V∴?" />
+        <acto actor="2V" tema="La hora de empezar, mediodía en punto, VM∴." />
+        <acto actor="VM" tema="Siendo mediodía en punto, hora que los Apr∴ Mas∴ abren sus trabajos QQHH∴, 1V∴ y 2V∴, servios invitar a los obreros que decoran vuestras respectivas CCol∴, como yo a los de Oriente, para que se unan a vosotros y a mí a fin de abrir los trabajos de esta Augusta y RL∴" />
+        <acto actor="1V" tema="QH∴ 2V∴ y HH∴ que decoráis mi Col∴, por orden del VM∴, os invito que os unáis a él y a mí para abrir los trabajos de esta RL∴ en el grado de Apr∴ M∴." />
+        <acto actor="2V" tema="QQHH∴ de la Col∴ del Norte, por orden del VM∴ comunicada a mí por nuestro QH∴ 1V∴, que os unáis a él y a nosotros para abrir los trabajos de esta RL∴ en grado de Apr∴M∴. [Anunciado en mi Col∴, QH∴ 1V∴.]" />
+        <acto actor="1V" tema="Anunciado en ambas CCol∴, VM∴." />
       </parte>
       <parte titulo="La Consagración de la Luz">
-        <acto actor="VM" tema="- ¡En pie y al Orden, Queridos Hermanos! [Da un golpe de Mallete seguido por los Vigilantes]." />
-        <acto actor="VM" tema="- QH∴ Maestro de Ceremonias (MC∴) , prended las Luces. (MC∴ , abre el Libro de la Ley y coloca la Escuadra y sobre esta el Compás. Enciende la estrella del VM∴, dice: ¡Que la Sabiduría guíe nuestros trabajos! ; MC∴, enciende la estrella del 1V∴ VM∴, dice: ¡Que la Fuerza los sostenga! ; MC∴, enciende la estrella del 2V∴, VM∴ dice: ¡Que la Belleza los adorne!)" />
-        <acto actor="VM" tema="- Puesto que todo está justo y perfecto, y que es la hora que los AAp∴ MM∴ empiezan sus trabajos, uníos a mí HH∴ míos, ALGDGADU∴ y en su nombre y bajo la obediencia de la Ser∴ Gran L∴ de Lengua Española para los EE. UU. de A., declaro abiertos los trabajos de esta RL∴ en el grado de Apr∴ M∴ del REAA∴. Queda prohibido a todo H∴ pasar de una a otra Col∴ ni cubrir el Templo sin permiso de su respectivo V∴; ni tratar asuntos políticos ni religiosos, a mí HH∴ con el signo y Bat∴ de Grado. [Da tres golpes de Mall∴ que repiten los VV∴] Tomad asiento, QQHH∴." />
+        <acto actor="VM" tema="¡En pie y al Orden, Queridos Hermanos! [Da un golpe de Mallete seguido por los Vigilantes]." />
+        <acto actor="VM" tema="QH∴ Maestro de Ceremonias (MC∴) , prended las Luces. (MC∴ , abre el Libro de la Ley y coloca la Escuadra y sobre esta el Compás. Enciende la estrella del VM∴, dice: ¡Que la Sabiduría guíe nuestros trabajos! ; MC∴, enciende la estrella del 1V∴ VM∴, dice: ¡Que la Fuerza los sostenga! ; MC∴, enciende la estrella del 2V∴, VM∴ dice: ¡Que la Belleza los adorne!)" />
+        <acto actor="VM" tema="Puesto que todo está justo y perfecto, y que es la hora que los AAp∴ MM∴ empiezan sus trabajos, uníos a mí HH∴ míos, ALGDGADU∴ y en su nombre y bajo la obediencia de la Ser∴ Gran L∴ de Lengua Española para los EE. UU. de A., declaro abiertos los trabajos de esta RL∴ en el grado de Apr∴ M∴ del REAA∴. Queda prohibido a todo H∴ pasar de una a otra Col∴ ni cubrir el Templo sin permiso de su respectivo V∴; ni tratar asuntos políticos ni religiosos, a mí HH∴ con el signo y Bat∴ de Grado. [Da tres golpes de Mall∴ que repiten los VV∴] Tomad asiento, QQHH∴." />
       </parte>
     </seccion>
     <seccion id="2" titulo="Desarrollo de Trabajos">
       <parte titulo="Balaustre Anterior">
-        <acto actor="VM" tema="- QQHH∴ 1V∴ y 2V∴, anunciad en vuestras respectivas columnas que presten atención, que el QH∴ Secretario (Sec∴) va ha dar lectura a la  Plancha de nuestros últimos trabajos." />
-        <acto actor="Sec" tema="- [QH∴ Sec∴ procede con la lectura.] [[INSTANCIA]]" />
-        <acto actor="VM" tema="- QQHH∴ 1V∴ y 2V∴, anunciad en vuestras respectivas CCol∴, como yo lo hago en Or∴ que está en consideración la plancha trazada por nuestro QH∴ Sec∴, en tal sentido, si algún H∴ desea hacer uso de la palabra podéis concedérsela." />
-        <acto actor="2V" tema="- Reina el silencio en mi Columna Hermano 1V∴." />
-        <acto actor="1V" tema="- Reina el silencio en ambas CCol∴, VM∴." />
-        <acto actor="VM" tema="- QH∴ OF∴ ¿Queréis darnos vuestras conclusiones respecto a la plancha trazada por nuestro H∴ Sec∴ de nuestros últimos trabajos? [El H∴ OF∴ da las conclusiones]" />
-        <acto actor="VM" tema="- Después de las conclusiones del H∴ OF∴, los HH∴ que estén de acuerdo se servirán de hacer la señal de aprobación al primer golpe de Mall∴. [Con golpe de Mallete]" />
-        <acto actor="VM" tema="- [[INSTANCIA]]" />
+        <acto actor="VM" tema="QQHH∴ 1V∴ y 2V∴, anunciad en vuestras respectivas columnas que presten atención, que el QH∴ Secretario (Sec∴) va ha dar lectura a la  Plancha de nuestros últimos trabajos." />
+        <acto actor="Sec" tema="[QH∴ Sec∴ procede con la lectura.] [[INSTANCIA]]" />
+        <acto actor="VM" tema="QQHH∴ 1V∴ y 2V∴, anunciad en vuestras respectivas CCol∴, como yo lo hago en Or∴ que está en consideración la plancha trazada por nuestro QH∴ Sec∴, en tal sentido, si algún H∴ desea hacer uso de la palabra podéis concedérsela." />
+        <acto actor="2V" tema="Reina el silencio en mi Columna Hermano 1V∴." />
+        <acto actor="1V" tema="Reina el silencio en ambas CCol∴, VM∴." />
+        <acto actor="VM" tema="QH∴ OF∴ ¿Queréis darnos vuestras conclusiones respecto a la plancha trazada por nuestro H∴ Sec∴ de nuestros últimos trabajos? [El H∴ OF∴ da las conclusiones]" />
+        <acto actor="VM" tema="Después de las conclusiones del H∴ OF∴, los HH∴ que estén de acuerdo se servirán de hacer la señal de aprobación al primer golpe de Mall∴. [Con golpe de Mallete]" />
+        <acto actor="VM" tema="[[INSTANCIA]]" />
       </parte>
     </seccion>
     <seccion id="3" titulo="Clausura de Trabajos">
       <parte titulo="Tronco de Beneficencia">
-        <acto actor="VM" tema="- QQHH∴ 1V∴ y 2V∴ anunciad en vuestras CCol∴ que el H∴ Hos∴ va a circular en tronco de beneficencia." />
-        <acto actor="2V" tema="- Anunciado en la Col∴ del Mediodía, H∴ 1V∴." />
-        <acto actor="1V" tema="- Anunciado en ambas Ccol∴, VM∴." />
-        <acto actor="VM" tema="- QH∴ Hos∴, cumplid con vuestro deber. [El H∴ Hos∴ se coloca entre Ccol∴.]." />
-        <acto actor="1V" tema="- VM∴, el H∴ Hos∴ se encuentra entre Ccol∴ pronto a circular entre los HH∴." />
-        <acto actor="VM" tema="- Ordenad que circule empezando por la derecha." />
-        <acto actor="1V" tema="- QH∴ Hos∴, cumplid con vuestro deber. (El H∴ Hos∴ después de haber circulado se coloca entre Ccol∴.)" />
-        <acto actor="Hos" tema="- QH∴ 1V∴, he cumplido vuestro mandato." />
-        <acto actor="1V" tema="- VM∴, el tronco de beneficencia después de circular por los cuatro puntos cardinales del templo se encuentra nuevamente entre Ccol∴.." />
-        <acto actor="VM" tema="- Ordenad que ocupe su puesto y nos dé cuenta de su contenido." />
-        <acto actor="VM" tema="- QH∴ OF∴, ¿Nos queréis dar las conclusiones de los trabajos de la Ten∴ de hoy?" />
-        <acto actor="OF" tema="- (Da a conocer el resultado del Trazado)." />
-        <acto actor="VM" tema="- En virtud de haber sido en un todo favorable las conclusiones del H∴ OF∴ a la labor realizada, vamos a proceder al cierre de los trabajos de esta RL∴." />
-        <acto actor="VM" tema="- QH∴ 1V∴ podéis decirnos. ¿Cuáles son los caracteres distintivos que deben de adornar al verdadero Mas∴?" />
-        <acto actor="1V" tema="- Ser virtuoso y amante con los HH∴ y tolerante con todos." />
-        <acto actor="VM" tema="- QH∴ 2V∴ ¿Qué se deben los Masones entre sí?" />
-        <acto actor="2V" tema="- Respeto mutuo y amor fraternal, VM∴." />
-        <acto actor="VM" tema="- ¿Cuál debe ser la conducta del Masón en el mundo profano, QH∴ 1V∴?" />
-        <acto actor="1V" tema="- Enseñar con la práctica el ejercicio de las virtudes." />
+        <acto actor="VM" tema="QQHH∴ 1V∴ y 2V∴ anunciad en vuestras CCol∴ que el H∴ Hos∴ va a circular en tronco de beneficencia." />
+        <acto actor="2V" tema="Anunciado en la Col∴ del Mediodía, H∴ 1V∴." />
+        <acto actor="1V" tema="Anunciado en ambas Ccol∴, VM∴." />
+        <acto actor="VM" tema="QH∴ Hos∴, cumplid con vuestro deber. [El H∴ Hos∴ se coloca entre Ccol∴.]." />
+        <acto actor="1V" tema="VM∴, el H∴ Hos∴ se encuentra entre Ccol∴ pronto a circular entre los HH∴." />
+        <acto actor="VM" tema="Ordenad que circule empezando por la derecha." />
+        <acto actor="1V" tema="QH∴ Hos∴, cumplid con vuestro deber. (El H∴ Hos∴ después de haber circulado se coloca entre Ccol∴.)" />
+        <acto actor="Hos" tema="QH∴ 1V∴, he cumplido vuestro mandato." />
+        <acto actor="1V" tema="VM∴, el tronco de beneficencia después de circular por los cuatro puntos cardinales del templo se encuentra nuevamente entre Ccol∴.." />
+        <acto actor="VM" tema="Ordenad que ocupe su puesto y nos dé cuenta de su contenido." />
+        <acto actor="VM" tema="QH∴ OF∴, ¿Nos queréis dar las conclusiones de los trabajos de la Ten∴ de hoy?" />
+        <acto actor="OF" tema="(Da a conocer el resultado del Trazado)." />
+        <acto actor="VM" tema="En virtud de haber sido en un todo favorable las conclusiones del H∴ OF∴ a la labor realizada, vamos a proceder al cierre de los trabajos de esta RL∴." />
+        <acto actor="VM" tema="QH∴ 1V∴ podéis decirnos. ¿Cuáles son los caracteres distintivos que deben de adornar al verdadero Mas∴?" />
+        <acto actor="1V" tema="Ser virtuoso y amante con los HH∴ y tolerante con todos." />
+        <acto actor="VM" tema="QH∴ 2V∴ ¿Qué se deben los Masones entre sí?" />
+        <acto actor="2V" tema="Respeto mutuo y amor fraternal, VM∴." />
+        <acto actor="VM" tema="¿Cuál debe ser la conducta del Masón en el mundo profano, QH∴ 1V∴?" />
+        <acto actor="1V" tema="Enseñar con la práctica el ejercicio de las virtudes." />
       </parte>
       <parte titulo="Verificación de los Trabajos">
-        <acto actor="VM" tema="- QH∴ 1V∴ ¿Qué edad tenéis como Ap∴Mas∴?" />
-        <acto actor="1V" tema="- Tres años, VM∴." />
-        <acto actor="VM" tema="- QH∴ 2V∴ ¿A qué hora cierran los trabajos los AAp∴ Mas∴?" />
-        <acto actor="2V" tema="- Medianoche en punto, VM∴." />
-        <acto actor="VM" tema="- ¿Qué hora es, QH∴ 1V∴?" />
-        <acto actor="1V" tema="- La hora de cerrar, medianoche en punto, VM∴." />
+        <acto actor="VM" tema="QH∴ 1V∴ ¿Qué edad tenéis como Ap∴Mas∴?" />
+        <acto actor="1V" tema="Tres años, VM∴." />
+        <acto actor="VM" tema="QH∴ 2V∴ ¿A qué hora cierran los trabajos los AAp∴ Mas∴?" />
+        <acto actor="2V" tema="Medianoche en punto, VM∴." />
+        <acto actor="VM" tema="¿Qué hora es, QH∴ 1V∴?" />
+        <acto actor="1V" tema="La hora de cerrar, medianoche en punto, VM∴." />
       </parte>
       <parte titulo="Cierre de los Trabajos">
-        <acto actor="VM" tema="- Puesto que es la hora en que los AAp∴ MMas∴ cierran sus trabajos, QQHH∴ 1V∴ y 2V∴, invitad a los obreros de vuestras respectivas CCol∴ como yo invito a los de Or∴ para que se unan a vosotros y a mí a fin de cerrar los trabajos de esta Aug∴ RL∴. [El VM∴ da tres golpes de Mall∴ que repiten los VV∴ y dice: de pie y al orden mis HH∴.]." />
-        <acto actor="2V" tema="- Todo está justo y perfecto, VM∴." />
-        <acto actor="1V" tema="- Reina completa armonía, VM∴ y estamos en condición de luchar por la emancipación Moral y Material de los seres humanos." />
-        <acto actor="VM" tema="- Ya Hermanos míos: puesto que todo es justo y perfecto, y nos hallamos en condición de luchar para que el estandarte de la Justicia ondee desde la cúpula de nuestros Templos sobre toda la humanidad, acompañadme a clausurar las tareas de esta Respetable Logia. ALGDGADU∴, en su nombre y bajo la obediencia de la Ser∴ Gr∴ L∴ de Lengua Española para los EE. UU. de A., declaro cerrados los trabajos de este logia por el día de hoy. ¡A mí, Hermanos, con el Signo y la Batería de Grado!" />
-        <acto actor="VM" tema="- Queridos Hermanos, antes de partir: ¿Juráis guardar absoluto silencio sobre lo aquí visto y oído, incluso ante aquellos Hermanos que no asistieron a esta Tenida? Todos. ¡Lo juramos!" />
-        <acto actor="VM" tema="- Si así lo hiciereis, que el GADU∴ os lo premie; si no, que Él os lo demande. H∴ MC∴ servíos cerrar el Ara. Hermanos míos, retiremonos en paz y fraternidad." />
-        <acto actor="MC" tema="- [Apaga la estrella de 2V∴ , Apaga la estrella del 1V∴ y Apaga la estrella del VM∴ Retira la Escuadra y el Compás, y cierra el Libro de la Ley]" />
+        <acto actor="VM" tema="Puesto que es la hora en que los AAp∴ MMas∴ cierran sus trabajos, QQHH∴ 1V∴ y 2V∴, invitad a los obreros de vuestras respectivas CCol∴ como yo invito a los de Or∴ para que se unan a vosotros y a mí a fin de cerrar los trabajos de esta Aug∴ RL∴. [El VM∴ da tres golpes de Mall∴ que repiten los VV∴ y dice: de pie y al orden mis HH∴.]." />
+        <acto actor="2V" tema="Todo está justo y perfecto, VM∴." />
+        <acto actor="1V" tema="Reina completa armonía, VM∴ y estamos en condición de luchar por la emancipación Moral y Material de los seres humanos." />
+        <acto actor="VM" tema="Ya Hermanos míos: puesto que todo es justo y perfecto, y nos hallamos en condición de luchar para que el estandarte de la Justicia ondee desde la cúpula de nuestros Templos sobre toda la humanidad, acompañadme a clausurar las tareas de esta Respetable Logia. ALGDGADU∴, en su nombre y bajo la obediencia de la Ser∴ Gr∴ L∴ de Lengua Española para los EE. UU. de A., declaro cerrados los trabajos de este logia por el día de hoy. ¡A mí, Hermanos, con el Signo y la Batería de Grado!" />
+        <acto actor="VM" tema="Queridos Hermanos, antes de partir: ¿Juráis guardar absoluto silencio sobre lo aquí visto y oído, incluso ante aquellos Hermanos que no asistieron a esta Tenida? Todos. ¡Lo juramos!" />
+        <acto actor="VM" tema="Si así lo hiciereis, que el GADU∴ os lo premie; si no, que Él os lo demande. H∴ MC∴ servíos cerrar el Ara. Hermanos míos, retiremonos en paz y fraternidad." />
+        <acto actor="MC" tema="[Apaga la estrella de 2V∴ , Apaga la estrella del 1V∴ y Apaga la estrella del VM∴ Retira la Escuadra y el Compás, y cierra el Libro de la Ley]" />
       </parte>
     </seccion>
     <seccion id="4" titulo="Proposiciones por Escrito">
       <parte titulo="De las Proposiciones por Escrito">
-        <acto actor="VM" tema="- QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ como yo lo hago en el Or∴ que nuestro QH∴ MC∴ va a circular el saco de proposiciones. [El MC∴ cumple con su deber y se coloca entre CCol∴.]" />
-        <acto actor="1V" tema="- VM∴, el saco de proposiciones se encuentra entre CCol∴ para circular." />
-        <acto actor="VM" tema="- Ordenad que circule empezando por mi derecha." />
-        <acto actor="1V" tema="- He cumplido con mi deber." />
-        <acto actor="1V" tema="- VM∴, el saco de proposiciones, después de haber circulado por los cuatro puntos cardinales, se halla nuevamente entre CCol∴." />
-        <acto actor="VM" tema="- Ordenad que pase a Or∴ y que en compañía del H∴ OF∴ nos enteremos de su contenido." />
-        <acto actor="OF" tema="- [OF∴ Lee la plancha de Trazado....]" />
-        <acto actor="VM" tema="- QQHH∴ 1V∴ y 2V∴ anunciad en vuestras respectivas CCol∴ que vamos a pasar a proposiciones verbales." />
-        <acto actor="2V" tema="- H∴ 1V∴, reina el silencio en mi Col∴." />
-        <acto actor="1V" tema="- VM∴, reina silencio en ambas CCol∴." />
-        <acto actor="VM" tema="- QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ que voy a conceder la palabra en bien general de la orden y en particular de este Tall∴." />
-        <acto actor="2V" tema="- QH∴ de la Col∴ del Norte, por orden del VM∴ y transmitida a mí por el QH∴ 1V∴ que está concedida la palabra en bien general de la orden y particular de este Tall∴." />
-        <acto actor="2V" tema="- QH∴ 1V∴, reina el silencio en mi Col∴.." />
-        <acto actor="1V" tema="- VM∴, reina silencio en ambas CCol∴." />
+        <acto actor="VM" tema="QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ como yo lo hago en el Or∴ que nuestro QH∴ MC∴ va a circular el saco de proposiciones. [El MC∴ cumple con su deber y se coloca entre CCol∴.]" />
+        <acto actor="1V" tema="VM∴, el saco de proposiciones se encuentra entre CCol∴ para circular." />
+        <acto actor="VM" tema="Ordenad que circule empezando por mi derecha." />
+        <acto actor="1V" tema="He cumplido con mi deber." />
+        <acto actor="1V" tema="VM∴, el saco de proposiciones, después de haber circulado por los cuatro puntos cardinales, se halla nuevamente entre CCol∴." />
+        <acto actor="VM" tema="Ordenad que pase a Or∴ y que en compañía del H∴ OF∴ nos enteremos de su contenido." />
+        <acto actor="OF" tema="[OF∴ Lee la plancha de Trazado....]" />
+        <acto actor="VM" tema="QQHH∴ 1V∴ y 2V∴ anunciad en vuestras respectivas CCol∴ que vamos a pasar a proposiciones verbales." />
+        <acto actor="2V" tema="H∴ 1V∴, reina el silencio en mi Col∴." />
+        <acto actor="1V" tema="VM∴, reina silencio en ambas CCol∴." />
+        <acto actor="VM" tema="QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ que voy a conceder la palabra en bien general de la orden y en particular de este Tall∴." />
+        <acto actor="2V" tema="QH∴ de la Col∴ del Norte, por orden del VM∴ y transmitida a mí por el QH∴ 1V∴ que está concedida la palabra en bien general de la orden y particular de este Tall∴." />
+        <acto actor="2V" tema="QH∴ 1V∴, reina el silencio en mi Col∴.." />
+        <acto actor="1V" tema="VM∴, reina silencio en ambas CCol∴." />
       </parte>
     </seccion>
     <seccion id="5" titulo="Asuntos Familiares y Otros">
       <parte titulo="De los Asuntos Familiares y Otros">
-        <acto actor="VM" tema="- QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ como yo lo hago en el Or∴ que vamos a tratar asuntos familiares." />
-        <acto actor="VM" tema="- Invitad al MC∴.. a que dé un paseo al salón de actos perdidos a ver si hay algún visitante." />
+        <acto actor="VM" tema="QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ como yo lo hago en el Or∴ que vamos a tratar asuntos familiares." />
+        <acto actor="VM" tema="Invitad al MC∴.. a que dé un paseo al salón de actos perdidos a ver si hay algún visitante." />
       </parte>
     </seccion>
     <seccion id="6" titulo="Instrucción: Simbolismo">
       <parte titulo="Estudio Profundo">
-        <acto actor="Ora" tema="- La Piedra Bruta representa el estado de imperfección..." />
-        <acto actor="Ora" tema="- Es cuanto, VM∴." />
+        <acto actor="Ora" tema="La Piedra Bruta representa el estado de imperfección..." />
+        <acto actor="Ora" tema="Es cuanto, VM∴." />
       </parte>
     </seccion>
     <seccion id="7" titulo="Logia de San Juan">
       <parte titulo="Estudio Profundo">
-        <acto actor="Ora" tema="- La Piedra Bruta representa el estado de imperfección..." />
-        <acto actor="Ora" tema="- Es cuanto, VM∴" />
+        <acto actor="Ora" tema="La Piedra Bruta representa el estado de imperfección..." />
+        <acto actor="Ora" tema="Es cuanto, VM∴" />
       </parte>
     </seccion>
     <seccion id="8" titulo="Logía Colmena #8">
       <parte titulo="Tenida Virtual">
-        <acto actor="VM" tema="- [[INSTANCIA]]" />
+        <acto actor="VM" tema="[[INSTANCIA]]" />
       </parte>
     </seccion>
   </ritual>
   <ritual libro="2" logia="Colmena No. 8">
     <seccion id="1" titulo="Apertura de Trabajos">
       <parte titulo="Apertura de Trabajos">
-        <acto actor="VM" tema="- HH∴ 1V∴ y 2V∴ Servios anunciar alo HH∴ de vuestras respectivas columnas, como yo lo hago en el Or∴ que voy a suspender los trabajos con un solo golpe de Mall∴ para abrir la de Compañero." />
-        <acto actor="1V" tema="- H∴ 2V∴ y HH∴ de mi columna, nuestro VM∴ va a suspender los trabajos por un solo golpe de Mall∴" />
-        <acto actor="2V" tema="- HH∴ de la Col∴ del Sur os anuncio que el VM∴ va a suspender los Trabajos con un solo golpe de Mall∴" />
-        <acto actor="1V" tema="- Anunciado VM∴" />
-        <acto actor="VM" tema="- [Da un golpe de Mallete]... y clausura los trabajos invitando a los HH∴ Aprendices a que cubran el Tempo" />
+        <acto actor="VM" tema="HH∴ 1V∴ y 2V∴ Servios anunciar alo HH∴ de vuestras respectivas columnas, como yo lo hago en el Or∴ que voy a suspender los trabajos con un solo golpe de Mall∴ para abrir la de Compañero." />
+        <acto actor="1V" tema="H∴ 2V∴ y HH∴ de mi columna, nuestro VM∴ va a suspender los trabajos por un solo golpe de Mall∴" />
+        <acto actor="2V" tema="HH∴ de la Col∴ del Sur os anuncio que el VM∴ va a suspender los Trabajos con un solo golpe de Mall∴" />
+        <acto actor="1V" tema="Anunciado VM∴" />
+        <acto actor="VM" tema="[Da un golpe de Mallete]... y clausura los trabajos invitando a los HH∴ Aprendices a que cubran el Tempo" />
       </parte>
     </seccion>
     <seccion id="2" titulo="Cámara de Compañeros">
       <parte titulo="Inicio de Trabajos">
-        <acto actor="VM" tema="- Servios H∴ GT∴ avisar al H∴ GTE∴ que voy a abrir la Log∴ en el Grado de Compañero y que vigile en consecuencia." />
-        <acto actor="GT" tema="- Seguimos a cubierto y el GTE∴ está avisado Muy VM∴" />
-        <acto actor="VM" tema="- H∴ 1V∴ ¿Cuál es el primer deber de un Vigilante en Cámara de Compañeros?" />
-        <acto actor="1V" tema="- Asegurarse que el Templo esté cubierto de las indiscreciones de profanos y Aprendices." />
-        <acto actor="VM" tema="- Aseguraos de ello, querido hermano" />
+        <acto actor="VM" tema="Servios H∴ GT∴ avisar al H∴ GTE∴ que voy a abrir la Log∴ en el Grado de Compañero y que vigile en consecuencia." />
+        <acto actor="GT" tema="Seguimos a cubierto y el GTE∴ está avisado Muy VM∴" />
+        <acto actor="VM" tema="H∴ 1V∴ ¿Cuál es el primer deber de un Vigilante en Cámara de Compañeros?" />
+        <acto actor="1V" tema="Asegurarse que el Templo esté cubierto de las indiscreciones de profanos y Aprendices." />
+        <acto actor="VM" tema="Aseguraos de ello, querido hermano" />
       </parte>
     </seccion>
   </ritual>
   <ritual libro="3" logia="Colmena No. 8">
     <seccion id="1" titulo="Apertura de Trabajos">
       <parte titulo="Preliminares de la Apertura">
-        <acto actor="VM" tema="- Muy Venerables Hermanos Primer y Segundo Vigilantes, servios pedir a todos los presentes la Palabra del Tercer Grado. En pie y al orden, mirando al Oriente Venerables Hermanos. [Lo ejecutan los Hermanos los Venerables hacen el reconocimiento en la forma debida y vueltos a sus tronos, da un golpe.]" />
-        <acto actor="2V" tema="- Todos los que decoran mi Columna son Maestros Masones, Venerable Hermano Primer Vigilante." />
-        <acto actor="1V" tema="-  Todos somos del Grado Muy Respetable Maestro. [El Muy Venerable Maestro, da un golpe de mallete con el mango de la cuchara y hace las siete preguntas que dan principio a los trabajos del Maestro]." />
+        <acto actor="VM" tema="Muy Venerables Hermanos Primer y Segundo Vigilantes, servios pedir a todos los presentes la Palabra del Tercer Grado. En pie y al orden, mirando al Oriente Venerables Hermanos. [Lo ejecutan los Hermanos los Venerables hacen el reconocimiento en la forma debida y vueltos a sus tronos, da un golpe.]" />
+        <acto actor="2V" tema="Todos los que decoran mi Columna son Maestros Masones, Venerable Hermano Primer Vigilante." />
+        <acto actor="1V" tema="Todos somos del Grado Muy Respetable Maestro. [El Muy Venerable Maestro, da un golpe de mallete con el mango de la cuchara y hace las siete preguntas que dan principio a los trabajos del Maestro]." />
       </parte>
-      <parte titulo="Apertura Cámara del Medio">
-        <acto actor="VM" tema="- Venerable Hermano Primer Vigilante, ¿sois Maestro Masón?" />
-        <acto actor="1V" tema="- La acacia me es conocida." />
-        <acto actor="VM" tema="- ¿Qué significa esa frase Venerable Hermano Segundo Vigilante?" />
-        <acto actor="2V" tema="- Que sé cómo se alcanza la inmortalidad." />
-        <acto actor="VM" tema="- ¿Qué es la inmortalidad? Venerable Hermano Primer Vigilante" />
-        <acto actor="1V" tema="- El pensamiento elevándose a su idealidad y tomando posesión de su propia divinidad." />
-        <acto actor="VM" tema="- ¿Por qué os rodeáis de cuadros de la muerte para simbolizar la Muy Venerable Hermano Segundo vigilante?" />
-        <acto actor="2V" tema="- Porque la del iniciador era el complemento necesario de la iniciación, según la ley palingenésica y nosotros representamos en el drama astronómico de Hiram la metempsícosis, en el sentido en que la tomaban aquellos sabios" />
-        <acto actor="VM" tema="- ¿Cuál es el secreto de la Maestría? Muy Venerable Hermano Primer vigilante" />
-        <acto actor="1V" tema="- Revelar el de la creación al iniciado demostrándole que la Materia y la Inteligencia Suma, de la que nuestro pensamiento es un efluvio, son inmortales; y si la primera cambia sin cesar de formas, lo que hace de la Idea, en vez de transformarse como aquella, se fecunda y perfecciona más y más, propagada de una a otra generación, y, por consecuencia, morir por la idea no es morir, sino perder la forma para eternizarse en el Panteón de los Bienhechores de nuestro linaje" />
-        <acto actor="VM" tema="- ¿A qué hora acostumbran los Maestros Masones abrir trabajos? Muy Venerable Hermano Segundo Vigilante." />
-        <acto actor="2V" tema="- Al medio día Muy Venerable Maestro" />
-        <acto actor="VM" tema="- ¿Qué hora es? Muy Venerable Hermano Primer Vigilante" />
-        <acto actor="1V" tema="- Mediodía en punto, Muy Respetable Maestro." />
-        <acto actor="VM" tema="- Servios pedir a los Venerables Hermanos que decoran vuestras respectivas columnas, como yo lo hago a los de Oriente, se unan a Vosotros y a Mí para abrir la Cámara del Medio por los golpes y signos misteriosos." />
-        <acto actor="1V" tema="- Muy Venerable Hermano Segundo Vigilante y Venerables Hermanos de la columna del Sur, nuestro Muy Respetable Maestro os pide os unáis a él y a nosotros para abrir los trabajos de la Cámara del Medio." />
-        <acto actor="2V" tema="- Anunciado, Muy Venerable Hermano Primer Vigilante [Da un golpe en su trono]." />
-        <acto actor="1V" tema="- Anunciado, Muy Respetable Maestro [Da otro golpe]" />
-        <acto actor="VM" tema="- En pie y al orden Venerables Hermanos. [ Todos se levantan al orden del Grado. El Muy Respetable Maestro da un golpe con el mango de la cuchara e inmediatamente lo repiten los Hermanos Vigilantes después de un brevísimo intervalo; da otro golpe el Muy Respetable Maestro, que repiten sucesivamente los Hermanos Vigilantes y, pasando un cortisimo tiempo, como el anterior, se repite lo mismo; de suerte que se dan nueve golpes por tres veces]" />
-        <acto actor="VM" tema="- Los trabajos de Maestros están abiertos. A mi Venerables Hermanos, Signo y la batería por tres veces, con Houzzé." />
-        <acto actor="VM" tema="- Sentaos Venerables Hermanos. [Lo hacen. Se aunica, lee y sanciona la Plancha de Arquitectura de los últimos trabajos; se circula el saco de proposiciones; en seguida se envía al Maestro de Ceremonia por los candidatos; aquél atará en el brazo derecho del que ha de entrar en el ataúd, un triángulo de oro. En el intermedio se apagan todas las luces, menos las de los transparentes de las tres linternas, que serán las que alumbran la Cámara, con las del Cuadro del Templo en su oscuridad]" />
+      <parte titulo="Apertura de la Cámara del Medio">
+        <acto actor="VM" tema="Venerable Hermano Primer Vigilante, ¿sois Maestro Masón?" />
+        <acto actor="1V" tema="La acacia me es conocida." />
+        <acto actor="VM" tema="¿Qué significa esa frase Venerable Hermano Segundo Vigilante?" />
+        <acto actor="2V" tema="Que sé cómo se alcanza la inmortalidad." />
+        <acto actor="VM" tema="¿Qué es la inmortalidad? Venerable Hermano Primer Vigilante" />
+        <acto actor="1V" tema="El pensamiento elevándose a su idealidad y tomando posesión de su propia divinidad." />
+        <acto actor="VM" tema="¿Por qué os rodeáis de cuadros de la muerte para simbolizar la Muy Venerable Hermano Segundo vigilante?" />
+        <acto actor="2V" tema="Porque la del iniciador era el complemento necesario de la iniciación, según la ley palingenésica y nosotros representamos en el drama astronómico de Hiram la metempsícosis, en el sentido en que la tomaban aquellos sabios" />
+        <acto actor="VM" tema="¿Cuál es el secreto de la Maestría? Muy Venerable Hermano Primer vigilante" />
+        <acto actor="1V" tema="Revelar el de la creación al iniciado demostrándole que la Materia y la Inteligencia Suma, de la que nuestro pensamiento es un efluvio, son inmortales; y si la primera cambia sin cesar de formas, lo que hace de la Idea, en vez de transformarse como aquella, se fecunda y perfecciona más y más, propagada de una a otra generación, y, por consecuencia, morir por la idea no es morir, sino perder la forma para eternizarse en el Panteón de los Bienhechores de nuestro linaje" />
+        <acto actor="VM" tema="¿A qué hora acostumbran los Maestros Masones abrir trabajos? Muy Venerable Hermano Segundo Vigilante." />
+        <acto actor="2V" tema="Al medio día Muy Venerable Maestro" />
+        <acto actor="VM" tema="¿Qué hora es? Muy Venerable Hermano Primer Vigilante" />
+        <acto actor="1V" tema="Mediodía en punto, Muy Respetable Maestro." />
+        <acto actor="VM" tema="Servios pedir a los Venerables Hermanos que decoran vuestras respectivas columnas, como yo lo hago a los de Oriente, se unan a Vosotros y a Mí para abrir la Cámara del Medio por los golpes y signos misteriosos." />
+        <acto actor="1V" tema="Muy Venerable Hermano Segundo Vigilante y Venerables Hermanos de la columna del Sur, nuestro Muy Respetable Maestro os pide os unáis a él y a nosotros para abrir los trabajos de la Cámara del Medio." />
+        <acto actor="2V" tema="Anunciado, Muy Venerable Hermano Primer Vigilante [Da un golpe en su trono]." />
+        <acto actor="1V" tema="Anunciado, Muy Respetable Maestro [Da otro golpe]" />
+        <acto actor="VM" tema="En pie y al orden Venerables Hermanos. [ Todos se levantan al orden del Grado. El Muy Respetable Maestro da un golpe con el mango de la cuchara e inmediatamente lo repiten los Hermanos Vigilantes después de un brevísimo intervalo; da otro golpe el Muy Respetable Maestro, que repiten sucesivamente los Hermanos Vigilantes y, pasando un cortisimo tiempo, como el anterior, se repite lo mismo; de suerte que se dan nueve golpes por tres veces]" />
+        <acto actor="VM" tema="Los trabajos de Maestros están abiertos. A mi Venerables Hermanos, Signo y la batería por tres veces, con Houzzé." />
+        <acto actor="VM" tema="Sentaos Venerables Hermanos. [Lo hacen. Se aunica, lee y sanciona la Plancha de Arquitectura de los últimos trabajos; se circula el saco de proposiciones; en seguida se envía al Maestro de Ceremonia por los candidatos; aquél atará en el brazo derecho del que ha de entrar en el ataúd, un triángulo de oro. En el intermedio se apagan todas las luces, menos las de los transparentes de las tres linternas, que serán las que alumbran la Cámara, con las del Cuadro del Templo en su oscuridad]" />
       </parte>
+    </seccion>
+    <seccion id="2" titulo="Exaltación al Grado de Maestro">
+        <acto actor="GT" tema="[El Maestro de Ceremonias hace que los Compañeros toquen en su grado y, al oirle, dice: ] Muy Venerable Hermano Segundo Vigilante, a la puerta de la Cámara toca un Compañero." />
+        <acto actor="2V" tema="Muy Venerable Hermano Primer Vigilante, a las puertas de la cámara toca un Compañero." />
+        <acto actor="1V" tema="Muy Respetable Maestro, a las puertas de la cámara toca un Compañero." />
+        <acto actor="VM" tema="Venerable Hermano Primer Vigilante, preguntad quién viene a turbar nuestro dolor." />
+        <acto actor="1V" tema="¿Quién viene a turbar nuestro dolor?" />
+        <acto actor="2V" tema="Venerable Hermano Guarda Templo, ved quién viene a turbar nuestro dolor." />
+        <acto actor="GT" tema="[El Guarda Templo, entreabre la puerta y no vuelve a cerrarla para que los graduandos oigan lo que sigue. Pregunta al abrir:] ¿Quién viene a turbar nuestro dolor?" />
+        <acto actor="MC" tema="Es el Maestro de Ceremonias que trae a un Hermano que pide pasar de la escuadra al compas." />
+        <acto actor="VM" tema="¿Cómo se atreve ese Compañero a esperar se le admita entre nosotros? ¿Ha concluido su tiempo? ¿Le es favorable el testimonio de sus maestros?" />
+        <acto actor="1V" tema="Si, Muy Respetable Maestro." />
+        <acto actor="VM" tema="Pues siendo así, dejadle entrar. ¡En pie y al orden, Venerables Hermanos! [Da un golpe con la cuchara. Todos los Hermanos se ponen en pie. Si hay música, tocará en un modo solemne y grave. El Guarda Templo abre la puerta y da un paso. El Maestro de Ceremonias se pone entre columnas con el candidato, y saluda como compañero]" />
+        <acto actor="VM" tema="Compañeros, concibo vuestra admisión al hallarás en este sitio donde todo respira tristeza y duelo. Creíais tal vez que al abrirse las puertas del Santuario, su lujo y esplendor deslumbraron vuestras miradas; en lugar de ello os hayáis en la estancia de la muerte, en la Cámara del Medio… ¡En la Cámara del Juicio!... Comparecéis hoy vivos, llenos de vigor, de salud y de esperanza. Un día vendrá, ¡Y Dios quiera que sea lo más tarde posible! En que vuestro cuerpo inanimado recibirá aquí también los últimos honores. Todos los Maestros recomiendan por vuestra aplicación, inteligencia y constancia en el trabajo, y piden os recompensamos. Para ello vamos a juzgaros vivos, como os juzgaremos muertos. Tenéis que darnos cuenta de vuestras opiniones en asuntos muy serios, y de vuestra conducta en otros muy graves; de la misma manera que antes de conducir vuestros restos al campo del reposo, le pediremos al mundo de la que hayáis seguido como hombres y como masones. Sentaos, Hermanos [Todos se sientan, así como los graduados]" />
     </seccion>
   </ritual>
 </liturgia>
