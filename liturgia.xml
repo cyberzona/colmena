@@ -169,21 +169,22 @@
     </ritual>
     <ritual logia="Colmena No. 8" libro="3">
         <seccion id="1" titulo="Apertura de Trabajos">
-            <parte id="1" titulo="Apertura de Trabajos">
+            <parte id="1" titulo="Apertura de La Camara del Medio">
                 <acto tipo="verso" actor="VM" tema="Venerable Hermano Primer Vigilante, ¿sois Maestro Masón?"/>
                 <acto tipo="verso" actor="1V" tema="La acacia me es conocida."/>
                 <acto tipo="verso" actor="VM" tema="¿Qué significa esa frase Venerable Hermano Segundo Vigilante?"/>
                 <acto tipo="verso" actor="2V" tema="Que sé cómo se alcanza la inmortalidad."/>
                 <acto tipo="verso" actor="VM" tema="¿Qué es la inmortalidad? Venerable Hermano Primer Vigilante"/>
                 <acto tipo="verso" actor="1V" tema="El pensamiento elevándose a su idealidad y tomando posesión de su propia divinidad."/>
-                <acto tipo="verso" actor="VM" tema="¿Cuál es el primer deber de un Vigilante en Cámara del Medio?"/>
-                <acto tipo="verso" actor="1V" tema="Investigar si estamos a cubierto de las indiscreciones de los Profanos, Aprendices y Compañeros"/>
-                <acto tipo="verso" actor="VM" tema="Aseguraos de ello, Venerable Hermano Segundo Vigilante"/>
-                <acto tipo="verso" actor="2V" tema="[El 2º Vigilante trasmite la orden del Muy Respetable Maestro al Guarda Templo, el cual entre abre la puerta y consulta al Guarda Templo Externo. Informado de que la Cámara esta a cubierto, lo participa al 2º Vigilante y éste al Muy Respetable Maestro]."/>
-                <acto tipo="verso" actor="2V" tema="Muy Respetable Maestro, el Templo se halla a cubierto interior y exteriormente."/>
-                <acto tipo="verso" actor="VM" tema="¿Cuál es el segundo deber de un 1º Vigilante en Cámara de Maestros?"/>
-                <acto tipo="verso" actor="1V" tema="Asegurarse de que todos los Hermanos que decoran las columnas son Maestros Masones"/>
-                <acto tipo="verso" actor="VM" tema="Servios cumplir este deber, Venerables Hermanos Vigilantes. En pie y alorden. Da un golpe de mallete. [Todos se ponen de pie y al orden de maestros. Los Vigilantes recorren sus respectivas columnas, y retejarán uno a uno a todos los Hermanos que se encuentran en ellas, por el toque y la palabra sagrada del grado de Maestro, al mismo tiempo que los Hermanos que se hayan en el Oriente se acercan uno a uno al Muy Respetable Maestro, el que los retejará en la misma forma]"/>  
+                <acto tipo="verso" actor="VM" tema="¿Por qué os rodeáis de cuadros de la muerte para simbolizarla Muy Venerable Hermano Segundo vigilante?"/>
+                <acto tipo="verso" actor="2V" tema="Porque la del iniciador era el complemento necesario de la iniciación, según la ley palingenésica y nosotros representamos en el drama astrónomico de Hiram la metempsícosis, en el sentido en que la tomaban aquellos sabios"/>
+                <acto tipo="verso" actor="VM" tema="¿Cuál es el secreto de la Maestía? Muy Venerable Hermano Primer vigilante"/>
+                <acto tipo="verso" actor="1V" tema="Revelar el de la creación al iniciado demostrándole que la Materia y la Inteligencia Suma, de la que nuestro pensamiento es un efluvio, son inmortales; y si la primera cambia sin cesar de formas, lo que hace de la Idea, en vez de transformarse como aquella, se fecunda y perfecciona más y más, propagada de una a otra generación, y, por consecuencia, morir por la idea no es morir, sino perder la forma para eternizarse en el Panteón de los Bienechores de nuestro linaje"/>
+                <acto tipo="verso" actor="VM" tema="¿A qué hora aconstumbran los Maestros Masones abrir trabajos? Muy Venerable Hermano Segundo Vigilante."/>
+                <acto tipo="verso" actor="2V" tema="Al medio día Muy Venerable Maestro"/>
+                <acto tipo="verso" actor="VM" tema="¿Qué hora es? Muy Venerable Hermano Primer Vigilante"/>
+                <acto tipo="verso" actor="1V" tema="Medio día en punto, Muy Venerable Maestro."/> 
+                <acto tipo="verso" actor="1V" tema="Servios pedir a los Venerables Hermanos que decoran vuestras respectivas columnas, como yo lo hago a los de Oriente, se unan a Vosotros y a Mi para abrir la Camara del Medio por los golpes y signos misteriosos."/>
             </parte>
         </seccion>        
     </ritual>    
