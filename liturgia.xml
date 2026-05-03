@@ -201,7 +201,7 @@
     <seccion id="2" titulo="Exaltación a Maestro">
       <parte titulo="Iniciación de la Ceremonia">
         <acto actor="GT" tema="[El MC∴ hace que los Compañeros toquen en su grado y, al oirle, dice: ] Muy Venerable H∴ 2V∴, a la puerta de la Cámara toca un Compañero." />
-        <acto actor="2V" tema="Muy Venerable H∴ 1V∴, a las puertas de la cámara toca un Compañero." />
+        <acto actor="2Vig" tema="Muy Venerable H∴ 1V∴, a las puertas de la cámara toca un Compañero." />
         <acto actor="1V" tema="MRM∴, a las puertas de la cámara toca un Compañero." />
         <acto actor="VM" tema="Venerable H∴ 1V∴, preguntad quién viene a turbar nuestro dolor." />
         <acto actor="1V" tema="¿Quién viene a turbar nuestro dolor?" />
