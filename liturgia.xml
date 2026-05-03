@@ -193,9 +193,9 @@
         <acto actor="1V" tema="Muy Venerable H∴ 2V∴ y Venerables HH∴ de la columna del Sur, nuestro Muy Respetable Maestro os pide os unáis a él y a nosotros para abrir los trabajos de la Cámara del Medio." />
         <acto actor="2V" tema="Anunciado, Muy Venerable H∴ 1V∴ [Da un golpe en su trono]" />
         <acto actor="1V" tema="Anunciado, MRM∴ [Da otro golpe]" />
-        <acto actor="VM" tema="En pie y al orden Venerables HH∴. [ Todos se levantan al orden del Grado. El MRM∴ da un golpe con el mango de la cuchara e inmediatamente lo repiten los HH∴ Vigilantes después de un brevísimo intervalo; da otro golpe el MRM∴, que repiten sucesivamente los Hermanos Vigilantes y, pasando un cortisimo tiempo, como el anterior, se repite lo mismo; de suerte que se dan nueve golpes por tres veces]" />
+        <acto actor="VM" tema="En pie y al orden Venerables HH∴ [ Todos se levantan al orden del Grado. El MRM∴ da un golpe con el mango de la cuchara e inmediatamente lo repiten los HH∴ Vigilantes después de un brevísimo intervalo; da otro golpe el MRM∴, que repiten sucesivamente los Hermanos Vigilantes y, pasando un cortisimo tiempo, como el anterior, se repite lo mismo; de suerte que se dan nueve golpes por tres veces]" />
         <acto actor="VM" tema="Los trabajos de Maestros están abiertos. A mi Venerables H∴, Signo y la batería por tres veces, con Houzzé." />
-        <acto actor="VM" tema="Sentaos Venerables HH∴. [Lo hacen. Se aunica, lee y sanciona la Plancha de Arquitectura de los últimos trabajos; se circula el saco de proposiciones; en seguida se envía al Maestro de Ceremonia por los candidatos; aquél atará en el brazo derecho del que ha de entrar en el ataúd, un triángulo de oro. En el intermedio se apagan todas las luces, menos las de los transparentes de las tres linternas, que serán las que alumbran la Cámara, con las del Cuadro del Templo en su oscuridad]" />
+        <acto actor="VM" tema="Sentaos Venerables HH∴ [Lo hacen. Se aunica, lee y sanciona la Plancha de Arquitectura de los últimos trabajos; se circula el saco de proposiciones; en seguida se envía al Maestro de Ceremonia por los candidatos; aquél atará en el brazo derecho del que ha de entrar en el ataúd, un triángulo de oro. En el intermedio se apagan todas las luces, menos las de los transparentes de las tres linternas, que serán las que alumbran la Cámara, con las del Cuadro del Templo en su oscuridad]" />
       </parte>
     </seccion>
     <seccion id="2" titulo="Exaltación a Maestro">
@@ -207,7 +207,7 @@
         <acto actor="1V" tema="¿Quién viene a turbar nuestro dolor?" />
         <acto actor="2V" tema="Venerable H∴ GT∴, ved quién viene a turbar nuestro dolor." />
         <acto actor="GT" tema="[El GT∴, entreabre la puerta y no vuelve a cerrarla para que los graduandos oigan lo que sigue. Pregunta al abrir:] ¿Quién viene a turbar nuestro dolor?" />
-        <acto actor="MC" tema="Es el MC∴ que trae a un Hermano que pide pasar de la escuadra al compas." />
+        <acto actor="MC" tema="Es el MC∴ que trae a un H∴ que pide pasar de la escuadra al compas." />
         <acto actor="VM" tema="¿Cómo se atreve ese Compañero a esperar se le admita entre nosotros? ¿Ha concluido su tiempo? ¿Le es favorable el testimonio de sus maestros?" />
         <acto actor="1V" tema="Si, MRM∴" />
         <acto actor="VM" tema="Pues siendo así, dejadle entrar. ¡En pie y al orden, Venerables HH∴! [Da un golpe con la cuchara. Todos los Hermanos se ponen en pie. Si hay música, tocará en un modo solemne y grave. El GT∴ abre la puerta y da un paso. El MC∴ se pone entre columnas con el candidato, y saluda como compañero]" />
