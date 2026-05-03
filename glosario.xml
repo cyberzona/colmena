@@ -7,7 +7,8 @@
     <item sigla="GT" expansion="Guarda Templo" />
     <item sigla="MM" expansion="Maestro Secretario" />
     <item sigla="Sec" expansion="Secretario" />
-    <item sigla="Hos" expansion="Secretario" />   
+    <item sigla="Hos" expansion="Secretario" />
+    <item sigla="2Vig" expansion="Segundo Vigilante" />   
     <item sigla="QQHH" expansion="Queridos Hermanos" />
     <item sigla="GADU" expansion="Gran Arquitecto Del Universo" />
 </glosario>
