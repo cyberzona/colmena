@@ -203,7 +203,7 @@
         <acto actor="GT" tema="[El Maestro de Ceremonias hace que los Compañeros toquen en su grado y, al oirle, dice: ] Muy Venerable Hermano Segundo Vigilante, a la puerta de la Cámara toca un Compañero." />
         <acto actor="2V" tema="Muy Venerable Hermano Primer Vigilante, a las puertas de la cámara toca un Compañero." />
         <acto actor="1V" tema="MRM∴, a las puertas de la cámara toca un Compañero." />
-        <acto actor="MRM" tema="Venerable Hermano Primer Vigilante, preguntad quién viene a turbar nuestro dolor." />
+        <acto actor="VM" tema="Venerable Hermano Primer Vigilante, preguntad quién viene a turbar nuestro dolor." />
         <acto actor="1V" tema="¿Quién viene a turbar nuestro dolor?" />
         <acto actor="2V" tema="Venerable Hermano Guarda Templo, ved quién viene a turbar nuestro dolor." />
         <acto actor="GT" tema="[El Guarda Templo, entreabre la puerta y no vuelve a cerrarla para que los graduandos oigan lo que sigue. Pregunta al abrir:] ¿Quién viene a turbar nuestro dolor?" />
