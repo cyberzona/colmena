@@ -34,10 +34,11 @@
         .visor-content { width: 95%; height: 90%; background: #fff; border-radius: 8px; position: relative; }
         .visor-close { position: absolute; top: -10px; right: -10px; background: #ff0000; color: #fff; border: 2px solid #fff; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; z-index: 2001; }
         .dialogo-vm { margin-bottom: 10px; font-style: normal; }
+        .actor-hint { cursor: help; border-bottom: 1px dotted #A87C00; position: relative; display: inline-block; }
+        .actor-hint:hover::after { content: attr(data-full); position: absolute; bottom: 125%; left: 50%;transform: translateX(-50%); background-color: #5d4037; color: #ffffff; padding: 5px 10px;border-radius: 4px;font-size: 0.8rem;white-space: nowrap;z-index: 1001;box-shadow: 0 2px 5px rgba(0,0,0,0.2);}        
     </style>
 </head>
 <body onload="inicializarPortal()">
-
     <div class="header-container">
         <img src="./images/logo-mini.png" class="logo-mini">
         <div class="logia-info">
@@ -76,7 +77,7 @@
                 const actURL = params.get('act'); 
                 await cargarArchivosBase();                
                 if (Ritual) {
-                    const Dic = { "1": "Libro de Aprendiz", "2": "Libro de Compañero", "3": "Libro de Maestro" };
+                    const Dic = { "1": "Liturgia de Aprendiz", "2": "Liturgia de Compañero", "3": "Liturgia de Maestro" };
                     document.getElementById("titulo-ritual-header").textContent = Dic[libURL];                   
                     let seccionInicial = secURL || sessionStorage.getItem('seccionRetornoLogia') || "1";
                     actualizarSelectorSecciones(seccionInicial);                   
@@ -165,10 +166,10 @@
             if (!nodoSec) return;
             let html = "";
             let contadorV = 1;
-            Array.from(nodoSec.getElementsByTagName("parte")).forEach(parte => {
+            Array.from(nodoSec.getElementsByTagName("parte")).forEach(parte => {                
                 html += `<div class="parte-header">${parte.getAttribute("titulo")}</div>`;
                 Array.from(parte.getElementsByTagName("acto")).forEach(acto => {
-                    const actor = (acto.getAttribute("actor") || "Actor").trim();
+                    const actor = (acto.getAttribute("actor") || "Actor").trim();                    
                     let texto = (acto.getAttribute("tema") || acto.textContent).trim();
                     let btns = "";                    
                     // Validación de sección y actor para mostrar el documento externo
