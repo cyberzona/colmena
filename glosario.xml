@@ -11,9 +11,11 @@
     <item sigla="QH" expansion="Querido Hermano" />
     <item sigla="VH" expansion="Venerable Hermano" />
     <item sigla="Sec" expansion="Secretario" />
+    <item sigla="Col" expansion="Columna" />
     <item sigla="CCol" expansion="Columnas" />    
     <item sigla="Hos" expansion="Maestro Hospitalario" />
     <item sigla="MRM" expansion="Muy Respetable Maestro" />   
     <item sigla="QQHH" expansion="Queridos Hermanos" />
     <item sigla="GADU" expansion="Gran Arquitecto Del Universo" />
+    <item sigla="ALGDGADU" expansion="A la Gloria del Gran Arquitecto Del Universo" />
 </glosario>
