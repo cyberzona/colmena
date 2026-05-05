@@ -6,11 +6,14 @@
     <item sigla="OF" expansion="Orador Fiscal" />
     <item sigla="GT" expansion="Guarda Templo" />
     <item sigla="HH" expansion="Hermanos" />
+    <item sigla="MC" expansion="Maestro de Ceremonias" />
     <item sigla="MM" expansion="Maestro Masón" />
+    <item sigla="QH" expansion="Querido Hermano" />
+    <item sigla="VH" expansion="Venerable Hermano" />
     <item sigla="Sec" expansion="Secretario" />
     <item sigla="CCol" expansion="Columnas" />    
     <item sigla="Hos" expansion="Maestro Hospitalario" />
-    <item sigla="2Vig" expansion="Segundo Vigilante" />   
+    <item sigla="MRM" expansion="Muy Respetable Maestro" />   
     <item sigla="QQHH" expansion="Queridos Hermanos" />
     <item sigla="GADU" expansion="Gran Arquitecto Del Universo" />
 </glosario>
