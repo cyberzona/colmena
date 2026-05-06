@@ -67,35 +67,26 @@
         let Ritual, Glosario, Bitacora;
         let libURL = "1", fecha = "", extURL = "", secURL_ext = "";
         
-      async function validarAcceso() {
-    return new Promise((resolve) => {
-        // Usamos una miniatura del archivo de seguridad como sensor
-        // Google permite cargar imágenes entre dominios sin bloqueos de CORS
-        const img = new Image();
-        const FILE_ID = "1-CFZvhbJyJGCMiSLMO9jBw5Nut06j8P9"; 
-        
-        // Esta URL intenta generar una miniatura. Si el usuario no tiene permiso, fallará.
-        img.src = `https://drive.google.com/thumbnail?id=${FILE_ID}&sz=w1&v=${new Date().getTime()}`;
+      function validarAcceso(callback) {
+    const FILE_ID = "1-CFZvhbJyJGCMiSLMO9jBw5Nut06j8P9"; 
+    const img = new Image();
+    
+    // El sensor de seguridad
+    img.src = `https://drive.google.com/thumbnail?id=${FILE_ID}&sz=w1&v=${new Date().getTime()}`;
 
-        img.onload = () => {
-            console.log("Acceso validado exitosamente.");
-            resolve(true);
-        };
+    img.onload = () => {
+        console.log("Acceso validado. Iniciando carga de rituales...");
+        callback(); // Dispara la carga de los archivos base
+    };
 
-        img.onerror = () => {
-            console.error("Acceso denegado o sesión no iniciada.");
-            document.body.innerHTML = `
-                <div style="display:flex; justify-content:center; align-items:center; height:100vh; font-family:'Palatino Linotype', serif; color:#5d4037; text-align:center; padding:20px; background-color:#fdfaf3;">
-                    <div> 
-                        <h2 style="font-size: 2rem; margin-bottom: 20px;">Acceso Restringido</h2>
-                        <p style="font-size: 1.2rem;">No se pudo verificar tu credencial de acceso en Google Drive.</p>
-                        <p style="font-size: 0.9rem; color: #8d6e63; margin-top: 20px;">Por favor, asegúrate de haber iniciado sesión en Google con tu cuenta autorizada.</p>
-                    </div>
-                </div>`;
-            resolve(false);
-        };
-    });
-}        async function inicializarPortal() { 
+    img.onerror = () => {
+        document.body.innerHTML = `
+            <div style="display:flex; justify-content:center; align-items:center; height:100vh; font-family:serif; color:#5d4037; text-align:center;">
+                <div> <h2>Acceso Restringido</h2> <p>No se pudo verificar la sesión de Google Drive.</p> </div>
+            </div>`;
+    };
+}
+        async function inicializarPortal() { validarAcceso(async () => {
             try {
                 const accesoPermitido = await validarAcceso();
                 if (!accesoPermitido) return;
@@ -129,6 +120,7 @@
                     }
                 }
             } catch (e) { console.error(e); }
+            });
         }
 
         async function cargarArchivosBase() {
