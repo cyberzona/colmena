@@ -68,33 +68,34 @@
         let libURL = "1", fecha = "", extURL = "", secURL_ext = "";
         
       async function validarAcceso() {
-    try {
-        // Usamos 'no-cors' para evitar el bloqueo del navegador
-        // Esto permite que la petición llegue a Google y regrese
-        await fetch(GAS_URL, {
-            method: 'GET',
-            mode: 'no-cors', 
-            cache: 'no-cache'
-        });
+    return new Promise((resolve) => {
+        // Usamos una miniatura del archivo de seguridad como sensor
+        // Google permite cargar imágenes entre dominios sin bloqueos de CORS
+        const img = new Image();
+        const FILE_ID = "1-CFZvhbJyJGCMiSLMO9jBw5Nut06j8P9"; 
+        
+        // Esta URL intenta generar una miniatura. Si el usuario no tiene permiso, fallará.
+        img.src = `https://drive.google.com/thumbnail?id=${FILE_ID}&sz=w1&v=${new Date().getTime()}`;
 
-        // En modo 'no-cors', si no hay un error de red, asumimos que el script 
-        // de Google (que ya probaste que funciona) dio el paso libre.
-        console.log("Validación técnica completada");
-        return true;
+        img.onload = () => {
+            console.log("Acceso validado exitosamente.");
+            resolve(true);
+        };
 
-    } catch (e) {
-        console.error("Error de red en validación:", e);
-        document.body.innerHTML = `
-            <div style="display:flex; justify-content:center; align-items:center; height:100vh; font-family:'Palatino Linotype', serif; color:#5d4037; text-align:center; padding:20px; background-color:#fdfaf3;">
-                <div> 
-                    <h2 style="font-size: 2rem;">Acceso Restringido</h2>
-                    <p>No se pudo establecer conexión con el servidor de seguridad.</p>
-                </div>
-            </div>`;
-        return false;
-    }
-}        
-        async function inicializarPortal() { 
+        img.onerror = () => {
+            console.error("Acceso denegado o sesión no iniciada.");
+            document.body.innerHTML = `
+                <div style="display:flex; justify-content:center; align-items:center; height:100vh; font-family:'Palatino Linotype', serif; color:#5d4037; text-align:center; padding:20px; background-color:#fdfaf3;">
+                    <div> 
+                        <h2 style="font-size: 2rem; margin-bottom: 20px;">Acceso Restringido</h2>
+                        <p style="font-size: 1.2rem;">No se pudo verificar tu credencial de acceso en Google Drive.</p>
+                        <p style="font-size: 0.9rem; color: #8d6e63; margin-top: 20px;">Por favor, asegúrate de haber iniciado sesión en Google con tu cuenta autorizada.</p>
+                    </div>
+                </div>`;
+            resolve(false);
+        };
+    });
+}        async function inicializarPortal() { 
             try {
                 const accesoPermitido = await validarAcceso();
                 if (!accesoPermitido) return;
