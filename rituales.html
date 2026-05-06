@@ -94,8 +94,6 @@
 }
         async function inicializarPortal() { validarAcceso(async () => {
             try {
-                const accesoPermitido = await validarAcceso();
-                if (!accesoPermitido) return;
                 const params = new URLSearchParams(window.location.search);
                 fecha = params.get('fec') || new Date().toLocaleDateString('en-CA');
                 libURL = (params.get('num') || "1").toString();
