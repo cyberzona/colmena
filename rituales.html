@@ -69,20 +69,22 @@
         
         async function validarAcceso() {
             try {
-                const r = await fetch(GAS_URL);
-                if (!r.ok) throw new Error();        
-                const data = await r.json();
-                return data.status === "authorized";
+               const r = await fetch(`${GAS_URL}?v=${new Date().getTime()}`);        
+                if (!r.ok) throw new Error("Error de red");        
+                const data = await r.json();        
+                if (data.status === "authorized") { return true; } else { throw new Error("No autorizado"); }
             } catch (e) {
                 document.body.innerHTML = `
-                   <div style="display:flex; justify-content:center; align-items:center; height:100vh; font-family:serif; color:#5d4037; text-align:center; padding:20px;">
-                    <div> <h2>Acceso Restringido</h2>
-                        <p>No se pudo verificar tu credencial de acceso.</p>
-                    </div>
-                  </div>`;
-           return false;
-          }
-        }
+            <div style="display:flex; justify-content:center; align-items:center; height:100vh; font-family:serif; color:#5d4037; text-align:center; padding:20px; background-color: #fdfaf3;">
+                <div> 
+                    <h2 style="color: #5d4037;">Acceso Restringido</h2>
+                    <p>No se pudo verificar tu credencial de acceso en el sistema.</p>
+                    <p style="font-size: 0.8rem; color: #8d6e63;">Verifica la configuración del script de enlace.</p>
+                </div>
+            </div>`;
+        return false;
+    }
+}
 
         async function inicializarPortal() { if (!(await validarAcceso())) return;
             try {
