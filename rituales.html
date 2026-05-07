@@ -100,8 +100,8 @@
 
         async function cargarArchivosBase() {
             const t = new Date().getTime();
-            const f = u => fetch(`${dominio}${u}?v=${t}`).then(r => r.text());
-            
+            //const f = u => fetch(`${dominio}${u}?v=${t}`).then(r => r.text());
+            const f = u => fetch(`${u}?v=${t}`).then(r => r.text());
             const [dg, dl, de] = await Promise.all([f('glosario.xml'), f('liturgia.xml'), f('bitacora.xml').catch(() => '<bitacora/>')]);
             const dp = new DOMParser();
             liturgiaDoc = dp.parseFromString(dl, "text/xml");
