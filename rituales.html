@@ -61,8 +61,7 @@
 
     <div id="rituales-content"></div>
 
-    <script>
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbxGVHjFuv44zbjeJLlvDCb9Gtc6HRvByj9MEDnDOKs7jafHqoL0izz1AznZPAiLtiqI/exec";
+    <script>       
         const dominio = "https://colmena8.org/";
         let Ritual, Glosario, Bitacora;
         let libURL = "1", fecha = "", extURL = "", secURL_ext = "";
@@ -95,7 +94,7 @@
                 const actURL = params.get('act'); 
                 await cargarArchivosBase();                
                 if (Ritual) {
-                    const Dic = { "1": "Libro de Aprendiz", "2": "Libro de Compañero", "3": "Libro de Maestro" };
+                    const Dic = { "1": "Liturgia de Aprendiz", "2": "Liturgia de Compañero", "3": "Liturgia de Maestro" };
                     document.getElementById("titulo-ritual-header").textContent = Dic[libURL];                   
                     let seccionInicial = secURL || sessionStorage.getItem('seccionRetornoLogia') || "1";
                     actualizarSelectorSecciones(seccionInicial);                   
