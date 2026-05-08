@@ -104,7 +104,7 @@
 async function cargarArchivosBase() {
     const t = new Date().getTime();
     
-    // Función interna para realizar la petición al puente de Google
+    // Función para obtener datos a través del puente de Google
     const fetchViaBridge = async (nombreArchivo) => {
         const res = await fetch(`${GAS_URL}?file=${nombreArchivo}&v=${t}`, {
             method: 'GET',
@@ -116,7 +116,7 @@ async function cargarArchivosBase() {
     };
 
     try {
-        // 1. Descarga sincronizada de los archivos a través del puente de Google
+        // 1. Descarga de archivos
         const [dg, dl, de] = await Promise.all([
             fetchViaBridge('glosario'),
             fetchViaBridge('liturgia'),
@@ -125,47 +125,47 @@ async function cargarArchivosBase() {
 
         const dp = new DOMParser();
         
-        // 2. Parseo de los documentos XML recibidos
+        // 2. Parseo de XML
         liturgiaDoc = dp.parseFromString(dl, "text/xml");
         Glosario = dp.parseFromString(dg, "text/xml");
         Bitacora = dp.parseFromString(de, "text/xml");
 
-        // 3. Búsqueda del ritual (Lógica de Identidad Reforzada)
+        // 3. Búsqueda del Ritual (Lógica infalible)
         const todosLosRituales = liturgiaDoc.getElementsByTagName("ritual");
         
-        // Buscamos el ritual comparando como texto y limpiando espacios invisibles
+        // Buscamos el libro 1 eliminando espacios y forzando texto
         Ritual = Array.from(todosLosRituales).find(r => {
             const idEnXML = String(r.getAttribute("libro")).trim();
             const idBuscado = String(libURL).trim();
             return idEnXML == idBuscado; 
         });
 
-        // 4. Validación del Ritual y Activación de la Interfaz
+        // 4. Activación de la interfaz
         if (!Ritual) {
-            // Diagnóstico en consola si no se encuentra el libro
-            const idsEncontrados = Array.from(todosLosRituales).map(r => r.getAttribute("libro"));
-            console.error("IDs en XML:", idsEncontrados, "Buscado:", libURL);
+            // Diagnóstico detallado para la consola
+            const encontrados = Array.from(todosLosRituales).map(r => r.getAttribute("libro"));
+            console.error("Libro buscado:", libURL, "Disponibles en XML:", encontrados);
             
             throw new Error(`No se encontró el ritual para el libro: ${libURL}`);
         } else {
-            console.log("Ritual cargado exitosamente. Logia:", Ritual.getAttribute("logia"));
+            console.log("¡Éxito! Ritual cargado para la logia:", Ritual.getAttribute("logia"));
             
-            // Disparar las funciones que dibujan el contenido en pantalla
+            // Dibujar el contenido en pantalla
             actualizarSelectorSecciones();
             await gestionarCambioSeccion(); 
         }
 
     } catch (error) {
-        console.error("Error crítico en la carga:", error);
+        console.error("Error crítico:", error);
         
-        // Mostrar mensaje de error visual al usuario en el portal
+        // Mensaje visual de error en el portal
         const contenedor = document.getElementById("rituales-content");
         if (contenedor) {
             contenedor.innerHTML = `
                 <div style="padding:20px; color:#721c24; background:#f8d7da; border:1px solid #f5c6cb; border-radius:8px; margin:10px;">
-                    <strong>Error Crítico</strong><br>
+                    <strong>Error de Conexión</strong><br>
                     ${error.message}<br><br>
-                    <small>Sugerencia: Verifique la conexión con Google Drive y que la URL del script sea la correcta.</small>
+                    <small>Verifique que la GAS_URL sea la correcta y que haya publicado una "Nueva versión" en el script de Google.</small>
                 </div>`;
         }
     }
