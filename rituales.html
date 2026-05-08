@@ -108,8 +108,8 @@
             // AÑADIDO: redirect: 'follow' y modo cors
             const res = await fetch(`${GAS_URL}?file=${nombreArchivo}`, {
                 method: 'GET',
-                redirect: 'follow',
-                mode: 'cors'
+                mode: 'cors', // Crucial para que el navegador no sospeche
+                redirect: 'follow' // Crucial para que Google pueda redirigir a los datos
             });
             
             if (!res.ok) throw new Error(`Error al obtener ${nombreArchivo}: ${res.status}`);
