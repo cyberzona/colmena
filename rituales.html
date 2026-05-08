@@ -110,10 +110,10 @@
     // Añadimos un número aleatorio para que Google no nos dé una respuesta vieja
     const cacheBuster = `&nocache=${new Date().getTime()}`;
     
-    const res = await fetch(`${GAS_URL}?file=${nombreArchivo}`, {
+   const res = await fetch(`${GAS_URL}?file=${nombreArchivo}&t=${t}`, {
     method: 'GET',
-    mode: 'cors',       // Indica que la petición es entre diferentes dominios
-    redirect: 'follow'   // Obligatorio para que el navegador siga la redirección interna de Google
+    mode: 'cors',
+    redirect: 'follow' 
 });
 
     if (!res.ok) {
