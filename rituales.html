@@ -110,11 +110,11 @@
     // Añadimos un número aleatorio para que Google no nos dé una respuesta vieja
     const cacheBuster = `&nocache=${new Date().getTime()}`;
     
-    const res = await fetch(`${GAS_URL}?file=${nombreArchivo}${cacheBuster}`, {
-        method: 'GET',
-        mode: 'cors',
-        redirect: 'follow'
-    });
+    const res = await fetch(`${GAS_URL}?file=${nombreArchivo}`, {
+    method: 'GET',
+    mode: 'cors',       // Indica que la petición es entre diferentes dominios
+    redirect: 'follow'   // Obligatorio para que el navegador siga la redirección interna de Google
+});
 
     if (!res.ok) {
         console.error(`Error de red en ${nombreArchivo}:`, res.status);
