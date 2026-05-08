@@ -102,66 +102,71 @@
         
            
 
-        async function cargarArchivosBase() {
-            const t = new Date().getTime();
-            
-            // Función interna para usar el puente de Google con redirección y CORS
-            const fetchViaBridge = async (nombreArchivo) => {
-    // Añadimos un número aleatorio para que Google no nos dé una respuesta vieja
-    const cacheBuster = `&nocache=${new Date().getTime()}`;
+       async function cargarArchivosBase() {
+    const t = new Date().getTime();
     
-   const res = await fetch(`${GAS_URL}?file=${nombreArchivo}&t=${t}`, {
-    method: 'GET',
-    mode: 'cors',
-    redirect: 'follow' 
-});
+    // Función interna para realizar la petición al puente de Google
+    const fetchViaBridge = async (nombreArchivo) => {
+        const res = await fetch(`${GAS_URL}?file=${nombreArchivo}&v=${t}`, {
+            method: 'GET',
+            mode: 'cors',
+            redirect: 'follow'
+        });
+        if (!res.ok) throw new Error(`Error al recuperar ${nombreArchivo}`);
+        return res.text();
+    };
 
-    if (!res.ok) {
-        console.error(`Error de red en ${nombreArchivo}:`, res.status);
-        throw new Error(`Servidor respondió con status ${res.status}`);
-    }
+    try {
+        // 1. Descarga sincronizada de los tres archivos base
+        const [dg, dl, de] = await Promise.all([
+            fetchViaBridge('glosario'),
+            fetchViaBridge('liturgia'),
+            fetchViaBridge('bitacora').catch(() => '<bitacora/>') // Failsafe para bitácora
+        ]);
 
-    const texto = await res.text();
-
-    // Si el texto es muy corto o dice Error, es que el puente falló
-    if (texto.length < 100 && texto.includes("Error")) {
-        throw new Error("El puente de Google no pudo acceder al archivo.");
-    }
-
-    return texto;
-};
-
-            try {
-                // Cargamos los 3 archivos a través del puente
-                const [dg, dl, de] = await Promise.all([
-                    fetchViaBridge('glosario'),
-                    fetchViaBridge('liturgia'),
-                    fetchViaBridge('bitacora').catch(() => '<bitacora/>')
-                ]);
-
-                const dp = new DOMParser();
-                liturgiaDoc = dp.parseFromString(dl, "text/xml");
-                Glosario = dp.parseFromString(dg, "text/xml");
-                Bitacora = dp.parseFromString(de, "text/xml");            
-
-                // Buscamos el ritual. Usamos == para asegurar que "1" (texto) coincida con 1 (número)
-                const todosLosRituales = liturgiaDoc.getElementsByTagName("ritual");
-                Ritual = Array.from(todosLosRituales).find(r => r.getAttribute("libro") == libURL);
-                
-                if (!Ritual) {
-                    console.error("No se encontró el ritual para el libro:", libURL);
-                } else {
-                    console.log("Ritual cargado exitosamente a través del puente.");
-                }
-
-            } catch (error) {
-                console.error("Fallo en la carga remota:", error);
-                document.getElementById("rituales-content").innerHTML = 
-                    "<p style='color:red;'>Error crítico: No se pudo recuperar la liturgia desde el servidor remoto.</p>";
-                throw error; // Re-lanzamos para que no siga la ejecución
-            }
-        }    
+        const dp = new DOMParser();
         
+        // 2. Parseo de los documentos XML
+        liturgiaDoc = dp.parseFromString(dl, "text/xml");
+        Glosario = dp.parseFromString(dg, "text/xml");
+        Bitacora = dp.parseFromString(de, "text/xml");
+
+        // 3. Búsqueda del ritual específico (Lógica de Identidad)
+        const todosLosRituales = liturgiaDoc.getElementsByTagName("ritual");
+        
+        // Buscamos el libro comparando como texto y limpiando espacios
+        Ritual = Array.from(todosLosRituales).find(r => {
+            const idEnXML = String(r.getAttribute("libro")).trim();
+            const idBuscado = String(libURL).trim();
+            return idEnXML == idBuscado; 
+        });
+
+        // 4. Validación y Activación de la Interfaz
+        if (Ritual) {
+            const logiaNom = Ritual.getAttribute("logia") || "Colmena No. 8";
+            console.log(`Éxito: Cargado libro ${libURL} de la Logia ${logiaNom}`);
+            
+            // Estas funciones dibujan el contenido en la pantalla
+            actualizarSelectorSecciones();
+            await gestionarCambioSeccion(); 
+            
+        } else {
+            // Diagnóstico detallado en caso de error
+            const disponibles = Array.from(todosLosRituales).map(r => r.getAttribute("libro"));
+            console.error("IDs encontrados en XML:", disponibles);
+            throw new Error(`No se encontró el ritual para el libro: ${libURL}`);
+        }
+
+    } catch (error) {
+        console.error("Error crítico en la carga:", error);
+        document.getElementById("rituales-content").innerHTML = `
+            <div style="padding:20px; color:#721c24; background:#f8d7da; border:1px solid #f5c6cb; border-radius:8px;">
+                <strong>Error de Conexión</strong><br>
+                ${error.message}<br><br>
+                <small>Verifique que el archivo de seguridad esté activo en Drive y la versión del script sea la más reciente.</small>
+            </div>`;
+    }
+}        
 
         function actualizarSelectorSecciones(sel) {
             const combo = document.getElementById("seccionFilter");
