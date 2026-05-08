@@ -99,63 +99,15 @@
         }
 
        async function cargarArchivosBase() {
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbzCYh2GxnCfrUn4Rius12ztTd2vpjY9zAWADTIkUJNuB4Aik_gFvenHofHDr1GlhmLXQw/exec";
-    
-    try {
-        console.log("Solicitando archivos a través del puente de Google...");
-        
-        const fetchViaBridge = async (nombreArchivo) => {
-    const res = await fetch(`${GAS_URL}?file=${nombreArchivo}`, {
-    method: 'GET',
-    mode: 'cors',      // Indica que es una petición entre dominios
-    redirect: 'follow'  // OBLIGATORIO: Google redirige de /macros a /user_content
-});
-
-    if (!res.ok) throw new Error(`Servidor respondió con status ${res.status}`);
-    
-    const texto = await res.text();
-    
-    if (texto.includes("Error de Seguridad")) {
-        throw new Error("El archivo de seguridad en Drive no autorizó la carga.");
-    }
-    
-    return texto;
-};
-
-        // Descarga de archivos
-        const [dg, dl, de] = await Promise.all([
-            fetchViaBridge('glosario'),
-            fetchViaBridge('liturgia'),
-            fetchViaBridge('bitacora')
-        ]);
-
-        const dp = new DOMParser();
-        Glosario = dp.parseFromString(dg, "text/xml");
-        liturgiaDoc = dp.parseFromString(dl, "text/xml");
-        Bitacora = dp.parseFromString(de, "text/xml");
-
-        // Buscamos el ritual
-        Ritual = Array.from(liturgiaDoc.getElementsByTagName("ritual"))
-                      .find(r => r.getAttribute("libro") === libURL);
-
-        if (!Ritual) throw new Error("No se encontró el ritual específico en el XML.");
-
-        console.log("Archivos procesados correctamente.");
-        
-        // IMPORTANTE: Aquí debes llamar a la función que dibuja la página
-        actualizarSelectorSecciones(); 
-        await gestionarCambioSeccion();
-
-    } catch (error) {
-        console.error("Error en la lectura remota:", error);
-        document.getElementById("rituales-content").innerHTML = 
-            `<div style="text-align:center; padding:20px; color:#5d4037;">
-                <h3>Error de Conexión</h3>
-                <p>${error.message}</p>
-                <small>Verifique que el archivo de seguridad esté activo en Drive.</small>
-            </div>`;
-    }
-}
+            const t = new Date().getTime();
+            const f = u => fetch(`${dominio}${u}?v=${t}`).then(r => r.text());            
+            const [dg, dl, de] = await Promise.all([f('glosario.xml'), f('liturgia.xml'), f('bitacora.xml').catch(() => '<bitacora/>')]);
+            const dp = new DOMParser();
+            liturgiaDoc = dp.parseFromString(dl, "text/xml");
+            Glosario = dp.parseFromString(dg, "text/xml");
+            Bitacora = dp.parseFromString(de, "text/xml");            
+            Ritual = Array.from(liturgiaDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("libro") === libURL);           
+        }
 
         function actualizarSelectorSecciones(sel) {
             const combo = document.getElementById("seccionFilter");
