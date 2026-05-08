@@ -101,8 +101,7 @@
 
         
            
-
-       async function cargarArchivosBase() {
+async function cargarArchivosBase() {
     const t = new Date().getTime();
     
     // Función interna para realizar la petición al puente de Google
@@ -117,57 +116,60 @@
     };
 
     try {
-        // 1. Descarga sincronizada de los tres archivos base
+        // 1. Descarga sincronizada de los archivos a través del puente de Google
         const [dg, dl, de] = await Promise.all([
             fetchViaBridge('glosario'),
             fetchViaBridge('liturgia'),
-            fetchViaBridge('bitacora').catch(() => '<bitacora/>') // Failsafe para bitácora
+            fetchViaBridge('bitacora').catch(() => '<bitacora/>')
         ]);
 
         const dp = new DOMParser();
         
-        // 2. Parseo de los documentos XML
+        // 2. Parseo de los documentos XML recibidos
         liturgiaDoc = dp.parseFromString(dl, "text/xml");
         Glosario = dp.parseFromString(dg, "text/xml");
         Bitacora = dp.parseFromString(de, "text/xml");
 
-        // 3. Búsqueda del ritual específico (Lógica de Identidad)
+        // 3. Búsqueda del ritual (Lógica de Identidad Reforzada)
         const todosLosRituales = liturgiaDoc.getElementsByTagName("ritual");
         
-        // Buscamos el libro comparando como texto y limpiando espacios
+        // Buscamos el ritual comparando como texto y limpiando espacios invisibles
         Ritual = Array.from(todosLosRituales).find(r => {
             const idEnXML = String(r.getAttribute("libro")).trim();
             const idBuscado = String(libURL).trim();
             return idEnXML == idBuscado; 
         });
 
-        // 4. Validación y Activación de la Interfaz
-        if (Ritual) {
-            const logiaNom = Ritual.getAttribute("logia") || "Colmena No. 8";
-            console.log(`Éxito: Cargado libro ${libURL} de la Logia ${logiaNom}`);
+        // 4. Validación del Ritual y Activación de la Interfaz
+        if (!Ritual) {
+            // Diagnóstico en consola si no se encuentra el libro
+            const idsEncontrados = Array.from(todosLosRituales).map(r => r.getAttribute("libro"));
+            console.error("IDs en XML:", idsEncontrados, "Buscado:", libURL);
             
-            // Estas funciones dibujan el contenido en la pantalla
+            throw new Error(`No se encontró el ritual para el libro: ${libURL}`);
+        } else {
+            console.log("Ritual cargado exitosamente. Logia:", Ritual.getAttribute("logia"));
+            
+            // Disparar las funciones que dibujan el contenido en pantalla
             actualizarSelectorSecciones();
             await gestionarCambioSeccion(); 
-            
-        } else {
-            // Diagnóstico detallado en caso de error
-            const disponibles = Array.from(todosLosRituales).map(r => r.getAttribute("libro"));
-            console.error("IDs encontrados en XML:", disponibles);
-            throw new Error(`No se encontró el ritual para el libro: ${libURL}`);
         }
 
     } catch (error) {
         console.error("Error crítico en la carga:", error);
-        document.getElementById("rituales-content").innerHTML = `
-            <div style="padding:20px; color:#721c24; background:#f8d7da; border:1px solid #f5c6cb; border-radius:8px;">
-                <strong>Error de Conexión</strong><br>
-                ${error.message}<br><br>
-                <small>Verifique que el archivo de seguridad esté activo en Drive y la versión del script sea la más reciente.</small>
-            </div>`;
+        
+        // Mostrar mensaje de error visual al usuario en el portal
+        const contenedor = document.getElementById("rituales-content");
+        if (contenedor) {
+            contenedor.innerHTML = `
+                <div style="padding:20px; color:#721c24; background:#f8d7da; border:1px solid #f5c6cb; border-radius:8px; margin:10px;">
+                    <strong>Error Crítico</strong><br>
+                    ${error.message}<br><br>
+                    <small>Sugerencia: Verifique la conexión con Google Drive y que la URL del script sea la correcta.</small>
+                </div>`;
+        }
     }
-}        
-
+}
         function actualizarSelectorSecciones(sel) {
             const combo = document.getElementById("seccionFilter");
             combo.innerHTML = "";
