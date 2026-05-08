@@ -61,7 +61,8 @@
 
     <div id="rituales-content"></div>
 
-    <script>       
+    <script>    
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbzCYh2GxnCfrUn4Rius12ztTd2vpjY9zAWADTIkUJNuB4Aik_gFvenHofHDr1GlhmLXQw/exec";
         const dominio = "https://colmena8.org/";
         let Ritual, Glosario, Bitacora;
         let libURL = "1", fecha = "", extURL = "", secURL_ext = "";
@@ -98,17 +99,54 @@
             } catch (e) { console.error(e); }
         }
 
+        
+           
+
         async function cargarArchivosBase() {
             const t = new Date().getTime();
-            //const f = u => fetch(`${dominio}${u}?v=${t}`).then(r => r.text());
-            const f = u => fetch(`${u}?v=${t}`).then(r => r.text());
-            const [dg, dl, de] = await Promise.all([f('glosario.xml'), f('liturgia.xml'), f('bitacora.xml').catch(() => '<bitacora/>')]);
-            const dp = new DOMParser();
-            liturgiaDoc = dp.parseFromString(dl, "text/xml");
-            Glosario = dp.parseFromString(dg, "text/xml");
-            Bitacora = dp.parseFromString(de, "text/xml");            
-            Ritual = Array.from(liturgiaDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("libro") === libURL);           
-        }
+            
+            // Función interna para usar el puente de Google con redirección y CORS
+            const fetchViaBridge = async (nombreArchivo) => {
+                const res = await fetch(`${GAS_URL}?file=${nombreArchivo}&v=${t}`, {
+                    method: 'GET',
+                    mode: 'cors',
+                    redirect: 'follow'
+                });
+                if (!res.ok) throw new Error(`Error en puente: ${nombreArchivo}`);
+                return res.text();
+            };
+
+            try {
+                // Cargamos los 3 archivos a través del puente
+                const [dg, dl, de] = await Promise.all([
+                    fetchViaBridge('glosario'),
+                    fetchViaBridge('liturgia'),
+                    fetchViaBridge('bitacora').catch(() => '<bitacora/>')
+                ]);
+
+                const dp = new DOMParser();
+                liturgiaDoc = dp.parseFromString(dl, "text/xml");
+                Glosario = dp.parseFromString(dg, "text/xml");
+                Bitacora = dp.parseFromString(de, "text/xml");            
+
+                // Buscamos el ritual. Usamos == para asegurar que "1" (texto) coincida con 1 (número)
+                const todosLosRituales = liturgiaDoc.getElementsByTagName("ritual");
+                Ritual = Array.from(todosLosRituales).find(r => r.getAttribute("libro") == libURL);
+                
+                if (!Ritual) {
+                    console.error("No se encontró el ritual para el libro:", libURL);
+                } else {
+                    console.log("Ritual cargado exitosamente a través del puente.");
+                }
+
+            } catch (error) {
+                console.error("Fallo en la carga remota:", error);
+                document.getElementById("rituales-content").innerHTML = 
+                    "<p style='color:red;'>Error crítico: No se pudo recuperar la liturgia desde el servidor remoto.</p>";
+                throw error; // Re-lanzamos para que no siga la ejecución
+            }
+        }    
+        
 
         function actualizarSelectorSecciones(sel) {
             const combo = document.getElementById("seccionFilter");
