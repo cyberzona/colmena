@@ -107,14 +107,29 @@
             
             // Función interna para usar el puente de Google con redirección y CORS
             const fetchViaBridge = async (nombreArchivo) => {
-                const res = await fetch(`${GAS_URL}?file=${nombreArchivo}&v=${t}`, {
-                    method: 'GET',
-                    mode: 'cors',
-                    redirect: 'follow'
-                });
-                if (!res.ok) throw new Error(`Error en puente: ${nombreArchivo}`);
-                return res.text();
-            };
+    // Añadimos un número aleatorio para que Google no nos dé una respuesta vieja
+    const cacheBuster = `&nocache=${new Date().getTime()}`;
+    
+    const res = await fetch(`${GAS_URL}?file=${nombreArchivo}${cacheBuster}`, {
+        method: 'GET',
+        mode: 'cors',
+        redirect: 'follow'
+    });
+
+    if (!res.ok) {
+        console.error(`Error de red en ${nombreArchivo}:`, res.status);
+        throw new Error(`Servidor respondió con status ${res.status}`);
+    }
+
+    const texto = await res.text();
+
+    // Si el texto es muy corto o dice Error, es que el puente falló
+    if (texto.length < 100 && texto.includes("Error")) {
+        throw new Error("El puente de Google no pudo acceder al archivo.");
+    }
+
+    return texto;
+};
 
             try {
                 // Cargamos los 3 archivos a través del puente
