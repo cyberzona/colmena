@@ -98,21 +98,33 @@
             } catch (e) { console.error(e); }
         }
 
-        async function cargarArchivosBase() {
-    // La URL de tu script de Google (la misma que usas para validar)
+       async function cargarArchivosBase() {
     const GAS_URL = "https://script.google.com/macros/s/AKfycbzCYh2GxnCfrUn4Rius12ztTd2vpjY9zAWADTIkUJNuB4Aik_gFvenHofHDr1GlhmLXQw/exec";
-
+    
     try {
         console.log("Solicitando archivos a través del puente de Google...");
-
-        // Llamamos al script pidiéndole cada archivo mediante un parámetro (ej: ?file=liturgia)
+        
         const fetchViaBridge = async (nombreArchivo) => {
-            const res = await fetch(`${GAS_URL}?file=${nombreArchivo}`);
-            if (!res.ok) throw new Error(`Error al obtener ${nombreArchivo}`);
-            return res.text(); // Recibimos el XML puro
+            // AÑADIDO: redirect: 'follow' y modo cors
+            const res = await fetch(`${GAS_URL}?file=${nombreArchivo}`, {
+                method: 'GET',
+                redirect: 'follow',
+                mode: 'cors'
+            });
+            
+            if (!res.ok) throw new Error(`Error al obtener ${nombreArchivo}: ${res.status}`);
+            
+            const texto = await res.text();
+            
+            // Verificación: Si GAS devuelve un error de acceso, lanzamos excepción
+            if (texto.includes("ACCESO DENEGADO") || texto.includes("script.google.com")) {
+                 throw new Error(`El servidor de Google no entregó el XML para ${nombreArchivo}`);
+            }
+            
+            return texto;
         };
 
-        // Descargamos todo en paralelo
+        // Descarga de archivos
         const [dg, dl, de] = await Promise.all([
             fetchViaBridge('glosario'),
             fetchViaBridge('liturgia'),
@@ -124,16 +136,26 @@
         liturgiaDoc = dp.parseFromString(dl, "text/xml");
         Bitacora = dp.parseFromString(de, "text/xml");
 
-        // Buscamos el ritual específico
+        // Buscamos el ritual
         Ritual = Array.from(liturgiaDoc.getElementsByTagName("ritual"))
                       .find(r => r.getAttribute("libro") === libURL);
 
-        console.log("Archivos procesados correctamente a través del puente.");
+        if (!Ritual) throw new Error("No se encontró el ritual específico en el XML.");
+
+        console.log("Archivos procesados correctamente.");
+        
+        // IMPORTANTE: Aquí debes llamar a la función que dibuja la página
+        actualizarSelectorSecciones(); 
+        await gestionarCambioSeccion();
 
     } catch (error) {
         console.error("Error en la lectura remota:", error);
         document.getElementById("rituales-content").innerHTML = 
-            "<p style='color:red;'>Error crítico: No se pudo recuperar la liturgia desde el servidor.</p>";
+            `<div style="text-align:center; padding:20px; color:#5d4037;">
+                <h3>Error de Conexión</h3>
+                <p>${error.message}</p>
+                <small>Verifique que el archivo de seguridad esté activo en Drive.</small>
+            </div>`;
     }
 }
 
