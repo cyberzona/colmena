@@ -105,24 +105,24 @@
         console.log("Solicitando archivos a través del puente de Google...");
         
         const fetchViaBridge = async (nombreArchivo) => {
-            // AÑADIDO: redirect: 'follow' y modo cors
-            const res = await fetch(`${GAS_URL}?file=${nombreArchivo}`, {
-                method: 'GET',
-                mode: 'cors', // Crucial para que el navegador no sospeche
-                redirect: 'follow' // Crucial para que Google pueda redirigir a los datos
-            });
-            
-            if (!res.ok) throw new Error(`Error al obtener ${nombreArchivo}: ${res.status}`);
-            
-            const texto = await res.text();
-            
-            // Verificación: Si GAS devuelve un error de acceso, lanzamos excepción
-            if (texto.includes("ACCESO DENEGADO") || texto.includes("script.google.com")) {
-                 throw new Error(`El servidor de Google no entregó el XML para ${nombreArchivo}`);
-            }
-            
-            return texto;
-        };
+    const res = await fetch(`${GAS_URL}?file=${nombreArchivo}`, {
+        method: 'GET',
+        // 'follow' es obligatorio porque Google siempre redirige
+        redirect: 'follow', 
+        // 'cors' le dice al navegador que esperamos una respuesta de otro dominio
+        mode: 'cors' 
+    });
+
+    if (!res.ok) throw new Error(`Servidor respondió con status ${res.status}`);
+    
+    const texto = await res.text();
+    
+    if (texto.includes("Error de Seguridad")) {
+        throw new Error("El archivo de seguridad en Drive no autorizó la carga.");
+    }
+    
+    return texto;
+};
 
         // Descarga de archivos
         const [dg, dl, de] = await Promise.all([
