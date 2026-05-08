@@ -99,16 +99,43 @@
         }
 
         async function cargarArchivosBase() {
-            const t = new Date().getTime();
-            //const f = u => fetch(`${dominio}${u}?v=${t}`).then(r => r.text());
-            const f = u => fetch(`${u}?v=${t}`).then(r => r.text());
-            const [dg, dl, de] = await Promise.all([f('glosario.xml'), f('liturgia.xml'), f('bitacora.xml').catch(() => '<bitacora/>')]);
-            const dp = new DOMParser();
-            liturgiaDoc = dp.parseFromString(dl, "text/xml");
-            Glosario = dp.parseFromString(dg, "text/xml");
-            Bitacora = dp.parseFromString(de, "text/xml");            
-            Ritual = Array.from(liturgiaDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("libro") === libURL);           
-        }
+    // La URL de tu script de Google (la misma que usas para validar)
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxGVHjFuv44zbjeJLlvDCb9Gtc6HRvByj9MEDnDOKs7jafHqoL0izz1AznZPAiLtiqI/exec";
+
+    try {
+        console.log("Solicitando archivos a través del puente de Google...");
+
+        // Llamamos al script pidiéndole cada archivo mediante un parámetro (ej: ?file=liturgia)
+        const fetchViaBridge = async (nombreArchivo) => {
+            const res = await fetch(`${GAS_URL}?file=${nombreArchivo}`);
+            if (!res.ok) throw new Error(`Error al obtener ${nombreArchivo}`);
+            return res.text(); // Recibimos el XML puro
+        };
+
+        // Descargamos todo en paralelo
+        const [dg, dl, de] = await Promise.all([
+            fetchViaBridge('glosario'),
+            fetchViaBridge('liturgia'),
+            fetchViaBridge('bitacora')
+        ]);
+
+        const dp = new DOMParser();
+        Glosario = dp.parseFromString(dg, "text/xml");
+        liturgiaDoc = dp.parseFromString(dl, "text/xml");
+        Bitacora = dp.parseFromString(de, "text/xml");
+
+        // Buscamos el ritual específico
+        Ritual = Array.from(liturgiaDoc.getElementsByTagName("ritual"))
+                      .find(r => r.getAttribute("libro") === libURL);
+
+        console.log("Archivos procesados correctamente a través del puente.");
+
+    } catch (error) {
+        console.error("Error en la lectura remota:", error);
+        document.getElementById("rituales-content").innerHTML = 
+            "<p style='color:red;'>Error crítico: No se pudo recuperar la liturgia desde el servidor.</p>";
+    }
+}
 
         function actualizarSelectorSecciones(sel) {
             const combo = document.getElementById("seccionFilter");
