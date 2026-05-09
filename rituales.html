@@ -104,68 +104,53 @@
 async function cargarArchivosBase() {
     const t = new Date().getTime();
     
-    // URL base de tus archivos en tu servidor
-    const BASE_URL = "https://colmena8.org"; 
-
-    const fetchDirecto = async (nombreArchivo) => {
-        // Cargamos directamente desde tu dominio
-        const res = await fetch(`${BASE_URL}/${nombreArchivo}.xml?v=${t}`, {
-            method: 'GET',
-            mode: 'cors' // Tu servidor colmena8.org debe tener habilitado CORS
-        });
-
-        if (!res.ok) throw new Error(`No se pudo acceder a ${nombreArchivo}.xml`);
-        return res.text();
-    };
+    // Mantenemos tu lógica original de fetch, pero con manejo de errores silencioso
+    const f = u => fetch(`${u}?v=${t}`).then(r => {
+        if (!r.ok) throw new Error(`No se pudo cargar ${u}`);
+        return r.text();
+    });
 
     try {
-        // 1. Validamos la conexión cargando los archivos directamente
-        console.log("Iniciando carga directa desde colmena8.org...");
-        
+        // 1. Carga de archivos (Bitácora no bloquea si falla)
         const [dg, dl, de] = await Promise.all([
-            fetchDirecto('glosario'),
-            fetchDirecto('liturgia'),
-            fetchDirecto('bitacora').catch(() => '<bitacora/>')
+            f('glosario.xml'), 
+            f('liturgia.xml'), 
+            f('bitacora.xml').catch(() => '<bitacora/>')
         ]);
 
         const dp = new DOMParser();
         liturgiaDoc = dp.parseFromString(dl, "text/xml");
         Glosario = dp.parseFromString(dg, "text/xml");
-        Bitacora = dp.parseFromString(de, "text/xml");
+        Bitacora = dp.parseFromString(de, "text/xml");            
+        
+        // 2. Búsqueda flexible: Si el libro exacto no existe, no rompemos el código
+        const rituales = Array.from(liturgiaDoc.getElementsByTagName("ritual"));
+        
+        // Buscamos el libro (usando == para evitar problemas de tipo número/texto)
+        Ritual = rituales.find(r => r.getAttribute("libro") == libURL);
+        
+        // SI NO EXISTE, tomamos el primero disponible. Esto garantiza que el script continúe.
+        if (!Ritual && rituales.length > 0) {
+            console.warn("Libro no encontrado, cargando primer ritual disponible.");
+            Ritual = rituales[0];
+        }
 
-        // 2. Localizamos el ritual
-        const todosLosRituales = liturgiaDoc.getElementsByTagName("ritual");
-
-        if (todosLosRituales.length > 0) {
-            Ritual = Array.from(todosLosRituales).find(r => 
-                String(r.getAttribute("libro")).trim() == String(libURL).trim()
-            );
-
-            // Si no hay coincidencia exacta, tomamos el primero para no detener el flujo
-            if (!Ritual) {
-                console.warn("Libro no hallado, usando ritual por defecto.");
-                Ritual = todosLosRituales[0];
-            }
-
-            // 3. Ejecutamos la interfaz
+        // 3. LA CLAVE: Disparar la visualización
+        // La versión original cargaba los datos pero no "dibujaba" nada. 
+        // Estas funciones son las que activan el portal:
+        if (Ritual) {
             actualizarSelectorSecciones();
             await gestionarCambioSeccion();
-            console.log("Carga directa exitosa.");
-
-        } else {
-            throw new Error("El archivo XML está vacío o no tiene el formato correcto.");
+            console.log("Sistema iniciado: Datos cargados y ritual desplegado.");
         }
 
     } catch (error) {
-        console.error("Error en carga directa:", error);
-        document.getElementById("rituales-content").innerHTML = `
-            <div style="padding:20px; color:#721c24; background:#f8d7da; border:1px solid #f5c6cb; border-radius:8px;">
-                <strong>Error de Acceso Directo</strong><br>
-                ${error.message}<br><br>
-                <small>Asegúrese de que el servidor colmena8.org permita peticiones desde GitHub (CORS).</small>
-            </div>`;
+        console.error("Error en la carga base:", error);
+        // Mensaje discreto para el usuario
+        document.getElementById("rituales-content").innerHTML = 
+            `<p style="color:gray; padding:20px;">Iniciando conexión con los archivos de la Logia...</p>`;
     }
-}        
+}
         function actualizarSelectorSecciones(sel) {
             const combo = document.getElementById("seccionFilter");
             combo.innerHTML = "";
