@@ -98,38 +98,17 @@
             } catch (e) { console.error(e); }
         }
 
-        async function verificarAccesoGoogle() {
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbxusJMCe2nIewXX3fzERrGvBp6wPnejJbO_KYqut3ZF28xb7uK6ctl2Dyiwf-SA8d2-Kw/exec"; // La que termina en /exec
-
-    try {
-        // Pedimos la autorización a Google. 
-        // Si el usuario no ha iniciado sesión en Google, el navegador lo detectará aquí.
-        const respuesta = await fetch(GAS_URL, {
-            method: 'GET',
-            mode: 'cors' // Esto es vital para que Google responda
-        });
-
-        if (!respuesta.ok) throw new Error("Acceso denegado por Google.");
-
-        const data = await respuesta.json();
-
-        // Si el archivo en Drive dice que está autorizado, abrimos el portal
-        if (data.status === "authorized") {
-            console.log("Bienvenido, Lux Artifex. Acceso concedido.");
-            cargarLiturgia(); // Solo aquí llamamos a la carga de los XML
-        } else {
-            throw new Error("No tienes permisos suficientes en el archivo de Drive.");
+        async function cargarArchivosBase() {
+            const t = new Date().getTime();
+            //const f = u => fetch(`${dominio}${u}?v=${t}`).then(r => r.text());
+            const f = u => fetch(`${u}?v=${t}`).then(r => r.text());
+            const [dg, dl, de] = await Promise.all([f('glosario.xml'), f('liturgia.xml'), f('bitacora.xml').catch(() => '<bitacora/>')]);
+            const dp = new DOMParser();
+            liturgiaDoc = dp.parseFromString(dl, "text/xml");
+            Glosario = dp.parseFromString(dg, "text/xml");
+            Bitacora = dp.parseFromString(de, "text/xml");            
+            Ritual = Array.from(liturgiaDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("libro") === libURL);           
         }
-
-    } catch (error) {
-        document.getElementById("rituales-content").innerHTML = `
-            <div style="padding:20px; text-align:center; border:1px solid #721c24; background:#f8d7da;">
-                <strong>Fallo de Autenticación</strong><br>
-                ${error.message}<br>
-                <small>Asegúrate de haber iniciado sesión con tu cuenta autorizada.</small>
-            </div>`;
-    }
-}
 
         function actualizarSelectorSecciones(sel) {
             const combo = document.getElementById("seccionFilter");
