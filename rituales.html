@@ -61,8 +61,7 @@
 
     <div id="rituales-content"></div>
 
-    <script> 
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbxusJMCe2nIewXX3fzERrGvBp6wPnejJbO_KYqut3ZF28xb7uK6ctl2Dyiwf-SA8d2-Kw/exec";
+    <script>         
         const dominio = "https://colmena8.org/";
         let Ritual, Glosario, Bitacora;
         let libURL = "1", fecha = "", extURL = "", secURL_ext = "";
@@ -103,6 +102,7 @@
         
         async function validarAccesoConGoogle() {
             try {
+                const GAS_URL = "https://script.google.com/macros/s/AKfycbxusJMCe2nIewXX3fzERrGvBp6wPnejJbO_KYqut3ZF28xb7uK6ctl2Dyiwf-SA8d2-Kw/exec";
                 const res = await fetch(GAS_URL);
                 const data = await res.json();
                 if (data.status === "authorized") return true;        
