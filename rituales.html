@@ -102,7 +102,7 @@
         async function validarAccesoConGoogle() {
             try {
                 const GAS_URL = "https://script.google.com/macros/s/AKfycbxusJMCe2nIewXX3fzERrGvBp6wPnejJbO_KYqut3ZF28xb7uK6ctl2Dyiwf-SA8d2-Kw/exec";
-                const respuesta = await fetch(GAS_URL, {redirect: 'follow',method: 'GET',mode: 'cors',credentials: 'omit'});       
+                const respuesta = await fetch(GAS_URL, {method: 'GET',mode: 'cors'});       
                 const data = await respuesta.json();
                 return data.status === "authorized";
             } catch (e) { console.error("Error de CORS o Sesión:", e);
