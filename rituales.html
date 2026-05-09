@@ -64,8 +64,7 @@
     <script>         
         const dominio = "https://colmena8.org/";
         let Ritual, Glosario, Bitacora;
-        let libURL = "1", fecha = "", extURL = "", secURL_ext = "";
-        
+        let libURL = "1", fecha = "", extURL = "", secURL_ext = "";        
         async function inicializarPortal() { 
             try {
                 const autorizado = await validarAccesoConGoogle();        
@@ -103,29 +102,13 @@
         async function validarAccesoConGoogle() {
             try {
                 const GAS_URL = "https://script.google.com/macros/s/AKfycbxusJMCe2nIewXX3fzERrGvBp6wPnejJbO_KYqut3ZF28xb7uK6ctl2Dyiwf-SA8d2-Kw/exec";
-               const respuesta = await fetch(GAS_URL, {
-            redirect: 'follow',
-            method: 'GET',
-            mode: 'cors' 
-        });
-        
-        // Si el navegador te bloquea por CORS aquí, la alternativa es 
-        // usar el modo 'no-cors', pero eso no te dejará leer el JSON.
-        // La solución definitiva es asegurar que el GAS use 
-        // ContentService.MimeType.JSON y devolverlo correctamente.
-        
-        const data = await respuesta.json();
-        return data.status === "authorized";
-    } catch (e) {
-        console.error("Error de CORS o Sesión:", e);
-        return false;
-    }
+                const respuesta = await fetch(GAS_URL, {redirect: 'follow',method: 'GET',mode: 'cors',credentials: 'omit'});       
+                const data = await respuesta.json();
+                return data.status === "authorized";
+            } catch (e) { console.error("Error de CORS o Sesión:", e);
+                          return false;}
         }
         
-        function mostrarError(msj) {
-            document.body.innerHTML = `<div style="text-align:center; margin-top:50px;"><h2>${msj}</h2></div>`;
-        }
-
         async function cargarArchivosBase() {
             const t = new Date().getTime();
             //const f = u => fetch(`${dominio}${u}?v=${t}`).then(r => r.text());
