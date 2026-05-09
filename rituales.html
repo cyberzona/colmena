@@ -99,16 +99,44 @@
         }
 
         async function cargarArchivosBase() {
-            const t = new Date().getTime();
-            //const f = u => fetch(`${dominio}${u}?v=${t}`).then(r => r.text());
-            const f = u => fetch(`${u}?v=${t}`).then(r => r.text());
-            const [dg, dl, de] = await Promise.all([f('glosario.xml'), f('liturgia.xml'), f('bitacora.xml').catch(() => '<bitacora/>')]);
-            const dp = new DOMParser();
-            liturgiaDoc = dp.parseFromString(dl, "text/xml");
-            Glosario = dp.parseFromString(dg, "text/xml");
-            Bitacora = dp.parseFromString(de, "text/xml");            
-            Ritual = Array.from(liturgiaDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("libro") === libURL);           
+    const t = new Date().getTime();
+    
+    // Mantenemos tu lógica de fetch local para GitHub
+    const f = u => fetch(`./${u}?v=${t}`).then(r => {
+        if (!r.ok) throw new Error(`No se pudo cargar el archivo: ${u}`);
+        return r.text();
+    });
+
+    try {
+        // Ejecutamos las descargas en paralelo para máxima velocidad
+        const [dg, dl, de] = await Promise.all([
+            f('glosario.xml'), 
+            f('liturgia.xml'), 
+            f('bitacora.xml').catch(() => '<bitacora/>')
+        ]);
+
+        const dp = new DOMParser();
+        liturgiaDoc = dp.parseFromString(dl, "text/xml");
+        Glosario = dp.parseFromString(dg, "text/xml");
+        Bitacora = dp.parseFromString(de, "text/xml");
+
+        // Buscamos el ritual específico según la URL
+        Ritual = Array.from(liturgiaDoc.getElementsByTagName("ritual"))
+                      .find(r => r.getAttribute("libro") === libURL);
+
+        if (Ritual) {
+            // Vital: Aquí es donde conectas con la interfaz
+            actualizarSelectorSecciones();
+            await gestionarCambioSeccion(); 
+            console.log("Ritual cargado correctamente.");
+        } else {
+            console.error("No se encontró el ritual especificado en el XML.");
         }
+
+    } catch (error) {
+        console.error("Error en la carga de archivos base:", error);
+    }
+}
 
         function actualizarSelectorSecciones(sel) {
             const combo = document.getElementById("seccionFilter");
