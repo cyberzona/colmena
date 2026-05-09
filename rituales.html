@@ -103,15 +103,23 @@
         async function validarAccesoConGoogle() {
             try {
                 const GAS_URL = "https://script.google.com/macros/s/AKfycbxusJMCe2nIewXX3fzERrGvBp6wPnejJbO_KYqut3ZF28xb7uK6ctl2Dyiwf-SA8d2-Kw/exec";
-                const res = await fetch(GAS_URL);
-                const data = await res.json();
-                if (data.status === "authorized") return true;        
-                  mostrarErrorEnPantalla("No tienes permiso para acceder.");
-                  return false;
-            } catch (e) {
-              mostrarErrorEnPantalla("Inicia sesión en Google para continuar.");
-              return false;
-            }
+               const respuesta = await fetch(GAS_URL, {
+            redirect: 'follow',
+            method: 'GET',
+            mode: 'cors' 
+        });
+        
+        // Si el navegador te bloquea por CORS aquí, la alternativa es 
+        // usar el modo 'no-cors', pero eso no te dejará leer el JSON.
+        // La solución definitiva es asegurar que el GAS use 
+        // ContentService.MimeType.JSON y devolverlo correctamente.
+        
+        const data = await respuesta.json();
+        return data.status === "authorized";
+    } catch (e) {
+        console.error("Error de CORS o Sesión:", e);
+        return false;
+    }
         }
         
         function mostrarError(msj) {
