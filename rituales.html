@@ -102,37 +102,53 @@
         
            
 async function cargarArchivosBase() {
+    const t = new Date().getTime();
+    const DOMINIO = "https://colmena8.org";
+
     try {
-        // 1. En lugar de fetch, usamos el XML que ya está pegado abajo (o en una variable)
-        const dp = new DOMParser();
+        // 1. PASO DE SEGURIDAD: Validar con GAS
+        const respuestaSeguridad = await fetch(`${GAS_URL}?v=${t}`, { redirect: 'follow' });
+        const estado = await respuestaSeguridad.text();
 
-        // 2. Parseamos los documentos (usando las variables que definiremos abajo)
-        liturgiaDoc = dp.parseFromString(xmlLiturgia, "text/xml");
-        Glosario = dp.parseFromString(xmlGlosario, "text/xml");
-        Bitacora = dp.parseFromString(xmlBitacora, "text/xml");
-
-        // 3. Búsqueda del ritual (Flexible)
-        const todosLosRituales = liturgiaDoc.getElementsByTagName("ritual");
-        
-        Ritual = Array.from(todosLosRituales).find(r => 
-            String(r.getAttribute("libro")).trim() == String(libURL).trim()
-        );
-
-        // Si no se encuentra el libro específico, cargamos el primero por defecto
-        if (!Ritual && todosLosRituales.length > 0) {
-            console.warn("Libro no hallado, cargando primer ritual disponible.");
-            Ritual = todosLosRituales[0];
+        if (estado !== "AUTORIZADO") {
+            throw new Error("Su cuenta de Google no está autorizada para acceder a estos trabajos.");
         }
 
-        // 4. Disparamos la interfaz
+        console.log("Autenticación exitosa. Cargando archivos desde colmena8.org...");
+
+        // 2. CONTINUAR LEYENDO DEL DOMINIO (Tu versión original)
+        const f = u => fetch(`${DOMINIO}/${u}?v=${t}`).then(r => {
+            if (!r.ok) throw new Error(`Error al leer ${u} desde el servidor.`);
+            return r.text();
+        });
+
+        const [dg, dl, de] = await Promise.all([
+            f('glosario.xml'), 
+            f('liturgia.xml'), 
+            f('bitacora.xml').catch(() => '<bitacora/>')
+        ]);
+
+        const dp = new DOMParser();
+        liturgiaDoc = dp.parseFromString(dl, "text/xml");
+        Glosario = dp.parseFromString(dg, "text/xml");
+        Bitacora = dp.parseFromString(de, "text/xml");            
+        
+        // 3. Localizar Ritual y lanzar interfaz
+        const rituales = Array.from(liturgiaDoc.getElementsByTagName("ritual"));
+        Ritual = rituales.find(r => r.getAttribute("libro") == libURL) || rituales[0];
+        
         if (Ritual) {
             actualizarSelectorSecciones();
             await gestionarCambioSeccion();
-            console.log("Sistema iniciado localmente.");
         }
 
     } catch (error) {
-        console.error("Error al procesar los datos internos:", error);
+        console.error("Fallo de acceso:", error);
+        document.getElementById("rituales-content").innerHTML = `
+            <div style="padding:20px; color:#721c24; background:#f8d7da; border:1px solid #f5c6cb; border-radius:8px;">
+                <strong>Acceso Restringido</strong><br>
+                ${error.message}
+            </div>`;
     }
 }
         function actualizarSeccionGlobal() {
