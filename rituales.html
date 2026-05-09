@@ -101,7 +101,7 @@
         
         async function validarAccesoConGoogle() {
             try {
-                const GAS_URL = "https://script.google.com/macros/s/AKfycbxusJMCe2nIewXX3fzERrGvBp6wPnejJbO_KYqut3ZF28xb7uK6ctl2Dyiwf-SA8d2-Kw/exec";
+                const GAS_URL = "https://script.google.com/macros/s/AKfycbw-ZCRO6cbsLbFmXb-zm2rXS8iK_8uJfGW6tRmE8XGDza0PPeA9dHyAvE20-wsnQUlFEw/exec";
                 const respuesta = await fetch(GAS_URL, {method: 'GET',mode: 'cors',cache: 'no-cache'});       
                 const data = await respuesta.json();
                 return data.status === "authorized";
