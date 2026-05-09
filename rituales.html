@@ -103,27 +103,32 @@
            
 async function cargarArchivosBase() {
     const t = new Date().getTime();
-
-    const f = async (nombre) => {
-        const res = await fetch(`${GAS_URL}?file=${nombre}&v=${t}`, { 
-            method: 'GET',
-            redirect: 'follow' 
-        });
-        
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        
-        const texto = await res.text();
-        
-        // Si lo que recibimos empieza con "Error", lanzamos la excepción
-        if (texto.startsWith("Error")) {
-            throw new Error(texto);
-        }
-        
-        return texto;
-    };
+    // Usa exactamente la URL que probaste
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxusJMCe2nIewXX3fzERrGvBp6wPnejJbO_KYqut3ZF28xb7uK6ctl2Dyiwf-SA8d2-Kw/exec";
 
     try {
-        // Carga simultánea de los archivos base
+        // 1. Validar la autorización con GAS
+        // Usamos mode: 'cors' y capturamos la respuesta de forma segura
+        const authRes = await fetch(GAS_URL + "?v=" + t);
+        
+        if (!authRes.ok) throw new Error("No se pudo conectar con el validador.");
+        
+        const authData = await authRes.json();
+
+        // Verificamos el estado que recibiste: {"status":"authorized", ...}
+        if (authData.status !== "authorized") {
+            throw new Error("Acceso no autorizado por el sistema de seguridad.");
+        }
+
+        console.log("Autorización confirmada para: " + authData.organization);
+
+        // 2. Si está autorizado, procedemos a cargar los XML desde colmena8.org
+        const f = async (archivo) => {
+            const resp = await fetch(`https://colmena8.org/${archivo}.xml?v=${t}`);
+            if (!resp.ok) throw new Error(`Error al cargar ${archivo}`);
+            return resp.text();
+        };
+
         const [dg, dl, de] = await Promise.all([
             f('glosario'),
             f('liturgia'),
@@ -135,23 +140,23 @@ async function cargarArchivosBase() {
         Glosario = dp.parseFromString(dg, "text/xml");
         Bitacora = dp.parseFromString(de, "text/xml");
 
-        // Localizar el Ritual solicitado
+        // Configurar el ritual
         const rituales = Array.from(liturgiaDoc.getElementsByTagName("ritual"));
-        Ritual = rituales.find(r => String(r.getAttribute("libro")).trim() == String(libURL).trim()) || rituales[0];
+        Ritual = rituales.find(r => r.getAttribute("libro") == libURL) || rituales[0];
 
         if (Ritual) {
             actualizarSelectorSecciones();
             await gestionarCambioSeccion();
-            console.log("Carga exitosa desde el puente GAS.");
+            // Limpiar mensaje de error si existía
+            document.getElementById("rituales-content").innerHTML = ""; 
         }
 
     } catch (error) {
-        console.error("Error en el puente:", error);
+        console.error("Error en el proceso:", error);
         document.getElementById("rituales-content").innerHTML = `
-            <div style="padding:20px; color:#721c24; background:#f8d7da; border:1px solid #f5c6cb; border-radius:8px;">
-                <strong>Fallo de Sincronización</strong><br>
-                ${error.message}<br><br>
-                <small>Artifex: Verifique que la GAS_URL sea la de la 'Nueva Versión' y que los archivos existan en colmena8.org</small>
+            <div style="padding:20px; text-align:center; border:1px solid #721c24; background:#f8d7da; color:#721c24; border-radius:8px;">
+                <strong>Fallo de Seguridad</strong><br>
+                ${error.message}
             </div>`;
     }
 }        
