@@ -144,6 +144,27 @@ async function cargarArchivosBase() {
             </div>`;
     }
 }        
+        function actualizarSelectorSecciones() {
+    const selector = document.getElementById("seccion-selector");
+    if (!selector || !Ritual) return;
+
+    // Limpiamos el selector actual
+    selector.innerHTML = "";
+
+    // Obtenemos las secciones (etiquetas <s1>, <s2>, etc.) del ritual actual
+    const secciones = Array.from(Ritual.children).filter(node => node.nodeName.startsWith('S'));
+
+    secciones.forEach((seccion, index) => {
+        const nombre = seccion.getAttribute("nombre") || `Sección ${index + 1}`;
+        const option = document.createElement("option");
+        option.value = index;
+        option.textContent = nombre;
+        selector.appendChild(option);
+    });
+    
+    console.log("Selector de secciones actualizado.");
+}
+        
         function actualizarSeccionGlobal() {
             const val = document.getElementById("seccionFilter").value;
             if (parseInt(val) <= 3) {
