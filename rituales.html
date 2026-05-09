@@ -102,70 +102,39 @@
         
            
 async function cargarArchivosBase() {
-    const t = new Date().getTime();
-    
-    // Mantenemos tu lógica original de fetch, pero con manejo de errores silencioso
-    const f = u => fetch(`${u}?v=${t}`).then(r => {
-        if (!r.ok) throw new Error(`No se pudo cargar ${u}`);
-        return r.text();
-    });
-
     try {
-        // 1. Carga de archivos (Bitácora no bloquea si falla)
-        const [dg, dl, de] = await Promise.all([
-            f('glosario.xml'), 
-            f('liturgia.xml'), 
-            f('bitacora.xml').catch(() => '<bitacora/>')
-        ]);
-
+        // 1. En lugar de fetch, usamos el XML que ya está pegado abajo (o en una variable)
         const dp = new DOMParser();
-        liturgiaDoc = dp.parseFromString(dl, "text/xml");
-        Glosario = dp.parseFromString(dg, "text/xml");
-        Bitacora = dp.parseFromString(de, "text/xml");            
+
+        // 2. Parseamos los documentos (usando las variables que definiremos abajo)
+        liturgiaDoc = dp.parseFromString(xmlLiturgia, "text/xml");
+        Glosario = dp.parseFromString(xmlGlosario, "text/xml");
+        Bitacora = dp.parseFromString(xmlBitacora, "text/xml");
+
+        // 3. Búsqueda del ritual (Flexible)
+        const todosLosRituales = liturgiaDoc.getElementsByTagName("ritual");
         
-        // 2. Búsqueda flexible: Si el libro exacto no existe, no rompemos el código
-        const rituales = Array.from(liturgiaDoc.getElementsByTagName("ritual"));
-        
-        // Buscamos el libro (usando == para evitar problemas de tipo número/texto)
-        Ritual = rituales.find(r => r.getAttribute("libro") == libURL);
-        
-        // SI NO EXISTE, tomamos el primero disponible. Esto garantiza que el script continúe.
-        if (!Ritual && rituales.length > 0) {
-            console.warn("Libro no encontrado, cargando primer ritual disponible.");
-            Ritual = rituales[0];
+        Ritual = Array.from(todosLosRituales).find(r => 
+            String(r.getAttribute("libro")).trim() == String(libURL).trim()
+        );
+
+        // Si no se encuentra el libro específico, cargamos el primero por defecto
+        if (!Ritual && todosLosRituales.length > 0) {
+            console.warn("Libro no hallado, cargando primer ritual disponible.");
+            Ritual = todosLosRituales[0];
         }
 
-        // 3. LA CLAVE: Disparar la visualización
-        // La versión original cargaba los datos pero no "dibujaba" nada. 
-        // Estas funciones son las que activan el portal:
+        // 4. Disparamos la interfaz
         if (Ritual) {
             actualizarSelectorSecciones();
             await gestionarCambioSeccion();
-            console.log("Sistema iniciado: Datos cargados y ritual desplegado.");
+            console.log("Sistema iniciado localmente.");
         }
 
     } catch (error) {
-        console.error("Error en la carga base:", error);
-        // Mensaje discreto para el usuario
-        document.getElementById("rituales-content").innerHTML = 
-            `<p style="color:gray; padding:20px;">Iniciando conexión con los archivos de la Logia...</p>`;
+        console.error("Error al procesar los datos internos:", error);
     }
 }
-        function actualizarSelectorSecciones(sel) {
-            const combo = document.getElementById("seccionFilter");
-            combo.innerHTML = "";
-            const numSel = parseInt(sel);
-            Array.from(Ritual.getElementsByTagName("seccion")).forEach(s => {
-                const id = s.getAttribute("id");
-                if (numSel > 3) {
-                    if (id === sel) combo.add(new Option(s.getAttribute("titulo"), id));
-                } else {
-                    if (parseInt(id) <= 3) combo.add(new Option(s.getAttribute("titulo"), id));
-                }
-            });
-            combo.value = sel;
-        }
-
         function actualizarSeccionGlobal() {
             const val = document.getElementById("seccionFilter").value;
             if (parseInt(val) <= 3) {
