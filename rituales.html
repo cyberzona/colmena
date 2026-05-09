@@ -105,13 +105,25 @@ async function cargarArchivosBase() {
     const t = new Date().getTime();
 
     const f = async (nombre) => {
-        // Le pedimos a GAS que traiga el archivo por nosotros
-        const res = await fetch(`${GAS_URL}?file=${nombre}&v=${t}`, { redirect: 'follow' });
-        if (!res.ok) throw new Error(`Error en el puente para ${nombre}`);
-        return res.text();
+        const res = await fetch(`${GAS_URL}?file=${nombre}&v=${t}`, { 
+            method: 'GET',
+            redirect: 'follow' 
+        });
+        
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        
+        const texto = await res.text();
+        
+        // Si lo que recibimos empieza con "Error", lanzamos la excepción
+        if (texto.startsWith("Error")) {
+            throw new Error(texto);
+        }
+        
+        return texto;
     };
 
     try {
+        // Carga simultánea de los archivos base
         const [dg, dl, de] = await Promise.all([
             f('glosario'),
             f('liturgia'),
@@ -123,19 +135,26 @@ async function cargarArchivosBase() {
         Glosario = dp.parseFromString(dg, "text/xml");
         Bitacora = dp.parseFromString(de, "text/xml");
 
+        // Localizar el Ritual solicitado
         const rituales = Array.from(liturgiaDoc.getElementsByTagName("ritual"));
-        Ritual = rituales.find(r => r.getAttribute("libro") == libURL) || rituales[0];
+        Ritual = rituales.find(r => String(r.getAttribute("libro")).trim() == String(libURL).trim()) || rituales[0];
 
         if (Ritual) {
             actualizarSelectorSecciones();
             await gestionarCambioSeccion();
+            console.log("Carga exitosa desde el puente GAS.");
         }
+
     } catch (error) {
-        console.error("Error crítico:", error);
-        document.getElementById("rituales-content").innerHTML = "Error de conexión con el servidor de la Logia.";
+        console.error("Error en el puente:", error);
+        document.getElementById("rituales-content").innerHTML = `
+            <div style="padding:20px; color:#721c24; background:#f8d7da; border:1px solid #f5c6cb; border-radius:8px;">
+                <strong>Fallo de Sincronización</strong><br>
+                ${error.message}<br><br>
+                <small>Artifex: Verifique que la GAS_URL sea la de la 'Nueva Versión' y que los archivos existan en colmena8.org</small>
+            </div>`;
     }
-}
-        
+}        
         function actualizarSeccionGlobal() {
             const val = document.getElementById("seccionFilter").value;
             if (parseInt(val) <= 3) {
