@@ -105,73 +105,64 @@ async function cargarArchivosBase() {
     const t = new Date().getTime();
     
     const fetchViaBridge = async (nombreArchivo) => {
-        // Forzamos la URL para evitar bloqueos de caché
-        const urlPeticion = `${GAS_URL}?file=${nombreArchivo}&v=${t}`;
-        const res = await fetch(urlPeticion, {
+        const res = await fetch(`${GAS_URL}?file=${nombreArchivo}&v=${t}`, {
             method: 'GET',
             mode: 'cors',
             redirect: 'follow'
         });
-        if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+        if (!res.ok) throw new Error(`Error de red: ${res.status}`);
         return res.text();
     };
 
     try {
-        // 1. Intentamos obtener los datos
+        // 1. Intentamos la conexión
         const [dg, dl, de] = await Promise.all([
             fetchViaBridge('glosario'),
             fetchViaBridge('liturgia'),
             fetchViaBridge('bitacora').catch(() => '<bitacora/>')
         ]);
 
-        // Verificación de seguridad: ¿Llegó algo que parezca XML?
-        if (!dl || !dl.includes('<liturgia')) {
-            console.error("Respuesta recibida no válida:", dl);
-            throw new Error("El servidor de Google no entregó un archivo XML válido.");
-        }
-
         const dp = new DOMParser();
-        
-        // 2. Parseo de documentos
         liturgiaDoc = dp.parseFromString(dl, "text/xml");
         Glosario = dp.parseFromString(dg, "text/xml");
         Bitacora = dp.parseFromString(de, "text/xml");
 
-        // 3. Lógica de flujo continuo
+        // 2. Verificamos la conexión: ¿Tenemos rituales?
         const todosLosRituales = liturgiaDoc.getElementsByTagName("ritual");
 
         if (todosLosRituales.length > 0) {
-            // Buscamos el libro solicitado
+            // Intentamos buscar el solicitado (?lib=X)
             Ritual = Array.from(todosLosRituales).find(r => 
                 String(r.getAttribute("libro")).trim() == String(libURL).trim()
             );
 
-            // Si no se encuentra el específico, usamos el primero para que el sistema NO se detenga
+            // SI NO SE ENCUENTRA EL LIBRO ESPECÍFICO, NO DAMOS ERROR:
+            // Simplemente tomamos el primero disponible para que el código continúe.
             if (!Ritual) {
-                console.warn("Libro no hallado, usando ritual por defecto.");
-                Ritual = todosLosRituales[0];
+                console.warn("Libro específico no hallado, cargando primer ritual disponible.");
+                Ritual = todosLosRituales[0]; 
             }
 
-            // 4. Activación de la interfaz
+            // 3. Ejecutamos la interfaz pase lo que pase
             actualizarSelectorSecciones();
             await gestionarCambioSeccion();
-            console.log("Sistema iniciado correctamente.");
+            console.log("Conexión verificada y código en ejecución.");
 
         } else {
-            throw new Error("La estructura del XML es incorrecta o está vacía.");
+            throw new Error("El XML llegó vacío o mal formado.");
         }
 
     } catch (error) {
-        console.error("Fallo en carga:", error);
+        console.error("Error en la cadena de conexión:", error);
         document.getElementById("rituales-content").innerHTML = `
-            <div style="padding:20px; color:#856404; background:#fff3cd; border:1px solid #ffeeba; border-radius:8px;">
-                <strong>Aviso de Configuración</strong><br>
-                El sistema no puede leer los datos desde Google Drive.<br><br>
-                <strong>Causa probable:</strong> El script de Google necesita ser actualizado a una "Nueva versión" o el archivo no es público.<br>
-                <small>Detalle: ${error.message}</small>
+            <div style="padding:20px; border:1px solid #ccc; border-radius:8px;">
+                <strong>Aviso de Sistema</strong><br>
+                No se pudo establecer la conexión con el servidor de datos.<br>
+                <small>${error.message}</small>
             </div>`;
     }
 }
+        
         function actualizarSelectorSecciones(sel) {
             const combo = document.getElementById("seccionFilter");
             combo.innerHTML = "";
