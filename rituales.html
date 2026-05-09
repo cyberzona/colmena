@@ -104,38 +104,28 @@
 async function cargarArchivosBase() {
     const t = new Date().getTime();
     
-    const fetchViaBridge = async (nombreArchivo) => {
-        try {
-            const urlPeticion = `${GAS_URL}?file=${nombreArchivo}&v=${t}`;
-            const res = await fetch(urlPeticion, {
-                method: 'GET',
-                mode: 'cors',
-                cache: 'no-store',
-                redirect: 'follow'
-            });
+    // URL base de tus archivos en tu servidor
+    const BASE_URL = "https://colmena8.org"; 
 
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            
-            const texto = await res.text();
-            
-            // Si Google nos devuelve un HTML de inicio de sesión en lugar del XML
-            if (texto.includes("<!DOCTYPE html>") || texto.includes("goog-ws")) {
-                throw new Error("Acceso Denegado: El script no es público o requiere login.");
-            }
-            
-            return texto;
-        } catch (err) {
-            console.error(`Error en fetch de ${nombreArchivo}:`, err);
-            throw err;
-        }
+    const fetchDirecto = async (nombreArchivo) => {
+        // Cargamos directamente desde tu dominio
+        const res = await fetch(`${BASE_URL}/${nombreArchivo}.xml?v=${t}`, {
+            method: 'GET',
+            mode: 'cors' // Tu servidor colmena8.org debe tener habilitado CORS
+        });
+
+        if (!res.ok) throw new Error(`No se pudo acceder a ${nombreArchivo}.xml`);
+        return res.text();
     };
 
     try {
-        // 1. Intentar descargar archivos
+        // 1. Validamos la conexión cargando los archivos directamente
+        console.log("Iniciando carga directa desde colmena8.org...");
+        
         const [dg, dl, de] = await Promise.all([
-            fetchViaBridge('glosario'),
-            fetchViaBridge('liturgia'),
-            fetchViaBridge('bitacora').catch(() => '<bitacora/>')
+            fetchDirecto('glosario'),
+            fetchDirecto('liturgia'),
+            fetchDirecto('bitacora').catch(() => '<bitacora/>')
         ]);
 
         const dp = new DOMParser();
@@ -143,45 +133,39 @@ async function cargarArchivosBase() {
         Glosario = dp.parseFromString(dg, "text/xml");
         Bitacora = dp.parseFromString(de, "text/xml");
 
-        // 2. Verificar estructura
+        // 2. Localizamos el ritual
         const todosLosRituales = liturgiaDoc.getElementsByTagName("ritual");
 
         if (todosLosRituales.length > 0) {
-            // Buscamos el libro
             Ritual = Array.from(todosLosRituales).find(r => 
                 String(r.getAttribute("libro")).trim() == String(libURL).trim()
             );
 
-            // Si no lo encuentra, toma el primero disponible (Tolerancia a fallos)
+            // Si no hay coincidencia exacta, tomamos el primero para no detener el flujo
             if (!Ritual) {
-                console.warn("Libro no hallado, cargando primer ritual disponible.");
+                console.warn("Libro no hallado, usando ritual por defecto.");
                 Ritual = todosLosRituales[0];
             }
 
-            // 3. Activar el portal
+            // 3. Ejecutamos la interfaz
             actualizarSelectorSecciones();
             await gestionarCambioSeccion();
-            console.log("Conexión exitosa y ritual desplegado.");
+            console.log("Carga directa exitosa.");
 
         } else {
-            throw new Error("El archivo XML llegó, pero no contiene rituales válidos.");
+            throw new Error("El archivo XML está vacío o no tiene el formato correcto.");
         }
 
     } catch (error) {
-        console.error("Fallo de conexión:", error);
+        console.error("Error en carga directa:", error);
         document.getElementById("rituales-content").innerHTML = `
             <div style="padding:20px; color:#721c24; background:#f8d7da; border:1px solid #f5c6cb; border-radius:8px;">
-                <strong>Error de Conexión (Failed to fetch)</strong><br>
-                El navegador bloqueó la comunicación con Google.<br><br>
-                <strong>Acción requerida en Google Apps Script:</strong><br>
-                1. Menú 'Implementar' > 'Administrar implementaciones'.<br>
-                2. Editar (lápiz) y elegir <b>'Nueva versión'</b>.<br>
-                3. Cambiar 'Quién tiene acceso' a <b>'Cualquier persona'</b>.<br>
-                <small style="display:block; margin-top:10px;">Detalle técnico: ${error.message}</small>
+                <strong>Error de Acceso Directo</strong><br>
+                ${error.message}<br><br>
+                <small>Asegúrese de que el servidor colmena8.org permita peticiones desde GitHub (CORS).</small>
             </div>`;
     }
-}
-        
+}        
         function actualizarSelectorSecciones(sel) {
             const combo = document.getElementById("seccionFilter");
             combo.innerHTML = "";
