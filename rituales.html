@@ -61,8 +61,7 @@
 
     <div id="rituales-content"></div>
 
-    <script>    
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbxusJMCe2nIewXX3fzERrGvBp6wPnejJbO_KYqut3ZF28xb7uK6ctl2Dyiwf-SA8d2-Kw/exec";
+    <script>       
         const dominio = "https://colmena8.org/";
         let Ritual, Glosario, Bitacora;
         let libURL = "1", fecha = "", extURL = "", secURL_ext = "";
@@ -99,72 +98,33 @@
             } catch (e) { console.error(e); }
         }
 
-        
-           
-async function cargarArchivosBase() {
-    const t = new Date().getTime();
-    // Tu URL de GAS verificada
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbxusJMCe2nIewXX3fzERrGvBp6wPnejJbO_KYqut3ZF28xb7uK6ctl2Dyiwf-SA8d2-Kw/exec";
-
-    const f = async (nombre) => {
-        const res = await fetch(`${GAS_URL}?file=${nombre}&v=${t}`);
-        if (!res.ok) throw new Error(`Fallo en el puente: ${nombre}`);
-        const texto = await res.text();
-        if (texto.startsWith("Error")) throw new Error(texto);
-        return texto;
-    };
-
-    try {
-        // Pedimos los archivos a través del túnel de Google
-        const [dg, dl, de] = await Promise.all([
-            f('glosario'),
-            f('liturgia'),
-            f('bitacora').catch(() => '<bitacora/>')
-        ]);
-
-        const dp = new DOMParser();
-        liturgiaDoc = dp.parseFromString(dl, "text/xml");
-        Glosario = dp.parseFromString(dg, "text/xml");
-        Bitacora = dp.parseFromString(de, "text/xml");
-
-        const rituales = Array.from(liturgiaDoc.getElementsByTagName("ritual"));
-        Ritual = rituales.find(r => r.getAttribute("libro") == libURL) || rituales[0];
-
-        if (Ritual) {
-            actualizarSelectorSecciones();
-            await gestionarCambioSeccion();
-            document.getElementById("rituales-content").innerHTML = ""; 
+        async function cargarArchivosBase() {
+            const t = new Date().getTime();
+            //const f = u => fetch(`${dominio}${u}?v=${t}`).then(r => r.text());
+            const f = u => fetch(`${u}?v=${t}`).then(r => r.text());
+            const [dg, dl, de] = await Promise.all([f('glosario.xml'), f('liturgia.xml'), f('bitacora.xml').catch(() => '<bitacora/>')]);
+            const dp = new DOMParser();
+            liturgiaDoc = dp.parseFromString(dl, "text/xml");
+            Glosario = dp.parseFromString(dg, "text/xml");
+            Bitacora = dp.parseFromString(de, "text/xml");            
+            Ritual = Array.from(liturgiaDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("libro") === libURL);           
         }
 
-    } catch (error) {
-        document.getElementById("rituales-content").innerHTML = `
-            <div style="padding:20px; text-align:center; background:#fff3cd; border:1px solid #ffeeba;">
-                <strong>Aviso de Sistema</strong><br>
-                ${error.message}
-            </div>`;
-    }
-}        
-        function actualizarSelectorSecciones() {
-    const selector = document.getElementById("seccion-selector");
-    if (!selector || !Ritual) return;
+        function actualizarSelectorSecciones(sel) {
+            const combo = document.getElementById("seccionFilter");
+            combo.innerHTML = "";
+            const numSel = parseInt(sel);
+            Array.from(Ritual.getElementsByTagName("seccion")).forEach(s => {
+                const id = s.getAttribute("id");
+                if (numSel > 3) {
+                    if (id === sel) combo.add(new Option(s.getAttribute("titulo"), id));
+                } else {
+                    if (parseInt(id) <= 3) combo.add(new Option(s.getAttribute("titulo"), id));
+                }
+            });
+            combo.value = sel;
+        }
 
-    // Limpiamos el selector actual
-    selector.innerHTML = "";
-
-    // Obtenemos las secciones (etiquetas <s1>, <s2>, etc.) del ritual actual
-    const secciones = Array.from(Ritual.children).filter(node => node.nodeName.startsWith('S'));
-
-    secciones.forEach((seccion, index) => {
-        const nombre = seccion.getAttribute("nombre") || `Sección ${index + 1}`;
-        const option = document.createElement("option");
-        option.value = index;
-        option.textContent = nombre;
-        selector.appendChild(option);
-    });
-    
-    console.log("Selector de secciones actualizado.");
-}
-        
         function actualizarSeccionGlobal() {
             const val = document.getElementById("seccionFilter").value;
             if (parseInt(val) <= 3) {
