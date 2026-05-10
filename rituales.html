@@ -102,8 +102,26 @@
         function AccesoRito() {
             const GAS_URL = "https://script.google.com/macros/s/AKfycbw-ZCRO6cbsLbFmXb-zm2rXS8iK_8uJfGW6tRmE8XGDza0PPeA9dHyAvE20-wsnQUlFEw/exec";
             const ventana = window.open(GAS_URL, "LoginColmena", "width=500,height=600");    
-            window.addEventListener("message", (event) => { if (event.data === "authorized") { ventana.close(); true;} }, false);
-        }
+            const manejadorMensajes = (event) => {
+            if (event.data === "authorized") {
+                window.removeEventListener("message", manejadorMensajes)               
+                if (ventana) ventana.close();
+                resolve(true);
+            }
+        };
+
+        window.addEventListener("message", manejadorMensajes, false);
+
+        // Control de seguridad: si el usuario cierra la ventana manualmente sin loguearse
+        const chequearCierre = setInterval(() => {
+            if (ventana.closed) {
+                clearInterval(chequearCierre);
+                window.removeEventListener("message", manejadorMensajes);
+                resolve(false); 
+            }
+        }, 1000);
+    });
+}
         
         async function validarAccesoConGoogle() {
             try {
