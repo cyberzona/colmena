@@ -100,28 +100,28 @@
         }
         
         function AccesoRito() {
-            const GAS_URL = "https://script.google.com/macros/s/AKfycbw-ZCRO6cbsLbFmXb-zm2rXS8iK_8uJfGW6tRmE8XGDza0PPeA9dHyAvE20-wsnQUlFEw/exec";
-            const ventana = window.open(GAS_URL, "LoginColmena", "width=500,height=600");    
-            const manejadorMensajes = (event) => {
-            if (event.data === "authorized") {
-                window.removeEventListener("message", manejadorMensajes)               
-                if (ventana) ventana.close();
-                resolve(true);
-            }
-        };
+            return new Promise(resolve => {
+            const win = window.open("https://script.google.com/macros/s/AKfycbw-ZCRO6cbsLbFmXb-zm2rXS8iK_8uJfGW6tRmE8XGDza0PPeA9dHyAvE20-wsnQUlFEw/exec", "Login", "width=500,height=600");
+        
+            const timer = setInterval(() => {
+                if (win.closed) {
+                    clearInterval(timer);
+                    window.removeEventListener("message", handler);
+                    resolve(false);
+                }
+            }, 1000);
 
-        window.addEventListener("message", manejadorMensajes, false);
+                const handler = (e) => {
+                    if (e.data === "authorized") {
+                        win.close();
+                        clearInterval(timer);
+                        resolve(true);
+                    }
+                };
 
-        // Control de seguridad: si el usuario cierra la ventana manualmente sin loguearse
-        const chequearCierre = setInterval(() => {
-            if (ventana.closed) {
-                clearInterval(chequearCierre);
-                window.removeEventListener("message", manejadorMensajes);
-                resolve(false); 
-            }
-        }, 1000);
-    });
-}
+                window.addEventListener("message", handler, { once: true });
+            });
+        }
         
         async function validarAccesoConGoogle() {
             try {
