@@ -100,29 +100,12 @@
         }
         
         function AccesoRito() {
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbw-ZCRO6cbsLbFmXb-zm2rXS8iK_8uJfGW6tRmE8XGDza0PPeA9dHyAvE20-wsnQUlFEw/exec";
-    const urlParams = new URLSearchParams(window.location.search);
-    
-    // Si ya regresamos de Google con el token de éxito
-    if (urlParams.get("auth") === "true") {
-        return true;
-    }
-
-    // Si no, saltamos a Google para validar
-    // Enviamos la URL actual para que Google sepa a dónde regresar
-    const redirectUrl = encodeURIComponent(window.location.href);
-    window.location.href = `${GAS_URL}?dest=${redirectUrl}`;
-    return false; 
-}
-        
-        async function validarAccesoConGoogle() {
-            try {
-                const GAS_URL = "https://script.google.com/macros/s/AKfycbw-ZCRO6cbsLbFmXb-zm2rXS8iK_8uJfGW6tRmE8XGDza0PPeA9dHyAvE20-wsnQUlFEw/exec";
-                const respuesta = await fetch(GAS_URL, {method: 'GET',mode: 'cors',cache: 'no-cache'});       
-                const data = await respuesta.json();
-                return data.status === "authorized";
-            } catch (e) { console.error("Error de CORS o Sesión:", e);
-                          return false;}
+            const GAS_URL = "https://script.google.com/macros/s/AKfycbw-ZCRO6cbsLbFmXb-zm2rXS8iK_8uJfGW6tRmE8XGDza0PPeA9dHyAvE20-wsnQUlFEw/exec";
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get("auth") === "true") { return true; }
+            const redirectUrl = encodeURIComponent(window.location.href);
+            window.location.href = `${GAS_URL}?dest=${redirectUrl}`;
+            return false; 
         }
         
         async function cargarArchivosBase() {
