@@ -67,8 +67,9 @@
         let libURL = "1", fecha = "", extURL = "", secURL_ext = "";        
         async function inicializarPortal() { 
             try {
-                const autorizado = await AccesoRito();        
-                if (!autorizado) { return; }
+                const autorizado = await AccesoRito();   
+                if (!autorizado) {  console.error("Acceso bloqueado por seguridad."); return; }
+               
                 const params = new URLSearchParams(window.location.search);
                 fecha = params.get('fec') || new Date().toLocaleDateString('en-CA');
                 libURL = (params.get('num') || "1").toString();                
@@ -100,28 +101,36 @@
         }
         
         async function AccesoRito() {
-            const GAS_URL = "https://script.google.com/macros/s/AKfycbw-ZCRO6cbsLbFmXb-zm2rXS8iK_8uJfGW6tRmE8XGDza0PPeA9dHyAvE20-wsnQUlFEw/exec";    
-            try {
-                const res = await fetch(GAS_URL);
-                const data = await res.json();
-                if (data.autorizado) return true;
-                    document.body.innerHTML = `
-                        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;text-align:center;font-family:serif;">
-                        <h2>Acceso Denegado</h2>
-                        <p>No figura en la lista de la Colmena No. 8.</p>
-                        <button onclick="location.reload()">Reintentar</button>
-                        </div>`;
-                } catch (e) {
-                        // Error de conexión o sesión de Google no iniciada
-                    document.body.innerHTML = `
-                        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;text-align:center;font-family:serif;">
-                        <h2>Error de Identidad</h2>
-                        <p>Por favor, inicie sesión en Google para validar su acceso.</p>
-                        <button onclick="location.reload()">Verificar de nuevo</button>
-                        </div>`;
-                }        
-                return false;
+    const GAS_URL = "TU_URL_DE_SCRIPT";
+    const userEmail = localStorage.getItem("colmena_user");
+
+    if (!userEmail) {
+        // Si no hay correo guardado, forzamos identificación
+        const email = prompt("Ingrese su correo autorizado:");
+        if (email) {
+            localStorage.setItem("colmena_user", email);
+            location.reload(); // Recargamos para validar
         }
+        return false;
+    }
+
+    try {
+        const res = await fetch(`${GAS_URL}?user=${encodeURIComponent(userEmail)}`);
+        const data = await res.json();
+
+        if (data.autorizado === true) {
+            // SOLO AQUÍ permitimos ver el contenido
+            document.getElementById("contenedor-principal").style.display = "block";
+            return true;
+        }
+    } catch (e) {
+        console.error("Error en validación");
+    }
+
+    // Si llega aquí, es que no es válido
+    document.body.innerHTML = "<h1>Acceso Denegado</h1><p>No tienes permisos.</p>";
+    return false;
+}
         
         async function cargarArchivosBase() {
             const t = new Date().getTime();
