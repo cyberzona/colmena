@@ -67,7 +67,7 @@
         let libURL = "1", fecha = "", extURL = "", secURL_ext = "";        
         async function inicializarPortal() { 
             try {                
-                //if (!AccesoRito()) {  console.error("Acceso bloqueado por seguridad."); return; }               
+               if (!AccesoRito()) {  console.error("Acceso bloqueado por seguridad."); return; }               
                 const params = new URLSearchParams(window.location.search);
                 fecha = params.get('fec') || new Date().toLocaleDateString('en-CA');
                 libURL = (params.get('num') || "1").toString();                
@@ -99,12 +99,9 @@
         }
         
         async function AccesoRito(claveManual = null) {
-            const GAS_URL = "URL_DE_TU_SCRIPT_GAS";
-            const memo = localStorage.getItem("memo_colmena8");
-
+            const GAS_URL = "https://script.google.com/macros/s/AKfycbw-ZCRO6cbsLbFmXb-zm2rXS8iK_8uJfGW6tRmE8XGDza0PPeA9dHyAvE20-wsnQUlFEw/exec";
+            const memo = localStorage.getItem("memo_colmena8")
             if (memo && !claveManual) { return true; }
-
-    // Caso B: Intento de validación manual contra GAS
             if (claveManual) {
                 try {
                     const res = await fetch(`${GAS_URL}?key=${encodeURIComponent(claveManual)}`);
@@ -118,7 +115,6 @@
                     console.error("Error de comunicación con el GAS.");
                 }
             }
-
             return false; // No hay permiso aún
         }
                 
