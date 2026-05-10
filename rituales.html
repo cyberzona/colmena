@@ -100,26 +100,18 @@
         }
         
         function AccesoRito() {
+            const GAS_URL = "https://script.google.com/macros/s/AKfycbw-ZCRO6cbsLbFmXb-zm2rXS8iK_8uJfGW6tRmE8XGDza0PPeA9dHyAvE20-wsnQUlFEw/exec";
             return new Promise(resolve => {
-            const win = window.open("https://script.google.com/macros/s/AKfycbw-ZCRO6cbsLbFmXb-zm2rXS8iK_8uJfGW6tRmE8XGDza0PPeA9dHyAvE20-wsnQUlFEw/exec", "Login", "width=500,height=600");
-        
-            const timer = setInterval(() => {
-                if (win.closed) {
+                const win = window.open(GAS_URL, "Login", "width=500,height=600");        
+                const end = (res) => {
                     clearInterval(timer);
                     window.removeEventListener("message", handler);
-                    resolve(false);
-                }
-            }, 1000);
-
-                const handler = (e) => {
-                    if (e.data === "authorized") {
-                        win.close();
-                        clearInterval(timer);
-                        resolve(true);
-                    }
+                    if (win && !win.closed) win.close();
+                    resolve(res);
                 };
-
-                window.addEventListener("message", handler, { once: true });
+                const timer = setInterval(() => win.closed && end(false), 1000);
+                const handler = (e) => e.data === "authorized" && end(true);
+                window.addEventListener("message", handler);
             });
         }
         
