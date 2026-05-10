@@ -102,16 +102,16 @@
         function AccesoRito() {
             const GAS_URL = "https://script.google.com/macros/s/AKfycbw-ZCRO6cbsLbFmXb-zm2rXS8iK_8uJfGW6tRmE8XGDza0PPeA9dHyAvE20-wsnQUlFEw/exec";
             const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get("auth") === "true") { return true; }
+            if (urlParams.get("auth") === "true") return true;
             if (urlParams.get("error") === "denied") {
                 document.body.innerHTML = `
-                    <div style="text-align:center; margin-top:50px; font-family:serif;">
-                        <h2>Acceso Denegado</h2>
-                        <p>Tu cuenta de Google no está en la lista de la Colmena No. 8.</p>
-                        <a href="index.html" style="color:blue;">Volver al inicio</a>
+                    <div style="padding: 20px; text-align: center; font-family: sans-serif;">
+                        <h2 style="font-size: 1.5rem;">Acceso Denegado</h2>
+                        <p style="font-size: 1.1rem;">Tu cuenta no está autorizada en la lista de la Colmena No. 8.</p>
+                        <button onclick="window.location.href='index.html'" style="padding: 10px 20px; font-size: 1rem;">Volver</button>
                     </div>`;
                 return false;
-            }    
+            }
             const redirectUrl = encodeURIComponent(window.location.href);
             window.location.href = `${GAS_URL}?dest=${redirectUrl}`;
             return false;
