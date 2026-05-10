@@ -100,37 +100,27 @@
             } catch (e) { console.error(e); }
         }
         
-        async function AccesoRito() {
-    const GAS_URL = "TU_URL_DE_SCRIPT";
-    const userEmail = localStorage.getItem("colmena_user");
-
-    if (!userEmail) {
-        // Si no hay correo guardado, forzamos identificación
-        const email = prompt("Ingrese su correo autorizado:");
-        if (email) {
-            localStorage.setItem("colmena_user", email);
-            location.reload(); // Recargamos para validar
+        function AccesoRito() {
+            const GAS_URL = "TU_URL_DE_SCRIPT";
+            const urlParams = new URLSearchParams(window.location.search);
+            const auth = urlParams.get("auth");
+            const error = urlParams.get("error");
+            if (auth === "true") {
+                window.history.replaceState({}, document.title, window.location.pathname);
+                return true; 
+            }
+            if (error === "denied") {
+                document.body.innerHTML = `
+                    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;text-align:center;font-family:serif;">
+                    <h2>Acceso Denegado</h2>
+                    <p>No estás en la lista de la Colmena No. 8.</p>
+                    </div>`;
+                    return false;
+            }
+            const currentUrl = window.location.href;
+            window.location.href = `${GAS_URL}?dest=${encodeURIComponent(currentUrl)}`;
+            return false;
         }
-        return false;
-    }
-
-    try {
-        const res = await fetch(`${GAS_URL}?user=${encodeURIComponent(userEmail)}`);
-        const data = await res.json();
-
-        if (data.autorizado === true) {
-            // SOLO AQUÍ permitimos ver el contenido
-            document.getElementById("contenedor-principal").style.display = "block";
-            return true;
-        }
-    } catch (e) {
-        console.error("Error en validación");
-    }
-
-    // Si llega aquí, es que no es válido
-    document.body.innerHTML = "<h1>Acceso Denegado</h1><p>No tienes permisos.</p>";
-    return false;
-}
         
         async function cargarArchivosBase() {
             const t = new Date().getTime();
