@@ -67,7 +67,7 @@
         let libURL = "1", fecha = "", extURL = "", secURL_ext = "";        
         async function inicializarPortal() { 
             try {
-                const autorizado = await validarAccesoConGoogle();        
+                const autorizado = await AccesoRito();        
                 if (!autorizado) { return; }
                 const params = new URLSearchParams(window.location.search);
                 fecha = params.get('fec') || new Date().toLocaleDateString('en-CA');
@@ -99,7 +99,7 @@
             } catch (e) { console.error(e); }
         }
         
-        function solicitarAcceso() {
+        function AccesoRito() {
             const GAS_URL = "https://script.google.com/macros/s/AKfycbw-ZCRO6cbsLbFmXb-zm2rXS8iK_8uJfGW6tRmE8XGDza0PPeA9dHyAvE20-wsnQUlFEw/exec";
             const ventana = window.open(GAS_URL, "LoginColmena", "width=500,height=600");    
             window.addEventListener("message", (event) => { if (event.data === "authorized") { ventana.close(); true;} }, false);
