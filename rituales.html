@@ -112,24 +112,31 @@
         }
         
         async function AccesoRito(claveManual = null) {
-            const GAS_URL = "https://script.google.com/macros/s/AKfycbw-ZCRO6cbsLbFmXb-zm2rXS8iK_8uJfGW6tRmE8XGDza0PPeA9dHyAvE20-wsnQUlFEw/exec";
-            const memo = localStorage.getItem("memo_colmena8")
-            if (memo && !claveManual) { return true; }
-            if (claveManual) {
-                try {
-                    const res = await fetch(`${GAS_URL}?key=${encodeURIComponent(claveManual)}`);
-                    const data = await res.json();
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbw-ZCRO6cbsLbFmXb-zm2rXS8iK_8uJfGW6tRmE8XGDza0PPeA9dHyAvE20-wsnQUlFEw/exec";
+    const memo = localStorage.getItem("memo_colmena8");
 
-                    if (data.autorizado) {
-                        localStorage.setItem("memo_colmena8", data.token); // Creamos la cookie
-                        return true;
-                    }
-                } catch (e) {
-                    console.error("Error de comunicación con el GAS.");
-                }
+    if (memo && !claveManual) return true;
+
+    if (claveManual) {
+        try {
+            // El truco está en no enviar headers personalizados que disparen el CORS preflight
+            const res = await fetch(`${GAS_URL}?key=${encodeURIComponent(claveManual)}`, {
+                method: "GET",
+                mode: "cors" 
+            });
+            
+            const data = await res.json();
+
+            if (data.autorizado) {
+                localStorage.setItem("memo_colmena8", data.token);
+                return true;
             }
-            return false; // No hay permiso aún
+        } catch (e) {
+            console.error("Error de comunicación con el GAS:", e);
         }
+    }
+    return false;
+}
                 
         async function cargarArchivosBase() {
             const t = new Date().getTime();
