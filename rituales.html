@@ -66,9 +66,13 @@
         let Ritual, Glosario, Bitacora;
         let libURL = "1", fecha = "", extURL = "", secURL_ext = "";        
         async function inicializarPortal() { 
-            try { 
-                
-               if (!(await AccesoRito())) {  console.error("Acceso bloqueado por seguridad."); return; }               
+            try {                 
+                if (!(await AccesoRito())) { 
+                    console.error("Acceso bloqueado por seguridad.");
+                    // Aquí mostramos el cuadro para que puedan poner la clave
+                    document.getElementById("capa-bloqueo").style.display = "flex";
+                    return; 
+                }             
                 const params = new URLSearchParams(window.location.search);
                 fecha = params.get('fec') || new Date().toLocaleDateString('en-CA');
                 libURL = (params.get('num') || "1").toString();                
