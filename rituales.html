@@ -114,29 +114,30 @@
         }
         
        async function AccesoRito(claveManual = null) {
-    // La "huella" de tu palabra secreta (Cámbiala cuando quieras renovar el acceso)
-    const HASH_MAESTRO = "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"; // Hash de "prueba"
+    // Hash SHA-256 de la palabra "prueba". 
+    // Para cambiar la clave, genera un nuevo hash y reemplaza esta cadena.
+    const HASH_MAESTRO = "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08";
     
     const llaveAProbar = claveManual || localStorage.getItem("memo_colmena8");
     if (!llaveAProbar) return false;
 
     try {
-        // Convertimos la palabra probada en una huella digital (SHA-256)
+        // Generar el hash de la llave recibida
         const msgUint8 = new TextEncoder().encode(llaveAProbar);
         const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
         const hashArray = Array.from(new Uint8Array(hashBuffer));
         const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-        // Comparamos huellas
         if (hashHex === HASH_MAESTRO) {
             localStorage.setItem("memo_colmena8", llaveAProbar);
             return true;
         } else {
+            // Si la clave grabada ya no coincide con el nuevo HASH_MAESTRO, limpiamos
             localStorage.removeItem("memo_colmena8");
             return false;
         }
     } catch (e) {
-        console.error("Error criptográfico:", e);
+        console.error("Error en validación criptográfica:", e);
         return false;
     }
 }
