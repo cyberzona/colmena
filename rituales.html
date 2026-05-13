@@ -116,33 +116,28 @@
         }
         
       async function AccesoRito(claveManual = null) {
-    const HASH_MAESTRO = "655e786674d9d3e77bc05ed1de37b4b6bc89f788829f9f3c679e7687b410c89b";
-    
-    // Prioridad: clave pasada por argumento o, en su defecto, la que esté en la memo
-    const llaveAProbar = claveManual || localStorage.getItem("memo_colmena");
-
-    if (!llaveAProbar) return false;
-
-    try {
-        // Proceso de hashing SHA-256
-        const msgUint8 = new TextEncoder().encode(llaveAProbar);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-
-        if (hashHex === HASH_MAESTRO) {
-            // Si es válida, nos aseguramos de que esté guardada en la memo
-            localStorage.setItem("memo_colmena", llaveAProbar);
-            return true;
-        } else {
-            // Si la clave manual falla, no borramos la memo aún (lo gestiona inicializarPortal)
-            return false;
-        }
-    } catch (e) {
-        console.error("Error en el protocolo de acceso:", e);
-        return false;
-    }
-}
+            const HASH_MAESTRO = "655e786674d9d3e77bc05ed1de37b4b6bc89f788829f9f3c679e7687b410c89b";
+            const llaveAProbar = claveManual || localStorage.getItem("memo_colmena");
+            if (!llaveAProbar) return false;
+            try {
+                const msgUint8 = new TextEncoder().encode(llaveAProbar);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                if (hashHex === HASH_MAESTRO) {
+                    if (localStorage.getItem("memo_colmena") !== llaveAProbar) {
+                        localStorage.setItem("memo_colmena", llaveAProbar);
+                        window.location.reload(); // El refresh que faltaba
+                        return true; 
+                    }
+                    return true;
+                } else { return false; }
+            } catch (e) {
+                console.error("Error en el acceso:", e);
+                return false;
+            }
+        }        
+        
         async function cargarArchivosBase() {
             const t = new Date().getTime();
             //const f = u => fetch(`${dominio}${u}?v=${t}`).then(r => r.text());
