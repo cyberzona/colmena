@@ -127,7 +127,7 @@
                 if (hashHex === HASH_MAESTRO) {
                     if (localStorage.getItem("memo_colmena") !== llaveAProbar) {
                         localStorage.setItem("memo_colmena", llaveAProbar);
-                        window.location.reload(); // El refresh que faltaba
+                        window.location.href = window.location.pathname;
                         return true; 
                     }
                     return true;
