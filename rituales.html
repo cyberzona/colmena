@@ -93,6 +93,7 @@
                 await cargarArchivosBase();                
                 if (Ritual) {
                     document.getElementById("capa-bloqueo").style.display = "none";
+                    document.getElementById("contenedor-principal").style.display = "block";
                     const Dic = { "1": "Liturgia de Aprendiz", "2": "Liturgia de Compañero", "3": "Liturgia de Maestro" };
                     document.getElementById("titulo-ritual-header").textContent = Dic[libURL];                   
                     let seccionInicial = secURL || sessionStorage.getItem('seccionRetornoLogia') || "1";
