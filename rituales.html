@@ -119,35 +119,28 @@
 
     if (!llaveAProbar) return false;
 
-    return new Promise((resolve) => {
-        // 1. Creamos un nombre de función único para esta respuesta
-        const callbackName = 'jsonp_' + Math.round(100000 * Math.random());
-        
-        // 2. Definimos qué hacer cuando llegue la respuesta
-        window[callbackName] = function(data) {
-            delete window[callbackName]; // Limpieza
-            document.body.removeChild(script); // Limpieza
-            
-            if (data.autorizado) {
-                localStorage.setItem("memo_colmena8", data.token);
-                resolve(true);
-            } else {
-                localStorage.removeItem("memo_colmena8");
-                resolve(false);
-            }
-        };
+    try {
+        // Usamos redirect: "follow" explícitamente y quitamos cabeceras manuales
+        const res = await fetch(`${GAS_URL}?key=${encodeURIComponent(llaveAProbar)}`, {
+            method: "GET",
+            mode: "cors",
+            redirect: "follow"
+        });
 
-        // 3. Creamos la etiqueta <script> que "engaña" al navegador
-        const script = document.createElement('script');
-        script.src = `${GAS_URL}?key=${encodeURIComponent(llaveAProbar)}&callback=${callbackName}`;
-        
-        script.onerror = () => {
-            console.error("Error cargando el script de validación");
-            resolve(false);
-        };
+        if (!res.ok) throw new Error("Respuesta de red no válida");
 
-        document.body.appendChild(script);
-    });
+        const data = await res.json();
+        
+        if (data.autorizado) {
+            localStorage.setItem("memo_colmena8", data.token);
+            return true;
+        } else {
+            localStorage.removeItem("memo_colmena8");
+        }
+    } catch (e) {
+        console.error("Fallo definitivo en AccesoRito:", e);
+    }
+    return false;
 }
         async function cargarArchivosBase() {
             const t = new Date().getTime();
