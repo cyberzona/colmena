@@ -114,17 +114,14 @@
         }
         
       async function AccesoRito(claveManual = null) {
-    // Hash de la palabra "prueba" (Asegúrate de que sea este)
-    const HASH_MAESTRO = "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08";
-    
-    const llaveAProbar = claveManual || localStorage.getItem("memo_colmena8");
-    if (!llaveAProbar) return false;
-
-    try {
-        const msgUint8 = new TextEncoder().encode(llaveAProbar);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+          const HASH_MAESTRO = "655e786674d9d3e77bc05ed1de37b4b6bc89f788829f9f3c679e7687b410c89b";
+          const llaveAProbar = claveManual || localStorage.getItem("memo_colmena8");
+          if (!llaveAProbar) return false;
+          try {
+                const msgUint8 = new TextEncoder().encode(llaveAProbar);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
         if (hashHex === HASH_MAESTRO) {
             localStorage.setItem("memo_colmena8", llaveAProbar);
