@@ -118,7 +118,14 @@
             const llaveAProbar = claveManual || localStorage.getItem("memo_colmena8");    
             if (!llaveAProbar) return false;
                 try {
-                    const res = await fetch(`${GAS_URL}?key=${encodeURIComponent(llaveAProbar)}`);
+                    //const res = await fetch(`${GAS_URL}?key=${encodeURIComponent(llaveAProbar)}`);
+                    const res = await fetch(`${GAS_URL}?key=${encodeURIComponent(llaveAProbar)}`, {
+    method: "GET",
+    mode: "cors", // Mantenemos cors
+    headers: {
+        "Content-Type": "text/plain;charset=utf-8", // Evita el preflight complejo
+    }
+});
                     const data = await res.json();
                     if (data.autorizado) {
                        localStorage.setItem("memo_colmena8", data.token);
