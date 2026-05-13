@@ -122,11 +122,9 @@
                     if (data.autorizado) {
                        localStorage.setItem("memo_colmena8", data.token);
                         return true;
-                    } else 
-                        localStorage.removeItem("memo_colmena8");
-                }
-            } catch (e) { console.error("Error de comunicación con el GAS:", e); }
-            return false;
+                    } else { localStorage.removeItem("memo_colmena8"); }
+                } catch (e) { console.error("Error de comunicación con el GAS:", e); }
+                return false;
         }
                 
         async function cargarArchivosBase() {
