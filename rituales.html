@@ -114,33 +114,31 @@
         }
         
        async function AccesoRito(claveManual = null) {
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbw-ZCRO6cbsLbFmXb-zm2rXS8iK_8uJfGW6tRmE8XGDza0PPeA9dHyAvE20-wsnQUlFEw/exec";
+    // La "huella" de tu palabra secreta (Cámbiala cuando quieras renovar el acceso)
+    const HASH_MAESTRO = "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"; // Hash de "prueba"
+    
     const llaveAProbar = claveManual || localStorage.getItem("memo_colmena8");
-
     if (!llaveAProbar) return false;
 
     try {
-        // Usamos redirect: "follow" explícitamente y quitamos cabeceras manuales
-        const res = await fetch(`${GAS_URL}?key=${encodeURIComponent(llaveAProbar)}`, {
-            method: "GET",
-            mode: "cors",
-            redirect: "follow"
-        });
+        // Convertimos la palabra probada en una huella digital (SHA-256)
+        const msgUint8 = new TextEncoder().encode(llaveAProbar);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-        if (!res.ok) throw new Error("Respuesta de red no válida");
-
-        const data = await res.json();
-        
-        if (data.autorizado) {
-            localStorage.setItem("memo_colmena8", data.token);
+        // Comparamos huellas
+        if (hashHex === HASH_MAESTRO) {
+            localStorage.setItem("memo_colmena8", llaveAProbar);
             return true;
         } else {
             localStorage.removeItem("memo_colmena8");
+            return false;
         }
     } catch (e) {
-        console.error("Fallo definitivo en AccesoRito:", e);
+        console.error("Error criptográfico:", e);
+        return false;
     }
-    return false;
 }
         async function cargarArchivosBase() {
             const t = new Date().getTime();
