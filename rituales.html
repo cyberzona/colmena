@@ -77,7 +77,7 @@
             try { 
                 const params = new URLSearchParams(window.location.search);
                 const claveHash = window.location.hash.substring(1);
-                const claveUrl = params.get('key') || claveHash;
+                const claveUrl = params.get('key') || claveHash || localStorage.getItem("memo_colmena8");
                 if (!(await AccesoRito(claveUrl))) { 
                     console.error("Acceso bloqueado por seguridad.");
                     document.getElementById("capa-bloqueo").style.display = "flex";
