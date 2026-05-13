@@ -121,40 +121,41 @@
 
     return new Promise((resolve) => {
         const xhr = new XMLHttpRequest();
-        // Construimos la URL con la llave
         const urlFinal = `${GAS_URL}?key=${encodeURIComponent(llaveAProbar)}`;
 
         xhr.open("GET", urlFinal, true);
-        
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                try {
-                    const data = JSON.parse(xhr.responseText);
-                    if (data.autorizado) {
-                        localStorage.setItem("memo_colmena8", data.token);
-                        resolve(true);
-                    } else {
-                        localStorage.removeItem("memo_colmena8");
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) { // Petición finalizada
+                if (xhr.status === 200) {
+                    try {
+                        const data = JSON.parse(xhr.responseText);
+                        if (data.autorizado) {
+                            localStorage.setItem("memo_colmena8", data.token);
+                            resolve(true);
+                        } else {
+                            localStorage.removeItem("memo_colmena8");
+                            resolve(false);
+                        }
+                    } catch (e) {
+                        console.error("Error al procesar JSON del GAS");
                         resolve(false);
                     }
-                } catch (e) {
-                    console.error("Error al leer respuesta del GAS");
+                } else {
+                    console.error("Error de servidor GAS:", xhr.status);
                     resolve(false);
                 }
-            } else {
-                resolve(false);
             }
         };
 
         xhr.onerror = function() {
-            console.error("Fallo de red o CORS persistente");
+            console.error("Error de red o bloqueo de seguridad");
             resolve(false);
         };
 
         xhr.send();
     });
-}
-                
+}                
         async function cargarArchivosBase() {
             const t = new Date().getTime();
             //const f = u => fetch(`${dominio}${u}?v=${t}`).then(r => r.text());
