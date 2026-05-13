@@ -113,49 +113,42 @@
             } catch (e) { console.error(e); }
         }
         
-        async function AccesoRito(claveManual = null) {
+       async function AccesoRito(claveManual = null) {
     const GAS_URL = "https://script.google.com/macros/s/AKfycbw-ZCRO6cbsLbFmXb-zm2rXS8iK_8uJfGW6tRmE8XGDza0PPeA9dHyAvE20-wsnQUlFEw/exec";
     const llaveAProbar = claveManual || localStorage.getItem("memo_colmena8");
 
     if (!llaveAProbar) return false;
 
     return new Promise((resolve) => {
-        const xhr = new XMLHttpRequest();
-        const urlFinal = `${GAS_URL}?key=${encodeURIComponent(llaveAProbar)}`;
-
-        xhr.open("GET", urlFinal, true);
-
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4) { // Petición finalizada
-                if (xhr.status === 200) {
-                    try {
-                        const data = JSON.parse(xhr.responseText);
-                        if (data.autorizado) {
-                            localStorage.setItem("memo_colmena8", data.token);
-                            resolve(true);
-                        } else {
-                            localStorage.removeItem("memo_colmena8");
-                            resolve(false);
-                        }
-                    } catch (e) {
-                        console.error("Error al procesar JSON del GAS");
-                        resolve(false);
-                    }
-                } else {
-                    console.error("Error de servidor GAS:", xhr.status);
-                    resolve(false);
-                }
+        // 1. Creamos un nombre de función único para esta respuesta
+        const callbackName = 'jsonp_' + Math.round(100000 * Math.random());
+        
+        // 2. Definimos qué hacer cuando llegue la respuesta
+        window[callbackName] = function(data) {
+            delete window[callbackName]; // Limpieza
+            document.body.removeChild(script); // Limpieza
+            
+            if (data.autorizado) {
+                localStorage.setItem("memo_colmena8", data.token);
+                resolve(true);
+            } else {
+                localStorage.removeItem("memo_colmena8");
+                resolve(false);
             }
         };
 
-        xhr.onerror = function() {
-            console.error("Error de red o bloqueo de seguridad");
+        // 3. Creamos la etiqueta <script> que "engaña" al navegador
+        const script = document.createElement('script');
+        script.src = `${GAS_URL}?key=${encodeURIComponent(llaveAProbar)}&callback=${callbackName}`;
+        
+        script.onerror = () => {
+            console.error("Error cargando el script de validación");
             resolve(false);
         };
 
-        xhr.send();
+        document.body.appendChild(script);
     });
-}                
+}
         async function cargarArchivosBase() {
             const t = new Date().getTime();
             //const f = u => fetch(`${dominio}${u}?v=${t}`).then(r => r.text());
