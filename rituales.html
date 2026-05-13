@@ -115,27 +115,19 @@
             } catch (e) { console.error(e); }
         }
         
-      async function AccesoRito(claveManual = null) {
-          const HASH_MAESTRO = "655e786674d9d3e77bc05ed1de37b4b6bc89f788829f9f3c679e7687b410c89b";
-          const llaveAProbar = claveManual || localStorage.getItem("memo_colmena8");
-          if (!llaveAProbar) return false;
-          try {
-                const msgUint8 = new TextEncoder().encode(llaveAProbar);
-                const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-                const hashArray = Array.from(new Uint8Array(hashBuffer));
-                const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      async function AccesoRito(llaveAProbar) {
+    const HASH_MAESTRO = "655e786674d9d3e77bc05ed1de37b4b6bc89f788829f9f3c679e7687b410c89b";
+    if (!llaveAProbar) return false;
+    
+    try {
+        const msgUint8 = new TextEncoder().encode(llaveAProbar);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-        if (hashHex === HASH_MAESTRO) {
-            localStorage.setItem("memo_colmena8", llaveAProbar);
-            return true;
-        } else {
-            // COMENTA O ELIMINA LA SIGUIENTE LÍNEA:
-            // localStorage.removeItem("memo_colmena8"); 
-            console.warn("Clave incorrecta, pero no la borramos de la memo.");
-            return false;
-        }
+        return hashHex === HASH_MAESTRO; 
     } catch (e) {
-        console.error("Error:", e);
+        console.error("Error en validación:", e);
         return false;
     }
 }
