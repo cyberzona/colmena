@@ -117,24 +117,26 @@
         
       async function AccesoRito(claveManual = null) {
             const HASH_MAESTRO = "655e786674d9d3e77bc05ed1de37b4b6bc89f788829f9f3c679e7687b410c89b";
-            const [guardada, expira] = (localStorage.getItem("memory") || "").split(".");
-           if (expira && Date.now() > expira) localStorage.removeItem("memory");
-           const llaveAProbar = claveManual || (Date.now() < expira ? guardada : null);
-           if (!llaveAProbar) return false;
-           try {
+            const llaveAProbar = claveManual || localStorage.getItem("memory");
+            if (!llaveAProbar) return false;
+            try {
                 const msgUint8 = new TextEncoder().encode(llaveAProbar);
                 const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-                const hashHex = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
-               if (hashHex === HASH_MAESTRO) {
-                   if (guardada !== llaveAProbar) {
-                      localStorage.setItem("memory", `${llaveAProbar}.${Date.now() + 86400000}`);
-                      window.location.href = window.location.pathname;
-                   }
-                   return true;
-               }
-           } catch (e) { console.error(e); }
-           return false;
-        }
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                if (hashHex === HASH_MAESTRO) {
+                    if (localStorage.getItem("memo_colmena") !== llaveAProbar) {
+                        localStorage.setItem("memo_colmena", llaveAProbar);
+                        window.location.href = window.location.pathname;
+                        return true; 
+                    }
+                    return true;
+                } else { return false; }
+            } catch (e) {
+                console.error("Error en el acceso:", e);
+                return false;
+            }
+        }        
         
         async function cargarArchivosBase() {
             const t = new Date().getTime();
