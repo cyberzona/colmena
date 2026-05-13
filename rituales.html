@@ -117,6 +117,11 @@
         
       async function AccesoRito(claveManual = null) {
             const HASH_MAESTRO = "655e786674d9d3e77bc05ed1de37b4b6bc89f788829f9f3c679e7687b410c89b";
+            const expira = localStorage.getItem("memory_expira");
+            if (expira && Date.now() > parseInt(expira)) {
+                localStorage.removeItem("memory");
+                localStorage.removeItem("memory_expira");
+            }
             const llaveAProbar = claveManual || localStorage.getItem("memory");
             if (!llaveAProbar) return false;
             try {
@@ -125,11 +130,12 @@
                 const hashArray = Array.from(new Uint8Array(hashBuffer));
                 const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
                 if (hashHex === HASH_MAESTRO) {
-                    if (localStorage.getItem("memo_colmena") !== llaveAProbar) {
-                        localStorage.setItem("memo_colmena", llaveAProbar);
+                    if (localStorage.getItem("memory") !== llaveAProbar || !expira) {
+                        localStorage.setItem("memory", llaveAProbar);
+                        localStorage.setItem("memory_expira", Date.now() + 86400000);
                         window.location.href = window.location.pathname;
                         return true; 
-                    }
+                    }                    
                     return true;
                 } else { return false; }
             } catch (e) {
