@@ -134,7 +134,10 @@
                       acceso = (hashHex === HASH_MAESTRO);
                       if (acceso && Cookie('memory') !== llave) {
                             document.cookie = `memory=${encodeURIComponent(llave)}; max-age=86400; path=/; SameSite=Strict; Secure`;
-                            if (urlParams.has('key')) { window.history.replaceState({}, document.title, window.location.pathname); }
+                            if (urlParams.has('key')) { 
+                                window.history.replaceState({}, document.title, window.location.pathname);
+                                requiereRefresco = true;
+                            }
                       }
                 }
            } catch (e) { 
