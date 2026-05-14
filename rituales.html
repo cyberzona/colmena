@@ -115,33 +115,32 @@
             } catch (e) { console.error(e); }
         }
         
-      async function AccesoRito(claveManual = null) {
-            const HASH_MAESTRO = "655e786674d9d3e77bc05ed1de37b4b6bc89f788829f9f3c679e7687b410c89b";
-            const expira = localStorage.getItem("memory_expira");
-            if (expira && Date.now() > parseInt(expira)) {
-                localStorage.removeItem("memory");
-                localStorage.removeItem("memory_expira");
-            }
-            const llaveAProbar = claveManual || localStorage.getItem("memory");
-            if (!llaveAProbar) return false;
-            try {
-                const msgUint8 = new TextEncoder().encode(llaveAProbar);
-                const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-                const hashArray = Array.from(new Uint8Array(hashBuffer));
-                const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-                if (hashHex === HASH_MAESTRO) {
-                    if (localStorage.getItem("memory") !== llaveAProbar || !expira) {
-                        localStorage.setItem("memory", llaveAProbar);
-                        localStorage.setItem("memory_expira", Date.now() + 86400000);
-                        window.location.href = window.location.pathname;
-                        return true; 
-                    }                    
-                    return true;
-                } else { return false; }
-            } catch (e) {
-                console.error("Error en el acceso:", e);
-                return false;
-            }
+      async function AccesoRito(pass = null) {
+          let acceso = false;
+          try {
+                const resp = await fetch('velo.json');
+                const { hash: HASH_MAESTRO } = await resp.json();
+                const Cookie = (n) => {
+                    const v = `; ${document.cookie}`;
+                      const p = v.split(`; ${n}=`);
+                      return p.length === 2 ? p.pop().split(';').shift() : null;
+                    };  
+                const urlParams = new URLSearchParams(window.location.search);
+                const llave = pass || urlParams.get('key') || Cookie('memory');              
+                if (llave) {
+                      const msgUint8 = new TextEncoder().encode(llave);
+                      const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+                      const hashHex = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+                      acceso = (hashHex === HASH_MAESTRO);
+                      if (acceso && Cookie('memory') !== llave) {
+                            document.cookie = `memory=${encodeURIComponent(llave)}; max-age=86400; path=/; SameSite=Strict; Secure`;
+                            if (urlParams.has('key')) { window.history.replaceState({}, document.title, window.location.pathname); }
+                      }
+                }
+           } catch (e) { 
+              // Error silencioso: accesoConcedido se mantiene en false 
+           }
+           return acceso;
         }        
         
         async function cargarArchivosBase() {
