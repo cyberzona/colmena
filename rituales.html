@@ -129,9 +129,9 @@
                 const llave = pass || urlParams.get('key') || Cookie('memory');              
                 if (llave) {
                       
-                      acceso = (hashHex === HASH_MAESTRO);
+                      acceso = (llave === HASH_MAESTRO);
                       if (acceso && Cookie('memory') !== llave) {
-                          if (Cookie('memory') !== llave) { document.cookie = `memory=${encodeURIComponent(llave)}; max-age=86400; path=/; SameSite=Strict; Secure`;}
+                          if (Cookie('memory') !== llave) { document.cookie = `memory=${encodeURIComponent(llave)}; max-age=86400; path=/;}
                           if (urlParams.has('key') || pass !== null) { 
                                 window.history.replaceState({}, document.title, window.location.pathname);
                                 window.location.reload();
