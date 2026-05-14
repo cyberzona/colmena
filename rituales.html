@@ -128,9 +128,7 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 const llave = pass || urlParams.get('key') || Cookie('memory');              
                 if (llave) {
-                      const msgUint8 = new TextEncoder().encode(llave);
-                      const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-                      const hashHex = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+                      
                       acceso = (hashHex === HASH_MAESTRO);
                       if (acceso && Cookie('memory') !== llave) {
                           if (Cookie('memory') !== llave) { document.cookie = `memory=${encodeURIComponent(llave)}; max-age=86400; path=/; SameSite=Strict; Secure`;}
