@@ -133,11 +133,11 @@
                       const hashHex = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
                       acceso = (hashHex === HASH_MAESTRO);
                       if (acceso && Cookie('memory') !== llave) {
-                            document.cookie = `memory=${encodeURIComponent(llave)}; max-age=86400; path=/; SameSite=Strict; Secure`;
-                            if (urlParams.has('key')) { 
+                          if (Cookie('memory') !== llave) { document.cookie = `memory=${encodeURIComponent(llave)}; max-age=86400; path=/; SameSite=Strict; Secure`;}
+                          if (urlParams.has('key') || pass !== null) { 
                                 window.history.replaceState({}, document.title, window.location.pathname);
-                                requiereRefresco = true;
-                            }
+                                window.location.reload();
+                          }
                       }
                 }
            } catch (e) { 
