@@ -116,33 +116,45 @@
         }
         
       async function AccesoRito(pass = null) {
-          let acceso = false;
-          try {
-                const resp = await fetch('velo.json');
-                const { hash: HASH_MAESTRO } = await resp.json();
-                const Cookie = (n) => {
-                    const v = `; ${document.cookie}`;
-                      const p = v.split(`; ${n}=`);
-                      return p.length === 2 ? p.pop().split(';').shift() : null;
-                    };  
-                const urlParams = new URLSearchParams(window.location.search);
-                const llave = pass || urlParams.get('key') || Cookie('memory');              
-                if (llave) {
-                      
-                      acceso = (llave === HASH_MAESTRO);
-                      if (acceso && Cookie('memory') !== llave) {
-                          if (Cookie('memory') !== llave) { document.cookie = `memory=${encodeURIComponent(llave)}; max-age=86400; path=/;}
-                          if (urlParams.has('key') || pass !== null) { 
-                                window.history.replaceState({}, document.title, window.location.pathname);
-                                window.location.reload();
-                          }
-                      }
-                }
-           } catch (e) { 
-              // Error silencioso: accesoConcedido se mantiene en false 
-           }
-           return acceso;
-        }        
+  let acceso = false;
+  try {
+    const resp = await fetch('velo.json');
+    const { hash: HASH_MAESTRO } = await resp.json();
+    
+    const Cookie = (n) => {
+      const v = `; ${document.cookie}`;
+      const p = v.split(`; ${n}=`);
+      return p.length === 2 ? p.pop().split(';').shift() : null;
+    };  
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const llave = pass || urlParams.get('key') || Cookie('memory');              
+
+    if (llave) {
+      acceso = (llave === HASH_MAESTRO);
+      
+      if (acceso) {
+        // 1. Corregido el cierre de la cadena y la llave que faltaba en tu versión
+        if (Cookie('memory') !== llave) { 
+          document.cookie = `memory=${encodeURIComponent(llave)}; max-age=86400; path=/`;
+        }
+
+        // 2. Si entras por URL o prompt, limpiamos y recargamos
+        if (urlParams.has('key') || pass !== null) { 
+          window.history.replaceState({}, document.title, window.location.pathname);
+          
+          // Nota: Si en Android ves que no recarga con la sesión iniciada, 
+          // envuelve el reload en un setTimeout de 100ms.
+          window.location.reload();
+        }
+      }
+    }
+  } catch (e) { 
+    // Error silencioso
+  }
+  return acceso;
+}
+
         
         async function cargarArchivosBase() {
             const t = new Date().getTime();
