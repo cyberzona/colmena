@@ -43,7 +43,7 @@
         <img src="./images/logo-mini.png" style="width: 100px; margin-bottom: 25px; filter: grayscale(20%);">        
         <div id="estado-carga" style="text-align: center;">
             <h2 style="font-family: serif; color: #2c3e50; letter-spacing: 3px; margin-bottom: 10px;">RLS∴ COLMENA # 8</h2>
-            <p id="mensaje-estado" style="color: #7f8c8d; font-style: italic;">Sincronizando estación con el GAS...</p>
+            <p id="mensaje-estado" style="color: #7f8c8d; font-style: italic;">Sincronizando estación ...</p>
         </div>
     </div>
     <div id="contenedor-principal" style="display: none;">
@@ -137,7 +137,7 @@
                       }
                 }
             }
-          } catch (e) { // Error silencioso }
+          } catch (e) { console.error(e); }
           return acceso;
         }
         
