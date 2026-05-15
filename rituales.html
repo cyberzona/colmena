@@ -130,7 +130,9 @@
             if (llave) {
                 acceso = (llave === HASH_MAESTRO);      
                 if (acceso) {
-                      if (Cookie('memory') !== llave) { document.cookie = `memory=${encodeURIComponent(llave)}; max-age=86400; path=/`; }
+                      if (Cookie('memory') !== llave) { 
+                          document.cookie = `memory=${encodeURIComponent(llave)}; max-age=86400; path=/`; 
+                      }
                       if (urlParams.has('key') || pass !== null) { 
                           window.history.replaceState({}, document.title, window.location.pathname);
                           window.location.reload();
