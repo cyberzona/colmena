@@ -116,54 +116,45 @@
         }
         
       async function AccesoRito(pass = null) {
-  let acceso = false;
-  try {
-    const resp = await fetch('velo.json');
-    const { hash: HASH_MAESTRO } = await resp.json();   
-    
-    const Cookie = (n) => {
-      const v = `; ${document.cookie}`;
-      const p = v.split(`; ${n}=`);
-      return p.length === 2 ? p.pop().split(';').shift() : null;
-    };  
-    
-    const urlParams = new URLSearchParams(window.location.search);
-    const llave = pass || urlParams.get('key') || Cookie('memory'); 
-    
-    if (llave) {
-      acceso = (llave === HASH_MAESTRO);      
-      
-      if (acceso) {
-        // --- ACCESO CORRECTO ---
-        if (Cookie('memory') !== llave) { 
-          document.cookie = `memory=${encodeURIComponent(llave)}; max-age=86400; path=/`; 
-        }
-        if (urlParams.has('key') || pass !== null) { 
-          window.history.replaceState({}, document.title, window.location.pathname);
-          window.location.reload(); // Recarga limpia con acceso garantizado vía cookie
-        }
-      } else {
-        // --- ERROR: CLAVE INCORRECTA ---
-        let necesitaRecarga = false;
-
-        if (urlParams.has('key')) {
-          window.history.replaceState({}, document.title, window.location.pathname);
-          necesitaRecarga = true; // Marcamos que requiere limpiar el flujo
-        }
-        if (Cookie('memory')) {
-          document.cookie = "memory=; max-age=0; path=/";
-          necesitaRecarga = true;
-        }
-
-        // Si limpiamos un error, recargamos para romper el estado corrupto de forma segura
-        if (necesitaRecarga) {
-          window.location.reload();
-        }
-      }
-    }
-  } catch (e) { console.error(e); }
-  return acceso;
-}        
+          let acceso = false;
+          try {
+                const resp = await fetch('velo.json');
+                const { hash: HASH_MAESTRO } = await resp.json();   
+                const Cookie = (n) => {
+                  const v = `; ${document.cookie}`;
+                  const p = v.split(`; ${n}=`);
+                  return p.length === 2 ? p.pop().split(';').shift() : null;
+                };  
+                const urlParams = new URLSearchParams(window.location.search);
+                const llave = pass || urlParams.get('key') || Cookie('memory'); 
+                if (llave) { acceso = (llave === HASH_MAESTRO);      
+                    if (acceso) {        
+                        if (Cookie('memory') !== llave) { 
+                          document.cookie = `memory=${encodeURIComponent(llave)}; max-age=86400; path=/`; 
+                        }
+                        if (urlParams.has('key') || pass !== null) { 
+                          window.history.replaceState({}, document.title, window.location.pathname);
+                          window.location.reload(); // Recarga limpia con acceso garantizado vía cookie
+                        }
+                      } else {
+                        let necesitaRecarga = false;
+                        if (urlParams.has('key')) {
+                          window.history.replaceState({}, document.title, window.location.pathname);
+                          necesitaRecarga = true; // Marcamos que requiere limpiar el flujo
+                        }
+                        if (Cookie('memory')) {
+                          document.cookie = "memory=; max-age=0; path=/";
+                          necesitaRecarga = true;
+                        }
+                        if (necesitaRecarga) {
+                          window.location.reload();
+                        }
+                     }
+                }
+          } catch (e) { console.error(e); }
+          return acceso;
+        } 
+        
         async function cargarArchivosBase() {
             const t = new Date().getTime();
             //const f = u => fetch(`${dominio}${u}?v=${t}`).then(r => r.text());
