@@ -136,7 +136,7 @@
                           window.history.replaceState({}, document.title, window.location.pathname);
                           window.location.reload(); // Recarga limpia con acceso garantizado vía cookie
                         }
-                      } else {
+                    } else {
                         let necesitaRecarga = false;
                         if (urlParams.has('key')) {
                           window.history.replaceState({}, document.title, window.location.pathname);
@@ -149,7 +149,7 @@
                         if (necesitaRecarga) {
                           window.location.reload();
                         }
-                     }
+                    }
                 }
           } catch (e) { console.error(e); }
           return acceso;
