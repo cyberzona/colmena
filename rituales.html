@@ -140,24 +140,30 @@
         }
         if (urlParams.has('key') || pass !== null) { 
           window.history.replaceState({}, document.title, window.location.pathname);
-          window.location.reload();
+          window.location.reload(); // Recarga limpia con acceso garantizado vía cookie
         }
       } else {
         // --- ERROR: CLAVE INCORRECTA ---
-        // Si el error venía en la URL (?key=incorrecto), la limpiamos de inmediato
+        let necesitaRecarga = false;
+
         if (urlParams.has('key')) {
           window.history.replaceState({}, document.title, window.location.pathname);
+          necesitaRecarga = true; // Marcamos que requiere limpiar el flujo
         }
-        // Si la cookie tenía un hash viejo o corrupto, lo eliminamos
         if (Cookie('memory')) {
           document.cookie = "memory=; max-age=0; path=/";
+          necesitaRecarga = true;
+        }
+
+        // Si limpiamos un error, recargamos para romper el estado corrupto de forma segura
+        if (necesitaRecarga) {
+          window.location.reload();
         }
       }
     }
   } catch (e) { console.error(e); }
   return acceso;
-}
-        
+}        
         async function cargarArchivosBase() {
             const t = new Date().getTime();
             //const f = u => fetch(`${dominio}${u}?v=${t}`).then(r => r.text());
