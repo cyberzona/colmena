@@ -137,12 +137,7 @@
                           window.history.replaceState({}, document.title, window.location.pathname);
                           window.location.reload();
                       }
-                } else { 
-                    if (urlParams.has('key')) {
-                          const urlLimpia = window.location.protocol + "//" + window.location.host + window.location.pathname;
-                          window.history.replaceState({}, document.title, urlLimpia);
-                    }
-            }}
+            }
           } catch (e) { console.error(e); }
           return acceso;
         }
