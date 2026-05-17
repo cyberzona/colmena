@@ -118,18 +118,13 @@
       async function AccesoRito(pass = null) {
           let acceso = false;
           try {
-                const resp = await fetch('velo.json');
-                const { hash: HASH_MAESTRO } = await resp.json();   
-                const Cookie = (n) => {
-                  const v = `; ${document.cookie}`;
-                  const p = v.split(`; ${n}=`);
-                  return p.length === 2 ? p.pop().split(';').shift() : null;
-                };  
-                const urlParams = new URLSearchParams(window.location.search);
-                const llave = pass || urlParams.get('key') || Cookie('memory'); 
+              const { hash: HASH_MAESTRO } = await (await fetch('velo.json')).json();
+              const cookieMem = document.cookie.match(/(^|;)\s*memory\s*=\s*([^;]+)/)?.[2] || null;
+              const urlParams = new URLSearchParams(window.location.search);
+              const llave = pass || urlParams.get('key') || cookieMem; 
                 if (llave) { acceso = (llave === HASH_MAESTRO);      
                     if (acceso) {        
-                        if (Cookie('memory') !== llave) { 
+                        if (cookieMem !== llave) { 
                           document.cookie = `memory=${encodeURIComponent(llave)}; max-age=86400; path=/`; 
                         }
                         if (urlParams.has('key') || pass !== null) { 
@@ -142,7 +137,7 @@
                           window.history.replaceState({}, document.title, window.location.pathname);
                           necesitaRecarga = true; // Marcamos que requiere limpiar el flujo
                         }
-                        if (Cookie('memory')) {
+                        if (cookieMem) {
                           document.cookie = "memory=; max-age=0; path=/";
                           necesitaRecarga = true;
                         }
