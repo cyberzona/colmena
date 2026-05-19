@@ -119,8 +119,8 @@
           let acceso = false;
           try {
               const { hash: HASH_MAESTRO } = await (await fetch('velo.json')).json();
-              const cookieMem = document.cookie.match(/(^|;)\s*memory\s*=\s*([^;]+)/)?.[2] || null;
-          
+              const rawCookie = document.cookie.match(/(^|;)\s*memory\s*=\s*([^;]+)/)?.[2] || null;
+              const cookieMem = rawCookie ? decodeURIComponent(rawCookie) : null;
               const urlParams = new URLSearchParams(window.location.search);
               const llave = pass || urlParams.get('key') || cookieMem; 
                 if (llave) { acceso = (llave === HASH_MAESTRO);      
