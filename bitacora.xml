@@ -40,4 +40,9 @@
     <item tipo="trazados" asunto="Saco de Proposiciones" url="rituales.html?num=1&amp;sec=4&amp;ext=hhttps://drive.google.com/file/d/1UCARn7AXkyxMKtziXhR5CpKn2HvVW4PG/preview" />
      <item tipo="ascensos" asunto="CÁMARA DEL MEDIO" url="rituales.html?num=3&amp;sec=1" />
   </evento>  
+  <evento fecha="2026-05-23">
+     <item tipo="cronicas" asunto="Acta Anterior" url="https://drive.google.com/file/d/1Jr6xYTM6FAyYTWhSwrCJApxKhk3KelMA/preview" />
+     <item tipo="trazados" asunto="Saco de Proposiciones" url="rituales.html?num=1&amp;sec=4&amp;ext=https://drive.google.com/file/d/1UCARn7AXkyxMKtziXhR5CpKn2HvVW4PG/preview" />
+     <item tipo="trazados" asunto="Asuntos Familiares" url="rituales.html?num=1&amp;sec=5" />
+  </evento>
 </bitacora>
