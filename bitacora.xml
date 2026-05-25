@@ -45,9 +45,10 @@
      <item tipo="trazados" asunto="Saco de Proposiciones" url="rituales.html?num=1&amp;sec=4&amp;ext=https://drive.google.com/file/d/1UCARn7AXkyxMKtziXhR5CpKn2HvVW4PG/preview" />
      <item tipo="trazados" asunto="Asuntos Familiares" url="rituales.html?num=1&amp;sec=5" />
   </evento>
-  <evento fecha="2026-06-20">
+  <evento fecha="2026-05-25">
      <item tipo="cronicas" asunto="Acta Anterior" url="https://drive.google.com/file/d/1Jr6xYTM6FAyYTWhSwrCJApxKhk3KelMA/preview" />
      <item tipo="trazados" asunto="Saco de Proposiciones" url="rituales.html?num=1&amp;sec=4&amp;ext=https://drive.google.com/file/d/1Jr6xYTM6FAyYTWhSwrCJApxKhk3KelMA/preview" />
      <item tipo="trazados" asunto="Asuntos Familiares" url="rituales.html?num=1&amp;sec=5" />
+    <item tipo="ascensos" asunto="CÁMARA DE COMPAÑERO" url="rituales.html?num=2&amp;sec=1" />
   </evento>
 </bitacora>
