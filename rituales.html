@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -36,6 +36,30 @@
         .dialogo-vm { margin-bottom: 10px; font-style: normal; }
         .actor-hint { cursor: help; border-bottom: 1px dotted #0277bd; position: relative; }
         .actor-hint:hover::after { content: attr(data-memo);position: absolute;bottom: 125%;left: 50%;transform: translateX(-50%);background-color: #333;color: #fff;padding: 5px 10px;border-radius: 6px;white-space: nowrap;font-size: 14px;z-index: 100;}
+        .dialogo-vm { margin-bottom: 10px; font-style: normal; }
+        .actor-hint { cursor: help; border-bottom: 1px dotted #0277bd; position: relative; }
+        .actor-hint:hover::after { content: attr(data-memo);position: absolute;bottom: 125%;left: 50%;transform: translateX(-50%);background-color: #333;color: #fff;padding: 5px 10px;border-radius: 6px;white-space: nowrap;font-size: 14px;z-index: 100;}
+
+        /* --- NUEVAS REGLAS PARA EL ENFOQUE VISUAL (AL FINAL) --- */
+        dt, dd {
+            transition: opacity 0.3s ease;
+            opacity: 1;
+        }
+
+        .filtro-activo dt, .filtro-activo dd {
+            opacity: 0.25;
+        }
+
+        .filtro-activo .resaltado, 
+        .filtro-activo dt.actor-activo {
+            opacity: 1 !important;
+        }
+
+        .resaltado { 
+            background: rgba(168, 124, 0, 0.08) !important; 
+            border-left: 5px solid #A87C00 !important; 
+        }    
+    
     </style>
 </head>
 <body onload="inicializarPortal()">
@@ -242,7 +266,9 @@
                     });
                     texto = texto.replace(/\[(.*?)\]/g, '<span class="acotacion">($1)</span>');
                     const esFoco = actorSel && actor === actorSel;
-                     html += `<dt>${actor}∴</dt><dd id="verso-${contador}" class="${esFoco ? 'resaltado' : ''}">${texto}${btns}</dd>`;
+                    const claseDt = esFoco ? 'class="actor-activo"' : '';
+                    html += `<dt ${claseDt}>${actor}∴</dt><dd id="verso-${contador}" class="${esFoco ? 'resaltado' : ''}">${texto}${btns}</dd>`;
+                    // html += `<dt>${actor}∴</dt><dd id="verso-${contador}" class="${esFoco ? 'resaltado' : ''}">${texto}${btns}</dd>`;
                     contador++;
                 });
             });
@@ -258,7 +284,9 @@
                 nav += `<button class="btn-flechas" onclick="irA('VOLVER')"><span class="icon-exit">✖</span></button>`;
             }
             nav += `</div>`;
-            document.getElementById('rituales-content').innerHTML = `<dl>${html}</dl>${nav}`;
+            const claseContenedor = actorSel ? 'class="filtro-activo"' : '';
+            document.getElementById('rituales-content').innerHTML = `<dl ${claseContenedor}>${html}</dl>${nav}`;
+            //document.getElementById('rituales-content').innerHTML = `<dl>${html}</dl>${nav}`;
             if (hacerScroll && actorSel) {
                 setTimeout(() => {
                     const el = document.querySelector('.resaltado');
