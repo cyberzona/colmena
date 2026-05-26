@@ -18,13 +18,17 @@
         .select-secciones { width: 250px; }
         .select-actores { width: 65px; }
         .parte-header { font-weight: bold; color: #795548; font-size: 1.1rem; border-bottom: 2px solid #d7ccc8; text-align: right; margin-top: 20px; margin-bottom: 10px; }
+        
+        /* Estructura de diálogos con transiciones suaves incorporadas */
         dl { counter-reset: line-counter; }
-        dt { font-weight: bold; color: #5d4037; margin-top: 12px; font-size: 0.9rem; }
-        dd { margin-left: 55px; border-left: 3px solid #d7ccc8; padding-left: 10px; position: relative; margin-bottom: 8px; text-align: justify; counter-increment: line-counter; min-height: 1.2em; }
+        dt { font-weight: bold; color: #5d4037; margin-top: 12px; font-size: 0.9rem; transition: opacity 0.25s ease-in-out; }
+        dd { margin-left: 55px; border-left: 3px solid #d7ccc8; padding-left: 10px; position: relative; margin-bottom: 8px; text-align: justify; counter-increment: line-counter; min-height: 1.2em; transition: opacity 0.25s ease-in-out; }
         dd::before { content: counter(line-counter); position: absolute; left: -45px; color: #8d6e63; font-size: 0.75rem; font-weight: bold; width: 35px; text-align: right; top: 0; }
         .acotacion { display: block; font-style: italic; color: rgba(0,0,0,0.5); font-size: 0.85rem; margin-top: 4px; margin-bottom: 4px; }
-        .resaltado { background: rgba(168, 124, 0, 0.12) !important; border-left: 5px solid #A87C00 !important; transition: background 0.5s ease; }
-        /* Margen de 10px a la derecha para separar botones unidos */
+        
+        /* El diseño original de tu línea resaltada unificado */
+        .resaltado { background: rgba(168, 124, 0, 0.12) !important; border-left: 5px solid #A87C00 !important; transition: background 0.3s ease, opacity 0.25s ease-in-out; }
+        
         .btn-ritual, .btn-instancia-exec { display: inline-block; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em; font-weight: bold; background: #A87C00 !important; color: #fff !important; margin: 8px 10px 8px 0; border: none; outline: none; width: auto; text-align: left; }
         .nav-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding: 15px; border-top: 1px solid #d7ccc8; }
         .btn-flechas { background: transparent !important; color: #A87C00 !important; width: 45px; height: 32px; font-size: 1.4rem; display: flex; align-items: center; justify-content: center; border: none; outline: none; }
@@ -37,27 +41,25 @@
         .actor-hint { cursor: help; border-bottom: 1px dotted #0277bd; position: relative; }
         .actor-hint:hover::after { content: attr(data-memo);position: absolute;bottom: 125%;left: 50%;transform: translateX(-50%);background-color: #333;color: #fff;padding: 5px 10px;border-radius: 6px;white-space: nowrap;font-size: 14px;z-index: 100;}
         
-        /* --- NUEVAS REGLAS PARA EL ENFOQUE VISUAL (AL FINAL) --- */
-        dt, dd {
-            transition: opacity 0.3s ease;
-            opacity: 1;
+        /* --- CONTROL DE ENFOQUE VISUAL PRECISO --- */
+        /* Opacamos de forma pareja los dt y dd que no tengan rol activo */
+        .filtro-activo dt, 
+        .filtro-activo dd {
+            opacity: 0.20;
         }
 
-        .filtro-activo dt, .filtro-activo dd {
-            opacity: 0.25;
-        }
-
-        .filtro-activo .resaltado, 
-        .filtro-activo dt.actor-activo {
+        /* Mantenemos brillo íntegro en el oficial seleccionado y su bloque */
+        .filtro-activo dt.actor-activo,
+        .filtro-activo dd.resaltado {
             opacity: 1 !important;
         }
 
-        .resaltado { 
-            background: rgba(168, 124, 0, 0.08) !important; 
-            border-left: 5px solid #A87C00 !important; 
-        }    
-    
-    </style>
+        /* Forzamos que las acotaciones hereden la visibilidad sin duplicar siluetas */
+        .filtro-activo dd.resaltado .acotacion {
+            opacity: 0.55 !important;
+        }
+</style>
+
 </head>
 <body onload="inicializarPortal()">
     <div id="capa-bloqueo" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 10000; display: none; justify-content: center; align-items: center; flex-direction: column; font-family: 'Segoe UI', sans-serif;">        
