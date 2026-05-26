@@ -41,22 +41,29 @@
         .actor-hint { cursor: help; border-bottom: 1px dotted #0277bd; position: relative; }
         .actor-hint:hover::after { content: attr(data-memo);position: absolute;bottom: 125%;left: 50%;transform: translateX(-50%);background-color: #333;color: #fff;padding: 5px 10px;border-radius: 6px;white-space: nowrap;font-size: 14px;z-index: 100;}
         
-        /* --- CONTROL DE ENFOQUE VISUAL PRECISO --- */
+       /* --- CONTROL DE ENFOQUE VISUAL PRECISO --- */
         /* Opacamos de forma pareja los dt y dd que no tengan rol activo */
         .filtro-activo dt, 
         .filtro-activo dd {
-            opacity: 0.20;
+            opacity: 0.15;
+            /* Forzar a la GPU a renderizar cada elemento por separado (elimina fantasmas) */
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
         }
 
         /* Mantenemos brillo íntegro en el oficial seleccionado y su bloque */
         .filtro-activo dt.actor-activo,
         .filtro-activo dd.resaltado {
             opacity: 1 !important;
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
         }
 
-        /* Forzamos que las acotaciones hereden la visibilidad sin duplicar siluetas */
+        /* Control estricto de las acotaciones */
         .filtro-activo dd.resaltado .acotacion {
-            opacity: 0.55 !important;
+            opacity: 0.60 !important;
         }
 </style>
 
