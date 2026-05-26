@@ -202,9 +202,10 @@
 
         function actualizarActorGlobal() {
             const actorFilter = document.getElementById("actorFilter");
-            if (actorFilter) actorFilter.blur(); 
+            if (!actorFilter) return;
+            actorFilter.blur();
             sessionStorage.setItem('actorRetornoLogia', actorFilter.value);
-            renderizarLiturgia(true);
+            setTimeout(() => { renderizarLiturgia(true); }, 180); 
         }
 
         async function gestionarCambioSeccion() {
