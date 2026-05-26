@@ -41,13 +41,30 @@
         .actor-hint { cursor: help; border-bottom: 1px dotted #0277bd; position: relative; }
         .actor-hint:hover::after { content: attr(data-memo);position: absolute;bottom: 125%;left: 50%;transform: translateX(-50%);background-color: #333;color: #fff;padding: 5px 10px;border-radius: 6px;white-space: nowrap;font-size: 14px;z-index: 100;}
         
-       /* --- CONTROL DE ENFOQUE VISUAL PRECISO --- */
-        /* Opacamos de forma pareja los dt y dd que no tengan rol activo */
-        .filtro-activo dt, .filtro-activo dd { opacity: 0.20; pointer-events: auto;}
-        /* Mantenemos brillo íntegro en el oficial seleccionado y su bloque */
-        .filtro-activo dt.actor-activo, .filtro-activo dd.resaltado { opacity: 1 !important; transform: translateZ(0); -webkit-transform: translateZ(0); }
-        /* Control estricto de las acotaciones */
-        .filtro-activo dd.resaltado .acotacion { opacity: 0.60 !important; }
+       /* --- ENFOQUE VISUAL INMEDIATO (SIN ANIMACIONES) --- */
+        /* Al usar cambios instantáneos sin 'transition', la GPU del móvil no se congela */
+        .filtro-activo dt {
+            color: #cbc0b9 !important;
+        }
+        .filtro-activo dd {
+            color: #bcaaa4 !important;
+            border-left-color: #efebe9 !important;
+        }
+        .filtro-activo dd::before {
+            color: #efebe9 !important;
+        }
+
+        /* Oficial seleccionado con su brillo íntegro original */
+        .filtro-activo dt.actor-activo {
+            color: #5d4037 !important;
+        }
+        .filtro-activo dd.resaltado {
+            color: #2c2c2c !important;
+            border-left-color: #A87C00 !important;
+        }
+        .filtro-activo dd.resaltado::before {
+            color: #8d6e63 !important;
+        }
 </style>
 
 </head>
