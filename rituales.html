@@ -45,17 +45,9 @@
         /* Opacamos de forma pareja los dt y dd que no tengan rol activo */
         .filtro-activo dt, .filtro-activo dd { opacity: 0.20; pointer-events: auto;}
         /* Mantenemos brillo íntegro en el oficial seleccionado y su bloque */
-        .filtro-activo dt.actor-activo,
-        .filtro-activo dd.resaltado {
-            opacity: 1 !important;
-            transform: translateZ(0);
-            -webkit-transform: translateZ(0);
-        }
-
+        .filtro-activo dt.actor-activo, .filtro-activo dd.resaltado { opacity: 1 !important; transform: translateZ(0); -webkit-transform: translateZ(0); }
         /* Control estricto de las acotaciones */
-        .filtro-activo dd.resaltado .acotacion {
-            opacity: 0.60 !important;
-        }
+        .filtro-activo dd.resaltado .acotacion { opacity: 0.60 !important; }
 </style>
 
 </head>
