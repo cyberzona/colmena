@@ -11,7 +11,7 @@
         .line-logia { font-size: 1.0rem; color: #5d4037; font-weight: bold; }
         #titulo-ritual-header { font-size: 0.95rem; color: #5d4037; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px; }
         .logo-mini { width: 65px; height: auto; }
-        #control-panel { background: #d7ccc8; padding: 10px; border-radius: 8px; border: 1px solid #a1887f; position: sticky; top: 0; z-index: 1000; display: flex; gap: 10px; }
+        #control-panel { background: #d7ccc8; padding: 10px; border-radius: 8px; border: 1px solid #a1887f; position: sticky; top: 0; z-index: 1000; display: flex; gap: 10px; transform: translateZ(0);}
         .container-select { display: flex; flex-direction: column; }
         .select-label { font-size: 0.65rem; color: #4e342e; font-weight: 800; text-transform: uppercase; margin-bottom: 2px; }
         .select-secciones, .select-actores { padding: 8px; font-size: 0.95rem; border-radius: 4px; border: 1px solid #a1887f; font-weight: bold; outline: none; background: #fff; }
@@ -43,16 +43,7 @@
         
        /* --- CONTROL DE ENFOQUE VISUAL PRECISO --- */
         /* Opacamos de forma pareja los dt y dd que no tengan rol activo */
-        .filtro-activo dt, 
-        .filtro-activo dd {
-            opacity: 0.15;
-            /* Forzar a la GPU a renderizar cada elemento por separado (elimina fantasmas) */
-            transform: translateZ(0);
-            -webkit-transform: translateZ(0);
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
-        }
-
+        .filtro-activo dt, .filtro-activo dd { opacity: 0.20; pointer-events: auto;}
         /* Mantenemos brillo íntegro en el oficial seleccionado y su bloque */
         .filtro-activo dt.actor-activo,
         .filtro-activo dd.resaltado {
@@ -218,7 +209,9 @@
         }
 
         function actualizarActorGlobal() {
-            sessionStorage.setItem('actorRetornoLogia', document.getElementById("actorFilter").value);
+            const actorFilter = document.getElementById("actorFilter");
+            if (actorFilter) actorFilter.blur(); 
+            sessionStorage.setItem('actorRetornoLogia', actorFilter.value);
             renderizarLiturgia(true);
         }
 
