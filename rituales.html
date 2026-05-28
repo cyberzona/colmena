@@ -293,22 +293,12 @@
                 nav += `<button class="btn-flechas" onclick="irA('VOLVER')"><span class="icon-exit">✖</span></button>`;
             }
             nav += `</div>`;
-            
-            // ==========================================
-            // PEGA ESTE NUEVO BLOQUE CORREGIDO:
-            // ==========================================
             const contenedorRitual = document.getElementById('rituales-content');
-
             if (contenedorRitual) {
-                // 1. Vaciamos de golpe el DOM viejo para romper la persistencia visual
                 contenedorRitual.innerHTML = ""; 
-                
-                // 2. Esperamos un instante microscópico (10ms) para que la GPU del móvil se limpie
                 setTimeout(() => {
                     const claseContenedor = actorSel ? 'class="filtro-activo"' : '';
                     contenedorRitual.innerHTML = `<dl ${claseContenedor}>${html}</dl>${nav}`;
-                    
-                    // 3. Ejecutamos el scroll suave al oficial si corresponde
                     if (hacerScroll && actorSel) {
                         const el = contenedorRitual.querySelector('.resaltado');
                         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
