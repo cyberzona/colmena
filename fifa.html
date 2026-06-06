@@ -69,6 +69,92 @@
             {
                 nombre: "Grupo F",
                 paises: [
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Guía de Bolsillo Panini 2026</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 8px; color: #333; background-color: #f4f6f7; }
+        h1 { text-align: center; font-size: 13px; margin: 5px 0 2px 0; text-transform: uppercase; color: #1a5276; letter-spacing: 0.5px; }
+        
+        /* Marcador de Conteo General */
+        .marcador-general { text-align: center; background: #2c3e50; color: #fff; font-size: 13px; font-weight: bold; padding: 6px; margin-bottom: 8px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .marcador-general span { color: #2ecc71; font-size: 14px; }
+
+        /* Panel de Respaldo */
+        .panel-respaldo { display: flex; gap: 6px; margin-bottom: 10px; background: #fff; padding: 6px; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .btn-respaldo { flex: 1; background-color: #1a5276; color: white; border: none; padding: 8px; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; text-transform: uppercase; -webkit-tap-highlight-color: transparent; }
+        .btn-respaldo:active { background-color: #11364f; }
+        .btn-importar { background-color: #7f8c8d; }
+        .btn-importar:active { background-color: #5d6d7e; }
+
+        .grupo-title { background-color: #1a5276; color: white; padding: 4px 8px; font-size: 11px; font-weight: bold; margin-top: 8px; border-radius: 4px; text-transform: uppercase; }
+        .pais-block { background: #fff; margin: 4px 0; padding: 6px; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .pais-name { font-size: 11px; font-weight: bold; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
+        .contador { font-size: 10px; color: #7f8c8d; font-weight: 600; background: #eaeded; padding: 1px 5px; border-radius: 10px; }
+        
+        .casillas { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+        .casilla { border: 1px solid #bdc3c7; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; background-color: #fff; border-radius: 4px; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; transition: background 0.1s; }
+        .casilla.poseido { background-color: #27ae60 !important; color: white !important; border-color: #1e8449 !important; }
+    </style>
+</head>
+<body>
+
+    <h1>📋 GUÍA DE BOLSILLO – PANINI 2026</h1>
+    
+    <div class="marcador-general">Progreso Total: <span id="total-general">0 / 960</span></div>
+
+    <div class="panel-respaldo">
+        <button class="btn-respaldo" onclick="exportarProgreso()">📤 Exportar Respaldo</button>
+        <button class="btn-respaldo btn-importar" onclick="importarProgreso()">📥 Importar Respaldo</button>
+    </div>
+
+    <div id="guia-contenedor"></div>
+
+    <script>
+        // Distribución oficial exacta de tus 12 grupos
+        const estructuraGrupos = [
+            {
+                nombre: "Grupo A",
+                paises: [
+                    { sigla: "MEX", nombre: "México" }, { sigla: "RSA", nombre: "Sudáfrica" },
+                    { sigla: "KOR", nombre: "Corea del Sur" }, { sigla: "CZE", nombre: "República Checa" }
+                ]
+            },
+            {
+                nombre: "Grupo B",
+                paises: [
+                    { sigla: "CAN", nombre: "Canadá" }, { sigla: "BIH", nombre: "Bosnia y Herzegovina" },
+                    { sigla: "QAT", nombre: "Qatar" }, { sigla: "SUI", nombre: "Suiza" }
+                ]
+            },
+            {
+                nombre: "Grupo C",
+                paises: [
+                    { sigla: "BRA", nombre: "Brasil" }, { sigla: "MAR", nombre: "Marruecos" },
+                    { sigla: "HAI", nombre: "Haití" }, { sigla: "SCO", nombre: "Escocia" }
+                ]
+            },
+            {
+                nombre: "Grupo D",
+                paises: [
+                    { sigla: "USA", nombre: "Estados Unidos" }, { sigla: "PAR", nombre: "Paraguay" },
+                    { sigla: "AUS", nombre: "Australia" }, { sigla: "TUR", nombre: "Turquía" }
+                ]
+            },
+            {
+                nombre: "Grupo E",
+                paises: [
+                    { sigla: "GER", nombre: "Alemania" }, { sigla: "CUW", nombre: "Curazao" },
+                    { sigla: "CIV", nombre: "Costa de Marfil" }, { sigla: "ECU", nombre: "Ecuador" }
+                ]
+            },
+            {
+                nombre: "Grupo F",
+                paises: [
                     { sigla: "NED", nombre: "Países Bajos" }, { sigla: "JPN", nombre: "Japón" },
                     { sigla: "SWE", nombre: "Suecia" }, { sigla: "TUN", nombre: "Túnez" }
                 ]
@@ -119,60 +205,114 @@
 
         const contenedor = document.getElementById('guia-contenedor');
 
-        estructuraGrupos.forEach(g => {
-            const divGrupo = document.createElement('div');
-            divGrupo.className = 'grupo-title';
-            divGrupo.textContent = g.nombre;
-            contenedor.appendChild(divGrupo);
+        function inicializarGuia() {
+            contenedor.innerHTML = '';
+            estructuraGrupos.forEach(g => {
+                const divGrupo = document.createElement('div');
+                divGrupo.className = 'grupo-title';
+                divGrupo.textContent = g.nombre;
+                contenedor.appendChild(divGrupo);
 
-            g.paises.forEach(p => {
-                const divPais = document.createElement('div');
-                divPais.className = 'pais-block';
-                
-                divPais.innerHTML = `
-                    <div class="pais-name">
-                        <span>${p.sigla} - ${p.nombre}</span>
-                        <span class="contador" id="cont-${p.sigla}">0 / 20</span>
-                    </div>
-                    <div class="casillas" id="casillas-${p.sigla}"></div>
-                `;
-                contenedor.appendChild(divPais);
+                g.paises.forEach(p => {
+                    const divPais = document.createElement('div');
+                    divPais.className = 'pais-block';
+                    
+                    divPais.innerHTML = `
+                        <div class="pais-name">
+                            <span>${p.sigla} - ${p.nombre}</span>
+                            <span class="contador" id="cont-${p.sigla}">0 / 20</span>
+                        </div>
+                        <div class="casillas" id="casillas-${p.sigla}"></div>
+                    `;
+                    contenedor.appendChild(divPais);
 
-                const divCasillas = divPais.querySelector(`#casillas-${p.sigla}`);
-                
-                for (let i = 1; i <= 20; i++) {
-                    const numStr = String(i).padStart(2, '0');
-                    const idSticker = `panini-${p.sigla}-${numStr}`;
-                    const casilla = document.createElement('div');
-                    casilla.className = 'casilla';
-                    casilla.textContent = numStr;
+                    const divCasillas = divPais.querySelector(`#casillas-${p.sigla}`);
+                    
+                    for (let i = 1; i <= 20; i++) {
+                        const numStr = String(i).padStart(2, '0');
+                        const idSticker = `panini-${p.sigla}-${numStr}`;
+                        const casilla = document.createElement('div');
+                        casilla.className = 'casilla';
+                        casilla.textContent = numStr;
 
-                    if (localStorage.getItem(idSticker) === 'true') {
-                        casilla.classList.add('poseido');
-                    }
-
-                    // Evento táctil optimizado para móviles
-                    casilla.addEventListener('click', function(e) {
-                        this.classList.toggle('poseido');
-                        if (this.classList.contains('poseido')) {
-                            localStorage.setItem(idSticker, 'true');
-                        } else {
-                            localStorage.removeItem(idSticker);
+                        if (localStorage.getItem(idSticker) === 'true') {
+                            casilla.classList.add('poseido');
                         }
-                        actualizarContador(p.sigla);
-                    });
 
-                    divCasillas.appendChild(casilla);
-                }
-                actualizarContador(p.sigla);
+                        casilla.addEventListener('click', function() {
+                            this.classList.toggle('poseido');
+                            if (this.classList.contains('poseido')) {
+                                localStorage.setItem(idSticker, 'true');
+                            } else {
+                                localStorage.removeItem(idSticker);
+                            }
+                            actualizarContador(p.sigla);
+                            actualizarConteoGeneral();
+                        });
+
+                        divCasillas.appendChild(casilla);
+                    }
+                    actualizarContador(p.sigla);
+                });
             });
-        });
+            actualizarConteoGeneral();
+        }
 
         function actualizarContador(sigla) {
             const total = document.querySelectorAll(`#casillas-${sigla} .casilla`).length;
             const poseidos = document.querySelectorAll(`#casillas-${sigla} .casilla.poseido`).length;
             document.getElementById(`cont-${sigla}`).textContent = `${poseidos} / ${total}`;
         }
+
+        // Calcula el progreso global dinámicamente
+        function actualizarConteoGeneral() {
+            const totalCromos = document.querySelectorAll('.casilla').length;
+            const poseidosCromos = document.querySelectorAll('.casilla.poseido').length;
+            document.getElementById('total-general').textContent = `${poseidosCromos} / ${totalCromos}`;
+        }
+
+        function exportarProgreso() {
+            const respaldo = {};
+            for (let i = 0; i < localStorage.length; i++) {
+                const clave = localStorage.key(i);
+                if (clave.startsWith('panini-')) {
+                    respaldo[clave] = localStorage.getItem(clave);
+                }
+            }
+            
+            const textoData = JSON.stringify(respaldo);
+            
+            if (Object.keys(respaldo).length === 0) {
+                alert("No tienes stickers marcados para exportar todavía.");
+                return;
+            }
+
+            navigator.clipboard.writeText(textoData).then(() => {
+                alert("¡Copiado con éxito! Guarda el texto en tus notas o envíatelo por mensaje.");
+            }).catch(err => {
+                alert("Tu progreso actual es:\n\n" + textoData + "\n\nCopia manualmente este texto.");
+            });
+        }
+
+        function importarProgreso() {
+            const entrada = prompt("Pega aquí el código de texto de tu respaldo anterior:");
+            if (!entrada) return;
+
+            try {
+                const datosParseados = JSON.parse(entrada);
+                Object.keys(datosParseados).forEach(clave => {
+                    if (clave.startsWith('panini-')) {
+                        localStorage.setItem(clave, datosParseados[clave]);
+                    }
+                });
+                alert("¡Progreso importado con éxito!");
+                inicializarGuia();
+            } catch (e) {
+                alert("Error: El texto ingresado no es un código de respaldo válido.");
+            }
+        }
+
+        inicializarGuia();
     </script>
 </body>
 </html>
