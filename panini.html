@@ -6,13 +6,12 @@
     <title>Guía de Bolsillo Panini 2026</title>
     <style>
         * { box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 8px; color: #333; background-color: #f4f6f7; padding-bottom: 60px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 8px; color: #333; background-color: #f4f6f7; }
         h1 { text-align: center; font-size: 13px; margin: 5px 0 2px 0; text-transform: uppercase; color: #1a5276; letter-spacing: 0.5px; }
         
         .marcador-general { text-align: center; background: #2c3e50; color: #fff; font-size: 13px; font-weight: bold; padding: 6px; margin-bottom: 8px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 6px; }
         .marcador-general span { color: #2ecc71; font-size: 14px; }
         
-        /* Selector de buscador rápido de equipos */
         .selector-rapido { background: #34495e; color: #fff; border: 1px solid #5d6d7e; padding: 3px 6px; font-size: 11px; font-weight: bold; border-radius: 4px; outline: none; max-width: 110px; cursor: pointer; }
         .selector-rapido option { background: #2c3e50; color: #fff; }
 
@@ -43,11 +42,6 @@
         .casilla { border: 1px solid #bdc3c7; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; background-color: #fff; border-radius: 4px; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; transition: background 0.1s; }
         .casilla.poseido { background-color: #27ae60 !important; color: white !important; border-color: #1e8449 !important; }
 
-        /* Botón flotante para volver arriba */
-        .btn-flotante-arriba { position: fixed; bottom: 16px; right: 16px; background-color: #1a5276; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 3px 6px rgba(0,0,0,0.3); display: none; justify-content: center; align-items: center; z-index: 999; -webkit-tap-highlight-color: transparent; }
-        .btn-flotante-arriba:active { background-color: #11364f; }
-
-        /* Estilos del Visualizador de Fotos */
         .modal-foto { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
         .modal-contenido { background: white; padding: 12px; border-radius: 8px; max-width: 90%; max-height: 80%; text-align: center; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
         .modal-foto img { max-width: 100%; max-height: 60vh; object-fit: contain; border-radius: 4px; display: block; margin: 0 auto; background-color: #eee; }
@@ -75,8 +69,6 @@
 
     <div id="guia-contenedor"></div>
 
-    <button class="btn-flotante-arriba" id="btnArriba" onclick="volverArriba()">▲</button>
-
     <div id="vista-foto" class="modal-foto" onclick="cerrarFoto()">
         <div class="modal-contenido" onclick="event.stopPropagation()">
             <div id="foto-titulo" class="modal-titulo"></div>
@@ -88,13 +80,12 @@
     <script>
         let filtroActual = 'faltantes';
 
-        // Estructura restaurada al orden original correlativo de páginas del álbum
         const estructuraGrupos = [
             {
                 nombre: "Especiales",
                 esEspecial: true,
                 estiloClase: "especial-title",
-                paises: [ { sigla: "FWC", nombre: "FIFA World Cup", total: 20, pagInicio: 1 } ]
+                paises: [ { sigla: "FWC", nombre: "FIFA World Cup", total: 20, pagInicio: 2 } ]
             },
             {
                 nombre: "Grupo A",
@@ -114,7 +105,7 @@
                 nombre: "Grupo C",
                 paises: [
                     { sigla: "BRA", nombre: "Brasil", total: 20, pagInicio: 24 }, { sigla: "MAR", nombre: "Marruecos", total: 20, pagInicio: 26 },
-                    { sigla: "HAI", nombre: "Haití", total: 20, pagInicio: 28 }, { sigla: "SCO", nombre: "Escocia", total: 20, pagInicio: 30 }
+                    { sigla: "HAI", nombre: "Haití", total: 20, pagInicio: 28 }, { sigla: "SCO", font: "Escocia", nombre: "Escocia", total: 20, pagInicio: 30 }
                 ]
             },
             {
@@ -148,7 +139,7 @@
             {
                 nombre: "Grupo H",
                 paises: [
-                    { sigla: "ESP", nombre: "España", total: 20, pagInicio: 66 }, { sigla: "CPV", nombre: "Cabo Verde", total: 20, pagInicio: 68 },
+                    { sigla: "ESP", nombre: "España", total: 20 }, { sigla: "CPV", nombre: "Cabo Verde", total: 20 },
                     { sigla: "KSA", nombre: "Arabia Saudita", total: 20 }, { sigla: "URU", nombre: "Uruguay", total: 20 }
                 ]
             },
@@ -190,25 +181,12 @@
 
         const contenedor = document.getElementById('guia-contenedor');
         const selectEquipos = document.getElementById('selector-equipos');
-        const btnArriba = document.getElementById('btnArriba');
-
-        window.onscroll = function() {
-            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
-                btnArriba.style.display = "flex";
-            } else {
-                btnArriba.style.display = "none";
-            }
-        };
-
-        function volverArriba() {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
 
         function inicializarGuia() {
             contenedor.innerHTML = '';
             selectEquipos.innerHTML = '<option value="">🔍 Ir a...</option>';
 
-            // 1. Extraer todas las siglas globalmente y ordenarlas alfabéticamente para el Buscador Único
+            // Recolectar siglas globalmente para la lista alfabética continua
             let todasLasSiglas = [];
             estructuraGrupos.forEach(g => {
                 g.paises.forEach(p => {
@@ -217,7 +195,6 @@
             });
             todasLasSiglas.sort((a, b) => a.localeCompare(b, 'es'));
 
-            // Insertar opciones ordenadas de la A a la Z en el select
             todasLasSiglas.forEach(sigla => {
                 const opcion = document.createElement('option');
                 opcion.value = sigla;
@@ -225,7 +202,7 @@
                 selectEquipos.appendChild(opcion);
             });
 
-            // 2. Renderizar los elementos visuales respetando el orden numérico de páginas original
+            // Construir los bloques en orden del álbum original
             estructuraGrupos.forEach(g => {
                 const divGrupoContenedor = document.createElement('div');
                 divGrupoContenedor.className = 'grupo-block';
@@ -282,10 +259,13 @@
 
                         casilla.addEventListener('touchstart', (e) => {
                             esPulsacionLarga = false;
-                            tiempoPresionado = setTimeout(() => {
-                                esPulsacionLarga = true;
-                                mostrarFoto(p.sigla, numStr, p.nombre);
-                            }, 550);
+                            // SOLO activa la pulsación larga si la casilla está marcada como poseída
+                            if (casilla.classList.contains('poseido')) {
+                                tiempoPresionado = setTimeout(() => {
+                                    esPulsacionLarga = true;
+                                    mostrarFoto(p.sigla, numStr, p.nombre);
+                                }, 550);
+                            }
                         }, { passive: true });
 
                         casilla.addEventListener('touchend', (e) => {
@@ -296,7 +276,8 @@
                         });
 
                         casilla.addEventListener('mousedown', (e) => {
-                            if (e.button === 0) {
+                            // SOLO activa la pulsación larga si la casilla está marcada como poseída
+                            if (e.button === 0 && casilla.classList.contains('poseido')) {
                                 tiempoPresionado = setTimeout(() => {
                                     esPulsacionLarga = true;
                                     mostrarFoto(p.sigla, numStr, p.nombre);
