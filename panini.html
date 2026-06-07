@@ -6,12 +6,13 @@
     <title>Guía de Bolsillo Panini 2026</title>
     <style>
         * { box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 8px; color: #333; background-color: #f4f6f7; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 8px; color: #333; background-color: #f4f6f7; padding-bottom: 60px; }
         h1 { text-align: center; font-size: 13px; margin: 5px 0 2px 0; text-transform: uppercase; color: #1a5276; letter-spacing: 0.5px; }
         
         .marcador-general { text-align: center; background: #2c3e50; color: #fff; font-size: 13px; font-weight: bold; padding: 6px; margin-bottom: 8px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 6px; }
         .marcador-general span { color: #2ecc71; font-size: 14px; }
         
+        /* Selector de buscador rápido de equipos */
         .selector-rapido { background: #34495e; color: #fff; border: 1px solid #5d6d7e; padding: 3px 6px; font-size: 11px; font-weight: bold; border-radius: 4px; outline: none; max-width: 110px; cursor: pointer; }
         .selector-rapido option { background: #2c3e50; color: #fff; }
 
@@ -42,9 +43,16 @@
         .casilla { border: 1px solid #bdc3c7; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; background-color: #fff; border-radius: 4px; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; transition: background 0.1s; }
         .casilla.poseido { background-color: #27ae60 !important; color: white !important; border-color: #1e8449 !important; }
 
-        /* Botón Volver Arriba */
-        .btn-volver-arriba { position: fixed; bottom: 16px; right: 16px; background-color: #2c3e50; color: white; border: none; width: 38px; height: 38px; border-radius: 50%; font-size: 16px; cursor: pointer; display: none; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 99; transition: opacity 0.3s; -webkit-tap-highlight-color: transparent; }
-        .btn-volver-arriba:active { background-color: #1a252f; }
+        /* Botón flotante para volver arriba */
+        .btn-flotante-arriba { position: fixed; bottom: 16px; right: 16px; background-color: #1a5276; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 3px 6px rgba(0,0,0,0.3); display: none; justify-content: center; align-items: center; z-index: 999; -webkit-tap-highlight-color: transparent; }
+        .btn-flotante-arriba:active { background-color: #11364f; }
+
+        /* Estilos del Visualizador de Fotos */
+        .modal-foto { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
+        .modal-contenido { background: white; padding: 12px; border-radius: 8px; max-width: 90%; max-height: 80%; text-align: center; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .modal-foto img { max-width: 100%; max-height: 60vh; object-fit: contain; border-radius: 4px; display: block; margin: 0 auto; background-color: #eee; }
+        .modal-titulo { font-size: 13px; font-weight: bold; margin-bottom: 8px; color: #2c3e50; text-transform: uppercase; }
+        .btn-cerrar { display: block; width: 100%; margin-top: 10px; background-color: #c0392b; color: white; border: none; padding: 8px; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -52,7 +60,7 @@
     <h1>📋 GUÍA DE BOLSILLO – PANINI 2026</h1>
     
     <div class="marcador-general">
-        <div>Total: <span id="total-general">0 / 990</span></div>
+        <div>Total: <span id="total-general">0 / 992</span></div>
         <div>Progreso: <span id="porcentaje-general">0.0%</span></div>
         <select class="selector-rapido" id="selector-equipos" onchange="irAEquipo(this.value)">
             <option value="">🔍 Ir a...</option>
@@ -67,115 +75,123 @@
 
     <div id="guia-contenedor"></div>
 
-    <button id="btn-arriba" class="btn-volver-arriba" onclick="volverAlPrincipio()">⬆️</button>
+    <button class="btn-flotante-arriba" id="btnArriba" onclick="volverArriba()">▲</button>
+
+    <div id="vista-foto" class="modal-foto" onclick="cerrarFoto()">
+        <div class="modal-contenido" onclick="event.stopPropagation()">
+            <div id="foto-titulo" class="modal-titulo"></div>
+            <img id="foto-img" src="" alt="Cargando sticker...">
+            <button class="btn-cerrar" onclick="cerrarFoto()">Cerrar</button>
+        </div>
+    </div>
 
     <script>
         let filtroActual = 'faltantes';
 
+        // Estructura restaurada al orden original correlativo de páginas del álbum
         const estructuraGrupos = [
             {
                 nombre: "Especiales",
                 esEspecial: true,
                 estiloClase: "especial-title",
-                paises: [ { sigla: "FWC", nombre: "FIFA World Cup", total: 20 } ]
+                paises: [ { sigla: "FWC", nombre: "FIFA World Cup", total: 20, pagInicio: 2 } ]
             },
             {
                 nombre: "Grupo A",
                 paises: [
-                    { sigla: "MEX", nombre: "México" }, { sigla: "RSA", nombre: "Sudáfrica" },
-                    { sigla: "KOR", nombre: "Corea del Sur" }, { sigla: "CZE", nombre: "República Checa" }
+                    { sigla: "MEX", nombre: "México", total: 20, pagInicio: 8 }, { sigla: "RSA", nombre: "Sudáfrica", total: 20, pagInicio: 10 },
+                    { sigla: "KOR", nombre: "Corea del Sur", total: 20, pagInicio: 12 }, { sigla: "CZE", nombre: "República Checa", total: 20, pagInicio: 14 }
                 ]
             },
             {
                 nombre: "Grupo B",
                 paises: [
-                    { sigla: "CAN", nombre: "Canadá" }, { sigla: "BIH", nombre: "Bosnia y Herzegovina" },
-                    { sigla: "QAT", nombre: "Qatar" }, { sigla: "SUI", nombre: "Suiza" }
+                    { sigla: "CAN", nombre: "Canadá", total: 20, pagInicio: 16 }, { sigla: "BIH", nombre: "Bosnia y Herzegovina", total: 20, pagInicio: 18 },
+                    { sigla: "QAT", nombre: "Qatar", total: 20, pagInicio: 20 }, { sigla: "SUI", nombre: "Suiza", total: 20, pagInicio: 22 }
                 ]
             },
             {
                 nombre: "Grupo C",
                 paises: [
-                    { sigla: "BRA", nombre: "Brasil" }, { sigla: "MAR", nombre: "Marruecos" },
-                    { sigla: "HAI", nombre: "Haití" }, { sigla: "SCO", nombre: "Escocia" }
+                    { sigla: "BRA", nombre: "Brasil", total: 20, pagInicio: 24 }, { sigla: "MAR", nombre: "Marruecos", total: 20, pagInicio: 26 },
+                    { sigla: "HAI", nombre: "Haití", total: 20, pagInicio: 28 }, { sigla: "SCO", nombre: "Escocia", total: 20, pagInicio: 30 }
                 ]
             },
             {
                 nombre: "Grupo D",
                 paises: [
-                    { sigla: "USA", nombre: "Estados Unidos" }, { sigla: "PAR", nombre: "Paraguay" },
-                    { sigla: "AUS", nombre: "Australia" }, { sigla: "TUR", nombre: "Turquía" }
+                    { sigla: "USA", nombre: "Estados Unidos", total: 20, pagInicio: 32 }, { sigla: "PAR", nombre: "Paraguay", total: 20, pagInicio: 34 },
+                    { sigla: "AUS", nombre: "Australia", total: 20, pagInicio: 36 }, { sigla: "TUR", nombre: "Turquía", total: 20, pagInicio: 38 }
                 ]
             },
             {
                 nombre: "Grupo E",
                 paises: [
-                    { sigla: "GER", nombre: "Alemania" }, { sigla: "CUW", font: "Curazao", nombre: "Curazao" },
-                    { sigla: "CIV", nombre: "Costa de Marfil" }, { sigla: "ECU", nombre: "Ecuador" }
+                    { sigla: "GER", nombre: "Alemania", total: 20, pagInicio: 40 }, { sigla: "CUW", nombre: "Curazao", total: 20, pagInicio: 42 },
+                    { sigla: "CIV", nombre: "Costa de Marfil", total: 20, pagInicio: 44 }, { sigla: "ECU", nombre: "Ecuador", total: 20, pagInicio: 46 }
                 ]
             },
             {
                 nombre: "Grupo F",
                 paises: [
-                    { sigla: "NED", nombre: "Países Bajos" }, { sigla: "JPN", nombre: "Japón" },
-                    { sigla: "SWE", nombre: "Suecia" }, { sigla: "TUN", nombre: "Túnez" }
+                    { sigla: "NED", nombre: "Países Bajos", total: 20, pagInicio: 48 }, { sigla: "JPN", nombre: "Japón", total: 20, pagInicio: 50 },
+                    { sigla: "SWE", nombre: "Suecia", total: 20, pagInicio: 52 }, { sigla: "TUN", nombre: "Túnez", total: 20, pagInicio: 54 }
                 ]
             },
             {
                 nombre: "Grupo G",
                 paises: [
-                    { sigla: "BEL", nombre: "Bélgica" }, { sigla: "EGY", font: "Egipto", nombre: "Egipto" },
-                    { sigla: "IRN", nombre: "Irán" }, { sigla: "NZL", nombre: "Nueva Zelanda" }
+                    { sigla: "BEL", nombre: "Bélgica", total: 20, pagInicio: 58 }, { sigla: "EGY", nombre: "Egipto", total: 20, pagInicio: 60 },
+                    { sigla: "IRN", nombre: "Irán", total: 20, pagInicio: 62 }, { sigla: "NZL", nombre: "Nueva Zelanda", total: 20, pagInicio: 64 }
                 ]
             },
             {
                 nombre: "Grupo H",
                 paises: [
-                    { sigla: "ESP", nombre: "España" }, { sigla: "CPV", nombre: "Cabo Verde" },
-                    { sigla: "KSA", nombre: "Arabia Saudita" }, { sigla: "URU", nombre: "Uruguay" }
+                    { sigla: "ESP", nombre: "España", total: 20 }, { sigla: "CPV", nombre: "Cabo Verde", total: 20 },
+                    { sigla: "KSA", nombre: "Arabia Saudita", total: 20 }, { sigla: "URU", nombre: "Uruguay", total: 20 }
                 ]
             },
             {
                 nombre: "Grupo I",
                 paises: [
-                    { sigla: "FRA", font: "Francia", nombre: "Francia" }, { sigla: "SEN", nombre: "Senegal" },
-                    { sigla: "IRQ", nombre: "Irak" }, { sigla: "NOR", nombre: "Noruega" }
+                    { sigla: "FRA", nombre: "Francia", total: 20 }, { sigla: "SEN", nombre: "Senegal", total: 20 },
+                    { sigla: "IRQ", nombre: "Irak", total: 20 }, { sigla: "NOR", nombre: "Noruega", total: 20 }
                 ]
             },
             {
                 nombre: "Grupo J",
                 paises: [
-                    { sigla: "ARG", nombre: "Argentina" }, { sigla: "ALG", nombre: "Argelia" },
-                    { sigla: "AUT", nombre: "Austria" }, { sigla: "JOR", nombre: "Jordania" }
+                    { sigla: "ARG", nombre: "Argentina", total: 20 }, { sigla: "ALG", nombre: "Argelia", total: 20 },
+                    { sigla: "AUT", nombre: "Austria", total: 20 }, { sigla: "JOR", nombre: "Jordania", total: 20 }
                 ]
             },
             {
                 nombre: "Grupo K",
                 paises: [
-                    { sigla: "POR", nombre: "Portugal" }, { sigla: "COD", nombre: "RD Congo" },
-                    { sigla: "UZB", nombre: "Uzbekistán" }, { sigla: "COL", nombre: "Colombia" }
+                    { sigla: "POR", nombre: "Portugal", total: 20 }, { sigla: "COD", nombre: "RD Congo", total: 20 },
+                    { sigla: "UZB", nombre: "Uzbekistán", total: 20 }, { sigla: "COL", nombre: "Colombia", total: 20 }
                 ]
             },
             {
                 nombre: "Grupo L",
                 paises: [
-                    { sigla: "ENG", nombre: "Inglaterra" }, { sigla: "CRO", nombre: "Croacia" },
-                    { sigla: "GHA", nombre: "Ghana" }, { sigla: "PAN", nombre: "Panamá" }
+                    { sigla: "ENG", nombre: "Inglaterra", total: 20 }, { sigla: "CRO", nombre: "Croacia", total: 20 },
+                    { sigla: "GHA", nombre: "Ghana", total: 20 }, { sigla: "PAN", nombre: "Panamá", total: 20 }
                 ]
             },
             {
                 nombre: "Coca-Cola",
                 esEspecial: true,
                 estiloClase: "cocacola-title",
-                paises: [ { sigla: "COKE", nombre: "Stickers Especiales", total: 10 } ]
+                paises: [ { sigla: "COKE", nombre: "Stickers Especiales", total: 12, pagInicio: 100 } ]
             }
         ];
 
         const contenedor = document.getElementById('guia-contenedor');
         const selectEquipos = document.getElementById('selector-equipos');
-        const btnArriba = document.getElementById('btn-arriba');
+        const btnArriba = document.getElementById('btnArriba');
 
-        // Control de visibilidad del botón flotante mediante scroll
         window.onscroll = function() {
             if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
                 btnArriba.style.display = "flex";
@@ -184,7 +200,7 @@
             }
         };
 
-        function volverAlPrincipio() {
+        function volverArriba() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -192,8 +208,24 @@
             contenedor.innerHTML = '';
             selectEquipos.innerHTML = '<option value="">🔍 Ir a...</option>';
 
+            // 1. Extraer todas las siglas globalmente y ordenarlas alfabéticamente para el Buscador Único
             let todasLasSiglas = [];
+            estructuraGrupos.forEach(g => {
+                g.paises.forEach(p => {
+                    todasLasSiglas.push(p.sigla);
+                });
+            });
+            todasLasSiglas.sort((a, b) => a.localeCompare(b, 'es'));
 
+            // Insertar opciones ordenadas de la A a la Z en el select
+            todasLasSiglas.forEach(sigla => {
+                const opcion = document.createElement('option');
+                opcion.value = sigla;
+                opcion.textContent = sigla;
+                selectEquipos.appendChild(opcion);
+            });
+
+            // 2. Renderizar los elementos visuales respetando el orden numérico de páginas original
             estructuraGrupos.forEach(g => {
                 const divGrupoContenedor = document.createElement('div');
                 divGrupoContenedor.className = 'grupo-block';
@@ -205,45 +237,38 @@
                 divGrupoContenedor.appendChild(divGrupoTitulo);
 
                 g.paises.forEach(p => {
-                    todasLasSiglas.push(p.sigla);
-
                     const divPais = document.createElement('div');
                     divPais.className = 'pais-block';
                     divPais.id = `block-${p.sigla}`;
                     
                     const maxStickers = p.total || 20;
+                    const mitad = maxStickers / 2;
                     
-                    if (g.esEspecial) {
-                        divPais.innerHTML = `
-                            <div class="pais-name">
-                                <span>${p.sigla} - ${p.nombre}</span>
-                                <span class="contador" id="cont-${p.sigla}">0 / ${maxStickers}</span>
-                            </div>
-                            <div class="paginas-contenedor">
-                                <div class="pagina-album" data-pagina="Sección (01-${String(maxStickers).padStart(2, '0')})" id="pag-completa-${p.sigla}"></div>
-                            </div>
-                        `;
-                    } else {
-                        divPais.innerHTML = `
-                            <div class="pais-name">
-                                <span>${p.sigla} - ${p.nombre}</span>
-                                <span class="contador" id="cont-${p.sigla}">0 / 20</span>
-                            </div>
-                            <div class="paginas-contenedor">
-                                <div class="pagina-album" data-pagina="Izq (01-10)" id="pag-izq-${p.sigla}"></div>
-                                <div class="pagina-album" data-pagina="Der (11-20)" id="pag-der-${p.sigla}"></div>
-                            </div>
-                        `;
-                    }
+                    const etiquetaIzq = p.pagInicio ? `Pág. ${p.pagInicio}` : '—';
+                    const etiquetaDer = p.pagInicio ? `Pág. ${p.pagInicio + 1}` : '—';
+
+                    divPais.innerHTML = `
+                        <div class="pais-name">
+                            <span>${p.sigla} - ${p.nombre}</span>
+                            <span class="contador" id="cont-${p.sigla}">0 / ${maxStickers}</span>
+                        </div>
+                        <div class="paginas-contenedor">
+                            <div class="pagina-album" data-pagina="${etiquetaIzq}" id="pag-izq-${p.sigla}"></div>
+                            <div class="pagina-album" data-pagina="${etiquetaDer}" id="pag-der-${p.sigla}"></div>
+                        </div>
+                    `;
+                    
                     divGrupoContenedor.appendChild(divPais);
 
-                    const pagCompleta = divPais.querySelector(`#pag-completa-${p.sigla}`);
                     const pagIzq = divPais.querySelector(`#pag-izq-${p.sigla}`);
                     const pagDer = divPais.querySelector(`#pag-der-${p.sigla}`);
                     
-                    for (let i = 1; i <= maxStickers; i++) {
+                    const inicioRango = (g.nombre === "Especiales") ? 0 : 1;
+                    const finRango = (g.nombre === "Especiales") ? (maxStickers - 1) : maxStickers;
+
+                    for (let i = inicioRango; i <= finRango; i++) {
                         const numStr = String(i).padStart(2, '0');
-                        const idSticker = `panini-${p.sigla}-${numStr}`; // Estructura interna en modo memo
+                        const idSticker = `panini-${p.sigla}-${numStr}`;
                         const casilla = document.createElement('div');
                         casilla.className = 'casilla';
                         casilla.textContent = numStr;
@@ -252,7 +277,38 @@
                             casilla.classList.add('poseido');
                         }
 
+                        let tiempoPresionado;
+                        let esPulsacionLarga = false;
+
+                        casilla.addEventListener('touchstart', (e) => {
+                            esPulsacionLarga = false;
+                            tiempoPresionado = setTimeout(() => {
+                                esPulsacionLarga = true;
+                                mostrarFoto(p.sigla, numStr, p.nombre);
+                            }, 550);
+                        }, { passive: true });
+
+                        casilla.addEventListener('touchend', (e) => {
+                            clearTimeout(tiempoPresionado);
+                            if (esPulsacionLarga) {
+                                e.preventDefault();
+                            }
+                        });
+
+                        casilla.addEventListener('mousedown', (e) => {
+                            if (e.button === 0) {
+                                tiempoPresionado = setTimeout(() => {
+                                    esPulsacionLarga = true;
+                                    mostrarFoto(p.sigla, numStr, p.nombre);
+                                }, 550);
+                            }
+                        });
+
+                        casilla.addEventListener('mouseup', () => clearTimeout(tiempoPresionado));
+
                         casilla.addEventListener('click', function() {
+                            if (esPulsacionLarga) return;
+                            
                             this.classList.toggle('poseido');
                             if (this.classList.contains('poseido')) {
                                 localStorage.setItem(idSticker, 'true');
@@ -264,27 +320,17 @@
                             aplicarReglasVisibilidad();
                         });
 
-                        if (g.esEspecial) {
-                            pagCompleta.appendChild(casilla);
+                        if (g.nombre === "Especiales") {
+                            if (i < 10) pagIzq.appendChild(casilla);
+                            else pagDer.appendChild(casilla);
                         } else {
-                            if (i <= 10) {
-                                pagIzq.appendChild(casilla);
-                            } else {
-                                pagDer.appendChild(casilla);
-                            }
+                            if (i <= mitad) pagIzq.appendChild(casilla);
+                            else pagDer.appendChild(casilla);
                         }
                     }
                 });
 
                 contenedor.appendChild(divGrupoContenedor);
-            });
-
-            // Ordenamiento estricto alfabético de las siglas en el selector rápido
-            todasLasSiglas.sort().forEach(sigla => {
-                const opcion = document.createElement('option');
-                opcion.value = sigla;
-                opcion.textContent = sigla;
-                selectEquipos.appendChild(opcion);
             });
 
             estructuraGrupos.forEach(g => {
@@ -298,17 +344,31 @@
             if (!sigla) return;
             
             const bloquePais = document.getElementById(`block-${sigla}`);
-            
-            // Si el país está oculto por el filtro de faltantes, cambiamos el modo automáticamente
             if (bloquePais && bloquePais.style.display === 'none') {
                 alternarFiltro();
             }
             
-            if (bloquePais) {
-                bloquePais.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            const objetivo = document.getElementById(`block-${sigla}`);
+            if (objetivo) {
+                objetivo.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
             
             setTimeout(() => { selectEquipos.value = ""; }, 800);
+        }
+
+        function mostrarFoto(sigla, numero, paisNombre) {
+            const modal = document.getElementById('vista-foto');
+            const titulo = document.getElementById('foto-titulo');
+            const imagen = document.getElementById('foto-img');
+            
+            titulo.textContent = `${paisNombre} (${sigla}-${numero})`;
+            imagen.src = `stickers/${sigla}-${numero}.jpg`;
+            
+            modal.style.display = 'flex';
+        }
+
+        function cerrarFoto() {
+            document.getElementById('vista-foto').style.display = 'none';
         }
 
         function actualizarContador(sigla) {
@@ -352,14 +412,15 @@
         }
 
         function alternarFiltro() {
+            const boton = document.getElementById('btn-filtro-vista');
             if (filtroActual === 'faltantes') {
                 filtroActual = 'todos';
-                document.getElementById('btn-filtro-vista').textContent = '👁️ Modo: Ver Todos';
-                document.getElementById('btn-filtro-vista').style.backgroundColor = '#27ae60';
+                boton.textContent = '👁️ Modo: Ver Todos';
+                boton.style.backgroundColor = '#27ae60';
             } else {
                 filtroActual = 'faltantes';
-                document.getElementById('btn-filtro-vista').textContent = '👁️ Modo: Ver Faltantes';
-                document.getElementById('btn-filtro-vista').style.backgroundColor = '#d35400';
+                boton.textContent = '👁️ Modo: Ver Faltantes';
+                boton.style.backgroundColor = '#d35400';
             }
             aplicarReglasVisibilidad();
         }
