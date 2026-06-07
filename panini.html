@@ -12,7 +12,6 @@
         .marcador-general { text-align: center; background: #2c3e50; color: #fff; font-size: 13px; font-weight: bold; padding: 6px; margin-bottom: 8px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 6px; }
         .marcador-general span { color: #2ecc71; font-size: 14px; }
         
-        /* Selector de buscador rápido de equipos */
         .selector-rapido { background: #34495e; color: #fff; border: 1px solid #5d6d7e; padding: 3px 6px; font-size: 11px; font-weight: bold; border-radius: 4px; outline: none; max-width: 110px; cursor: pointer; }
         .selector-rapido option { background: #2c3e50; color: #fff; }
 
@@ -42,13 +41,6 @@
         
         .casilla { border: 1px solid #bdc3c7; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; background-color: #fff; border-radius: 4px; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; transition: background 0.1s; }
         .casilla.poseido { background-color: #27ae60 !important; color: white !important; border-color: #1e8449 !important; }
-
-        /* Estilos del Visualizador de Fotos */
-        .modal-foto { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
-        .modal-contenido { background: white; padding: 12px; border-radius: 8px; max-width: 90%; max-height: 80%; text-align: center; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
-        .modal-foto img { max-width: 100%; max-height: 60vh; object-fit: contain; border-radius: 4px; display: block; margin: 0 auto; background-color: #eee; }
-        .modal-titulo { font-size: 13px; font-weight: bold; margin-bottom: 8px; color: #2c3e50; text-transform: uppercase; }
-        .btn-cerrar { display: block; width: 100%; margin-top: 10px; background-color: #c0392b; color: white; border: none; padding: 8px; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -70,14 +62,6 @@
     </div>
 
     <div id="guia-contenedor"></div>
-
-    <div id="vista-foto" class="modal-foto" onclick="cerrarFoto()">
-        <div class="modal-contenido" onclick="event.stopPropagation()">
-            <div id="foto-titulo" class="modal-titulo"></div>
-            <img id="foto-img" src="" alt="Cargando sticker...">
-            <button class="btn-cerrar" onclick="cerrarFoto()">Cerrar</button>
-        </div>
-    </div>
 
     <script>
         let filtroActual = 'faltantes';
@@ -128,7 +112,7 @@
                 nombre: "Grupo F",
                 paises: [
                     { sigla: "NED", nombre: "Países Bajos", total: 20, pagInicio: 48 }, { sigla: "JPN", nombre: "Japón", total: 20, pagInicio: 50 },
-                    { sigla: "SWE", font: "Suecia", nombre: "Suecia", total: 20, pagInicio: 52 }, { sigla: "TUN", nombre: "Túnez", total: 20, pagInicio: 54 }
+                    { sigla: "SWE", nombre: "Suecia", total: 20, pagInicio: 52 }, { sigla: "TUN", nombre: "Túnez", total: 20, pagInicio: 54 }
                 ]
             },
             {
@@ -162,7 +146,7 @@
             {
                 nombre: "Grupo K",
                 paises: [
-                    { sigla: "POR", nombre: "Portugal", total: 20 }, { sigla: "COD", nombre: "RD Congo", total: 20 },
+                    { sigla: "POR", nombre: "Portugal", total: 20 }, { sigla: "COD", font: "RD Congo", nombre: "RD Congo", total: 20 },
                     { sigla: "UZB", nombre: "Uzbekistán", total: 20 }, { sigla: "COL", nombre: "Colombia", total: 20 }
                 ]
             },
@@ -186,9 +170,9 @@
 
         function inicializarGuia() {
             contenedor.innerHTML = '';
-            
-            // Limpiar opciones manteniendo la inicial
             selectEquipos.innerHTML = '<option value="">🔍 Ir a...</option>';
+
+            let todasLasSiglas = [];
 
             estructuraGrupos.forEach(g => {
                 const divGrupoContenedor = document.createElement('div');
@@ -200,16 +184,8 @@
                 divGrupoTitulo.textContent = g.nombre;
                 divGrupoContenedor.appendChild(divGrupoTitulo);
 
-                // Crear un grupo de opciones en el selector por cada Grupo/Sección
-                const optGroup = document.createElement('optgroup');
-                optGroup.label = g.nombre;
-
                 g.paises.forEach(p => {
-                    // Añadir al selector rápido
-                    const opcion = document.createElement('option');
-                    opcion.value = p.sigla;
-                    opcion.textContent = p.sigla;
-                    optGroup.appendChild(opcion);
+                    todasLasSiglas.push(p.sigla);
 
                     const divPais = document.createElement('div');
                     divPais.className = 'pais-block';
@@ -242,7 +218,7 @@
 
                     for (let i = inicioRango; i <= finRango; i++) {
                         const numStr = String(i).padStart(2, '0');
-                        const idSticker = `panini-${p.sigla}-${numStr}`;
+                        const idSticker = `panini-${p.sigla}-${numStr}`; // Modo de registro ("memo") interno
                         const casilla = document.createElement('div');
                         casilla.className = 'casilla';
                         casilla.textContent = numStr;
@@ -251,38 +227,7 @@
                             casilla.classList.add('poseido');
                         }
 
-                        let tiempoPresionado;
-                        let esPulsacionLarga = false;
-
-                        casilla.addEventListener('touchstart', (e) => {
-                            esPulsacionLarga = false;
-                            tiempoPresionado = setTimeout(() => {
-                                esPulsacionLarga = true;
-                                mostrarFoto(p.sigla, numStr, p.nombre);
-                            }, 550);
-                        }, { passive: true });
-
-                        casilla.addEventListener('touchend', (e) => {
-                            clearTimeout(tiempoPresionado);
-                            if (esPulsacionLarga) {
-                                e.preventDefault();
-                            }
-                        });
-
-                        casilla.addEventListener('mousedown', (e) => {
-                            if (e.button === 0) {
-                                tiempoPresionado = setTimeout(() => {
-                                    esPulsacionLarga = true;
-                                    mostrarFoto(p.sigla, numStr, p.nombre);
-                                }, 550);
-                            }
-                        });
-
-                        casilla.addEventListener('mouseup', () => clearTimeout(tiempoPresionado));
-
                         casilla.addEventListener('click', function() {
-                            if (esPulsacionLarga) return;
-                            
                             this.classList.toggle('poseido');
                             if (this.classList.contains('poseido')) {
                                 localStorage.setItem(idSticker, 'true');
@@ -304,8 +249,14 @@
                     }
                 });
 
-                selectEquipos.appendChild(optGroup);
                 contenedor.appendChild(divGrupoContenedor);
+            });
+
+            todasLasSiglas.sort().forEach(sigla => {
+                const opcion = document.createElement('option');
+                opcion.value = sigla;
+                opcion.textContent = sigla;
+                selectEquipos.appendChild(opcion);
             });
 
             estructuraGrupos.forEach(g => {
@@ -318,35 +269,16 @@
         function irAEquipo(sigla) {
             if (!sigla) return;
             
-            // Si el modo actual oculta completados, desactivarlo temporalmente para asegurar que exista el bloque
             const bloquePais = document.getElementById(`block-${sigla}`);
             if (bloquePais && bloquePais.style.display === 'none') {
-                alternarFiltro(); // Forzar modo 'Ver Todos'
+                alternarFiltro();
             }
             
-            // Desplazamiento suave integrado
-            const objetivo = document.getElementById(`block-${sigla}`);
-            if (objetivo) {
-                objetivo.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            if (bloquePais) {
+                bloquePais.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
             
-            // Resetear el selector después de usarlo
             setTimeout(() => { selectEquipos.value = ""; }, 800);
-        }
-
-        function mostrarFoto(sigla, numero, paisNombre) {
-            const modal = document.getElementById('vista-foto');
-            const titulo = document.getElementById('foto-titulo');
-            const imagen = document.getElementById('foto-img');
-            
-            titulo.textContent = `${paisNombre} (${sigla}-${numero})`;
-            imagen.src = `stickers/${sigla}-${numero}.jpg`;
-            
-            modal.style.display = 'flex';
-        }
-
-        function cerrarFoto() {
-            document.getElementById('vista-foto').style.display = 'none';
         }
 
         function actualizarContador(sigla) {
@@ -390,15 +322,14 @@
         }
 
         function alternarFiltro() {
-            const boton = document.getElementById('btn-filtro-vista');
             if (filtroActual === 'faltantes') {
                 filtroActual = 'todos';
-                boton.textContent = '👁️ Modo: Ver Todos';
-                boton.style.backgroundColor = '#27ae60';
+                document.getElementById('btn-filtro-vista').textContent = '👁️ Modo: Ver Todos';
+                document.getElementById('btn-filtro-vista').style.backgroundColor = '#27ae60';
             } else {
                 filtroActual = 'faltantes';
-                boton.textContent = '👁️ Modo: Ver Faltantes';
-                boton.style.backgroundColor = '#d35400';
+                document.getElementById('btn-filtro-vista').textContent = '👁️ Modo: Ver Faltantes';
+                document.getElementById('btn-filtro-vista').style.backgroundColor = '#d35400';
             }
             aplicarReglasVisibilidad();
         }
