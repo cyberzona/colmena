@@ -42,10 +42,12 @@
         .casilla { border: 1px solid #bdc3c7; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; background-color: #fff; border-radius: 4px; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; transition: background 0.1s; }
         .casilla.poseido { background-color: #27ae60 !important; color: white !important; border-color: #1e8449 !important; }
 
-        /* Estilos del Modal */
+        .marco-foto-contenedor { width: 100%; max-width: 280px; height: 320px; margin: 0 auto 10px auto; background-color: #eaeded; border: 2px dashed #bdc3c7; border-radius: 6px; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; }
+        .marco-foto-contenedor img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .texto-sin-foto { font-size: 11px; color: #7f8c8d; padding: 15px; text-align: center; position: absolute; }
+
         .modal-foto { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
-        .modal-contenido { background: white; padding: 12px; border-radius: 8px; max-width: 90%; max-height: 85%; text-align: center; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
-        .modal-foto img { max-width: 100%; max-height: 50vh; object-fit: contain; border-radius: 4px; display: block; margin: 0 auto; background-color: #eee; }
+        .modal-contenido { background: white; padding: 12px; border-radius: 8px; width: 90%; max-width: 320px; text-align: center; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
         .modal-titulo { font-size: 13px; font-weight: bold; margin-bottom: 8px; color: #2c3e50; text-transform: uppercase; }
         
         .btn-accion { display: block; width: 100%; margin-top: 10px; border: none; padding: 8px; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
@@ -81,7 +83,11 @@
     <div id="vista-foto" class="modal-foto" onclick="cerrarFoto()">
         <div class="modal-contenido" onclick="event.stopPropagation()">
             <div id="foto-titulo" class="modal-titulo"></div>
-            <img id="foto-img" src="" alt="Sin imagen asociada.">
+            
+            <div class="marco-foto-contenedor">
+                <span id="txt-sin-foto" class="texto-sin-foto">Aún no has tomado o cargado una foto para este cromo.</span>
+                <img id="foto-img" src="" alt="" style="display: none;">
+            </div>
             
             <button id="btn-modal-capturar" class="btn-accion btn-capturar" onclick="abrirCamara()">📷 Capturar / Subir Foto</button>
             <button id="btn-modal-eliminar" class="btn-accion btn-eliminar" onclick="borrarFotoActual()" style="display: none;">🗑️ Eliminar Foto y Casilla</button>
@@ -119,7 +125,7 @@
                 nombre: "Grupo C",
                 paises: [
                     { sigla: "BRA", nombre: "Brasil", total: 20, pagInicio: 24 }, { sigla: "MAR", nombre: "Marruecos", total: 20, pagInicio: 26 },
-                    { sigla: "HAI", nombre: "Haití", total: 20, pagInicio: 28 }, { sigla: "SCO", font: "Escocia", nombre: "Escocia", total: 20, pagInicio: 30 }
+                    { sigla: "HAI", nombre: "Haití", total: 20, pagInicio: 28 }, { sigla: "SCO", nombre: "Escocia", total: 20, pagInicio: 30 }
                 ]
             },
             {
@@ -132,7 +138,7 @@
             {
                 nombre: "Grupo E",
                 paises: [
-                    { sigla: "GER", nombre: "Alemania", total: 20, pagInicio: 40 }, { sigla: "CUW", nombre: "Curazao", total: 20, pagInicio: 42 },
+                    { sigla: "GER", nombre: "Alemania", total: 20, pagInicio: 40 }, { sigla: "CUW", font: "Curazao", nombre: "Curazao", total: 20, pagInicio: 42 },
                     { sigla: "CIV", nombre: "Costa de Marfil", total: 20, pagInicio: 44 }, { sigla: "ECU", nombre: "Ecuador", total: 20, pagInicio: 46 }
                 ]
             },
@@ -257,7 +263,8 @@
                     URL.revokeObjectURL(imagenElemento.src);
                 }
                 imagenElemento.src = URL.createObjectURL(archivoFoto);
-                imagenElemento.alt = "Cromo capturado.";
+                imagenElemento.style.display = 'block';
+                document.getElementById('txt-sin-foto').style.display = 'none';
 
                 document.getElementById('btn-modal-capturar').style.display = 'none';
                 document.getElementById('btn-modal-eliminar').style.display = 'block';
@@ -279,7 +286,8 @@
                     URL.revokeObjectURL(imagenElemento.src);
                 }
                 imagenElemento.src = "";
-                imagenElemento.alt = "Sin imagen asociada.";
+                imagenElemento.style.display = 'none';
+                document.getElementById('txt-sin-foto').style.display = 'block';
                 
                 cerrarFoto();
                 actualizarInterfazDOM();
@@ -407,15 +415,19 @@
 
                         casilla.addEventListener('mouseup', () => clearTimeout(tiempoPresionado));
 
+                        // COMPORTAMIENTO ACTUALIZADO DEL CLIC
                         casilla.addEventListener('click', async function() {
                             if (esPulsacionLarga) return;
                             
                             const tieneFoto = await obtenerImagenDeDB(idSticker);
+                            
+                            // Si la casilla está seleccionada y tiene una foto adjunta, abre el visor directamente
                             if (tieneFoto && this.classList.contains('poseido')) {
-                                alert("Esta casilla contiene una foto guardada en la base de datos. Para desactivarla, mantén presionado el cromo y pulsa 'Eliminar Foto y Casilla'.");
+                                abrirModalFoto(p.sigla, numStr, p.nombre);
                                 return; 
                             }
                             
+                            // Comportamiento normal si no tiene foto adjunta
                             this.classList.toggle('poseido');
                             if (this.classList.contains('poseido')) {
                                 localStorage.setItem(idSticker, 'true');
@@ -462,6 +474,7 @@
             const modal = document.getElementById('vista-foto');
             const titulo = document.getElementById('foto-titulo');
             const imagen = document.getElementById('foto-img');
+            const textoSinFoto = document.getElementById('txt-sin-foto');
             const btnCapturar = document.getElementById('btn-modal-capturar');
             const btnEliminar = document.getElementById('btn-modal-eliminar');
             
@@ -475,13 +488,15 @@
                     URL.revokeObjectURL(imagen.src);
                 }
                 imagen.src = URL.createObjectURL(archivoBlob);
-                imagen.alt = "Foto de tu cromo.";
+                imagen.style.display = 'block';
+                textoSinFoto.style.display = 'none';
                 
                 btnCapturar.style.display = 'none';
                 btnEliminar.style.display = 'block';
             } else {
                 imagen.src = "";
-                imagen.alt = "Aún no has tomado o cargado una foto para este cromo.";
+                imagen.style.display = 'none';
+                textoSinFoto.style.display = 'block';
                 
                 btnCapturar.style.display = 'block';
                 btnEliminar.style.display = 'none';
