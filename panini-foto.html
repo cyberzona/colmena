@@ -23,19 +23,6 @@
         
         .btn-filtro { background-color: #d35400; width: 100%; margin-top: 2px; }
         .btn-filtro:active { background-color: #a04000; }
-        
-        /* Estilos del Escáner */
-        .btn-escanear { background-color: #9b59b6; width: 100%; margin-bottom: 6px; }
-        .btn-escanear:active { background-color: #8e44ad; }
-        .contenedor-camara { display: none; position: relative; width: 100%; max-width: 400px; margin: 0 auto 10px auto; border-radius: 8px; overflow: hidden; background: #000; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-        #video-escaneo { width: 100%; height: auto; display: block; }
-        .linea-escaner { position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: #e74c3c; animation: bajar 2s linear infinite; shadow: 0 0 8px #e74c3c; }
-        
-        @keyframes bajar {
-            0% { top: 0%; }
-            50% { top: 100%; }
-            100% { top: 0%; }
-        }
 
         .grupo-block { margin-top: 8px; scroll-margin-top: 50px; }
         .grupo-title { background-color: #1a5276; color: white; padding: 4px 8px; font-size: 11px; font-weight: bold; border-radius: 4px; text-transform: uppercase; }
@@ -55,30 +42,32 @@
         .casilla { border: 1px solid #bdc3c7; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; background-color: #fff; border-radius: 4px; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; transition: background 0.1s; }
         .casilla.poseido { background-color: #27ae60 !important; color: white !important; border-color: #1e8449 !important; }
 
+        /* Estilos del Modal para ver Fotos y Capturar */
         .modal-foto { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
-        .modal-contenido { background: white; padding: 12px; border-radius: 8px; max-width: 90%; max-height: 80%; text-align: center; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
-        .modal-foto img { max-width: 100%; max-height: 60vh; object-fit: contain; border-radius: 4px; display: block; margin: 0 auto; background-color: #eee; }
+        .modal-contenido { background: white; padding: 12px; border-radius: 8px; max-width: 90%; max-height: 85%; text-align: center; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .modal-foto img { max-width: 100%; max-height: 50vh; object-fit: contain; border-radius: 4px; display: block; margin: 0 auto; background-color: #eee; }
         .modal-titulo { font-size: 13px; font-weight: bold; margin-bottom: 8px; color: #2c3e50; text-transform: uppercase; }
-        .btn-cerrar { display: block; width: 100%; margin-top: 10px; background-color: #c0392b; color: white; border: none; padding: 8px; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
+        
+        .btn-accion { display: block; width: 100%; margin-top: 10px; border: none; padding: 8px; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
+        .btn-capturar { background-color: #2980b9; color: white; }
+        .btn-cerrar { background-color: #c0392b; color: white; }
+        
+        /* Ocultar input nativo */
+        #input-camara { display: none; }
     </style>
 </head>
 <body>
 
     <h1>📋 GUÍA DE BOLSILLO – PANINI 2026</h1>
     
+    <input type="file" id="input-camara" accept="image/*" capture="environment" onchange="procesarFotoCapturada(this)">
+
     <div class="marcador-general">
         <div>Total: <span id="total-general">0 / 992</span></div>
         <div>Progreso: <span id="porcentaje-general">0.0%</span></div>
         <select class="selector-rapido" id="selector-equipos" onchange="irAEquipo(this.value)">
             <option value="">🔍 Ir a...</option>
         </select>
-    </div>
-
-    <button class="btn-respaldo btn-escanear" id="btn-toggle-camara" onclick="alternarEscaner()">📷 Encender Escáner</button>
-    
-    <div class="contenedor-camara" id="zona-camara">
-        <video id="video-escaneo" autoplay playsinline></video>
-        <div class="linea-escaner"></div>
     </div>
 
     <div class="panel-respaldo">
@@ -92,166 +81,17 @@
     <div id="vista-foto" class="modal-foto" onclick="cerrarFoto()">
         <div class="modal-contenido" onclick="event.stopPropagation()">
             <div id="foto-titulo" class="modal-titulo"></div>
-            <img id="foto-img" src="" alt="Cargando sticker...">
-            <button class="btn-cerrar" onclick="cerrarFoto()">Cerrar</button>
+            <img id="foto-img" src="" alt="Sin imagen asociada.">
+            
+            <button class="btn-accion btn-capturar" onclick="abrirCamara()">📷 Capturar / Subir Foto</button>
+            <button class="btn-accion btn-cerrar" onclick="cerrarFoto()">Cerrar</button>
         </div>
     </div>
 
     <script>
         let filtroActual = 'faltantes';
-        let transmisiónVideo = null;
-        let intervaloEscaneo = null;
-
-        // --- Configuración e Inicialización de IndexedDB ---
-        const DB_NAME = 'Panini2026DB';
-        const DB_VERSION = 1;
-        const STORE_NAME = 'progreso';
-
-        function abrirDB() {
-            return new Promise((resolve, reject) => {
-                const solicitud = indexedDB.open(DB_NAME, DB_VERSION);
-
-                solicitud.onupgradeneeded = (e) => {
-                    const db = e.target.result;
-                    if (!db.objectStoreNames.contains(STORE_NAME)) {
-                        db.createObjectStore(STORE_NAME);
-                    }
-                };
-
-                solicitud.onsuccess = (e) => resolve(e.target.result);
-                solicitud.onerror = (e) => reject(e.target.error);
-            });
-        }
-
-        async function guardarSticker(id, poseido) {
-            const db = await abrirDB();
-            return new Promise((resolve, reject) => {
-                const transaccion = db.transaction([STORE_NAME], 'readwrite');
-                const almacen = transaccion.objectStore(STORE_NAME);
-                
-                const solicitud = poseido ? almacen.put('true', id) : almacen.delete(id);
-                
-                solicitud.onsuccess = () => resolve();
-                solicitud.onerror = (e) => reject(e.target.error);
-            });
-        }
-
-        async function obtenerTodoElProgreso() {
-            const db = await abrirDB();
-            return new Promise((resolve, reject) => {
-                const transaccion = db.transaction([STORE_NAME], 'readonly');
-                const almacen = transaccion.objectStore(STORE_NAME);
-                const solicitud = almacen.openCursor();
-                const resultado = {};
-
-                solicitud.onsuccess = (e) => {
-                    const cursor = e.target.result;
-                    if (cursor) {
-                        resultado[cursor.key] = cursor.value;
-                        cursor.continue();
-                    } else {
-                        resolve(resultado);
-                    }
-                };
-                solicitud.onerror = (e) => reject(e.target.error);
-            });
-        }
-
-        // --- Módulo de Escaneo de Stickers ---
-        async function alternarEscaner() {
-            const zonaCamara = document.getElementById('zona-camara');
-            const boton = document.getElementById('btn-toggle-camara');
-            const video = document.getElementById('video-escaneo');
-
-            if (transmisiónVideo) {
-                detenerEscaner();
-                return;
-            }
-
-            if (!('BarcodeDetector' in window)) {
-                alert("El escaneo nativo no está soportado o requiere HTTPS en este navegador.");
-                return;
-            }
-
-            try {
-                transmisiónVideo = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: "environment" }
-                });
-                video.srcObject = transmisiónVideo;
-                zonaCamara.style.display = 'block';
-                boton.textContent = "❌ Apagar Escáner";
-                boton.style.backgroundColor = "#c0392b";
-
-                const detector = new BarcodeDetector({ formats: ['qr_code', 'code_128', 'ean_13'] });
-                
-                intervaloEscaneo = setInterval(async () => {
-                    try {
-                        const codigos = await detector.detect(video);
-                        if (codigos.length > 0) {
-                            procesarCodigoEscaneado(codigos[0].rawValue);
-                        }
-                    } catch (err) { /* Ignorar errores de frame vacío */ }
-                }, 300);
-
-            } catch (err) {
-                alert("No se pudo acceder a la cámara: " + err.message);
-                detenerEscaner();
-            }
-        }
-
-        function detenerEscaner() {
-            const zonaCamara = document.getElementById('zona-camara');
-            const boton = document.getElementById('btn-toggle-camara');
-            const video = document.getElementById('video-escaneo');
-
-            if (intervaloEscaneo) clearInterval(intervaloEscaneo);
-            if (transmisiónVideo) {
-                transmisiónVideo.getTracks().forEach(track => track.stop());
-            }
-
-            transmisiónVideo = null;
-            intervaloEscaneo = null;
-            video.srcObject = null;
-            zonaCamara.style.display = 'none';
-            boton.textContent = "📷 Encender Escáner";
-            boton.style.backgroundColor = "#9b59b6";
-        }
-
-        async function procesarCodigoEscaneado(valor) {
-            // Se espera un formato estándar limpio como: "panini-MEX-05" o "panini-FWC-00"
-            if (!valor.startsWith('panini-')) return;
-
-            const partes = valor.split('-');
-            if (partes.length < 3) return;
-            const sigla = partes[1];
-
-            // Buscar si existe la casilla en el DOM actual
-            const casillas = document.querySelectorAll(`#block-${sigla} .casilla`);
-            let casillaEncontrada = null;
-
-            casillas.forEach(c => {
-                const numStr = String(c.textContent).padStart(2, '0');
-                if (`panini-${sigla}-${numStr}` === valor) {
-                    casillaEncontrada = c;
-                }
-            });
-
-            if (casillaEncontrada && !casillaEncontrada.classList.contains('poseido')) {
-                // Hacer vibrar el dispositivo si es soportado
-                if (navigator.vibrate) navigator.vibrate(100);
-
-                casillaEncontrada.classList.add('poseido');
-                await guardarSticker(valor, true);
-                
-                actualizarContador(sigla);
-                actualizarConteoGeneral();
-                aplicarReglasVisibilidad();
-                
-                // Pequeña pausa visual enfocando el equipo
-                irAEquipo(sigla);
-            }
-        }
-        // ---------------------------------------------------
+        let db;
+        let cromoSeleccionadoActual = null; // Guarda temporalmente qué cromo se gestiona en el modal
 
         const estructuraGrupos = [
             {
@@ -278,7 +118,7 @@
                 nombre: "Grupo C",
                 paises: [
                     { sigla: "BRA", nombre: "Brasil", total: 20, pagInicio: 24 }, { sigla: "MAR", nombre: "Marruecos", total: 20, pagInicio: 26 },
-                    { sigla: "HAI", nombre: "Haití", total: 20, pagInicio: 28 }, { sigla: "SCO", font: "Escocia", nombre: "Escocia", total: 20, pagInicio: 30 }
+                    { sigla: "HAI", nombre: "Haití", total: 20, pagInicio: 28 }, { sigla: "SCO", nombre: "Escocia", total: 20, pagInicio: 30 }
                 ]
             },
             {
@@ -292,7 +132,7 @@
                 nombre: "Grupo E",
                 paises: [
                     { sigla: "GER", nombre: "Alemania", total: 20, pagInicio: 40 }, { sigla: "CUW", nombre: "Curazao", total: 20, pagInicio: 42 },
-                    { sigla: "CIV", nombre: "Costa de Marfil", total: 20, pagInicio: 44 }, { sigla: "ECU", font: "Ecuador", nombre: "Ecuador", total: 20, pagInicio: 46 }
+                    { sigla: "CIV", nombre: "Costa de Marfil", total: 20, pagInicio: 44 }, { sigla: "ECU", nombre: "Ecuador", total: 20, pagInicio: 46 }
                 ]
             },
             {
@@ -320,14 +160,14 @@
                 nombre: "Grupo I",
                 paises: [
                     { sigla: "FRA", nombre: "Francia", total: 20, pagInicio: 74 }, { sigla: "SEN", nombre: "Senegal", total: 20, pagInicio: 76 },
-                    { sigla: "IRQ", nombre: "Irak", total: 20, pagInicio: 78 }, { sigla: "NOR", font: "Noruega", nombre: "Noruega", total: 20, pagInicio: 80 }
+                    { sigla: "IRQ", nombre: "Irak", total: 20, pagInicio: 78 }, { sigla: "NOR", nombre: "Noruega", total: 20, pagInicio: 80 }
                 ]
             },
             {
                 nombre: "Grupo J",
                 paises: [
                     { sigla: "ARG", nombre: "Argentina", total: 20, pagInicio: 82 }, { sigla: "ALG", nombre: "Argelia", total: 20, pagInicio: 84 },
-                    { sigla: "AUT", nombre: "Austria", total: 20, pagInicio: 86 }, { sigla: "JOR", nombre: "Jordania", total: 20, pagInicio: 88 }
+                    { sigla: "AUT", nombre: "Austria", total: 20, pagInicio: 86 }, { sigla: "JOR", font: "Jordania", nombre: "Jordania", total: 20, pagInicio: 88 }
                 ]
             },
             {
@@ -355,17 +195,112 @@
         const contenedor = document.getElementById('guia-contenedor');
         const selectEquipos = document.getElementById('selector-equipos');
 
+        // --- MANEJO DE BASE DE DATOS INDEXEDDB ---
+        function inicializarDB() {
+            return new Promise((resolve) => {
+                const solicitud = indexedDB.open("PaniniDB", 1);
+                solicitud.onupgradeneeded = (e) => {
+                    const dbInstancia = e.target.result;
+                    if (!dbInstancia.objectStoreNames.contains("imagenes")) {
+                        dbInstancia.createObjectStore("imagenes");
+                    }
+                };
+                solicitud.onsuccess = (e) => {
+                    db = e.target.result;
+                    resolve();
+                };
+            });
+        }
+
+        function guardarImagenEnDB(id, blob) {
+            return new Promise((resolve) => {
+                const transaccion = db.transaction(["imagenes"], "readwrite");
+                const almacen = transaccion.objectStore(["imagenes"]);
+                almacen.put(blob, id);
+                transaccion.oncomplete = () => resolve();
+            });
+        }
+
+        function obtenerImagenDeDB(id) {
+            return new Promise((resolve) => {
+                const transaccion = db.transaction(["imagenes"], "readonly");
+                const almacen = transaccion.objectStore(["imagenes"]);
+                const solicitud = almacen.get(id);
+                solicitud.onsuccess = () => resolve(solicitud.result);
+                solicitud.onerror = () => resolve(null);
+            });
+        }
+
+        function eliminarImagenDeDB(id) {
+            return new Promise((resolve) => {
+                const transaccion = db.transaction(["imagenes"], "readwrite");
+                const almacen = transaccion.objectStore(["imagenes"]);
+                almacen.delete(id);
+                transaccion.oncomplete = () => resolve();
+            });
+        }
+
+        // --- MANEJO DE LA CÁMARA LOCAL ---
+        function abrirCamara() {
+            document.getElementById('input-camara').click();
+        }
+
+        async function procesarFotoCapturada(input) {
+            if (input.files && input.files[0] && cromoSeleccionadoActual) {
+                const archivoFoto = input.files[0];
+                const idSticker = `panini-${cromoSeleccionadoActual.sigla}-${cromoSeleccionadoActual.numero}`;
+                
+                // Guardar en la Base de Datos
+                await guardarImagenEnDB(idSticker, archivoFoto);
+                localStorage.setItem(idSticker, 'true');
+                
+                // Refrescar Vista Modal de inmediato
+                const imagenElemento = document.getElementById('foto-img');
+                if (imagenElemento.src.startsWith('blob:')) {
+                    URL.revokeObjectURL(imagenElemento.src);
+                }
+                imagenElemento.src = URL.createObjectURL(archivoFoto);
+                imagenElemento.alt = "Cromo capturado.";
+
+                // Sincronizar el DOM de las casillas generales
+                actualizarInterfazDOM();
+                input.value = ""; // Reset del input
+            }
+        }
+
+        function actualizarInterfazDOM() {
+            estructuraGrupos.forEach(g => {
+                g.paises.forEach(p => {
+                    const bloquePais = document.getElementById(`block-${p.sigla}`);
+                    if (!bloquePais) return;
+
+                    const casillas = bloquePais.querySelectorAll('.casilla');
+                    casillas.forEach(casilla => {
+                        const numStr = casilla.textContent;
+                        const idSticker = `panini-${p.sigla}-${numStr}`;
+
+                        if (localStorage.getItem(idSticker) === 'true') {
+                            casilla.classList.add('poseido');
+                        } else {
+                            casilla.classList.remove('poseido');
+                        }
+                    });
+                    actualizarContador(p.sigla);
+                });
+            });
+            actualizarConteoGeneral();
+            aplicarReglasVisibilidad();
+        }
+
         async function inicializarGuia() {
+            await inicializarDB();
+
             contenedor.innerHTML = '';
             selectEquipos.innerHTML = '<option value="">🔍 Ir a...</option>';
 
-            const progresoGuardado = await obtenerTodoElProgreso();
-
             let todasLasSiglas = [];
             estructuraGrupos.forEach(g => {
-                g.paises.forEach(p => {
-                    todasLasSiglas.push(p.sigla);
-                });
+                g.paises.forEach(p => { todasLasSiglas.push(p.sigla); });
             });
             todasLasSiglas.sort((a, b) => a.localeCompare(b, 'es'));
 
@@ -423,7 +358,7 @@
                         casilla.className = 'casilla';
                         casilla.textContent = numStr;
 
-                        if (progresoGuardado[idSticker] === 'true') {
+                        if (localStorage.getItem(idSticker) === 'true') {
                             casilla.classList.add('poseido');
                         }
 
@@ -432,26 +367,22 @@
 
                         casilla.addEventListener('touchstart', (e) => {
                             esPulsacionLarga = false;
-                            if (casilla.classList.contains('poseido')) {
-                                tiempoPresionado = setTimeout(() => {
-                                    esPulsacionLarga = true;
-                                    mostrarFoto(p.sigla, numStr, p.nombre);
-                                }, 550);
-                            }
+                            tiempoPresionado = setTimeout(() => {
+                                esPulsacionLarga = true;
+                                abrirModalFoto(p.sigla, numStr, p.nombre);
+                            }, 550);
                         }, { passive: true });
 
                         casilla.addEventListener('touchend', (e) => {
                             clearTimeout(tiempoPresionado);
-                            if (esPulsacionLarga) {
-                                e.preventDefault();
-                            }
+                            if (esPulsacionLarga) e.preventDefault();
                         });
 
                         casilla.addEventListener('mousedown', (e) => {
-                            if (e.button === 0 && casilla.classList.contains('poseido')) {
+                            if (e.button === 0) {
                                 tiempoPresionado = setTimeout(() => {
                                     esPulsacionLarga = true;
-                                    mostrarFoto(p.sigla, numStr, p.nombre);
+                                    abrirModalFoto(p.sigla, numStr, p.nombre);
                                 }, 550);
                             }
                         });
@@ -462,10 +393,12 @@
                             if (esPulsacionLarga) return;
                             
                             this.classList.toggle('poseido');
-                            const esPoseido = this.classList.contains('poseido');
-                            
-                            await guardarSticker(idSticker, esPoseido);
-                            
+                            if (this.classList.contains('poseido')) {
+                                localStorage.setItem(idSticker, 'true');
+                            } else {
+                                localStorage.removeItem(idSticker);
+                                await eliminarImagenDeDB(idSticker);
+                            }
                             actualizarContador(p.sigla);
                             actualizarConteoGeneral();
                             aplicarReglasVisibilidad();
@@ -484,42 +417,51 @@
                 contenedor.appendChild(divGrupoContenedor);
             });
 
-            estructuraGrupos.forEach(g => {
-                g.paises.forEach(p => actualizarContador(p.sigla));
-            });
-            actualizarConteoGeneral();
-            aplicarReglasVisibilidad();
+            actualizarInterfazDOM();
         }
 
         function irAEquipo(sigla) {
             if (!sigla) return;
-            
             const bloquePais = document.getElementById(`block-${sigla}`);
             if (bloquePais && bloquePais.style.display === 'none') {
                 alternarFiltro();
             }
-            
-            const objetivo = document.getElementById(`block-${sigla}`);
-            if (objetivo) {
-                objetivo.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            if (bloquePais) {
+                bloquePais.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
-            
             setTimeout(() => { selectEquipos.value = ""; }, 800);
         }
 
-        function mostrarFoto(sigla, numero, paisNombre) {
+        // --- GESTIÓN INTEGRADA DEL MODAL ---
+        async function abrirModalFoto(sigla, numero, paisNombre) {
+            cromoSeleccionadoActual = { sigla, numero, paisNombre };
+            
             const modal = document.getElementById('vista-foto');
             const titulo = document.getElementById('foto-titulo');
             const imagen = document.getElementById('foto-img');
             
             titulo.textContent = `${paisNombre} (${sigla}-${numero})`;
-            imagen.src = `stickers/${sigla}-${numero}.png`;
+            
+            const idSticker = `panini-${sigla}-${numero}`;
+            const archivoBlob = await obtenerImagenDeDB(idSticker);
+            
+            if (archivoBlob) {
+                if (imagen.src.startsWith('blob:')) {
+                    URL.revokeObjectURL(imagen.src);
+                }
+                imagen.src = URL.createObjectURL(archivoBlob);
+                imagen.alt = "Foto de tu cromo.";
+            } else {
+                imagen.src = "";
+                imagen.alt = "Aún no has tomado o cargado una foto para este cromo.";
+            }
             
             modal.style.display = 'flex';
         }
 
         function cerrarFoto() {
             document.getElementById('vista-foto').style.display = 'none';
+            cromoSeleccionadoActual = null;
         }
 
         function actualizarContador(sigla) {
@@ -586,8 +528,14 @@
             document.getElementById('porcentaje-general').textContent = `${porcentaje}%`;
         }
 
-        async function exportarProgreso() {
-            const respaldo = await obtenerTodoElProgreso();
+        function exportarProgreso() {
+            const respaldo = {};
+            for (let i = 0; i < localStorage.length; i++) {
+                const clave = localStorage.key(i);
+                if (clave.startsWith('panini-')) {
+                    respaldo[clave] = localStorage.getItem(clave);
+                }
+            }
             const textoData = JSON.stringify(respaldo);
             if (Object.keys(respaldo).length === 0) {
                 alert("No tienes stickers marcados para exportar todavía.");
@@ -600,28 +548,18 @@
             });
         }
 
-        async function importarProgreso() {
+        function importarProgreso() {
             const entrada = prompt("Pega aquí tu código de respaldo:");
             if (!entrada) return;
             try {
                 const datosParseados = JSON.parse(entrada);
-                const db = await abrirDB();
-                
-                const transaccion = db.transaction([STORE_NAME], 'readwrite');
-                const almacen = transaccion.objectStore(STORE_NAME);
-                
-                almacen.clear(); 
-                
                 Object.keys(datosParseados).forEach(clave => {
                     if (clave.startsWith('panini-')) {
-                        almacen.put(datosParseados[clave], clave);
+                        localStorage.setItem(clave, datosParseados[clave]);
                     }
                 });
-
-                transaccion.oncomplete = () => {
-                    alert("¡Progreso importado con éxito!");
-                    inicializarGuia();
-                };
+                alert("¡Progreso importado!");
+                inicializarGuia();
             } catch (e) {
                 alert("Error en el formato del código.");
             }
