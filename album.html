@@ -25,8 +25,7 @@
         .btn-importar { background-color: #7f8c8d; }
         .btn-importar:active { background-color: #5d6d7e; }
         
-        .selector-vista-accion { flex: 1; background-color: #27ae60; color: white; border: none; padding: 8px 4px; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; outline: none; text-transform: uppercase; text-align: center; -webkit-tap-highlight-color: transparent; }
-        .selector-vista-accion option { background-color: #fff; color: #333; text-transform: none; }
+        .btn-vista-toggle { flex: 1; background-color: #d35400; color: white; border: none; padding: 8px 4px; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; text-transform: uppercase; text-align: center; -webkit-tap-highlight-color: transparent; white-space: nowrap; }
 
         .grupo-block { margin-top: 8px; scroll-margin-top: 50px; }
         .grupo-title { background-color: #1a5276; color: white; padding: 4px 8px; font-size: 11px; font-weight: bold; border-radius: 4px; text-transform: uppercase; }
@@ -99,18 +98,14 @@
             <select class="selector-rapido" id="selector-equipos" onchange="irAEquipo(this.value)">
                 <option value="">🔍 Ir a...</option>
             </select>
-            <button class="btn-copiar-top" onclick="compartirFaltantes()">📋 Lista</button>
+            <button class="btn-copiar-top" id="btn-dinamico-lista" onclick="procesarAccionLista()">📋 Listas</button>
         </div>
     </div>
 
     <div class="panel-respaldo">
         <button class="btn-respaldo" onclick="exportarProgreso()">📤 Exportar</button>
         <button class="btn-respaldo btn-importar" onclick="solicitarArchivoImportar()">📥 Importar</button>
-        
-        <select class="selector-vista-accion" id="menu-vista-accion" style="background-color: #d35400;" onchange="gestionarCambioVista(this.value)">
-            <option value="faltantes">👁️ Modo: Faltantes</option>
-            <option value="todos">👁️ Modo: Todos</option>
-        </select>
+        <button class="btn-vista-toggle" id="btn-modo-alternar" onclick="alternarModoVista()">👁️ Modo: Faltantes</button>
     </div>
 
     <div id="guia-contenedor"></div>
@@ -143,15 +138,15 @@
             { nombre: "Grupo A", paises: [ { sigla: "MEX", nombre: "México", total: 20, pagInicio: 8 }, { sigla: "RSA", font: "SAFA", nombre: "Sudáfrica", total: 20, pagInicio: 10 }, { sigla: "KOR", nombre: "Corea del Sur", total: 20, pagInicio: 12 }, { sigla: "CZE", nombre: "República Checa", total: 20, pagInicio: 14 } ] },
             { nombre: "Grupo B", paises: [ { sigla: "CAN", nombre: "Canadá", total: 20, pagInicio: 16 }, { sigla: "BIH", nombre: "Bosnia y Herzegovina", total: 20, pagInicio: 18 }, { sigla: "QAT", font: "QFA", nombre: "Qatar", total: 20, pagInicio: 20 }, { sigla: "SUI", font: "SFV", nombre: "Suiza", total: 20, pagInicio: 22 } ] },
             { nombre: "Grupo C", paises: [ { sigla: "BRA", nombre: "Brasil", total: 20, pagInicio: 24 }, { sigla: "MAR", nombre: "Marruecos", total: 20, pagInicio: 26 }, { sigla: "HAI", nombre: "Haití", total: 20, pagInicio: 28 }, { sigla: "SCO", font: "SFA", nombre: "Escocia", total: 20, pagInicio: 30 } ] },
-            { nombre: "Grupo D", paises: [ { sigla: "USA", nombre: "Estados Unidos", total: 20, pagInicio: 32 }, { sigla: "PAR", nombre: "Paraguay", total: 20, pagInicio: 34 }, { sigla: "AUS", font: "FFA", nombre: "Australia", total: 20, pagInicio: 36 }, { sigla: "TUR", font: "TFF", nombre: "Turquía", total: 20, pagInicio: 38 } ] },
+            { nombre: "Grupo D", paises: [ { sigla: "USA", nombre: "Estados Unidos", total: 20, pagInicio: 32 }, { sigla: "PAR", nombre: "Paraguay", total: 20, pagInicio: 34 }, { sigla: "AUS", font: "FFA", merge: true, nombre: "Australia", total: 20, pagInicio: 36 }, { sigla: "TUR", font: "TFF", nombre: "Turquía", total: 20, pagInicio: 38 } ] },
             { nombre: "Grupo E", paises: [ { sigla: "GER", nombre: "Alemania", total: 20, pagInicio: 40 }, { sigla: "CUW", nombre: "Curazao", total: 20, pagInicio: 42 }, { sigla: "CIV", font: "FIF", nombre: "Costa de Marfil", total: 20, pagInicio: 44 }, { sigla: "ECU", nombre: "Ecuador", total: 20, pagInicio: 46 } ] },
-            { nombre: "Grupo F", paises: [ { sigla: "NED", nombre: "Países Bajos", total: 20, pagInicio: 48 }, { sigla: "JPN", nombre: "Japón", total: 20, pagInicio: 50 }, { sigla: "SWE", nombre: "Suecia", total: 20, pagInicio: 52 }, { sigla: "TUN", nombre: "Túnez", total: 20, pagInicio: 54 } ] },
-            { nombre: "Grupo G", paises: [ { sigla: "BEL", nombre: "Bélgica", total: 20, pagInicio: 58 }, { sigla: "EGY", font: "EFA", nombre: "Egipto", total: 20, pagInicio: 60 }, { sigla: "IRN", nombre: "Irán", total: 20, pagInicio: 62 }, { sigla: "NZL", nombre: "Nueva Zelanda", total: 20, pagInicio: 64 } ] },
+            { nombre: "Grupo F", paises: [ { sigla: "NED", nombre: "Países Bajos", total: 20, pagInicio: 48 }, { sigla: "JPN", font: "JFA", nombre: "Japón", total: 20, pagInicio: 50 }, { sigla: "SWE", nombre: "Suecia", total: 20, pagInicio: 52 }, { sigla: "TUN", nombre: "Túnez", total: 20, pagInicio: 54 } ] },
+            { nombre: "Grupo G", paises: [ { sigla: "BEL", nombre: "Bélgica", total: 20, pagInicio: 58 }, { sigla: "EGY", font: "EFA", nombre: "Egipto", total: 20, pagInicio: 60 }, { sigla: "IRN", nombre: "Irán", total: 20, pagInicio: 62 }, { sigla: "NZL", font: "NZF", nombre: "Nueva Zelanda", total: 20, pagInicio: 64 } ] },
             { nombre: "Grupo H", paises: [ { sigla: "ESP", nombre: "España", total: 20, pagInicio: 66 }, { sigla: "CPV", nombre: "Cabo Verde", total: 20, pagInicio: 68 }, { sigla: "KSA", nombre: "Arabia Saudita", total: 20, pagInicio: 70 }, { sigla: "URU", nombre: "Uruguay", total: 20, pagInicio: 72 } ] },
             { nombre: "Grupo I", paises: [ { sigla: "FRA", nombre: "Francia", total: 20, pagInicio: 74 }, { sigla: "SEN", nombre: "Senegal", total: 20, pagInicio: 76 }, { sigla: "IRQ", nombre: "Irak", total: 20, pagInicio: 78 }, { sigla: "NOR", nombre: "Noruega", total: 20, pagInicio: 80 } ] },
             { nombre: "Grupo J", paises: [ { sigla: "ARG", nombre: "Argentina", total: 20, pagInicio: 82 }, { sigla: "ALG", nombre: "Argelia", total: 20, pagInicio: 84 }, { sigla: "AUT", nombre: "Austria", total: 20, pagInicio: 86 }, { sigla: "JOR", nombre: "Jordania", total: 20, pagInicio: 88 } ] },
             { nombre: "Grupo K", paises: [ { sigla: "POR", nombre: "Portugal", total: 20, pagInicio: 90 }, { sigla: "COD", nombre: "RD Congo", total: 20, pagInicio: 92 }, { sigla: "UZB", nombre: "Uzbekistán", total: 20, pagInicio: 94 }, { sigla: "COL", nombre: "Colombia", total: 20, pagInicio: 96 } ] },
-            { nombre: "Grupo L", paises: [ { sigla: "ENG", nombre: "Inglaterra", total: 20, pagInicio: 98 }, { sigla: "CRO", nombre: "Croacia", total: 20, pagInicio: 100 }, { sigla: "GHA", nombre: "Ghana", total: 20, pagInicio: 102 }, { sigla: "PAN", nombre: "Panamá", total: 20, pagInicio: 104 } ] },
+            { nombre: "Grupo L", paises: [ { sigla: "ENG", font: "FA", nombre: "Inglaterra", total: 20, pagInicio: 98 }, { sigla: "CRO", nombre: "Croacia", total: 20, pagInicio: 100 }, { sigla: "GHA", nombre: "Ghana", total: 20, pagInicio: 102 }, { sigla: "PAN", nombre: "Panamá", total: 20, pagInicio: 104 } ] },
             { nombre: "Coca-Cola", esEspecial: true, estiloClase: "cocacola-title", paises: [ { sigla: "CCK", nombre: "Stickers Especiales", total: 12, pagInicio: 112 } ] }
         ];
 
@@ -201,11 +196,32 @@
             document.getElementById('input-camara').click();
         }
 
-        function gestionarCambioVista(valor) {
-            filtroActual = valor;
-            const elSelector = document.getElementById('menu-vista-accion');
-            elSelector.style.backgroundColor = (filtroActual === 'todos') ? '#27ae60' : '#d35400';
+        function alternarModoVista() {
+            filtroActual = (filtroActual === 'faltantes') ? 'todos' : 'faltantes';
+            
+            const elModoBtn = document.getElementById('btn-modo-alternar');
+            const elBtnDinamico = document.getElementById('btn-dinamico-lista');
+            
+            if (filtroActual === 'todos') {
+                elModoBtn.textContent = '👁️ Modo: Todos';
+                elModoBtn.style.backgroundColor = '#27ae60';
+                elBtnDinamico.style.backgroundColor = '#27ae60';
+                elBtnDinamico.style.borderColor = '#1e8449';
+            } else {
+                elModoBtn.textContent = '👁️ Modo: Faltantes';
+                elModoBtn.style.backgroundColor = '#d35400';
+                elBtnDinamico.style.backgroundColor = '#d35400';
+                elBtnDinamico.style.borderColor = '#a04000';
+            }
             aplicarRulesVisibilidad();
+        }
+
+        function procesarAccionLista() {
+            if (filtroActual === 'faltantes') {
+                compartirFaltantes();
+            } else {
+                compartirColeccionYRepetidos();
+            }
         }
 
         function compartirFaltantes() {
@@ -242,22 +258,75 @@
             }
 
             textoLista += `\nTotal faltantes: ${totalFaltantesContador} cromos.`;
+            enviarTextoCompartir(textoLista, 'Mis Faltantes Panini 2026');
+        }
 
+        function compartirColeccionYRepetidos() {
+            let textoLista = "📋 MI COLECCIÓN Y REPETIDOS - PANINI 2026\n";
+            textoLista += "(Los marcados con 'x' indican la cantidad de REPETIDOS que tengo)\n\n";
+            let totalPoseidos = 0;
+            let totalRepetidos = 0;
+
+            estructuraGrupos.forEach(g => {
+                g.paises.forEach(p => {
+                    let itemsPais = [];
+                    const max = p.total || 20;
+                    const inicio = (g.nombre === "Especiales") ? 0 : 1;
+                    const fin = (g.nombre === "Especiales") ? (max - 1) : max;
+
+                    for (let i = inicio; i <= fin; i++) {
+                        const numStr = String(i).padStart(2, '0');
+                        const keyUnica = `panini-${p.sigla}-${numStr}`;
+                        const val = localStorage.getItem(keyUnica);
+
+                        if (val && val !== 'false') {
+                            let cant = parseInt(val) || 1;
+                            totalPoseidos++;
+                            
+                            if (cant > 1) {
+                                let extras = cant - 1;
+                                itemsPais.push(`${numStr} (x${extras})`);
+                                totalRepetidos += extras;
+                            } else {
+                                itemsPais.push(numStr);
+                            }
+                        }
+                    }
+
+                    if (itemsPais.length > 0) {
+                        textoLista += `${p.sigla}: ${itemsPais.join(', ')}\n`;
+                    }
+                });
+            });
+
+            if (totalPoseidos === 0) {
+                alert("Aún no tienes cromos registrados en tu álbum.");
+                return;
+            }
+
+            textoLista += `\n-----------------------------------`;
+            textoLista += `\nCromos pegados: ${totalPoseidos}`;
+            textoLista += `\nTotal repetidos disponibles: ${totalRepetidos}`;
+            
+            enviarTextoCompartir(textoLista, 'Mi Colección Panini 2026');
+        }
+
+        function enviarTextoCompartir(texto, titulo) {
             if (navigator.share) {
                 navigator.share({
-                    title: 'Mis Faltantes Panini 2026',
-                    text: textoLista
+                    title: titulo,
+                    text: texto
                 }).catch(() => {
-                    copiarAlPortapapelesFallback(textoLista);
+                    copiarAlPortapapelesFallback(texto);
                 });
             } else {
-                copiarAlPortapapelesFallback(textoLista);
+                copiarAlPortapapelesFallback(texto);
             }
         }
 
         function copiarAlPortapapelesFallback(texto) {
             navigator.clipboard.writeText(texto).then(() => {
-                alert("📋 ¡Lista de faltantes copiada al portapapeles! Ya puedes pegarla.");
+                alert("📋 ¡Lista copiada al portapapeles con éxito! Ya puedes pegarla.");
             }).catch(() => {
                 alert("No se pudo copiar automáticamente.");
             });
@@ -497,10 +566,7 @@
             const b = document.getElementById(`block-${sigla}`);
             if (b) {
                 if (b.style.display === 'none') {
-                    filtroActual = 'todos';
-                    document.getElementById('menu-vista-accion').value = 'todos';
-                    document.getElementById('menu-vista-accion').style.backgroundColor = '#27ae60';
-                    aplicarRulesVisibilidad();
+                    alternarModoVista();
                 }
                 b.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
