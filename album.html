@@ -12,17 +12,21 @@
         .marcador-general { text-align: center; background: #2c3e50; color: #fff; font-size: 13px; font-weight: bold; padding: 6px; margin-bottom: 8px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 6px; }
         .marcador-general span { color: #2ecc71; font-size: 14px; }
         
-        .selector-rapido { background: #34495e; color: #fff; border: 1px solid #5d6d7e; padding: 3px 6px; font-size: 11px; font-weight: bold; border-radius: 4px; outline: none; max-width: 110px; cursor: pointer; }
+        .contenedor-busqueda-accion { display: flex; gap: 4px; align-items: center; }
+        .selector-rapido { background: #34495e; color: #fff; border: 1px solid #5d6d7e; padding: 4px 6px; font-size: 11px; font-weight: bold; border-radius: 4px; outline: none; max-width: 90px; cursor: pointer; }
         .selector-rapido option { background: #2c3e50; color: #fff; }
+        
+        .btn-copiar-top { background-color: #d35400; color: white; border: 1px solid #a04000; padding: 4px 6px; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; white-space: nowrap; -webkit-tap-highlight-color: transparent; }
+        .btn-copiar-top:active { background-color: #a04000; }
 
-        .panel-respaldo { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; background: #fff; padding: 6px; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-        .btn-respaldo { flex: 1; min-width: 100px; background-color: #1a5276; color: white; border: none; padding: 8px; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; text-transform: uppercase; -webkit-tap-highlight-color: transparent; }
+        .panel-respaldo { display: flex; gap: 6px; margin-bottom: 10px; background: #fff; padding: 6px; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .btn-respaldo { flex: 1; background-color: #1a5276; color: white; border: none; padding: 8px 4px; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; text-transform: uppercase; -webkit-tap-highlight-color: transparent; text-align: center; white-space: nowrap; }
         .btn-respaldo:active { background-color: #11364f; }
         .btn-importar { background-color: #7f8c8d; }
         .btn-importar:active { background-color: #5d6d7e; }
         
-        .btn-filtro { background-color: #d35400; width: 100%; margin-top: 2px; }
-        .btn-filtro:active { background-color: #a04000; }
+        .selector-vista-accion { flex: 1; background-color: #27ae60; color: white; border: none; padding: 8px 4px; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; outline: none; text-transform: uppercase; text-align: center; -webkit-tap-highlight-color: transparent; }
+        .selector-vista-accion option { background-color: #fff; color: #333; text-transform: none; }
 
         .grupo-block { margin-top: 8px; scroll-margin-top: 50px; }
         .grupo-title { background-color: #1a5276; color: white; padding: 4px 8px; font-size: 11px; font-weight: bold; border-radius: 4px; text-transform: uppercase; }
@@ -39,8 +43,27 @@
         .pagina-album { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; padding: 4px; border: 1px dashed #d5dbdb; border-radius: 4px; background-color: #fcfcfc; position: relative; }
         .pagina-album::before { content: attr(data-pagina); position: absolute; top: -6px; right: 6px; font-size: 7px; color: #bdc3c7; background: #fff; padding: 0 3px; font-weight: bold; text-transform: uppercase; }
         
-        .casilla { border: 1px solid #bdc3c7; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; background-color: #fff; border-radius: 4px; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; transition: background 0.1s; }
+        .casilla { 
+            border: 1px solid #bdc3c7; 
+            height: 35px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 11px; 
+            font-weight: bold; 
+            background-color: #fff; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            -webkit-touch-callout: none;
+            -webkit-user-select: none; 
+            user-select: none; 
+            -webkit-tap-highlight-color: transparent; 
+            transition: background 0.1s; 
+            position: relative; 
+        }
         .casilla.poseido { background-color: #27ae60 !important; color: white !important; border-color: #1e8449 !important; }
+
+        .badge-repetida { position: absolute; top: -4px; right: -4px; background-color: #e74c3c; color: white; font-size: 8px; font-weight: bold; min-width: 14px; height: 14px; padding: 0 2px; border-radius: 7px; display: flex; align-items: center; justify-content: center; border: 1px solid white; box-shadow: 0 1px 2px rgba(0,0,0,0.2); z-index: 10; }
 
         .marco-foto-contenedor { width: 100%; max-width: 280px; height: 320px; margin: 0 auto 10px auto; background-color: #eaeded; border: 2px dashed #bdc3c7; border-radius: 6px; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; }
         .marco-foto-contenedor img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -50,12 +73,13 @@
         .modal-contenido { background: white; padding: 12px; border-radius: 8px; width: 90%; max-width: 320px; text-align: center; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
         .modal-titulo { font-size: 13px; font-weight: bold; margin-bottom: 8px; color: #2c3e50; text-transform: uppercase; }
         
-        .btn-accion { display: block; width: 100%; margin-top: 10px; border: none; padding: 8px; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
+        .btn-accion { display: block; width: 100%; margin-top: 8px; border: none; padding: 8px; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
         .btn-capturar { background-color: #2980b9; color: white; }
+        .btn-restar { background-color: #f39c12; color: white; }
         .btn-eliminar { background-color: #e74c3c; color: white; }
         .btn-cerrar { background-color: #7f8c8d; color: white; }
 
-        .btn-flotante-inicio { position: fixed; bottom: 16px; right: 16px; width: 44px; height: 44px; background-color: #2c3e50; color: white; border: 2px solid #5d6d7e; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 900; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; -webkit-tap-highlight-color: transparent; }
+        .btn-flotante-inicio { position: fixed; bottom: 24px; right: 24px; width: 54px; height: 54px; background-color: #2c3e50; color: white; border: 2px solid #5d6d7e; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.4); z-index: 999; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; -webkit-tap-highlight-color: transparent; }
         .btn-flotante-inicio.visible { opacity: 1; visibility: visible; }
         
         #input-camara, #input-importar-archivo { display: none; }
@@ -71,15 +95,22 @@
     <div class="marcador-general">
         <div>Total: <span id="total-general">0 / 992</span></div>
         <div>Progreso: <span id="porcentaje-general">0.0%</span></div>
-        <select class="selector-rapido" id="selector-equipos" onchange="irAEquipo(this.value)">
-            <option value="">🔍 Ir a...</option>
-        </select>
+        <div class="contenedor-busqueda-accion">
+            <select class="selector-rapido" id="selector-equipos" onchange="irAEquipo(this.value)">
+                <option value="">🔍 Ir a...</option>
+            </select>
+            <button class="btn-copiar-top" onclick="compartirFaltantes()">📋 Lista</button>
+        </div>
     </div>
 
     <div class="panel-respaldo">
         <button class="btn-respaldo" onclick="exportarProgreso()">📤 Exportar</button>
         <button class="btn-respaldo btn-importar" onclick="solicitarArchivoImportar()">📥 Importar</button>
-        <button class="btn-respaldo btn-filtro" id="btn-filtro-vista" onclick="alternarFiltro()">👁️ Modo: Ver Faltantes</button>
+        
+        <select class="selector-vista-accion" id="menu-vista-accion" style="background-color: #d35400;" onchange="gestionarCambioVista(this.value)">
+            <option value="faltantes">👁️ Modo: Faltantes</option>
+            <option value="todos">👁️ Modo: Todos</option>
+        </select>
     </div>
 
     <div id="guia-contenedor"></div>
@@ -94,7 +125,8 @@
             </div>
             
             <button id="btn-modal-capturar" class="btn-accion btn-capturar" onclick="abrirCamara()">📷 Capturar / Subir Foto</button>
-            <button id="btn-modal-eliminar" class="btn-accion btn-eliminar" onclick="borrarFotoActual()" style="display: none;">🗑️ Eliminar Foto y Casilla</button>
+            <button id="btn-modal-restar" class="btn-accion btn-restar" onclick="restarRepetida()">➖ Quitar Una Repetida</button>
+            <button id="btn-modal-eliminar" class="btn-accion btn-eliminar" onclick="borrarCromoCompleto()">🗑️ Eliminar Cromo del Álbum</button>
             <button class="btn-accion btn-cerrar" onclick="cerrarFoto()">Cerrar</button>
         </div>
     </div>
@@ -108,13 +140,13 @@
 
         const estructuraGrupos = [
             { nombre: "Especiales", esEspecial: true, estiloClase: "especial-title", paises: [ { sigla: "FWC", nombre: "FIFA World Cup", total: 20, pagInicio: 1 } ] },
-            { nombre: "Grupo A", paises: [ { sigla: "MEX", nombre: "México", total: 20, pagInicio: 8 }, { sigla: "RSA", nombre: "Sudáfrica", total: 20, pagInicio: 10 }, { sigla: "KOR", nombre: "Corea del Sur", total: 20, pagInicio: 12 }, { sigla: "CZE", nombre: "República Checa", total: 20, pagInicio: 14 } ] },
-            { nombre: "Grupo B", paises: [ { sigla: "CAN", nombre: "Canadá", total: 20, pagInicio: 16 }, { sigla: "BIH", nombre: "Bosnia y Herzegovina", total: 20, pagInicio: 18 }, { sigla: "QAT", nombre: "Qatar", total: 20, pagInicio: 20 }, { sigla: "SUI", nombre: "Suiza", total: 20, pagInicio: 22 } ] },
-            { nombre: "Grupo C", paises: [ { sigla: "BRA", nombre: "Brasil", total: 20, pagInicio: 24 }, { sigla: "MAR", nombre: "Marruecos", total: 20, pagInicio: 26 }, { sigla: "HAI", nombre: "Haití", total: 20, pagInicio: 28 }, { sigla: "SCO", nombre: "Escocia", total: 20, pagInicio: 30 } ] },
-            { nombre: "Grupo D", paises: [ { sigla: "USA", nombre: "Estados Unidos", total: 20, pagInicio: 32 }, { sigla: "PAR", nombre: "Paraguay", total: 20, pagInicio: 34 }, { sigla: "AUS", nombre: "Australia", total: 20, pagInicio: 36 }, { sigla: "TUR", nombre: "Turquía", total: 20, pagInicio: 38 } ] },
-            { nombre: "Grupo E", paises: [ { sigla: "GER", nombre: "Alemania", total: 20, pagInicio: 40 }, { sigla: "CUW", nombre: "Curazao", total: 20, pagInicio: 42 }, { sigla: "CIV", nombre: "Costa de Marfil", total: 20, pagInicio: 44 }, { sigla: "ECU", nombre: "Ecuador", total: 20, pagInicio: 46 } ] },
+            { nombre: "Grupo A", paises: [ { sigla: "MEX", nombre: "México", total: 20, pagInicio: 8 }, { sigla: "RSA", font: "SAFA", nombre: "Sudáfrica", total: 20, pagInicio: 10 }, { sigla: "KOR", nombre: "Corea del Sur", total: 20, pagInicio: 12 }, { sigla: "CZE", nombre: "República Checa", total: 20, pagInicio: 14 } ] },
+            { nombre: "Grupo B", paises: [ { sigla: "CAN", nombre: "Canadá", total: 20, pagInicio: 16 }, { sigla: "BIH", nombre: "Bosnia y Herzegovina", total: 20, pagInicio: 18 }, { sigla: "QAT", font: "QFA", nombre: "Qatar", total: 20, pagInicio: 20 }, { sigla: "SUI", font: "SFV", nombre: "Suiza", total: 20, pagInicio: 22 } ] },
+            { nombre: "Grupo C", paises: [ { sigla: "BRA", nombre: "Brasil", total: 20, pagInicio: 24 }, { sigla: "MAR", nombre: "Marruecos", total: 20, pagInicio: 26 }, { sigla: "HAI", nombre: "Haití", total: 20, pagInicio: 28 }, { sigla: "SCO", font: "SFA", nombre: "Escocia", total: 20, pagInicio: 30 } ] },
+            { nombre: "Grupo D", paises: [ { sigla: "USA", nombre: "Estados Unidos", total: 20, pagInicio: 32 }, { sigla: "PAR", nombre: "Paraguay", total: 20, pagInicio: 34 }, { sigla: "AUS", font: "FFA", nombre: "Australia", total: 20, pagInicio: 36 }, { sigla: "TUR", font: "TFF", nombre: "Turquía", total: 20, pagInicio: 38 } ] },
+            { nombre: "Grupo E", paises: [ { sigla: "GER", nombre: "Alemania", total: 20, pagInicio: 40 }, { sigla: "CUW", nombre: "Curazao", total: 20, pagInicio: 42 }, { sigla: "CIV", font: "FIF", nombre: "Costa de Marfil", total: 20, pagInicio: 44 }, { sigla: "ECU", nombre: "Ecuador", total: 20, pagInicio: 46 } ] },
             { nombre: "Grupo F", paises: [ { sigla: "NED", nombre: "Países Bajos", total: 20, pagInicio: 48 }, { sigla: "JPN", nombre: "Japón", total: 20, pagInicio: 50 }, { sigla: "SWE", nombre: "Suecia", total: 20, pagInicio: 52 }, { sigla: "TUN", nombre: "Túnez", total: 20, pagInicio: 54 } ] },
-            { nombre: "Grupo G", paises: [ { sigla: "BEL", nombre: "Bélgica", total: 20, pagInicio: 58 }, { sigla: "EGY", nombre: "Egipto", total: 20, pagInicio: 60 }, { sigla: "IRN", nombre: "Irán", total: 20, pagInicio: 62 }, { sigla: "NZL", nombre: "Nueva Zelanda", total: 20, pagInicio: 64 } ] },
+            { nombre: "Grupo G", paises: [ { sigla: "BEL", nombre: "Bélgica", total: 20, pagInicio: 58 }, { sigla: "EGY", font: "EFA", nombre: "Egipto", total: 20, pagInicio: 60 }, { sigla: "IRN", nombre: "Irán", total: 20, pagInicio: 62 }, { sigla: "NZL", nombre: "Nueva Zelanda", total: 20, pagInicio: 64 } ] },
             { nombre: "Grupo H", paises: [ { sigla: "ESP", nombre: "España", total: 20, pagInicio: 66 }, { sigla: "CPV", nombre: "Cabo Verde", total: 20, pagInicio: 68 }, { sigla: "KSA", nombre: "Arabia Saudita", total: 20, pagInicio: 70 }, { sigla: "URU", nombre: "Uruguay", total: 20, pagInicio: 72 } ] },
             { nombre: "Grupo I", paises: [ { sigla: "FRA", nombre: "Francia", total: 20, pagInicio: 74 }, { sigla: "SEN", nombre: "Senegal", total: 20, pagInicio: 76 }, { sigla: "IRQ", nombre: "Irak", total: 20, pagInicio: 78 }, { sigla: "NOR", nombre: "Noruega", total: 20, pagInicio: 80 } ] },
             { nombre: "Grupo J", paises: [ { sigla: "ARG", nombre: "Argentina", total: 20, pagInicio: 82 }, { sigla: "ALG", nombre: "Argelia", total: 20, pagInicio: 84 }, { sigla: "AUT", nombre: "Austria", total: 20, pagInicio: 86 }, { sigla: "JOR", nombre: "Jordania", total: 20, pagInicio: 88 } ] },
@@ -169,6 +201,68 @@
             document.getElementById('input-camara').click();
         }
 
+        function gestionarCambioVista(valor) {
+            filtroActual = valor;
+            const elSelector = document.getElementById('menu-vista-accion');
+            elSelector.style.backgroundColor = (filtroActual === 'todos') ? '#27ae60' : '#d35400';
+            aplicarRulesVisibilidad();
+        }
+
+        function compartirFaltantes() {
+            let textoLista = "📋 MIS FALTANTES - ÁLBUM PANINI 2026\n\n";
+            let totalFaltantesContador = 0;
+
+            estructuraGrupos.forEach(g => {
+                g.paises.forEach(p => {
+                    let faltantesDelPais = [];
+                    const max = p.total || 20;
+                    const inicio = (g.nombre === "Especiales") ? 0 : 1;
+                    const fin = (g.nombre === "Especiales") ? (max - 1) : max;
+
+                    for (let i = inicio; i <= fin; i++) {
+                        const numStr = String(i).padStart(2, '0');
+                        const keyUnica = `panini-${p.sigla}-${numStr}`;
+                        const val = localStorage.getItem(keyUnica);
+
+                        if (!val || val === 'false') {
+                            faltantesDelPais.push(numStr);
+                            totalFaltantesContador++;
+                        }
+                    }
+
+                    if (faltantesDelPais.length > 0) {
+                        textoLista += `${p.sigla}: ${faltantesDelPais.join(', ')}\n`;
+                    }
+                });
+            });
+
+            if (totalFaltantesContador === 0) {
+                alert("¡Felicidades! No te falta ningún cromo. ¡Álbum Completo!");
+                return;
+            }
+
+            textoLista += `\nTotal faltantes: ${totalFaltantesContador} cromos.`;
+
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Mis Faltantes Panini 2026',
+                    text: textoLista
+                }).catch(() => {
+                    copiarAlPortapapelesFallback(textoLista);
+                });
+            } else {
+                copiarAlPortapapelesFallback(textoLista);
+            }
+        }
+
+        function copiarAlPortapapelesFallback(texto) {
+            navigator.clipboard.writeText(texto).then(() => {
+                alert("📋 ¡Lista de faltantes copiada al portapapeles! Ya puedes pegarla.");
+            }).catch(() => {
+                alert("No se pudo copiar automáticamente.");
+            });
+        }
+
         function procesarFotoCapturada(input) {
             if (input.files && input.files[0] && cromoSeleccionadoActual) {
                 const lector = new FileReader();
@@ -177,22 +271,44 @@
                     const idSticker = `panini-${cromoSeleccionadoActual.sigla}-${cromoSeleccionadoActual.numero}`;
                     
                     await guardarFotoDB(idSticker, base64);
-                    localStorage.setItem(idSticker, 'true');
                     
                     document.getElementById('foto-img').src = base64;
                     document.getElementById('foto-img').style.display = 'block';
                     document.getElementById('txt-sin-foto').style.display = 'none';
                     document.getElementById('btn-modal-capturar').style.display = 'none';
-                    document.getElementById('btn-modal-eliminar').style.display = 'block';
 
-                    actualizarInterfazDOM();
                     input.value = "";
                 };
                 lector.readAsDataURL(input.files[0]);
             }
         }
 
-        async function borrarFotoActual() {
+        function avanzarContadorSticker(idCromo) {
+            let actualValor = localStorage.getItem(idCromo);
+            if (!actualValor || actualValor === 'false') {
+                localStorage.setItem(idCromo, '1');
+            } else {
+                let numActual = parseInt(actualValor) || 1;
+                localStorage.setItem(idCromo, String(numActual + 1));
+            }
+            actualizarInterfazDOM();
+        }
+
+        async function restarRepetida() {
+            if (cromoSeleccionadoActual) {
+                const idSticker = `panini-${cromoSeleccionadoActual.sigla}-${cromoSeleccionadoActual.numero}`;
+                let cant = parseInt(localStorage.getItem(idSticker)) || 0;
+                if (cant > 1) {
+                    localStorage.setItem(idSticker, String(cant - 1));
+                    cerrarFoto();
+                    actualizarInterfazDOM();
+                } else {
+                    await borrarCromoCompleto();
+                }
+            }
+        }
+
+        async function borrarCromoCompleto() {
             if (cromoSeleccionadoActual) {
                 const idSticker = `panini-${cromoSeleccionadoActual.sigla}-${cromoSeleccionadoActual.numero}`;
                 await borrarFotoDB(idSticker);
@@ -209,8 +325,21 @@
                     const b = document.getElementById(`block-${p.sigla}`);
                     if(b) {
                         b.querySelectorAll('.casilla').forEach(c => {
-                            if(localStorage.getItem(`panini-${p.sigla}-${c.textContent}`) === 'true') {
+                            const idStr = c.getAttribute('data-id');
+                            const valorValor = localStorage.getItem(idStr);
+                            
+                            const badgePrevio = c.querySelector('.badge-repetida');
+                            if(badgePrevio) badgePrevio.remove();
+
+                            if(valorValor && valorValor !== 'false') {
                                 c.classList.add('poseido');
+                                const cantidad = parseInt(valorValor) || 1;
+                                if(cantidad > 1) {
+                                    const bge = document.createElement('span');
+                                    bge.className = 'badge-repetida';
+                                    bge.textContent = `+${cantidad - 1}`;
+                                    c.appendChild(bge);
+                                }
                             } else {
                                 c.classList.remove('poseido');
                             }
@@ -219,7 +348,7 @@
                 });
             });
             actualizarConteoGeneral();
-            aplicarReglasVisibilidad();
+            aplicarRulesVisibilidad();
         }
 
         async function inicializarGuia() {
@@ -251,7 +380,6 @@
                     divPais.className = 'pais-block';
                     divPais.id = `block-${p.sigla}`;
                     const max = p.total || 20;
-                    const mitad = max / 2;
 
                     divPais.innerHTML = `
                         <div class="pais-name">
@@ -267,61 +395,94 @@
 
                     const pIzq = divPais.querySelector(`#pag-izq-${p.sigla}`);
                     const pDer = divPais.querySelector(`#pag-der-${p.sigla}`);
+                    
                     const inicio = (g.nombre === "Especiales") ? 0 : 1;
                     const fin = (g.nombre === "Especiales") ? (max - 1) : max;
+                    const puntoCorteMitad = (g.nombre === "Especiales") ? 9 : (max / 2);
 
                     for (let i = inicio; i <= fin; i++) {
                         const numStr = String(i).padStart(2, '0');
-                        const idSticker = `panini-${p.sigla}-${numStr}`;
+                        const keyUnica = `panini-${p.sigla}-${numStr}`;
+                        
                         const casilla = document.createElement('div');
                         casilla.className = 'casilla';
                         casilla.textContent = numStr;
+                        
+                        casilla.setAttribute('data-id', keyUnica);
+                        casilla.setAttribute('data-sigla', p.sigla);
+                        casilla.setAttribute('data-numero', numStr);
+                        casilla.setAttribute('data-pais', p.nombre);
 
-                        if (localStorage.getItem(idSticker) === 'true') casilla.classList.add('poseido');
+                        let tiempoInicio = 0;
+                        let timeoutPulsacion = null;
+                        let pulsacionLargaEjecutada = false;
 
-                        let tiempoPresionado;
-                        let esPulsacionLarga = false;
+                        function alComenzarPresion(e) {
+                            pulsacionLargaEjecutada = false;
+                            tiempoInicio = Date.now();
+                            clearTimeout(timeoutPulsacion);
 
-                        const iniciarPresion = () => {
-                            esPulsacionLarga = false;
-                            tiempoPresionado = setTimeout(() => {
-                                esPulsacionLarga = true;
-                                abrirModalFoto(p.sigla, numStr, p.nombre);
-                            }, 500);
-                        };
+                            timeoutPulsacion = setTimeout(() => {
+                                const idCromo = casilla.getAttribute('data-id');
+                                if (localStorage.getItem(idCromo)) {
+                                    pulsacionLargaEjecutada = true;
+                                    if (e.cancelable) e.preventDefault();
+                                    if (navigator.vibrate) navigator.vibrate(50);
 
-                        const cancelarPresion = () => clearTimeout(tiempoPresionado);
-
-                        casilla.addEventListener('touchstart', iniciarPresion, { passive: true });
-                        casilla.addEventListener('touchend', cancelarPresion);
-                        casilla.addEventListener('mousedown', (e) => { if (e.button === 0) iniciarPresion(); });
-                        casilla.addEventListener('mouseup', cancelarPresion);
-                        casilla.addEventListener('mouseleave', cancelarPresion);
-
-                        casilla.addEventListener('click', async function() {
-                            if (esPulsacionLarga) return;
-                            
-                            if (this.classList.contains('poseido')) {
-                                const fotoGuardada = await obtenerFotoDB(idSticker);
-                                if (fotoGuardada) {
-                                    abrirModalFoto(p.sigla, numStr, p.nombre);
-                                    return;
+                                    const s = casilla.getAttribute('data-sigla');
+                                    const n = casilla.getAttribute('data-numero');
+                                    const pNm = casilla.getAttribute('data-pais');
+                                    abrirModalFoto(s, n, pNm);
                                 }
+                            }, 600);
+                        }
+
+                        function alTerminarPresion(e) {
+                            clearTimeout(timeoutPulsacion);
+                            if (pulsacionLargaEjecutada) {
+                                if (e.cancelable) e.preventDefault();
+                                e.stopPropagation();
+                                return false;
                             }
 
-                            this.classList.toggle('poseido');
-                            if (this.classList.contains('poseido')) {
-                                localStorage.setItem(idSticker, 'true');
-                            } else {
-                                localStorage.removeItem(idSticker);
-                                await borrarFotoDB(idSticker);
+                            const duracion = Date.now() - tiempoInicio;
+                            if (duracion < 600 && tiempoInicio > 0) {
+                                tiempoInicio = 0;
+                                const idCromo = casilla.getAttribute('data-id');
+                                avanzarContadorSticker(idCromo);
                             }
-                            actualizarContador(p.sigla);
-                            actualizarConteoGeneral();
-                            aplicarReglasVisibilidad();
+                        }
+
+                        function alCancelarPresion() {
+                            clearTimeout(timeoutPulsacion);
+                            tiempoInicio = 0;
+                        }
+
+                        casilla.addEventListener('mousedown', (e) => {
+                            if (e.button !== 0) return;
+                            alComenzarPresion(e);
+                        });
+                        casilla.addEventListener('mouseup', (e) => {
+                            alTerminarPresion(e);
+                        });
+                        casilla.addEventListener('mouseleave', alCancelarPresion);
+
+                        casilla.addEventListener('touchstart', (e) => {
+                            alComenzarPresion(e);
+                        }, { passive: false });
+
+                        casilla.addEventListener('touchend', (e) => {
+                            alTerminarPresion(e);
+                        }, { passive: false });
+
+                        casilla.addEventListener('touchcancel', alCancelarPresion);
+
+                        casilla.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
                         });
 
-                        if (i <= mitad || (g.nombre === "Especiales" && i < 10)) pIzq.appendChild(casilla);
+                        if (i <= puntoCorteMitad) pIzq.appendChild(casilla);
                         else pDer.appendChild(casilla);
                     }
                 });
@@ -335,7 +496,12 @@
             if (!sigla) return;
             const b = document.getElementById(`block-${sigla}`);
             if (b) {
-                if (b.style.display === 'none') alternarFiltro();
+                if (b.style.display === 'none') {
+                    filtroActual = 'todos';
+                    document.getElementById('menu-vista-accion').value = 'todos';
+                    document.getElementById('menu-vista-accion').style.backgroundColor = '#27ae60';
+                    aplicarRulesVisibilidad();
+                }
                 b.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
             setTimeout(() => { selectEquipos.value = ""; }, 800);
@@ -348,28 +514,29 @@
             const titulo = document.getElementById('foto-titulo');
             const imagen = document.getElementById('foto-img');
             const textoSinFoto = document.getElementById('txt-sin-foto');
-            const btnCapturar = document.getElementById('btn-modal-capturar');
-            const btnEliminar = document.getElementById('btn-modal-eliminar');
-            
-            titulo.textContent = `${paisNombre} (${sigla}-${numero})`;
+            const btnAppCapturar = document.getElementById('btn-modal-capturar');
+            const btnRestar = document.getElementById('btn-modal-restar');
             
             const idSticker = `panini-${sigla}-${numero}`;
+            const totalCromos = parseInt(localStorage.getItem(idSticker)) || 1;
+            
+            titulo.textContent = `${paisNombre} (${sigla}-${numero}) [Tienes: ${totalCromos}]`;
+            
             const base64Data = await obtenerFotoDB(idSticker);
             
             if (base64Data) {
                 imagen.src = base64Data;
                 imagen.style.display = 'block';
                 textoSinFoto.style.display = 'none';
-                btnCapturar.style.display = 'none';
-                btnEliminar.style.display = 'block';
+                btnAppCapturar.style.display = 'none';
             } else {
                 imagen.src = "";
                 imagen.style.display = 'none';
                 textoSinFoto.style.display = 'block';
-                btnCapturar.style.display = 'block';
-                btnEliminar.style.none;
+                btnAppCapturar.style.display = 'block';
             }
-            
+
+            btnRestar.style.display = (totalCromos > 1) ? 'block' : 'none';
             modal.style.display = 'flex';
         }
 
@@ -379,16 +546,23 @@
         }
 
         function actualizarContador(sigla) {
-            const tot = document.querySelectorAll(`#block-${sigla} .casilla`).length;
-            const pos = document.querySelectorAll(`#block-${sigla} .casilla.poseido`).length;
             const b = document.getElementById(`block-${sigla}`);
             if(!b) return;
+            const tot = b.querySelectorAll('.casilla').length;
+            
+            let pos = 0;
+            b.querySelectorAll('.casilla').forEach(c => {
+                const idStr = c.getAttribute('data-id');
+                const val = localStorage.getItem(idStr);
+                if(val && val !== 'false') pos++;
+            });
+
             document.getElementById(`cont-${sigla}`).textContent = `${pos} / ${tot}`;
             if (pos === tot && tot > 0) b.classList.add('completo');
             else b.classList.remove('completo');
         }
 
-        function aplicarReglasVisibilidad() {
+        function aplicarRulesVisibilidad() {
             estructuraGrupos.forEach(g => {
                 let ocultos = true;
                 g.paises.forEach(p => {
@@ -403,22 +577,18 @@
             });
         }
 
-        function alternarFiltro() {
-            const btn = document.getElementById('btn-filtro-vista');
-            filtroActual = (filtroActual === 'faltantes') ? 'todos' : 'faltantes';
-            btn.textContent = filtroActual === 'todos' ? '👁️ Modo: Ver Todos' : '👁️ Modo: Ver Faltantes';
-            btn.style.backgroundColor = filtroActual === 'todos' ? '#27ae60' : '#d35400';
-            aplicarReglasVisibilidad();
-        }
-
         function actualizarConteoGeneral() {
-            const tot = document.querySelectorAll('.casilla').length;
-            const pos = document.querySelectorAll('.casilla.poseido').length;
+            const casillas = document.querySelectorAll('.casilla');
+            const tot = casillas.length;
+            let pos = 0;
+            casillas.forEach(c => {
+                const val = c.classList.contains('poseido');
+                if(val) pos++;
+            });
             document.getElementById('total-general').textContent = `${pos} / ${tot}`;
             document.getElementById('porcentaje-general').textContent = `${tot > 0 ? ((pos / tot) * 100).toFixed(1) : 0}%`;
         }
 
-        // EXPORTACIÓN MEJORADA: Descarga directa como archivo .json
         async function exportarProgreso() {
             const respaldo = { cromos: {}, fotos: {} };
             for (let i = 0; i < localStorage.length; i++) {
@@ -438,7 +608,6 @@
                         respaldo.fotos[llave] = fotosReq.result[idx];
                     });
                     
-                    // Creación segura del archivo binario blob para descargar
                     const str = JSON.stringify(respaldo);
                     const blob = new Blob([str], { type: "application/json" });
                     const url = URL.createObjectURL(blob);
@@ -458,7 +627,6 @@
             document.getElementById('input-importar-archivo').click();
         }
 
-        // IMPORTACIÓN MEJORADA: Carga y lectura del archivo .json
         function procesarArchivoImportado(input) {
             if (input.files && input.files[0]) {
                 const lector = new FileReader();
@@ -466,10 +634,9 @@
                     try {
                         const data = JSON.parse(e.target.result);
                         
-                        // Si es un archivo antiguo (solo texto plano antiguo)
                         if (!data.cromos && !data.fotos) {
                             Object.keys(data).forEach(k => { if(k.startsWith('panini-')) localStorage.setItem(k, data[k]); });
-                            alert("Progreso básico importado con éxito.");
+                            alert("Progreso básico importado.");
                             inicializarGuia();
                             return;
                         }
@@ -482,10 +649,10 @@
                             for (let k of llaves) { await guardarFotoDB(k, data.fotos[k]); }
                         }
                         
-                        alert("¡Respaldo masivo de progreso y fotos restaurado!");
+                        alert("¡Respaldo restaurado!");
                         inicializarGuia();
                     } catch (err) {
-                        alert("Error al leer el archivo. Asegúrate de que sea el archivo .json correcto.");
+                        alert("Error al leer el archivo.");
                     }
                     input.value = "";
                 };
