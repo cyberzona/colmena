@@ -142,9 +142,9 @@
             { nombre: "Grupo E", paises: [ { sigla: "GER", nombre: "Alemania", total: 20, pagInicio: 40 }, { sigla: "CUW", nombre: "Curazao", total: 20, pagInicio: 42 }, { sigla: "CIV", font: "FIF", nombre: "Costa de Marfil", total: 20, pagInicio: 44 }, { sigla: "ECU", nombre: "Ecuador", total: 20, pagInicio: 46 } ] },
             { nombre: "Grupo F", paises: [ { sigla: "NED", nombre: "Países Bajos", total: 20, pagInicio: 48 }, { sigla: "JPN", font: "JFA", nombre: "Japón", total: 20, pagInicio: 50 }, { sigla: "SWE", nombre: "Suecia", total: 20, pagInicio: 52 }, { sigla: "TUN", nombre: "Túnez", total: 20, pagInicio: 54 } ] },
             { nombre: "Grupo G", paises: [ { sigla: "BEL", nombre: "Bélgica", total: 20, pagInicio: 58 }, { sigla: "EGY", font: "EFA", nombre: "Egipto", total: 20, pagInicio: 60 }, { sigla: "IRN", nombre: "Irán", total: 20, pagInicio: 62 }, { sigla: "NZL", font: "NZF", nombre: "Nueva Zelanda", total: 20, pagInicio: 64 } ] },
-            { nombre: "Grupo H", paises: [ { sigla: "ESP", nombre: "España", total: 20, pagInicio: 66 }, { sigla: "CPV", nombre: "Cabo Verde", total: 20, pagInicio: 68 }, { sigla: "KSA", nombre: "Arabia Saudita", total: 20, pagInicio: 70 }, { sigla: "URU", nombre: "Uruguay", total: 20, pagInicio: 72 } ] },
+            { nombre: "Grupo H", paises: [ { sigla: "ESP", font: "RFEF", nombre: "España", total: 20, pagInicio: 66 }, { sigla: "CPV", nombre: "Cabo Verde", total: 20, pagInicio: 68 }, { sigla: "KSA", nombre: "Arabia Saudita", total: 20, pagInicio: 70 }, { sigla: "URU", nombre: "Uruguay", total: 20, pagInicio: 72 } ] },
             { nombre: "Grupo I", paises: [ { sigla: "FRA", nombre: "Francia", total: 20, pagInicio: 74 }, { sigla: "SEN", nombre: "Senegal", total: 20, pagInicio: 76 }, { sigla: "IRQ", nombre: "Irak", total: 20, pagInicio: 78 }, { sigla: "NOR", nombre: "Noruega", total: 20, pagInicio: 80 } ] },
-            { nombre: "Grupo J", paises: [ { sigla: "ARG", nombre: "Argentina", total: 20, pagInicio: 82 }, { sigla: "ALG", nombre: "Argelia", total: 20, pagInicio: 84 }, { sigla: "AUT", nombre: "Austria", total: 20, pagInicio: 86 }, { sigla: "JOR", nombre: "Jordania", total: 20, pagInicio: 88 } ] },
+            { nombre: "Grupo J", paises: [ { sigla: "ARG", nombre: "Argentina", total: 20, pagInicio: 82 }, { sigla: "ALG", nombre: "Argelia", total: 20, pagInicio: 84 }, { sigla: "AUT", nombre: "Austria", total: 20, pagInicio: 86 }, { sigla: "JOR", font: "JFA", nombre: "Jordania", total: 20, pagInicio: 88 } ] },
             { nombre: "Grupo K", paises: [ { sigla: "POR", nombre: "Portugal", total: 20, pagInicio: 90 }, { sigla: "COD", nombre: "RD Congo", total: 20, pagInicio: 92 }, { sigla: "UZB", nombre: "Uzbekistán", total: 20, pagInicio: 94 }, { sigla: "COL", nombre: "Colombia", total: 20, pagInicio: 96 } ] },
             { nombre: "Grupo L", paises: [ { sigla: "ENG", font: "FA", nombre: "Inglaterra", total: 20, pagInicio: 98 }, { sigla: "CRO", nombre: "Croacia", total: 20, pagInicio: 100 }, { sigla: "GHA", nombre: "Ghana", total: 20, pagInicio: 102 }, { sigla: "PAN", nombre: "Panamá", total: 20, pagInicio: 104 } ] },
             { nombre: "Coca-Cola", esEspecial: true, estiloClase: "cocacola-title", paises: [ { sigla: "CCK", nombre: "Stickers Especiales", total: 12, pagInicio: 112 } ] }
@@ -485,15 +485,17 @@
                         let tiempoInicio = 0;
                         let timeoutPulsacion = null;
                         let pulsacionLargaEjecutada = false;
+                        let haHabidoMovimiento = false;
 
                         function alComenzarPresion(e) {
                             pulsacionLargaEjecutada = false;
+                            haHabidoMovimiento = false;
                             tiempoInicio = Date.now();
                             clearTimeout(timeoutPulsacion);
 
                             timeoutPulsacion = setTimeout(() => {
                                 const idCromo = casilla.getAttribute('data-id');
-                                if (localStorage.getItem(idCromo)) {
+                                if (localStorage.getItem(idCromo) && !haHabidoMovimiento) {
                                     pulsacionLargaEjecutada = true;
                                     if (e.cancelable) e.preventDefault();
                                     if (navigator.vibrate) navigator.vibrate(50);
@@ -508,7 +510,7 @@
 
                         function alTerminarPresion(e) {
                             clearTimeout(timeoutPulsacion);
-                            if (pulsacionLargaEjecutada) {
+                            if (pulsacionLargaEjecutada || haHabidoMovimiento) {
                                 if (e.cancelable) e.preventDefault();
                                 e.stopPropagation();
                                 return false;
@@ -525,6 +527,7 @@
                         function alCancelarPresion() {
                             clearTimeout(timeoutPulsacion);
                             tiempoInicio = 0;
+                            haHabidoMovimiento = true;
                         }
 
                         casilla.addEventListener('mousedown', (e) => {
@@ -539,6 +542,11 @@
                         casilla.addEventListener('touchstart', (e) => {
                             alComenzarPresion(e);
                         }, { passive: false });
+
+                        casilla.addEventListener('touchmove', () => {
+                            haHabidoMovimiento = true;
+                            clearTimeout(timeoutPulsacion);
+                        }, { passive: true });
 
                         casilla.addEventListener('touchend', (e) => {
                             alTerminarPresion(e);
