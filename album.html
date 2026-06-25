@@ -61,6 +61,7 @@
             position: relative; 
         }
         .casilla.poseido { background-color: #27ae60 !important; color: white !important; border-color: #1e8449 !important; }
+        .casilla.match-intercambio { background-color: #2980b9 !important; color: white !important; border-color: #1b4f72 !important; box-shadow: inset 0 0 5px rgba(0,0,0,0.2); }
 
         .badge-repetida { position: absolute; top: -4px; right: -4px; background-color: #e74c3c; color: white; font-size: 8px; font-weight: bold; min-width: 14px; height: 14px; padding: 0 2px; border-radius: 7px; display: flex; align-items: center; justify-content: center; border: 1px solid white; box-shadow: 0 1px 2px rgba(0,0,0,0.2); z-index: 10; }
 
@@ -89,7 +90,7 @@
     <h1>📋 GUÍA DE BOLSILLO – PANINI 2026</h1>
     
     <input type="file" id="input-camara" accept="image/*" capture="environment" onchange="procesarFotoCapturada(this)">
-    <input type="file" id="input-importar-archivo" accept=".json" onchange="procesarArchivoImportado(this)">
+    <input type="file" id="input-importar-archivo" accept=".json,.txt" onchange="procesarArchivoImportado(this)">
 
     <div class="marcador-general">
         <div>Total: <span id="total-general">0 / 992</span></div>
@@ -98,7 +99,7 @@
             <select class="selector-rapido" id="selector-equipos" onchange="irAEquipo(this.value)">
                 <option value="">🔍 Ir a...</option>
             </select>
-            <button class="btn-copiar-top" id="btn-dinamico-lista" onclick="procesarAccionLista()">📋 Listas</button>
+            <button class="btn-copiar-top" id="btn-dinamico-lista" onclick="procesarAccionLista()">📋 Faltantes</button>
         </div>
     </div>
 
@@ -119,7 +120,7 @@
                 <img id="foto-img" src="" alt="" style="display: none;">
             </div>
             
-            <button id="btn-modal-capturar" class="btn-accion btn-capturar" onclick="abrirCamara()">📷 Capturar / Subir Foto</button>
+            <button id="btn-modal-capturar" class="btn-accion btn-capturar" onclick="abrirCamara()">📸 Tomar Foto Memo</button>
             <button id="btn-modal-restar" class="btn-accion btn-restar" onclick="restarRepetida()">➖ Quitar Una Repetida</button>
             <button id="btn-modal-eliminar" class="btn-accion btn-eliminar" onclick="borrarCromoCompleto()">🗑️ Eliminar Cromo del Álbum</button>
             <button class="btn-accion btn-cerrar" onclick="cerrarFoto()">Cerrar</button>
@@ -136,17 +137,17 @@
         const estructuraGrupos = [
             { nombre: "Especiales", esEspecial: true, estiloClase: "especial-title", paises: [ { sigla: "FWC", nombre: "FIFA World Cup", total: 20, pagInicio: 1 } ] },
             { nombre: "Grupo A", paises: [ { sigla: "MEX", nombre: "México", total: 20, pagInicio: 8 }, { sigla: "RSA", font: "SAFA", nombre: "Sudáfrica", total: 20, pagInicio: 10 }, { sigla: "KOR", nombre: "Corea del Sur", total: 20, pagInicio: 12 }, { sigla: "CZE", nombre: "República Checa", total: 20, pagInicio: 14 } ] },
-            { nombre: "Grupo B", paises: [ { sigla: "CAN", nombre: "Canadá", total: 20, pagInicio: 16 }, { sigla: "BIH", nombre: "Bosnia y Herzegovina", total: 20, pagInicio: 18 }, { sigla: "QAT", font: "QFA", nombre: "Qatar", total: 20, pagInicio: 20 }, { sigla: "SUI", font: "SFV", nombre: "Suiza", total: 20, pagInicio: 22 } ] },
+            { nombre: "Grupo B", paises: [ { sigla: "CAN", nombre: "Canadá", total: 20, pagInicio: 16 }, { sigla: "BIH", font: "NFSBIH", nombre: "Bosnia y Herzegovina", total: 20, pagInicio: 18 }, { sigla: "QAT", font: "QFA", nombre: "Qatar", total: 20, pagInicio: 20 }, { sigla: "SUI", font: "SFV", nombre: "Suiza", total: 20, pagInicio: 22 } ] },
             { nombre: "Grupo C", paises: [ { sigla: "BRA", nombre: "Brasil", total: 20, pagInicio: 24 }, { sigla: "MAR", nombre: "Marruecos", total: 20, pagInicio: 26 }, { sigla: "HAI", nombre: "Haití", total: 20, pagInicio: 28 }, { sigla: "SCO", font: "SFA", nombre: "Escocia", total: 20, pagInicio: 30 } ] },
             { nombre: "Grupo D", paises: [ { sigla: "USA", nombre: "Estados Unidos", total: 20, pagInicio: 32 }, { sigla: "PAR", nombre: "Paraguay", total: 20, pagInicio: 34 }, { sigla: "AUS", font: "FFA", merge: true, nombre: "Australia", total: 20, pagInicio: 36 }, { sigla: "TUR", font: "TFF", nombre: "Turquía", total: 20, pagInicio: 38 } ] },
-            { nombre: "Grupo E", paises: [ { sigla: "GER", nombre: "Alemania", total: 20, pagInicio: 40 }, { sigla: "CUW", nombre: "Curazao", total: 20, pagInicio: 42 }, { sigla: "CIV", font: "FIF", nombre: "Costa de Marfil", total: 20, pagInicio: 44 }, { sigla: "ECU", nombre: "Ecuador", total: 20, pagInicio: 46 } ] },
-            { nombre: "Grupo F", paises: [ { sigla: "NED", nombre: "Países Bajos", total: 20, pagInicio: 48 }, { sigla: "JPN", font: "JFA", nombre: "Japón", total: 20, pagInicio: 50 }, { sigla: "SWE", nombre: "Suecia", total: 20, pagInicio: 52 }, { sigla: "TUN", nombre: "Túnez", total: 20, pagInicio: 54 } ] },
-            { nombre: "Grupo G", paises: [ { sigla: "BEL", nombre: "Bélgica", total: 20, pagInicio: 58 }, { sigla: "EGY", font: "EFA", nombre: "Egipto", total: 20, pagInicio: 60 }, { sigla: "IRN", nombre: "Irán", total: 20, pagInicio: 62 }, { sigla: "NZL", font: "NZF", nombre: "Nueva Zelanda", total: 20, pagInicio: 64 } ] },
-            { nombre: "Grupo H", paises: [ { sigla: "ESP", font: "RFEF", nombre: "España", total: 20, pagInicio: 66 }, { sigla: "CPV", nombre: "Cabo Verde", total: 20, pagInicio: 68 }, { sigla: "KSA", nombre: "Arabia Saudita", total: 20, pagInicio: 70 }, { sigla: "URU", nombre: "Uruguay", total: 20, pagInicio: 72 } ] },
+            { nombre: "Grupo E", paises: [ { sigla: "GER", nombre: "Alemania", total: 20, pagInicio: 40 }, { sigla: "CUW", font: "NAVU", nombre: "Curazao", total: 20, pagInicio: 42 }, { sigla: "CIV", font: "FIF", nombre: "Costa de Marfil", total: 20, pagInicio: 44 }, { sigla: "ECU", font: "FEF", nombre: "Ecuador", total: 20, pagInicio: 46 } ] },
+            { nombre: "Grupo F", paises: [ { sigla: "NED", font: "KNVB", nombre: "Países Bajos", total: 20, pagInicio: 48 }, { sigla: "JPN", font: "JFA", nombre: "Japón", total: 20, pagInicio: 50 }, { sigla: "SWE", font: "SvFF", nombre: "Suecia", total: 20, pagInicio: 52 }, { sigla: "TUN", nombre: "Túnez", total: 20, pagInicio: 54 } ] },
+            { nombre: "Grupo G", paises: [ { sigla: "BEL", nombre: "Bélgica", total: 20, pagInicio: 58 }, { sigla: "EGY", font: "EFA", nombre: "Egipto", total: 20, pagInicio: 60 }, { sigla: "IRN", font: "FFIRI", nombre: "Irán", total: 20, pagInicio: 62 }, { sigla: "NZL", font: "NZF", nombre: "Nueva Zelanda", total: 20, pagInicio: 64 } ] },
+            { nombre: "Grupo H", paises: [ { sigla: "ESP", nombre: "España", total: 20, pagInicio: 66 }, { sigla: "CPV", nombre: "Cabo Verde", total: 20, pagInicio: 68 }, { sigla: "KSA", nombre: "Arabia Saudita", total: 20, pagInicio: 70 }, { sigla: "URU", nombre: "Uruguay", total: 20, pagInicio: 72 } ] },
             { nombre: "Grupo I", paises: [ { sigla: "FRA", nombre: "Francia", total: 20, pagInicio: 74 }, { sigla: "SEN", nombre: "Senegal", total: 20, pagInicio: 76 }, { sigla: "IRQ", nombre: "Irak", total: 20, pagInicio: 78 }, { sigla: "NOR", nombre: "Noruega", total: 20, pagInicio: 80 } ] },
-            { nombre: "Grupo J", paises: [ { sigla: "ARG", nombre: "Argentina", total: 20, pagInicio: 82 }, { sigla: "ALG", nombre: "Argelia", total: 20, pagInicio: 84 }, { sigla: "AUT", nombre: "Austria", total: 20, pagInicio: 86 }, { sigla: "JOR", font: "JFA", nombre: "Jordania", total: 20, pagInicio: 88 } ] },
-            { nombre: "Grupo K", paises: [ { sigla: "POR", nombre: "Portugal", total: 20, pagInicio: 90 }, { sigla: "COD", nombre: "RD Congo", total: 20, pagInicio: 92 }, { sigla: "UZB", nombre: "Uzbekistán", total: 20, pagInicio: 94 }, { sigla: "COL", nombre: "Colombia", total: 20, pagInicio: 96 } ] },
-            { nombre: "Grupo L", paises: [ { sigla: "ENG", font: "FA", nombre: "Inglaterra", total: 20, pagInicio: 98 }, { sigla: "CRO", nombre: "Croacia", total: 20, pagInicio: 100 }, { sigla: "GHA", nombre: "Ghana", total: 20, pagInicio: 102 }, { sigla: "PAN", nombre: "Panamá", total: 20, pagInicio: 104 } ] },
+            { nombre: "Grupo J", paises: [ { sigla: "ARG", nombre: "Argentina", total: 20, pagInicio: 82 }, { sigla: "ALG", font: "FAF", nombre: "Argelia", total: 20, pagInicio: 84 }, { sigla: "AUT", font: "ÖFB", nombre: "Austria", total: 20, pagInicio: 86 }, { sigla: "JOR", nombre: "Jordania", total: 20, pagInicio: 88 } ] },
+            { nombre: "Grupo K", paises: [ { sigla: "POR", font: "FPF", nombre: "Portugal", total: 20, pagInicio: 90 }, { sigla: "COD", nombre: "RD Congo", total: 20, pagInicio: 92 }, { sigla: "UZB", nombre: "Uzbekistán", total: 20, pagInicio: 94 }, { sigla: "COL", nombre: "Colombia", total: 20, pagInicio: 96 } ] },
+            { nombre: "Grupo L", paises: [ { sigla: "ENG", font: "FA", nombre: "Inglaterra", total: 20, pagInicio: 98 }, { sigla: "CRO", nombre: "Croacia", total: 20, pagInicio: 100 }, { sigla: "GHA", font: "GFA", nombre: "Ghana", total: 20, pagInicio: 102 }, { sigla: "PAN", nombre: "Panamá", total: 20, pagInicio: 104 } ] },
             { nombre: "Coca-Cola", esEspecial: true, estiloClase: "cocacola-title", paises: [ { sigla: "CCK", nombre: "Stickers Especiales", total: 12, pagInicio: 112 } ] }
         ];
 
@@ -205,22 +206,24 @@
             if (filtroActual === 'todos') {
                 elModoBtn.textContent = '👁️ Modo: Todos';
                 elModoBtn.style.backgroundColor = '#27ae60';
+                elBtnDinamico.textContent = '📋 Repetidos';
                 elBtnDinamico.style.backgroundColor = '#27ae60';
                 elBtnDinamico.style.borderColor = '#1e8449';
             } else {
                 elModoBtn.textContent = '👁️ Modo: Faltantes';
                 elModoBtn.style.backgroundColor = '#d35400';
+                elBtnDinamico.textContent = '📋 Faltantes';
                 elBtnDinamico.style.backgroundColor = '#d35400';
                 elBtnDinamico.style.borderColor = '#a04000';
             }
-            aplicarRulesVisibilidad();
+            actualizarInterfazDOM();
         }
 
         function procesarAccionLista() {
             if (filtroActual === 'faltantes') {
                 compartirFaltantes();
             } else {
-                compartirColeccionYRepetidos();
+                compartirSoloRepetidos();
             }
         }
 
@@ -261,15 +264,14 @@
             enviarTextoCompartir(textoLista, 'Mis Faltantes Panini 2026');
         }
 
-        function compartirColeccionYRepetidos() {
-            let textoLista = "📋 MI COLECCIÓN Y REPETIDOS - PANINI 2026\n";
-            textoLista += "(Los marcados con 'x' indican la cantidad de REPETIDOS que tengo)\n\n";
-            let totalPoseidos = 0;
-            let totalRepetidos = 0;
+        function compartirSoloRepetidos() {
+            let textoLista = "📋 MIS REPETIDOS - PANINI 2026\n";
+            textoLista += "(Solo se incluyen cromos con cantidad mayor a 1)\n\n";
+            let totalRepetidosContador = 0;
 
             estructuraGrupos.forEach(g => {
                 g.paises.forEach(p => {
-                    let itemsPais = [];
+                    let listaRepetidosPais = [];
                     const max = p.total || 20;
                     const inicio = (g.nombre === "Especiales") ? 0 : 1;
                     const fin = (g.nombre === "Especiales") ? (max - 1) : max;
@@ -281,44 +283,32 @@
 
                         if (val && val !== 'false') {
                             let cant = parseInt(val) || 1;
-                            totalPoseidos++;
-                            
                             if (cant > 1) {
                                 let extras = cant - 1;
-                                itemsPais.push(`${numStr} (x${extras})`);
-                                totalRepetidos += extras;
-                            } else {
-                                itemsPais.push(numStr);
+                                listaRepetidosPais.push(`${numStr}`); // Formato simple y compatible
+                                totalRepetidosContador += extras;
                             }
                         }
                     }
 
-                    if (itemsPais.length > 0) {
-                        textoLista += `${p.sigla}: ${itemsPais.join(', ')}\n`;
+                    if (listaRepetidosPais.length > 0) {
+                        textoLista += `${p.sigla}: ${listaRepetidosPais.join(', ')}\n`;
                     }
                 });
             });
 
-            if (totalPoseidos === 0) {
-                alert("Aún no tienes cromos registrados en tu álbum.");
+            if (totalRepetidosContador === 0) {
+                alert("No tienes ningún cromo repetido registrado actualmente.");
                 return;
             }
 
-            textoLista += `\n-----------------------------------`;
-            textoLista += `\nCromos pegados: ${totalPoseidos}`;
-            textoLista += `\nTotal repetidos disponibles: ${totalRepetidos}`;
-            
-            enviarTextoCompartir(textoLista, 'Mi Colección Panini 2026');
+            textoLista += `\nTotal cromos repetidos: ${totalRepetidosContador}`;
+            enviarTextoCompartir(textoLista, 'Mis Repetidos Panini 2026');
         }
 
         function enviarTextoCompartir(texto, titulo) {
             if (navigator.share) {
-                navigator.share({
-                    title: titulo,
-                    text: texto
-                }).catch(() => {
-                    copiarAlPortapapelesFallback(texto);
-                });
+                navigator.share({ title: titulo, text: texto }).catch(() => { copiarAlPortapapelesFallback(texto); });
             } else {
                 copiarAlPortapapelesFallback(texto);
             }
@@ -361,6 +351,10 @@
                 localStorage.setItem(idCromo, String(numActual + 1));
             }
             actualizarInterfazDOM();
+        }
+
+        async function avanzarContadorStickerEspecial(idCromo, cantidad) {
+             localStorage.setItem(idCromo, String(cantidad));
         }
 
         async function restarRepetida() {
@@ -485,17 +479,15 @@
                         let tiempoInicio = 0;
                         let timeoutPulsacion = null;
                         let pulsacionLargaEjecutada = false;
-                        let haHabidoMovimiento = false;
 
                         function alComenzarPresion(e) {
                             pulsacionLargaEjecutada = false;
-                            haHabidoMovimiento = false;
                             tiempoInicio = Date.now();
                             clearTimeout(timeoutPulsacion);
 
                             timeoutPulsacion = setTimeout(() => {
                                 const idCromo = casilla.getAttribute('data-id');
-                                if (localStorage.getItem(idCromo) && !haHabidoMovimiento) {
+                                if (localStorage.getItem(idCromo)) {
                                     pulsacionLargaEjecutada = true;
                                     if (e.cancelable) e.preventDefault();
                                     if (navigator.vibrate) navigator.vibrate(50);
@@ -510,7 +502,7 @@
 
                         function alTerminarPresion(e) {
                             clearTimeout(timeoutPulsacion);
-                            if (pulsacionLargaEjecutada || haHabidoMovimiento) {
+                            if (pulsacionLargaEjecutada) {
                                 if (e.cancelable) e.preventDefault();
                                 e.stopPropagation();
                                 return false;
@@ -527,7 +519,6 @@
                         function alCancelarPresion() {
                             clearTimeout(timeoutPulsacion);
                             tiempoInicio = 0;
-                            haHabidoMovimiento = true;
                         }
 
                         casilla.addEventListener('mousedown', (e) => {
@@ -542,11 +533,6 @@
                         casilla.addEventListener('touchstart', (e) => {
                             alComenzarPresion(e);
                         }, { passive: false });
-
-                        casilla.addEventListener('touchmove', () => {
-                            haHabidoMovimiento = true;
-                            clearTimeout(timeoutPulsacion);
-                        }, { passive: true });
 
                         casilla.addEventListener('touchend', (e) => {
                             alTerminarPresion(e);
@@ -642,12 +628,22 @@
                 g.paises.forEach(p => {
                     const b = document.getElementById(`block-${p.sigla}`);
                     if(b) {
-                        if (filtroActual === 'faltantes' && b.classList.contains('completo')) b.style.display = 'none';
-                        else { b.style.display = 'block'; ocultos = false; }
+                        if (filtroActual === 'faltantes' && b.classList.contains('completo')) {
+                            b.style.display = 'none';
+                        } else {
+                            b.style.display = 'block';
+                            ocultos = false;
+                        }
                     }
                 });
                 const gBlk = document.getElementById(`bloque-grupo-${g.nombre.replace(/ /g, '').replace(/-/g, '')}`);
-                if(gBlk) gBlk.style.display = ocultos ? 'none' : 'block';
+                if(gBlk) {
+                    if (filtroActual === 'todos') {
+                        gBlk.style.display = 'block';
+                    } else {
+                        gBlk.style.display = ocultos ? 'none' : 'block';
+                    }
+                }
             });
         }
 
@@ -678,9 +674,7 @@
                 const llaves = llavesReq.result;
                 const fotosReq = almacen.getAll();
                 fotosReq.onsuccess = () => {
-                    llaves.forEach((llave, idx) => {
-                        respaldo.fotos[llave] = fotosReq.result[idx];
-                    });
+                    llaves.forEach((llave, idx) => { respaldo.fotos[llave] = fotosReq.result[idx]; });
                     
                     const str = JSON.stringify(respaldo);
                     const blob = new Blob([str], { type: "application/json" });
@@ -703,7 +697,20 @@
 
         function procesarArchivoImportado(input) {
             if (input.files && input.files[0]) {
+                const archivo = input.files[0];
                 const lector = new FileReader();
+
+                // DETECCIÓN POR EXTENSIÓN: Si es .txt es una lista externa plano/texto
+                if (archivo.name.endsWith('.txt')) {
+                    lector.onload = (e) => {
+                        ejecutarCruceTextoPlano(e.target.result);
+                        input.value = "";
+                    };
+                    lector.readAsText(archivo);
+                    return;
+                }
+
+                // Procesamiento normal para .json de respaldos propios
                 lector.onload = async (e) => {
                     try {
                         const data = JSON.parse(e.target.result);
@@ -723,14 +730,66 @@
                             for (let k of llaves) { await guardarFotoDB(k, data.fotos[k]); }
                         }
                         
-                        alert("¡Respaldo restaurado!");
+                        alert("¡Respaldo restaurado con éxito!");
                         inicializarGuia();
                     } catch (err) {
-                        alert("Error al leer el archivo.");
+                        alert("Error al leer o procesar el archivo JSON.");
                     }
                     input.value = "";
                 };
-                lector.readAsText(input.files[0]);
+                lector.readAsText(archivo);
+            }
+        }
+
+        function ejecutarCruceTextoPlano(textoContenido) {
+            // Limpiamos resaltados previos
+            document.querySelectorAll('.casilla').forEach(c => c.classList.remove('match-intercambio'));
+            
+            let matchesEncontrados = 0;
+            
+            // Forzar visualización de todos los bloques para que se aprecien las coincidencias
+            if (filtroActual !== 'todos') {
+                alternarModoVista(); 
+            }
+
+            // Procesar líneas del texto plano (ej: "ARG: 02, 05, 10" o simplemente "MEX 05")
+            const lineas = textoContenido.split('\n');
+            
+            // Recorrer cada país de la estructura de la aplicación
+            estructuraGrupos.forEach(g => {
+                g.paises.forEach(p => {
+                    // Buscar líneas que mencionen la sigla del país (ej: "ARG")
+                    lineas.forEach(linea => {
+                        const limpia = linea.toUpperCase().trim();
+                        if (limpia.includes(p.sigla)) {
+                            
+                            // Extraer todos los números de esa línea mediante una expresión regular
+                            const numerosEncontrados = limpia.match(/\d+/g);
+                            if (numerosEncontrados) {
+                                numerosEncontrados.forEach(num => {
+                                    const numStr = String(num).padStart(2, '0');
+                                    const keyUnica = `panini-${p.sigla}-${numStr}`;
+                                    
+                                    const valPropio = localStorage.getItem(keyUnica);
+                                    // Match si a mí me falta (no existe o es false)
+                                    if (!valPropio || valPropio === 'false') {
+                                        const casillaDOM = document.querySelector(`.casilla[data-id="${keyUnica}"]`);
+                                        if (casillaDOM && !casillaDOM.classList.contains('match-intercambio')) {
+                                            casillaDOM.classList.add('match-intercambio');
+                                            matchesEncontrados++;
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    });
+                });
+            });
+
+            if (matchesEncontrados === 0) {
+                alert("Se analizó la lista de texto plano, pero no coincide ningún cromo con tus faltantes actuales.");
+            } else {
+                alert(`¡Match de Intercambio!\n\nSe identificaron ${matchesEncontrados} cromos de la lista que te hacen falta.\nLas casillas compatibles se iluminaron temporalmente en AZUL.`);
             }
         }
 
