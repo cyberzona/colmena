@@ -139,12 +139,12 @@
             { nombre: "Grupo A", paises: [ { sigla: "MEX", nombre: "México", total: 20, pagInicio: 8 }, { sigla: "RSA", font: "SAFA", nombre: "Sudáfrica", total: 20, pagInicio: 10 }, { sigla: "KOR", nombre: "Corea del Sur", total: 20, pagInicio: 12 }, { sigla: "CZE", nombre: "República Checa", total: 20, pagInicio: 14 } ] },
             { nombre: "Grupo B", paises: [ { sigla: "CAN", nombre: "Canadá", total: 20, pagInicio: 16 }, { sigla: "BIH", font: "NFSBIH", nombre: "Bosnia y Herzegovina", total: 20, pagInicio: 18 }, { sigla: "QAT", font: "QFA", nombre: "Qatar", total: 20, pagInicio: 20 }, { sigla: "SUI", font: "SFV", nombre: "Suiza", total: 20, pagInicio: 22 } ] },
             { nombre: "Grupo C", paises: [ { sigla: "BRA", nombre: "Brasil", total: 20, pagInicio: 24 }, { sigla: "MAR", nombre: "Marruecos", total: 20, pagInicio: 26 }, { sigla: "HAI", nombre: "Haití", total: 20, pagInicio: 28 }, { sigla: "SCO", font: "SFA", nombre: "Escocia", total: 20, pagInicio: 30 } ] },
-            { nombre: "Grupo D", paises: [ { sigla: "USA", nombre: "Estados Unidos", total: 20, pagInicio: 32 }, { sigla: "PAR", nombre: "Paraguay", total: 20, pagInicio: 34 }, { sigla: "AUS", font: "FFA", merge: true, nombre: "Australia", total: 20, pagInicio: 36 }, { sigla: "TUR", font: "TFF", font: "TFF", nombre: "Turquía", total: 20, pagInicio: 38 } ] },
+            { nombre: "Grupo D", paises: [ { sigla: "USA", nombre: "Estados Unidos", total: 20, pagInicio: 32 }, { sigla: "PAR", nombre: "Paraguay", total: 20, pagInicio: 34 }, { sigla: "AUS", font: "FFA", merge: true, nombre: "Australia", total: 20, pagInicio: 36 }, { sigla: "TUR", font: "TFF", nombre: "Turquía", total: 20, pagInicio: 38 } ] },
             { nombre: "Grupo E", paises: [ { sigla: "GER", nombre: "Alemania", total: 20, pagInicio: 40 }, { sigla: "CUW", font: "NAVU", nombre: "Curazao", total: 20, pagInicio: 42 }, { sigla: "CIV", font: "FIF", nombre: "Costa de Marfil", total: 20, pagInicio: 44 }, { sigla: "ECU", font: "FEF", nombre: "Ecuador", total: 20, pagInicio: 46 } ] },
             { nombre: "Grupo F", paises: [ { sigla: "NED", font: "KNVB", nombre: "Países Bajos", total: 20, pagInicio: 48 }, { sigla: "JPN", font: "JFA", nombre: "Japón", total: 20, pagInicio: 50 }, { sigla: "SWE", font: "SvFF", nombre: "Suecia", total: 20, pagInicio: 52 }, { sigla: "TUN", nombre: "Túnez", total: 20, pagInicio: 54 } ] },
             { nombre: "Grupo G", paises: [ { sigla: "BEL", nombre: "Bélgica", total: 20, pagInicio: 58 }, { sigla: "EGY", font: "EFA", nombre: "Egipto", total: 20, pagInicio: 60 }, { sigla: "IRN", font: "FFIRI", nombre: "Irán", total: 20, pagInicio: 62 }, { sigla: "NZL", font: "NZF", nombre: "Nueva Zelanda", total: 20, pagInicio: 64 } ] },
             { nombre: "Grupo H", paises: [ { sigla: "ESP", nombre: "España", total: 20, pagInicio: 66 }, { sigla: "CPV", nombre: "Cabo Verde", total: 20, pagInicio: 68 }, { sigla: "KSA", nombre: "Arabia Saudita", total: 20, pagInicio: 70 }, { sigla: "URU", nombre: "Uruguay", total: 20, pagInicio: 72 } ] },
-            { nombre: "Grupo I", paises: [ { sigla: "FRA", nombre: "Francia", total: 20, pagInicio: 74 }, { sigla: "SEN", nombre: "Senegal", total: 20, pagInicio: 76 }, { sigla: "IRQ", nombre: "Irak", total: 20, pagInicio: 78 }, { sigla: "NOR", nombre: "Noruega", total: 20, pagInicio: 80 } ] },
+            { nombre: "Grupo I", paises: [ { sigla: "FRA", nombre: "Francia", total: 20, pagInicio: 74 }, { sigla: "SEN", nombre: "Senegal", total: 20, pagInicio: 76 }, { sigla: "IRQ", font: "IFA", nombre: "Irak", total: 20, pagInicio: 78 }, { sigla: "NOR", nombre: "Noruega", total: 20, pagInicio: 80 } ] },
             { nombre: "Grupo J", paises: [ { sigla: "ARG", nombre: "Argentina", total: 20, pagInicio: 82 }, { sigla: "ALG", font: "FAF", nombre: "Argelia", total: 20, pagInicio: 84 }, { sigla: "AUT", font: "ÖFB", nombre: "Austria", total: 20, pagInicio: 86 }, { sigla: "JOR", nombre: "Jordania", total: 20, pagInicio: 88 } ] },
             { nombre: "Grupo K", paises: [ { sigla: "POR", font: "FPF", nombre: "Portugal", total: 20, pagInicio: 90 }, { sigla: "COD", nombre: "RD Congo", total: 20, pagInicio: 92 }, { sigla: "UZB", nombre: "Uzbekistán", total: 20, pagInicio: 94 }, { sigla: "COL", nombre: "Colombia", total: 20, pagInicio: 96 } ] },
             { nombre: "Grupo L", paises: [ { sigla: "ENG", font: "FA", nombre: "Inglaterra", total: 20, pagInicio: 98 }, { sigla: "CRO", nombre: "Croacia", total: 20, pagInicio: 100 }, { sigla: "GHA", font: "GFA", nombre: "Ghana", total: 20, pagInicio: 102 }, { sigla: "PAN", nombre: "Panamá", total: 20, pagInicio: 104 } ] },
@@ -345,10 +345,10 @@
         function avanzarContadorSticker(idCromo) {
             let actualValor = localStorage.getItem(idCromo);
             if (!actualValor || actualValor === 'false') {
-                localStorage.setItem(idCromo, '1'); // Primer clic = Poseído (1 unidad, sin badge visible)
+                localStorage.setItem(idCromo, '1'); 
             } else {
                 let numActual = parseInt(actualValor) || 1;
-                localStorage.setItem(idCromo, String(numActual + 1)); // Siguientes clics incrementan repetidas
+                localStorage.setItem(idCromo, String(numActual + 1)); 
             }
             actualizarInterfazDOM();
         }
@@ -393,7 +393,6 @@
                             if(valorValor && valorValor !== 'false') {
                                 c.classList.add('poseido');
                                 const cantidad = parseInt(valorValor) || 1;
-                                // CORRECCIÓN AQUÍ: Solo muestra el badge si la cantidad es mayor que 1
                                 if(cantidad > 1) {
                                     const bge = document.createElement('span');
                                     bge.className = 'badge-repetida';
@@ -689,6 +688,26 @@
         }
 
         function solicitarArchivoImportar() {
+            // Lógica inteligente de portapapeles integrada
+            if (navigator.clipboard && navigator.clipboard.readText) {
+                navigator.clipboard.readText().then(textoPortapapeles => {
+                    if (textoPortapapeles && textoPortapapeles.trim().length > 0) {
+                        const usarTexto = confirm("Detectamos texto de repetidas en tu portapapeles.\n\n¿Quieres usarlo para cruzar datos?\n\n(Si seleccionas 'Cancelar', se abrirá el buscador de archivos)");
+                        if (usarTexto) {
+                            ejecutarCruceTextoPlano(textoPortapapeles);
+                            return; 
+                        }
+                    }
+                    abrirSelectorDeArchivosFisicos();
+                }).catch(() => {
+                    abrirSelectorDeArchivosFisicos();
+                });
+            } else {
+                abrirSelectorDeArchivosFisicos();
+            }
+        }
+
+        function abrirSelectorDeArchivosFisicos() {
             document.getElementById('input-importar-archivo').click();
         }
 
