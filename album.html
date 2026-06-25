@@ -139,7 +139,7 @@
             { nombre: "Grupo A", paises: [ { sigla: "MEX", nombre: "México", total: 20, pagInicio: 8 }, { sigla: "RSA", font: "SAFA", nombre: "Sudáfrica", total: 20, pagInicio: 10 }, { sigla: "KOR", nombre: "Corea del Sur", total: 20, pagInicio: 12 }, { sigla: "CZE", nombre: "República Checa", total: 20, pagInicio: 14 } ] },
             { nombre: "Grupo B", paises: [ { sigla: "CAN", nombre: "Canadá", total: 20, pagInicio: 16 }, { sigla: "BIH", font: "NFSBIH", nombre: "Bosnia y Herzegovina", total: 20, pagInicio: 18 }, { sigla: "QAT", font: "QFA", nombre: "Qatar", total: 20, pagInicio: 20 }, { sigla: "SUI", font: "SFV", nombre: "Suiza", total: 20, pagInicio: 22 } ] },
             { nombre: "Grupo C", paises: [ { sigla: "BRA", nombre: "Brasil", total: 20, pagInicio: 24 }, { sigla: "MAR", nombre: "Marruecos", total: 20, pagInicio: 26 }, { sigla: "HAI", nombre: "Haití", total: 20, pagInicio: 28 }, { sigla: "SCO", font: "SFA", nombre: "Escocia", total: 20, pagInicio: 30 } ] },
-            { nombre: "Grupo D", paises: [ { sigla: "USA", nombre: "Estados Unidos", total: 20, pagInicio: 32 }, { sigla: "PAR", nombre: "Paraguay", total: 20, pagInicio: 34 }, { sigla: "AUS", font: "FFA", merge: true, nombre: "Australia", total: 20, pagInicio: 36 }, { sigla: "TUR", font: "TFF", nombre: "Turquía", total: 20, pagInicio: 38 } ] },
+            { nombre: "Grupo D", paises: [ { sigla: "USA", nombre: "Estados Unidos", total: 20, pagInicio: 32 }, { sigla: "PAR", nombre: "Paraguay", total: 20, pagInicio: 34 }, { sigla: "AUS", font: "FFA", merge: true, nombre: "Australia", total: 20, pagInicio: 36 }, { sigla: "TUR", font: "TFF", font: "TFF", nombre: "Turquía", total: 20, pagInicio: 38 } ] },
             { nombre: "Grupo E", paises: [ { sigla: "GER", nombre: "Alemania", total: 20, pagInicio: 40 }, { sigla: "CUW", font: "NAVU", nombre: "Curazao", total: 20, pagInicio: 42 }, { sigla: "CIV", font: "FIF", nombre: "Costa de Marfil", total: 20, pagInicio: 44 }, { sigla: "ECU", font: "FEF", nombre: "Ecuador", total: 20, pagInicio: 46 } ] },
             { nombre: "Grupo F", paises: [ { sigla: "NED", font: "KNVB", nombre: "Países Bajos", total: 20, pagInicio: 48 }, { sigla: "JPN", font: "JFA", nombre: "Japón", total: 20, pagInicio: 50 }, { sigla: "SWE", font: "SvFF", nombre: "Suecia", total: 20, pagInicio: 52 }, { sigla: "TUN", nombre: "Túnez", total: 20, pagInicio: 54 } ] },
             { nombre: "Grupo G", paises: [ { sigla: "BEL", nombre: "Bélgica", total: 20, pagInicio: 58 }, { sigla: "EGY", font: "EFA", nombre: "Egipto", total: 20, pagInicio: 60 }, { sigla: "IRN", font: "FFIRI", nombre: "Irán", total: 20, pagInicio: 62 }, { sigla: "NZL", font: "NZF", nombre: "Nueva Zelanda", total: 20, pagInicio: 64 } ] },
@@ -285,7 +285,7 @@
                             let cant = parseInt(val) || 1;
                             if (cant > 1) {
                                 let extras = cant - 1;
-                                listaRepetidosPais.push(`${numStr}`); // Formato simple y compatible
+                                listaRepetidosPais.push(`${numStr}`); 
                                 totalRepetidosContador += extras;
                             }
                         }
@@ -345,16 +345,12 @@
         function avanzarContadorSticker(idCromo) {
             let actualValor = localStorage.getItem(idCromo);
             if (!actualValor || actualValor === 'false') {
-                localStorage.setItem(idCromo, '1');
+                localStorage.setItem(idCromo, '1'); // Primer clic = Poseído (1 unidad, sin badge visible)
             } else {
                 let numActual = parseInt(actualValor) || 1;
-                localStorage.setItem(idCromo, String(numActual + 1));
+                localStorage.setItem(idCromo, String(numActual + 1)); // Siguientes clics incrementan repetidas
             }
             actualizarInterfazDOM();
-        }
-
-        async function avanzarContadorStickerEspecial(idCromo, cantidad) {
-             localStorage.setItem(idCromo, String(cantidad));
         }
 
         async function restarRepetida() {
@@ -397,6 +393,7 @@
                             if(valorValor && valorValor !== 'false') {
                                 c.classList.add('poseido');
                                 const cantidad = parseInt(valorValor) || 1;
+                                // CORRECCIÓN AQUÍ: Solo muestra el badge si la cantidad es mayor que 1
                                 if(cantidad > 1) {
                                     const bge = document.createElement('span');
                                     bge.className = 'badge-repetida';
@@ -700,7 +697,6 @@
                 const archivo = input.files[0];
                 const lector = new FileReader();
 
-                // DETECCIÓN POR EXTENSIÓN: Si es .txt es una lista externa plano/texto
                 if (archivo.name.endsWith('.txt')) {
                     lector.onload = (e) => {
                         ejecutarCruceTextoPlano(e.target.result);
@@ -710,7 +706,6 @@
                     return;
                 }
 
-                // Procesamiento normal para .json de respaldos propios
                 lector.onload = async (e) => {
                     try {
                         const data = JSON.parse(e.target.result);
@@ -742,28 +737,20 @@
         }
 
         function ejecutarCruceTextoPlano(textoContenido) {
-            // Limpiamos resaltados previos
             document.querySelectorAll('.casilla').forEach(c => c.classList.remove('match-intercambio'));
-            
             let matchesEncontrados = 0;
             
-            // Forzar visualización de todos los bloques para que se aprecien las coincidencias
             if (filtroActual !== 'todos') {
                 alternarModoVista(); 
             }
 
-            // Procesar líneas del texto plano (ej: "ARG: 02, 05, 10" o simplemente "MEX 05")
             const lineas = textoContenido.split('\n');
             
-            // Recorrer cada país de la estructura de la aplicación
             estructuraGrupos.forEach(g => {
                 g.paises.forEach(p => {
-                    // Buscar líneas que mencionen la sigla del país (ej: "ARG")
                     lineas.forEach(linea => {
                         const limpia = linea.toUpperCase().trim();
                         if (limpia.includes(p.sigla)) {
-                            
-                            // Extraer todos los números de esa línea mediante una expresión regular
                             const numerosEncontrados = limpia.match(/\d+/g);
                             if (numerosEncontrados) {
                                 numerosEncontrados.forEach(num => {
@@ -771,7 +758,6 @@
                                     const keyUnica = `panini-${p.sigla}-${numStr}`;
                                     
                                     const valPropio = localStorage.getItem(keyUnica);
-                                    // Match si a mí me falta (no existe o es false)
                                     if (!valPropio || valPropio === 'false') {
                                         const casillaDOM = document.querySelector(`.casilla[data-id="${keyUnica}"]`);
                                         if (casillaDOM && !casillaDOM.classList.contains('match-intercambio')) {
