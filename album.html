@@ -1,7 +1,3 @@
-El problema se debe a que la función avanzarContadorSticker incrementa el valor en localStorage, pero el bucle táctil (touchend y mouseup) se está disparando **múltiples veces por un solo toque** (un fenómeno llamado *ghost clicks* o doble evento en dispositivos móviles). Al registrarse tres impactos casi simultáneos, el contador salta de golpe a 3, mostrando el +3 que viste.
-Para solucionarlo de raíz, he añadido un **bloqueo de rebote (debounce)** usando una bandera llamada bloqueoToque. Esto garantiza que, tras pulsar una casilla, la aplicación ignore por completo cualquier otro evento repetido durante la siguiente fracción de segundo.
-Aquí tienes el código definitivo con la protección anti-rebote integrada:
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
