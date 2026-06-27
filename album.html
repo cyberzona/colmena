@@ -143,7 +143,7 @@
             { nombre: "Grupo D", paises: [ { sigla: "USA", nombre: "Estados Unidos", total: 20, pagInicio: 32 }, { sigla: "PAR", font: "APF", nombre: "Paraguay", total: 20, pagInicio: 34 }, { sigla: "AUS", font: "FFA", nombre: "Australia", total: 20, pagInicio: 36 }, { sigla: "TUR", font: "TFF", nombre: "Turquía", total: 20, pagInicio: 38 } ] },
             { nombre: "Grupo E", paises: [ { sigla: "GER", nombre: "Alemania", total: 20, pagInicio: 40 }, { sigla: "CUW", font: "NAVU", nombre: "Curazao", total: 20, pagInicio: 42 }, { sigla: "CIV", font: "FIF", nombre: "Costa de Marfil", total: 20, pagInicio: 44 }, { sigla: "ECU", font: "FEF", nombre: "Ecuador", total: 20, pagInicio: 46 } ] },
             { nombre: "Grupo F", paises: [ { sigla: "NED", font: "KNVB", nombre: "Países Bajos", total: 20, pagInicio: 48 }, { sigla: "JPN", font: "JFA", nombre: "Japón", total: 20, pagInicio: 50 }, { sigla: "SWE", font: "SvFF", nombre: "Suecia", total: 20, pagInicio: 52 }, { sigla: "TUN", nombre: "Túnez", total: 20, pagInicio: 54 } ] },
-            { nombre: "Grupo G", paises: [ { sigla: "BEL", nombre: "Bélgica", total: 20, pagInicio: 58 }, { sigla: "EGY", font: "EFA", nombre: "Egipto", total: 20, pagInicio: 60 }, { sigla: "IRN", font: "FFIRI", nombre: "Irán", total: 20, pagInicio: 62 }, { sigla: "NZL", font: "NZF", nombre: "Nueva Zelanda", total: 20, pagInicio: 64 } ] },
+            { nombre: "Grupo G", paises: [ { sigla: "BEL", nombre: "Bélgica", total: 20, pagInicio: 58 }, { sigla: "EGY", font: "EFA", nombre: "Egipto", total: 20, pagInicio: 60 }, { sigla: "IRN", font: "FFIRI", nombre: "Irán", total: 20, pagInicio: 62 }, { sigla: "NZL", font: "NZF", font: "NZF", nombre: "Nueva Zelanda", total: 20, pagInicio: 64 } ] },
             { nombre: "Grupo H", paises: [ { sigla: "ESP", nombre: "España", total: 20, pagInicio: 66 }, { sigla: "CPV", font: "FCF", nombre: "Cabo Verde", total: 20, pagInicio: 68 }, { sigla: "KSA", nombre: "Arabia Saudita", total: 20, pagInicio: 70 }, { sigla: "URU", font: "AUF", nombre: "Uruguay", total: 20, pagInicio: 72 } ] },
             { nombre: "Grupo I", paises: [ { sigla: "FRA", nombre: "Francia", total: 20, pagInicio: 74 }, { sigla: "SEN", nombre: "Senegal", total: 20, pagInicio: 76 }, { sigla: "IRQ", font: "IFA", nombre: "Irak", total: 20, pagInicio: 78 }, { sigla: "NOR", nombre: "Noruega", total: 20, pagInicio: 80 } ] },
             { nombre: "Grupo J", paises: [ { sigla: "ARG", font: "AFA", nombre: "Argentina", total: 20, pagInicio: 82 }, { sigla: "ALG", font: "FAF", nombre: "Argelia", total: 20, pagInicio: 84 }, { sigla: "AUT", font: "ÖFB", nombre: "Austria", total: 20, pagInicio: 86 }, { sigla: "JOR", nombre: "Jordania", total: 20, pagInicio: 88 } ] },
@@ -313,8 +313,7 @@
         }
 
         function compartirSoloRepetidos() {
-            let textoLista = "📋 MIS REPETIDOS - PANINI 2026\n";
-            textoLista += "(Solo se incluyen cromos con cantidad mayor a 1)\n\n";
+            let textoLista = "📋 MIS REPETIDOS - PANINI 2026\n\n";
             let totalRepetidosContador = 0;
 
             estructuraGrupos.forEach(g => {
@@ -890,7 +889,7 @@
                     actualizarInterfazDOM();
                 } else {
                     const elBtnDinamico = document.getElementById('btn-dinamico-lista');
-                    elBtnDinamico.textContent = '📋 Copiar Match';
+                    elBtnDinamico.textContent = '📋 Faltantes';
                     elBtnDinamico.style.backgroundColor = '#2980b9';
                     elBtnDinamico.style.borderColor = '#1b4f72';
                     
