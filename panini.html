@@ -4,67 +4,112 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Guía de Bolsillo Panini 2026</title>
+    <script src="https://unpkg.com/tesseract.js@v2.1.0/dist/tesseract.min.js"></script>
     <style>
         * { box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 8px; color: #333; background-color: #f4f6f7; }
-        h1 { text-align: center; font-size: 13px; margin: 5px 0 2px 0; text-transform: uppercase; color: #1a5276; letter-spacing: 0.5px; }
+        h1 { text-align: center; font-size: 14px; margin: 6px 0 4px 0; text-transform: uppercase; color: #1a5276; letter-spacing: 0.5px; }
         
-        .marcador-general { text-align: center; background: #2c3e50; color: #fff; font-size: 13px; font-weight: bold; padding: 6px; margin-bottom: 8px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 6px; }
-        .marcador-general span { color: #2ecc71; font-size: 14px; }
+        .marcador-general { text-align: center; background: #2c3e50; color: #fff; font-size: 14px; font-weight: bold; padding: 8px; margin-bottom: 10px; border-radius: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 8px; }
+        .marcador-general span { color: #2ecc71; font-size: 15px; }
+        .porcentaje-parentesis { color: #2ecc71; font-size: 14px; font-weight: normal; margin-left: 4px; }
         
-        .selector-rapido { background: #34495e; color: #fff; border: 1px solid #5d6d7e; padding: 3px 6px; font-size: 11px; font-weight: bold; border-radius: 4px; outline: none; max-width: 110px; cursor: pointer; }
+        .contenedor-busqueda-accion { display: flex; gap: 6px; align-items: center; }
+        .selector-rapido { background: #34495e; color: #fff; border: 1px solid #5d6d7e; padding: 6px 24px 6px 12px; font-size: 13px; font-weight: bold; border-radius: 20px; outline: none; max-width: 110px; cursor: pointer; height: 36px; appearance: none; -webkit-appearance: none; }
         .selector-rapido option { background: #2c3e50; color: #fff; }
+        
+        .btn-copiar-top { background-color: #d35400; color: white; border: 1px solid #a04000; padding: 6px 14px; font-size: 13px; font-weight: bold; border-radius: 20px; cursor: pointer; white-space: nowrap; -webkit-tap-highlight-color: transparent; height: 36px; display: flex; align-items: center; }
+        .btn-copiar-top:active { background-color: #a04000; }
 
-        .panel-respaldo { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; background: #fff; padding: 6px; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-        .btn-respaldo { flex: 1; min-width: 100px; background-color: #1a5276; color: white; border: none; padding: 8px; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; text-transform: uppercase; -webkit-tap-highlight-color: transparent; }
+        .panel-respaldo { display: flex; gap: 8px; margin-bottom: 12px; background: #fff; padding: 8px; border-radius: 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .btn-respaldo { flex: 1; background-color: #1a5276; color: white; border: none; padding: 10px 14px; font-size: 12px; font-weight: bold; border-radius: 20px; cursor: pointer; text-transform: uppercase; -webkit-tap-highlight-color: transparent; text-align: center; white-space: nowrap; min-height: 38px; user-select: none; -webkit-user-select: none; }
         .btn-respaldo:active { background-color: #11364f; }
         .btn-importar { background-color: #7f8c8d; }
         .btn-importar:active { background-color: #5d6d7e; }
         
-        .btn-filtro { background-color: #d35400; width: 100%; margin-top: 2px; }
-        .btn-filtro:active { background-color: #a04000; }
+        .btn-vista-toggle { flex: 1; background-color: #d35400; color: white; border: none; padding: 10px 14px; font-size: 12px; font-weight: bold; border-radius: 20px; cursor: pointer; text-transform: uppercase; text-align: center; -webkit-tap-highlight-color: transparent; white-space: nowrap; min-height: 38px; }
 
-        .grupo-block { margin-top: 8px; scroll-margin-top: 50px; }
-        .grupo-title { background-color: #1a5276; color: white; padding: 4px 8px; font-size: 11px; font-weight: bold; border-radius: 4px; text-transform: uppercase; }
-        
+        .grupo-block { margin-top: 10px; scroll-margin-top: 60px; }
+        .grupo-title { background-color: #1a5276; color: white; padding: 6px 14px; font-size: 13px; font-weight: bold; border-radius: 12px; text-transform: uppercase; }
         .especial-title { background-color: #b1942d; }
         .cocacola-title { background-color: #df0000; }
 
-        .pais-block { background: #fff; margin: 4px 0; padding: 6px; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: all 0.3s ease; scroll-margin-top: 50px; }
-        .pais-name { font-size: 11px; font-weight: bold; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
-        .contador { font-size: 10px; color: #7f8c8d; font-weight: 600; background: #eaeded; padding: 1px 5px; border-radius: 10px; }
+        .pais-block { background: #fff; margin: 6px 0; padding: 8px; border-radius: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: all 0.3s ease; scroll-margin-top: 60px; }
+        .pais-name { font-size: 13px; font-weight: bold; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; padding: 0 4px; }
+        .contador { font-size: 11px; color: #7f8c8d; font-weight: 600; background: #eaeded; padding: 2px 8px; border-radius: 10px; }
         .pais-block.completo .contador { background: #2ecc71; color: white; }
         
-        .paginas-contenedor { display: flex; flex-direction: column; gap: 6px; }
-        .pagina-album { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; padding: 4px; border: 1px dashed #d5dbdb; border-radius: 4px; background-color: #fcfcfc; position: relative; }
-        .pagina-album::before { content: attr(data-pagina); position: absolute; top: -6px; right: 6px; font-size: 7px; color: #bdc3c7; background: #fff; padding: 0 3px; font-weight: bold; text-transform: uppercase; }
+        .paginas-contenedor { display: flex; flex-direction: column; gap: 8px; }
+        .pagina-album { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; padding: 8px; border: 1px dashed #d5dbdb; border-radius: 8px; background-color: #fcfcfc; position: relative; }
+        .pagina-album::before { content: attr(data-pagina); position: absolute; top: -6px; right: 8px; font-size: 8px; color: #bdc3c7; background: #fff; padding: 0 4px; font-weight: bold; text-transform: uppercase; }
         
-        .casilla { border: 1px solid #bdc3c7; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; background-color: #fff; border-radius: 4px; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; transition: background 0.1s; }
+        .casilla { 
+            border: 1px solid #bdc3c7; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: bold; background-color: #fff; border-radius: 8px; cursor: pointer; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; position: relative; 
+        }
         .casilla.poseido { background-color: #27ae60 !important; color: white !important; border-color: #1e8449 !important; }
+        .casilla.match-intercambio { background-color: #2980b9 !important; color: white !important; border-color: #1b4f72 !important; }
+        .badge-repetida { position: absolute; top: -5px; right: -5px; background-color: #e74c3c; color: white; font-size: 9px; font-weight: bold; min-width: 16px; height: 16px; padding: 0 3px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid white; z-index: 10; }
+
+        .marco-foto-contenedor { width: 100%; max-width: 280px; height: 320px; margin: 0 auto 12px auto; background-color: #eaeded; border: 2px dashed #bdc3c7; border-radius: 12px; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; }
+        .marco-foto-contenedor img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .texto-sin-foto { font-size: 12px; color: #7f8c8d; padding: 15px; text-align: center; position: absolute; }
 
         .modal-foto { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
-        .modal-contenido { background: white; padding: 12px; border-radius: 8px; max-width: 90%; max-height: 80%; text-align: center; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
-        .modal-foto img { max-width: 100%; max-height: 60vh; object-fit: contain; border-radius: 4px; display: block; margin: 0 auto; background-color: #eee; }
-        .modal-titulo { font-size: 13px; font-weight: bold; margin-bottom: 8px; color: #2c3e50; text-transform: uppercase; }
-        .btn-cerrar { display: block; width: 100%; margin-top: 10px; background-color: #c0392b; color: white; border: none; padding: 8px; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
+        .modal-contenido { background: white; padding: 16px; border-radius: 16px; width: 90%; max-width: 320px; text-align: center; position: relative; }
+        .modal-titulo { font-size: 14px; font-weight: bold; margin-bottom: 12px; color: #2c3e50; text-transform: uppercase; }
+        
+        .btn-accion { display: block; width: 100%; margin-top: 10px; border: none; padding: 10px 16px; font-size: 13px; font-weight: bold; border-radius: 24px; cursor: pointer; text-transform: uppercase; min-height: 40px; }
+        .btn-capturar { background-color: #2980b9; color: white; }
+        .btn-restar { background-color: #e67e22; color: white; } 
+        .btn-eliminar { background-color: #e74c3c; color: white; }
+        .btn-cerrar { background-color: #7f8c8d; color: white; }
+
+        .scanner-loader { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 3000; flex-direction: column; justify-content: center; align-items: center; color: white; font-weight: bold; font-size: 14px; text-align: center; padding: 20px; }
+        .spinner { border: 4px solid rgba(255,255,255,0.3); width: 40px; height: 40px; border-radius: 50%; border-left-color: #2980b9; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Banner de Notificación con opción Undo */
+        .banner-undo { display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #2c3e50; color: white; padding: 12px 20px; border-radius: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 2000; align-items: center; gap: 14px; font-size: 13px; min-width: 280px; justify-content: space-between; border: 1px solid #5d6d7e; }
+        .btn-undo-action { background: #e74c3c; color: white; border: none; padding: 6px 12px; font-size: 11px; font-weight: bold; border-radius: 15px; cursor: pointer; text-transform: uppercase; }
+
+        .btn-flotante-inicio { position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px; background-color: #2c3e50; color: white; border: 2px solid #5d6d7e; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.4); z-index: 999; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+        .btn-flotante-inicio.visible { opacity: 1; visibility: visible; }
+        
+        #input-camara, #input-importar-archivo, #input-scanner-lote { display: none; }
     </style>
 </head>
 <body>
 
     <h1>📋 GUÍA DE BOLSILLO – PANINI 2026</h1>
     
+    <input type="file" id="input-camara" accept="image/*" capture="environment" onchange="procesarFotoCapturada(this)">
+    <input type="file" id="input-importar-archivo" accept=".json,.txt" onchange="procesarArchivoImportado(this)">
+    <input type="file" id="input-scanner-lote" accept="image/*" capture="environment" onchange="procesarLoteOCR(this)">
+
     <div class="marcador-general">
-        <div>Total: <span id="total-general">0 / 992</span></div>
-        <div>Progreso: <span id="porcentaje-general">0.0%</span></div>
-        <select class="selector-rapido" id="selector-equipos" onchange="irAEquipo(this.value)">
-            <option value="">🔍 Ir a...</option>
-        </select>
+        <div>Total: <span id="total-general">0 / 992</span><span id="porcentaje-general" class="porcentaje-parentesis">(0.0%)</span></div>
+        <div class="contenedor-busqueda-accion">
+            <select class="selector-rapido" id="selector-equipos" onchange="irAEquipo(this.value)">
+                <option value="">🔍 Ir a...</option>
+            </select>
+            <button class="btn-copiar-top" id="btn-dinamico-lista" onclick="procesarAccionLista()">📋 Faltantes</button>
+        </div>
     </div>
 
     <div class="panel-respaldo">
         <button class="btn-respaldo" onclick="exportarProgreso()">📤 Exportar</button>
-        <button class="btn-respaldo btn-importar" onclick="importarProgreso()">📥 Importar</button>
-        <button class="btn-respaldo btn-filtro" id="btn-filtro-vista" onclick="alternarFiltro()">👁️ Modo: Ver Faltantes</button>
+        <button class="btn-respaldo btn-importar" id="btn-main-importar" onclick="solicitarArchivoImportar()">📥 Importar</button>
+        <button class="btn-vista-toggle" id="btn-modo-alternar" onclick="alternarModoVista()">👁️ Modo: Faltantes</button>
+    </div>
+
+    <div id="loader-ocr" class="scanner-loader">
+        <div class="spinner"></div>
+        <div id="ocr-status-text">Procesando...</div>
+    </div>
+
+    <div id="toast-undo-container" class="banner-undo">
+        <span id="toast-undo-texto">Lote integrado con éxito.</span>
+        <button class="btn-undo-action" onclick="ejecutarDeshacerLote()">Deshacer (Undo)</button>
     </div>
 
     <div id="guia-contenedor"></div>
@@ -72,385 +117,867 @@
     <div id="vista-foto" class="modal-foto" onclick="cerrarFoto()">
         <div class="modal-contenido" onclick="event.stopPropagation()">
             <div id="foto-titulo" class="modal-titulo"></div>
-            <img id="foto-img" src="" alt="Cargando sticker...">
-            <button class="btn-cerrar" onclick="cerrarFoto()">Cerrar</button>
+            <div class="marco-foto-contenedor">
+                <span id="txt-sin-foto" class="texto-sin-foto">Aún no has tomado o cargado una foto para este cromo.</span>
+                <img id="foto-img" src="" alt="" style="display: none;">
+            </div>
+            <button id="btn-modal-capturar" class="btn-accion btn-capturar" onclick="abrirCamara()">📸 Tomar Foto Memo</button>
+            <button id="btn-modal-restar" class="btn-accion btn-restar" onclick="restarRepetida()">➖ Quitar Una Repetida</button>
+            <button id="btn-modal-eliminar" class="btn-accion btn-eliminar" onclick="borrarCromoCompleto()">🗑️ Eliminar Cromo del Álbum</button>
+            <button class="btn-accion btn-cerrar" onclick="cerrarFoto()">Cerrar</button>
         </div>
     </div>
 
+    <button id="btn-subir" class="btn-flotante-inicio" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">🔝</button>
+
     <script>
         let filtroActual = 'faltantes';
+        let db;
+        let cromoSeleccionadoActual = null;
+        let bloqueoToque = false; 
+        let instantaneaRespaldoUndo = null; // Almacén temporal para la acción Undo
 
         const estructuraGrupos = [
-            {
-                nombre: "Especiales",
-                esEspecial: true,
-                estiloClase: "especial-title",
-                paises: [ { sigla: "FWC", nombre: "FIFA World Cup", total: 20, pagInicio: 1 } ]
-            },
-            {
-                nombre: "Grupo A",
-                paises: [
-                    { sigla: "MEX", nombre: "México", total: 20, pagInicio: 8 }, { sigla: "RSA", nombre: "Sudáfrica", total: 20, pagInicio: 10 },
-                    { sigla: "KOR", nombre: "Corea del Sur", total: 20, pagInicio: 12 }, { sigla: "CZE", nombre: "República Checa", total: 20, pagInicio: 14 }
-                ]
-            },
-            {
-                nombre: "Grupo B",
-                paises: [
-                    { sigla: "CAN", nombre: "Canadá", total: 20, pagInicio: 16 }, { sigla: "BIH", nombre: "Bosnia y Herzegovina", total: 20, pagInicio: 18 },
-                    { sigla: "QAT", nombre: "Qatar", total: 20, pagInicio: 20 }, { sigla: "SUI", nombre: "Suiza", total: 20, pagInicio: 22 }
-                ]
-            },
-            {
-                nombre: "Grupo C",
-                paises: [
-                    { sigla: "BRA", nombre: "Brasil", total: 20, pagInicio: 24 }, { sigla: "MAR", nombre: "Marruecos", total: 20, pagInicio: 26 },
-                    { sigla: "HAI", nombre: "Haití", total: 20, pagInicio: 28 }, { sigla: "SCO", font: "Escocia", nombre: "Escocia", total: 20, pagInicio: 30 }
-                ]
-            },
-            {
-                nombre: "Grupo D",
-                paises: [
-                    { sigla: "USA", nombre: "Estados Unidos", total: 20, pagInicio: 32 }, { sigla: "PAR", nombre: "Paraguay", total: 20, pagInicio: 34 },
-                    { sigla: "AUS", nombre: "Australia", total: 20, pagInicio: 36 }, { sigla: "TUR", nombre: "Turquía", total: 20, pagInicio: 38 }
-                ]
-            },
-            {
-                nombre: "Grupo E",
-                paises: [
-                    { sigla: "GER", nombre: "Alemania", total: 20, pagInicio: 40 }, { sigla: "CUW", nombre: "Curazao", total: 20, pagInicio: 42 },
-                    { sigla: "CIV", nombre: "Costa de Marfil", total: 20, pagInicio: 44 }, { sigla: "ECU", nombre: "Ecuador", total: 20, pagInicio: 46 }
-                ]
-            },
-            {
-                nombre: "Grupo F",
-                paises: [
-                    { sigla: "NED", nombre: "Países Bajos", total: 20, pagInicio: 48 }, { sigla: "JPN", nombre: "Japón", total: 20, pagInicio: 50 },
-                    { sigla: "SWE", nombre: "Suecia", total: 20, pagInicio: 52 }, { sigla: "TUN", nombre: "Túnez", total: 20, pagInicio: 54 }
-                ]
-            },
-            {
-                nombre: "Grupo G",
-                paises: [
-                    { sigla: "BEL", nombre: "Bélgica", total: 20, pagInicio: 58 }, { sigla: "EGY", nombre: "Egipto", total: 20, pagInicio: 60 },
-                    { sigla: "IRN", nombre: "Irán", total: 20, pagInicio: 62 }, { sigla: "NZL", nombre: "Nueva Zelanda", total: 20, pagInicio: 64 }
-                ]
-            },
-            {
-                nombre: "Grupo H",
-                paises: [
-                    { sigla: "ESP", nombre: "España", total: 20, pagInicio: 66 }, { sigla: "CPV", nombre: "Cabo Verde", total: 20, pagInicio: 68 },
-                    { sigla: "KSA", nombre: "Arabia Saudita", total: 20, pagInicio: 70 }, { sigla: "URU", nombre: "Uruguay", total: 20, pagInicio: 72 }
-                ]
-            },
-            {
-                nombre: "Grupo I",
-                paises: [
-                    { sigla: "FRA", nombre: "Francia", total: 20, pagInicio: 74 }, { sigla: "SEN", nombre: "Senegal", total: 20, pagInicio: 76 },
-                    { sigla: "IRQ", nombre: "Irak", total: 20, pagInicio: 78 }, { sigla: "NOR", nombre: "Noruega", total: 20, pagInicio: 80 }
-                ]
-            },
-            {
-                nombre: "Grupo J",
-                paises: [
-                    { sigla: "ARG", nombre: "Argentina", total: 20, pagInicio: 82 }, { sigla: "ALG", nombre: "Argelia", total: 20, pagInicio: 84 },
-                    { sigla: "AUT", nombre: "Austria", total: 20, pagInicio: 86 }, { sigla: "JOR", nombre: "Jordania", total: 20, pagInicio: 88 }
-                ]
-            },
-            {
-                nombre: "Grupo K",
-                paises: [
-                    { sigla: "POR", nombre: "Portugal", total: 20, pagInicio: 90 }, { sigla: "COD", nombre: "RD Congo", total: 20, pagInicio: 92 },
-                    { sigla: "UZB", nombre: "Uzbekistán", total: 20, pagInicio: 94 }, { sigla: "COL", nombre: "Colombia", total: 20, pagInicio: 96 }
-                ]
-            },
-            {
-                nombre: "Grupo L",
-                paises: [
-                    { sigla: "ENG", nombre: "Inglaterra", total: 20, pagInicio: 98 }, { sigla: "CRO", nombre: "Croacia", total: 20, pagInicio: 100 },
-                    { sigla: "GHA", nombre: "Ghana", total: 20, pagInicio: 102 }, { sigla: "PAN", nombre: "Panamá", total: 20, pagInicio: 104 }
-                ]
-            },
-            {
-                nombre: "Coca-Cola",
-                esEspecial: true,
-                estiloClase: "cocacola-title",
-                paises: [ { sigla: "CCK", nombre: "Stickers Especiales", total: 12, pagInicio: 112 } ]
-            }
+            { nombre: "Especiales", esEspecial: true, estiloClase: "especial-title", paises: [ { sigla: "FWC", nombre: "FIFA World Cup", total: 20, pagInicio: 1 } ] },
+            { nombre: "Grupo A", paises: [ { sigla: "MEX", nombre: "México", total: 20, pagInicio: 8 }, { sigla: "RSA", nombre: "Sudáfrica", total: 20, pagInicio: 10 }, { sigla: "KOR", nombre: "Corea del Sur", total: 20, pagInicio: 12 }, { sigla: "CZE", nombre: "República Checa", total: 20, pagInicio: 14 } ] },
+            { nombre: "Grupo B", paises: [ { sigla: "CAN", nombre: "Canadá", total: 20, pagInicio: 16 }, { sigla: "BIH", nombre: "Bosnia y Herzegovina", total: 18, pagInicio: 18 }, { sigla: "QAT", nombre: "Qatar", total: 20, pagInicio: 20 }, { sigla: "SUI", nombre: "Suiza", total: 20, pagInicio: 22 } ] },
+            { nombre: "Grupo C", paises: [ { sigla: "BRA", nombre: "Brasil", total: 20, pagInicio: 24 }, { sigla: "MAR", nombre: "Marruecos", total: 20, pagInicio: 26 }, { sigla: "HAI", nombre: "Haití", total: 20, pagInicio: 28 }, { sigla: "SCO", nombre: "Escocia", total: 20, pagInicio: 30 } ] },
+            { nombre: "Grupo D", paises: [ { sigla: "USA", nombre: "Estados Unidos", total: 20, pagInicio: 32 }, { sigla: "PAR", nombre: "Paraguay", total: 20, pagInicio: 34 }, { sigla: "AUS", nombre: "Australia", total: 20, pagInicio: 36 }, { sigla: "TUR", nombre: "Turquía", total: 20, pagInicio: 38 } ] },
+            { nombre: "Grupo E", paises: [ { sigla: "GER", nombre: "Alemania", total: 20, pagInicio: 40 }, { sigla: "CUW", nombre: "Curazao", total: 20, pagInicio: 42 }, { sigla: "CIV", nombre: "Costa de Marfil", total: 20, pagInicio: 44 }, { sigla: "ECU", nombre: "Ecuador", total: 20, pagInicio: 46 } ] },
+            { nombre: "Grupo F", paises: [ { sigla: "NED", nombre: "Países Bajos", total: 20, pagInicio: 48 }, { sigla: "JPN", nombre: "Japón", total: 20, pagInicio: 50 }, { sigla: "SWE", nombre: "Suecia", total: 20, pagInicio: 52 }, { sigla: "TUN", nombre: "Túnez", total: 20, pagInicio: 54 } ] },
+            { nombre: "Grupo G", paises: [ { sigla: "BEL", nombre: "Bélgica", total: 20, pagInicio: 58 }, { sigla: "EGY", nombre: "Egipto", total: 20, pagInicio: 60 }, { sigla: "IRN", nombre: "Irán", total: 20, pagInicio: 62 }, { sigla: "NZL", nombre: "Nueva Zelanda", total: 20, pagInicio: 64 } ] },
+            { nombre: "Grupo H", paises: [ { sigla: "ESP", nombre: "España", total: 20, pagInicio: 66 }, { sigla: "CPV", nombre: "Cabo Verde", total: 20, pagInicio: 68 }, { sigla: "KSA", nombre: "Arabia Saudita", total: 20, pagInicio: 70 }, { sigla: "URU", nombre: "Uruguay", total: 20, pagInicio: 72 } ] },
+            { nombre: "Grupo I", paises: [ { sigla: "FRA", nombre: "Francia", total: 20, pagInicio: 74 }, { sigla: "SEN", nombre: "Senegal", total: 20, pagInicio: 76 }, { sigla: "IRQ", nombre: "Irak", total: 20, pagInicio: 78 }, { sigla: "NOR", nombre: "Noruega", total: 20, pagInicio: 80 } ] },
+            { nombre: "Grupo J", paises: [ { sigla: "ARG", nombre: "Argentina", total: 20, pagInicio: 82 }, { sigla: "ALG", nombre: "Argelia", total: 20, pagInicio: 84 }, { sigla: "AUT", nombre: "Austria", total: 20, pagInicio: 86 }, { sigla: "JOR", nombre: "Jordania", total: 20, pagInicio: 88 } ] },
+            { nombre: "Grupo K", paises: [ { sigla: "POR", nombre: "Portugal", total: 20, pagInicio: 90 }, { sigla: "COD", nombre: "RD Congo", total: 20, pagInicio: 92 }, { sigla: "UZB", nombre: "Uzbekistán", total: 20, pagInicio: 94 }, { sigla: "COL", nombre: "Colombia", total: 20, pagInicio: 96 } ] },
+            { nombre: "Grupo L", paises: [ { sigla: "ENG", nombre: "Inglaterra", total: 20, pagInicio: 98 }, { sigla: "CRO", nombre: "Croacia", total: 20, pagInicio: 100 }, { sigla: "GHA", nombre: "Ghana", total: 20, pagInicio: 102 }, { sigla: "PAN", nombre: "Panamá", total: 104 } ] },
+            { nombre: "Coca-Cola", esEspecial: true, estiloClase: "cocacola-title", paises: [ { sigla: "CCK", nombre: "Stickers Especiales", total: 12, pagInicio: 112 } ] }
         ];
 
         const contenedor = document.getElementById('guia-contenedor');
         const selectEquipos = document.getElementById('selector-equipos');
 
-        function inicializarGuia() {
+        window.addEventListener('scroll', () => {
+            const btn = document.getElementById('btn-subir');
+            if (window.scrollY > 300) btn.classList.add('visible');
+            else btn.classList.remove('visible');
+        });
+
+        function abrirDB() {
+            return new Promise((resolve) => {
+                const solicitud = indexedDB.open("PaniniFotosDB", 1);
+                solicitud.onupgradeneeded = (e) => { e.target.result.createObjectStore("fotos"); };
+                solicitud.onsuccess = (e) => { db = e.target.result; resolve(); };
+            });
+        }
+
+        function guardarFotoDB(id, base64Str) {
+            return new Promise((resolve) => {
+                const tx = db.transaction(["fotos"], "readwrite");
+                tx.objectStore("fotos").put(base64Str, id);
+                tx.oncomplete = () => resolve();
+            });
+        }
+
+        function obtenerFotoDB(id) {
+            return new Promise((resolve) => {
+                const tx = db.transaction(["fotos"], "readonly");
+                const req = tx.objectStore("fotos").get(id);
+                req.onsuccess = () => resolve(req.result || null);
+                req.onerror = () => resolve(null);
+            });
+        }
+
+        function borrarFotoDB(id) {
+            return new Promise((resolve) => {
+                const tx = db.transaction(["fotos"], "readwrite");
+                tx.objectStore("fotos").delete(id);
+                tx.oncomplete = () => resolve();
+            });
+        }
+
+        function abrirCamara() {
+            document.getElementById('input-camara').click();
+        }
+
+        /* ==============================================================
+           MÓDULO: ESCÁNER INTELIGENTE POR LOTES (LONG PRESS IMPORTAR)
+           ============================================================== */
+        function configurarLongPressLote() {
+            const btnMainImportar = document.getElementById('btn-main-importar');
+            if (!btnMainImportar) return;
+
+            let temporizadorPulsacion;
+            let esLargo = false;
+
+            btnMainImportar.addEventListener('touchstart', (e) => {
+                esLargo = false;
+                temporizadorPulsacion = setTimeout(() => {
+                    esLargo = true;
+                    if (navigator.vibrate) navigator.vibrate(70);
+                    activarDisparadorLote();
+                }, 800); 
+            }, { passive: true });
+
+            btnMainImportar.addEventListener('touchend', (e) => {
+                clearTimeout(temporizadorPulsacion);
+                if (esLargo) {
+                    e.preventDefault(); 
+                }
+            });
+
+            // Fallback Ordenador / Mouse
+            btnMainImportar.addEventListener('mousedown', () => {
+                esLargo = false;
+                temporizadorPulsacion = setTimeout(() => { esLargo = true; activarDisparadorLote(); }, 800);
+            });
+            btnMainImportar.addEventListener('mouseup', (e) => {
+                clearTimeout(temporizadorPulsacion);
+                if (esLargo) e.preventDefault();
+            });
+        }
+
+        function activarDisparadorLote() {
+            document.getElementById('input-scanner-lote').click();
+        }
+
+        function procesarLoteOCR(input) {
+            if (!input.files || !input.files[0]) return;
+
+            const loader = document.getElementById('loader-ocr');
+            const statusTexto = document.getElementById('ocr-status-text');
+            
+            loader.style.display = 'flex';
+            statusTexto.textContent = "Procesando ráfaga analítica...";
+
+            const archivo = input.files[0];
+            const lector = new FileReader();
+
+            lector.onload = function(e) {
+                Tesseract.recognize(
+                    e.target.result,
+                    'eng',
+                    { logger: m => {
+                        if(m.status === 'recognizing text') {
+                            statusTexto.textContent = `Extrayendo texto: ${Math.floor(m.progress * 100)}%`;
+                        }
+                    }}
+                ).then(({ data: { text } }) => {
+                    loader.style.display = 'none';
+                    input.value = "";
+                    analizarInventarioLeido(text);
+                }).catch(err => {
+                    loader.style.display = 'none';
+                    input.value = "";
+                    alert("Error analítico en el motor OCR.");
+                });
+            };
+            lector.readAsDataURL(archivo);
+        }
+
+        function analizarInventarioLeido(textoCrudo) {
+            const limpio = textoCrudo.toUpperCase().replace(/\s+/g, ' ');
+            const patronCodigo = /\b([A-Z]{3})\s*(\d+)\b/g;
+            let match;
+            let loteMapeado = {};
+
+            while ((match = patronCodigo.exec(limpio)) !== null) {
+                const sigla = match[1];
+                const numStr = String(match[2]).padStart(2, '0');
+                const idCromo = `panini-${sigla}-${numStr}`;
+
+                // Validar que la nomenclatura exista en la configuración de la guía
+                let existeSigla = estructuraGrupos.some(g => g.paises.some(p => p.sigla === sigla));
+                if (!existeSigla) continue;
+
+                if (!loteMapeado[idCromo]) {
+                    loteMapeado[idCromo] = { sigla, numero: numStr, cantidadDetectada: 1 };
+                } else {
+                    loteMapeado[idCromo].cantidadDetectada += 1;
+                }
+            }
+
+            if (Object.keys(loteMapeado).length === 0) {
+                alert("No se identificaron códigos nítidos de 3 letras y un número en la captura.");
+                return;
+            }
+
+            mostrarConsolaVerificacionLote(loteMapeado);
+        }
+
+        function mostrarConsolaVerificacionLote(loteMapeado) {
+            const modal = document.getElementById('vista-foto');
+            const plantillaOriginal = modal.querySelector('.modal-contenido').innerHTML;
+
+            let htmlConsola = `
+                <div class="modal-titulo" style="color:#1a5276;">📦 Lote Escaneado</div>
+                <div style="text-align: left; max-height: 250px; overflow-y: auto; margin: 10px 0; font-size: 13px; border: 1px solid #ddd; padding: 8px; border-radius: 8px; background:#fcfcfc;">
+            `;
+
+            Object.keys(loteMapeado).forEach(idCromo => {
+                const cromo = loteMapeado[idCromo];
+                const localVal = localStorage.getItem(idCromo);
+                const esNuevo = (!localVal || localVal === 'false');
+                
+                let etiquetaDestino = esNuevo ? 
+                    `<span style="color:#27ae60; font-weight:bold;">↳ Irá al Álbum</span>` : 
+                    `<span style="color:#d35400; font-weight:bold;">↳ Sumará Repetida</span>`;
+
+                htmlConsola += `
+                    <div id="item-lote-${idCromo}" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; padding-bottom:6px; border-bottom:1px solid #eee;">
+                        <div>
+                            <strong>${cromo.sigla}-${cromo.numero}</strong><br>${etiquetaDestino}
+                        </div>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <button style="width:26px; height:26px; border-radius:50%; border:1px solid #bbb; background:#fff; font-weight:bold;" onclick="window.modificarContadorLote('${idCromo}', -1)">-</button>
+                            <span id="cant-viva-lote-${idCromo}" style="font-weight:bold; min-width:16px; text-align:center;">${cromo.cantidadDetectada}</span>
+                            <button style="width:26px; height:26px; border-radius:50%; border:1px solid #bbb; background:#fff; font-weight:bold;" onclick="window.modificarContadorLote('${idCromo}', 1)">+</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            htmlConsola += `
+                </div>
+                <div style="font-size:11px; color:#7f8c8d; margin-bottom:10px;">¿Deseas procesar e integrar este lote de cromos?</div>
+                <button class="btn-accion btn-capturar" id="btn-confirmar-lote-on" style="background-color:#27ae60; margin-top:0;">Sí, Procesar Lote</button>
+                <button class="btn-accion btn-cerrar" id="btn-abortar-lote-on" style="margin-top:6px;">No, Cancelar</button>
+            `;
+
+            modal.querySelector('.modal-contenido').innerHTML = htmlConsola;
+            modal.style.display = 'flex';
+
+            window.modificarContadorLote = function(idCromo, delta) {
+                let visor = document.getElementById(`cant-viva-lote-${idCromo}`);
+                let actual = parseInt(visor.textContent) || 0;
+                let nuevoValor = actual + delta;
+
+                if (nuevoValor <= 0) {
+                    delete loteMapeado[idCromo];
+                    document.getElementById(`item-lote-${idCromo}`).remove();
+                    if (Object.keys(loteMapeado).length === 0) { restaurarModalBase(plantillaOriginal); }
+                } else {
+                    loteMapeado[idCromo].cantidadDetectada = nuevoValor;
+                    visor.textContent = nuevoValor;
+                }
+            };
+
+            document.getElementById('btn-confirmar-lote-on').onclick = function() {
+                ejecutarInyeccionLoteYPrepararUndo(loteMapeado);
+                restaurarModalBase(plantillaOriginal);
+            };
+
+            document.getElementById('btn-abortar-lote-on').onclick = function() {
+                restaurarModalBase(plantillaOriginal);
+            };
+        }
+
+        function ejecutarInyeccionLoteYPrepararUndo(loteFinal) {
+            // Generar snapshot de respaldo para la funcionalidad de Deshacer (Undo)
+            instantaneaRespaldoUndo = {};
+            
+            Object.keys(loteFinal).forEach(idCromo => {
+                // Guardamos el estado original tal cual estaba antes de la operación
+                instantaneaRespaldoUndo[idCromo] = localStorage.getItem(idCromo);
+
+                const item = loteFinal[idCromo];
+                const valorActual = localStorage.getItem(idCromo);
+                
+                let baseUnidades = 0;
+                if (valorActual && valorActual !== 'false') {
+                    baseUnidades = parseInt(valorActual) || 1;
+                }
+
+                let inyeccionFinal = baseUnidades + item.cantidadDetectada;
+                localStorage.setItem(idCromo, String(inyeccionFinal));
+            });
+
+            actualizarInterfazDOM();
+            mostrarBannerDeshacer(Object.keys(loteFinal).length);
+        }
+
+        function mostrarBannerDeshacer(numCromos) {
+            const banner = document.getElementById('toast-undo-container');
+            const texto = document.getElementById('toast-undo-texto');
+            
+            texto.textContent = `Procesados ${numCromos} cromo(s) correctamente.`;
+            banner.style.display = 'flex';
+
+            // El banner desaparece automáticamente a los 10 segundos si no se usa
+            setTimeout(() => {
+                banner.style.display = 'none';
+            }, 10000);
+        }
+
+        function ejecutarDeshacerLote() {
+            if (!instantaneaRespaldoUndo) return;
+
+            Object.keys(instantaneaRespaldoUndo).forEach(idCromo => {
+                const valorPrevio = instantaneaRespaldoUndo[idCromo];
+                if (valorPrevio === null) {
+                    localStorage.removeItem(idCromo); // No existía, se elimina
+                } else {
+                    localStorage.setItem(idCromo, valorPrevio); // Se restaura su cantidad previa
+                }
+            });
+
+            instantaneaRespaldoUndo = null;
+            document.getElementById('toast-undo-container').style.display = 'none';
+            actualizarInterfazDOM();
+            alert("↩️ Operación revertida. El inventario ha vuelto a su estado anterior.");
+        }
+
+        function restaurarModalBase(htmlOriginal) {
+            const modal = document.getElementById('vista-foto');
+            modal.style.display = 'none';
+            modal.querySelector('.modal-contenido').innerHTML = htmlOriginal;
+            window.modificarContadorLote = null;
+        }
+        /* ============================================================== */
+
+        function alternarModoVista() {
+            filtroActual = (filtroActual === 'faltantes') ? 'todos' : 'faltantes';
+            const elModoBtn = document.getElementById('btn-modo-alternar');
+            const elBtnDinamico = document.getElementById('btn-dinamico-lista');
+            
+            document.querySelectorAll('.casilla').forEach(c => c.classList.remove('match-intercambio'));
+            elBtnDinamico.style.borderColor = '';
+
+            if (filtroActual === 'todos') {
+                elModoBtn.textContent = '👁️ Modo: Todos';
+                elModoBtn.style.backgroundColor = '#27ae60';
+                elBtnDinamico.textContent = '📋 Repetidos';
+                elBtnDinamico.style.backgroundColor = '#27ae60';
+            } else {
+                elModoBtn.textContent = '👁️ Modo: Faltantes';
+                elModoBtn.style.backgroundColor = '#d35400';
+                elBtnDinamico.textContent = '📋 Faltantes';
+                elBtnDinamico.style.backgroundColor = '#d35400';
+            }
+            actualizarInterfazDOM();
+        }
+
+        function procesarAccionLista() {
+            const elBtnDinamico = document.getElementById('btn-dinamico-lista');
+            if (elBtnDinamico.style.backgroundColor === 'rgb(41, 128, 185)' || elBtnDinamico.style.backgroundColor === '#2980b9') {
+                compartirListaMatchAzul();
+            } else if (filtroActual === 'faltantes') {
+                compartirFaltantes();
+            } else {
+                compartirSoloRepetidos();
+            }
+        }
+
+        function compartirListaMatchAzul() {
+            let textoLista = "📋 LO QUE NECESITO DE TUS REPETIDAS - PANINI 2026\n\n";
+            let totalMatch = 0;
+
+            estructuraGrupos.forEach(g => {
+                g.paises.forEach(p => {
+                    let matchPais = [];
+                    const max = p.total || 20;
+                    const inicio = (g.nombre === "Especiales") ? 0 : 1;
+                    const fin = (g.nombre === "Especiales") ? (max - 1) : max;
+
+                    for (let i = inicio; i <= fin; i++) {
+                        const numStr = String(i).padStart(2, '0');
+                        const keyUnica = `panini-${p.sigla}-${numStr}`;
+                        
+                        const casillaDOM = document.querySelector(`.casilla[data-id="${keyUnica}"]`);
+                        if (casillaDOM && casillaDOM.classList.contains('match-intercambio')) {
+                            matchPais.push(numStr);
+                            totalMatch++;
+                        }
+                    }
+                    if (matchPais.length > 0) textoLista += `${p.sigla}: ${matchPais.join(', ')}\n`;
+                });
+            });
+
+            textoLista += `\nTotal solicitado: ${totalMatch} cromos.`;
+            enviarTextoCompartir(textoLista, 'Mis Solicitados Panini 2026');
+        }
+
+        function compartirFaltantes() {
+            let textoLista = "📋 MIS FALTANTES - ÁLBUM PANINI 2026\n\n";
+            let totalFaltantesContador = 0;
+
+            estructuraGrupos.forEach(g => {
+                g.paises.forEach(p => {
+                    let faltantesDelPais = [];
+                    const max = p.total || 20;
+                    const inicio = (g.nombre === "Especiales") ? 0 : 1;
+                    const fin = (g.nombre === "Especiales") ? (max - 1) : max;
+
+                    for (let i = inicio; i <= fin; i++) {
+                        const numStr = String(i).padStart(2, '0');
+                        const keyUnica = `panini-${p.sigla}-${numStr}`;
+                        const val = localStorage.getItem(keyUnica);
+
+                        if (!val || val === 'false') {
+                            faltantesDelPais.push(numStr);
+                            totalFaltantesContador++;
+                        }
+                    }
+                    if (faltantesDelPais.length > 0) textoLista += `${p.sigla}: ${faltantesDelPais.join(', ')}\n`;
+                });
+            });
+
+            if (totalFaltantesContador === 0) {
+                alert("¡Álbum Completo!"); return;
+            }
+            textoLista += `\nTotal faltantes: ${totalFaltantesContador} cromos.`;
+            enviarTextoCompartir(textoLista, 'Mis Faltantes Panini 2026');
+        }
+
+        function compartirSoloRepetidos() {
+            let textoLista = "📋 MIS REPETIDOS - PANINI 2026\n\n";
+            let totalRepetidosContador = 0;
+
+            estructuraGrupos.forEach(g => {
+                g.paises.forEach(p => {
+                    let listaRepetidosPais = [];
+                    const max = p.total || 20;
+                    const inicio = (g.nombre === "Especiales") ? 0 : 1;
+                    const fin = (g.nombre === "Especiales") ? (max - 1) : max;
+
+                    for (let i = inicio; i <= fin; i++) {
+                        const numStr = String(i).padStart(2, '0');
+                        const keyUnica = `panini-${p.sigla}-${numStr}`;
+                        const val = localStorage.getItem(keyUnica);
+
+                        if (val && val !== 'false') {
+                            let cant = parseInt(val) || 1;
+                            if (cant > 1) {
+                                listaRepetidosPais.push(`${numStr}`); 
+                                totalRepetidosContador += (cant - 1);
+                            }
+                        }
+                    }
+                    if (listaRepetidosPais.length > 0) textoLista += `${p.sigla}: ${listaRepetidosPais.join(', ')}\n`;
+                });
+            });
+
+            if (totalRepetidosContador === 0) {
+                alert("No tienes ningún cromo repetido registrado."); return;
+            }
+            textoLista += `\nTotal cromos repetidos: ${totalRepetidosContador}`;
+            enviarTextoCompartir(textoLista, 'Mis Repetidos Panini 2026');
+        }
+
+        function enviarTextoCompartir(texto, titulo) {
+            if (navigator.share) {
+                navigator.share({ title: titulo, text: texto }).catch(() => { copiarAlPortapapelesFallback(texto); });
+            } else {
+                copiarAlPortapapelesFallback(texto);
+            }
+        }
+
+        function copiarAlPortapapelesFallback(texto) {
+            navigator.clipboard.writeText(texto).then(() => {
+                alert("📋 ¡Lista copiada al portapapeles con éxito!");
+            });
+        }
+
+        function procesarFotoCapturada(input) {
+            if (input.files && input.files[0] && cromoSeleccionadoActual) {
+                const lector = new FileReader();
+                lector.onload = async (e) => {
+                    const base64 = e.target.result;
+                    const idSticker = `panini-${cromoSeleccionadoActual.sigla}-${cromoSeleccionadoActual.numero}`;
+                    await guardarFotoDB(idSticker, base64);
+                    
+                    document.getElementById('foto-img').src = base64;
+                    document.getElementById('foto-img').style.display = 'block';
+                    document.getElementById('txt-sin-foto').style.display = 'none';
+                    document.getElementById('btn-modal-capturar').style.display = 'none';
+                    input.value = "";
+                };
+                lector.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function avanzarContadorSticker(idCromo) {
+            let actualValor = localStorage.getItem(idCromo);
+            if (!actualValor || actualValor === 'false') {
+                localStorage.setItem(idCromo, '1'); 
+            } else {
+                let numActual = parseInt(actualValor) || 1;
+                localStorage.setItem(idCromo, String(numActual + 1)); 
+            }
+            actualizarInterfazDOM();
+        }
+
+        function avanzarContadorConBloqueo(idCromo) {
+            if (bloqueoToque) return; 
+            bloqueoToque = true;
+            avanzarContadorSticker(idCromo);
+            setTimeout(() => { bloqueoToque = false; }, 250);
+        }
+
+        async function restarRepetida() {
+            if (cromoSeleccionadoActual) {
+                const idSticker = `panini-${cromoSeleccionadoActual.sigla}-${cromoSeleccionadoActual.numero}`;
+                let cant = parseInt(localStorage.getItem(idSticker)) || 0;
+                if (cant > 1) {
+                    let nuevaCant = cant - 1;
+                    localStorage.setItem(idSticker, String(nuevaCant));
+                    document.getElementById('foto-titulo').textContent = `${cromoSeleccionadoActual.paisNombre} (${cromoSeleccionadoActual.sigla}-${cromoSeleccionadoActual.numero}) [Tienes: ${nuevaCant}]`;
+                    document.getElementById('btn-modal-restar').style.display = (nuevaCant > 1) ? 'block' : 'none';
+                    actualizarInterfazDOM();
+                }
+            }
+        }
+
+        async function borrarCromoCompleto() {
+            if (cromoSeleccionadoActual) {
+                const idSticker = `panini-${cromoSeleccionadoActual.sigla}-${cromoSeleccionadoActual.numero}`;
+                await borrarFotoDB(idSticker);
+                localStorage.removeItem(idSticker);
+                cerrarFoto();
+                actualizarInterfazDOM();
+            }
+        }
+
+        function actualizarInterfazDOM() {
+            estructuraGrupos.forEach(g => {
+                g.paises.forEach(p => {
+                    actualizarContador(p.sigla);
+                    const b = document.getElementById(`block-${p.sigla}`);
+                    if(b) {
+                        b.querySelectorAll('.casilla').forEach(c => {
+                            const idStr = c.getAttribute('data-id');
+                            const valorValor = localStorage.getItem(idStr);
+                            const badgePrevio = c.querySelector('.badge-repetida');
+                            if(badgePrevio) badgePrevio.remove();
+
+                            if(valorValor && valorValor !== 'false') {
+                                c.classList.add('poseido');
+                                const cantidad = parseInt(valorValor) || 1;
+                                if(cantidad > 1) {
+                                    const bge = document.createElement('span');
+                                    bge.className = 'badge-repetida';
+                                    bge.textContent = `+${cantidad - 1}`;
+                                    c.appendChild(bge);
+                                }
+                            } else {
+                                c.classList.remove('poseido');
+                            }
+                        });
+                    }
+                });
+            });
+            actualizarConteoGeneral();
+            aplicarRulesVisibilidad();
+        }
+
+        async function inicializarGuia() {
+            await abrirDB();
             contenedor.innerHTML = '';
             selectEquipos.innerHTML = '<option value="">🔍 Ir a...</option>';
 
-            // Recolectar siglas globalmente para la lista alfabética continua
             let todasLasSiglas = [];
-            estructuraGrupos.forEach(g => {
-                g.paises.forEach(p => {
-                    todasLasSiglas.push(p.sigla);
-                });
-            });
+            estructuraGrupos.forEach(g => g.paises.forEach(p => todasLasSiglas.push(p.sigla)));
             todasLasSiglas.sort((a, b) => a.localeCompare(b, 'es'));
-
             todasLasSiglas.forEach(sigla => {
-                const opcion = document.createElement('option');
-                opcion.value = sigla;
-                opcion.textContent = sigla;
-                selectEquipos.appendChild(opcion);
+                const op = document.createElement('option');
+                op.value = sigla; op.textContent = sigla;
+                selectEquipos.appendChild(op);
             });
 
-            // Construir los bloques en orden del álbum original
             estructuraGrupos.forEach(g => {
-                const divGrupoContenedor = document.createElement('div');
-                divGrupoContenedor.className = 'grupo-block';
-                divGrupoContenedor.id = `bloque-grupo-${g.nombre.replace(' ', '').replace('-', '')}`;
+                const divGrupo = document.createElement('div');
+                divGrupo.className = 'grupo-block';
+                divGrupo.id = `bloque-grupo-${g.nombre.replace(/ /g, '').replace(/-/g, '')}`;
 
-                const divGrupoTitulo = document.createElement('div');
-                divGrupoTitulo.className = 'grupo-title' + (g.esEspecial ? ` ${g.estiloClase}` : '');
-                divGrupoTitulo.textContent = g.nombre;
-                divGrupoContenedor.appendChild(divGrupoTitulo);
+                const divTitulo = document.createElement('div');
+                divTitulo.className = 'grupo-title' + (g.esEspecial ? ` ${g.estiloClase}` : '');
+                divTitulo.textContent = g.nombre;
+                divGrupo.appendChild(divTitulo);
 
                 g.paises.forEach(p => {
                     const divPais = document.createElement('div');
                     divPais.className = 'pais-block';
                     divPais.id = `block-${p.sigla}`;
-                    
-                    const maxStickers = p.total || 20;
-                    const mitad = maxStickers / 2;
-                    
-                    const etiquetaIzq = p.pagInicio ? `Pág. ${p.pagInicio}` : '—';
-                    const etiquetaDer = p.pagInicio ? `Pág. ${p.pagInicio + 1}` : '—';
+                    const max = p.total || 20;
 
                     divPais.innerHTML = `
                         <div class="pais-name">
                             <span>${p.sigla} - ${p.nombre}</span>
-                            <span class="contador" id="cont-${p.sigla}">0 / ${maxStickers}</span>
+                            <span class="contador" id="cont-${p.sigla}">0 / ${max}</span>
                         </div>
                         <div class="paginas-contenedor">
-                            <div class="pagina-album" data-pagina="${etiquetaIzq}" id="pag-izq-${p.sigla}"></div>
-                            <div class="pagina-album" data-pagina="${etiquetaDer}" id="pag-der-${p.sigla}"></div>
+                            <div class="pagina-album" data-pagina="Pág. ${p.pagInicio}" id="pag-izq-${p.sigla}"></div>
+                            <div class="pagina-album" data-pagina="Pág. ${p.pagInicio + 1}" id="pag-der-${p.sigla}"></div>
                         </div>
                     `;
-                    
-                    divGrupoContenedor.appendChild(divPais);
+                    divGrupo.appendChild(divPais);
 
-                    const pagIzq = divPais.querySelector(`#pag-izq-${p.sigla}`);
-                    const pagDer = divPais.querySelector(`#pag-der-${p.sigla}`);
+                    const pIzq = divPais.querySelector(`#pag-izq-${p.sigla}`);
+                    const pDer = divPais.querySelector(`#pag-der-${p.sigla}`);
                     
-                    const inicioRango = (g.nombre === "Especiales") ? 0 : 1;
-                    const finRango = (g.nombre === "Especiales") ? (maxStickers - 1) : maxStickers;
+                    const inicio = (g.nombre === "Especiales") ? 0 : 1;
+                    const fin = (g.nombre === "Especiales") ? (max - 1) : max;
+                    const puntoCorteMitad = (g.nombre === "Especiales") ? 9 : (max / 2);
 
-                    for (let i = inicioRango; i <= finRango; i++) {
+                    for (let i = inicio; i <= fin; i++) {
                         const numStr = String(i).padStart(2, '0');
-                        const idSticker = `panini-${p.sigla}-${numStr}`;
+                        const keyUnica = `panini-${p.sigla}-${numStr}`;
+                        
                         const casilla = document.createElement('div');
                         casilla.className = 'casilla';
                         casilla.textContent = numStr;
+                        
+                        casilla.setAttribute('data-id', keyUnica);
+                        casilla.setAttribute('data-sigla', p.sigla);
+                        casilla.setAttribute('data-numero', numStr);
+                        casilla.setAttribute('data-pais', p.nombre);
 
-                        if (localStorage.getItem(idSticker) === 'true') {
-                            casilla.classList.add('poseido');
+                        let tiempoInicio = 0;
+                        let timeoutPulsacion = null;
+                        let pulsacionLargaEjecutada = false;
+                        let touchStartX = 0, touchStartY = 0;
+                        let esScroll = false;
+
+                        function alComenzarPresion(e) {
+                            pulsacionLargaEjecutada = false; esScroll = false;
+                            tiempoInicio = Date.now();
+                            if (e.touches && e.touches[0]) {
+                                touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY;
+                            }
+                            clearTimeout(timeoutPulsacion);
+                            timeoutPulsacion = setTimeout(() => {
+                                const idCromo = casilla.getAttribute('data-id');
+                                if (localStorage.getItem(idCromo) && !esScroll) {
+                                    pulsacionLargaEjecutada = true;
+                                    if (navigator.vibrate) navigator.vibrate(50);
+                                    const s = casilla.getAttribute('data-sigla');
+                                    const n = casilla.getAttribute('data-numero');
+                                    const pNm = casilla.getAttribute('data-pais');
+                                    abrirModalFoto(s, n, pNm);
+                                }
+                            }, 600);
                         }
 
-                        let tiempoPresionado;
-                        let esPulsacionLarga = false;
-
-                        casilla.addEventListener('touchstart', (e) => {
-                            esPulsacionLarga = false;
-                            // SOLO activa la pulsación larga si la casilla está marcada como poseída
-                            if (casilla.classList.contains('poseido')) {
-                                tiempoPresionado = setTimeout(() => {
-                                    esPulsacionLarga = true;
-                                    mostrarFoto(p.sigla, numStr, p.nombre);
-                                }, 550);
+                        function alMoverDedo(e) {
+                            if (!tiempoInicio) return;
+                            if (e.touches && e.touches[0]) {
+                                const deltaX = Math.abs(e.touches[0].clientX - touchStartX);
+                                const deltaY = Math.abs(e.touches[0].clientY - touchStartY);
+                                if (deltaX > 8 || deltaY > 8) { esScroll = true; clearTimeout(timeoutPulsacion); }
                             }
-                        }, { passive: true });
-
-                        casilla.addEventListener('touchend', (e) => {
-                            clearTimeout(tiempoPresionado);
-                            if (esPulsacionLarga) {
-                                e.preventDefault();
-                            }
-                        });
-
-                        casilla.addEventListener('mousedown', (e) => {
-                            // SOLO activa la pulsación larga si la casilla está marcada como poseída
-                            if (e.button === 0 && casilla.classList.contains('poseido')) {
-                                tiempoPresionado = setTimeout(() => {
-                                    esPulsacionLarga = true;
-                                    mostrarFoto(p.sigla, numStr, p.nombre);
-                                }, 550);
-                            }
-                        });
-
-                        casilla.addEventListener('mouseup', () => clearTimeout(tiempoPresionado));
-
-                        casilla.addEventListener('click', function() {
-                            if (esPulsacionLarga) return;
-                            
-                            this.classList.toggle('poseido');
-                            if (this.classList.contains('poseido')) {
-                                localStorage.setItem(idSticker, 'true');
-                            } else {
-                                localStorage.removeItem(idSticker);
-                            }
-                            actualizarContador(p.sigla);
-                            actualizarConteoGeneral();
-                            aplicarReglasVisibilidad();
-                        });
-
-                        if (g.nombre === "Especiales") {
-                            if (i < 10) pagIzq.appendChild(casilla);
-                            else pagDer.appendChild(casilla);
-                        } else {
-                            if (i <= mitad) pagIzq.appendChild(casilla);
-                            else pagDer.appendChild(casilla);
                         }
+
+                        function alTerminarPresion(e) {
+                            clearTimeout(timeoutPulsacion);
+                            if (pulsacionLargaEjecutada || esScroll) return;
+                            const duracion = Date.now() - tiempoInicio;
+                            if (duracion < 600 && tiempoInicio > 0) {
+                                tiempoInicio = 0;
+                                const idCromo = casilla.getAttribute('data-id');
+                                avanzarContadorConBloqueo(idCromo);
+                            }
+                        }
+
+                        casilla.addEventListener('mousedown', alComenzarPresion);
+                        casilla.addEventListener('mouseup', alTerminarPresion);
+                        casilla.addEventListener('touchstart', alComenzarPresion, { passive: true });
+                        casilla.addEventListener('touchmove', alMoverDedo, { passive: true });
+                        casilla.addEventListener('touchend', alTerminarPresion);
+
+                        if (i <= puntoCorteMitad) pIzq.appendChild(casilla);
+                        else pDer.appendChild(casilla);
                     }
                 });
-
-                contenedor.appendChild(divGrupoContenedor);
+                contenedor.appendChild(divGrupo);
             });
-
-            estructuraGrupos.forEach(g => {
-                g.paises.forEach(p => actualizarContador(p.sigla));
-            });
-            actualizarConteoGeneral();
-            aplicarReglasVisibilidad();
+            actualizarInterfazDOM();
+            configurarLongPressLote(); // Activar el detector del botón Importar
         }
 
         function irAEquipo(sigla) {
             if (!sigla) return;
-            
-            const bloquePais = document.getElementById(`block-${sigla}`);
-            if (bloquePais && bloquePais.style.display === 'none') {
-                alternarFiltro();
-            }
-            
-            const objetivo = document.getElementById(`block-${sigla}`);
-            if (objetivo) {
-                objetivo.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-            
+            const b = document.getElementById(`block-${sigla}`);
+            if (b) b.scrollIntoView({ behavior: 'smooth', block: 'start' });
             setTimeout(() => { selectEquipos.value = ""; }, 800);
         }
 
-        function mostrarFoto(sigla, numero, paisNombre) {
+        async function abrirModalFoto(sigla, numero, paisNombre) {
+            cromoSeleccionadoActual = { sigla, numero, paisNombre };
             const modal = document.getElementById('vista-foto');
             const titulo = document.getElementById('foto-titulo');
             const imagen = document.getElementById('foto-img');
+            const textoSinFoto = document.getElementById('txt-sin-foto');
+            const btnAppCapturar = document.getElementById('btn-modal-capturar');
+            const btnRestar = document.getElementById('btn-modal-restar');
             
-            titulo.textContent = `${paisNombre} (${sigla}-${numero})`;
-            imagen.src = `stickers/${sigla}-${numero}.jpg`;
+            const idSticker = `panini-${sigla}-${numero}`;
+            const totalCromos = parseInt(localStorage.getItem(idSticker)) || 1;
             
+            titulo.textContent = `${paisNombre} (${sigla}-${numero}) [Tienes: ${totalCromos}]`;
+            const base64Data = await obtenerFotoDB(idSticker);
+            
+            if (base64Data) {
+                imagen.src = base64Data; imagen.style.display = 'block';
+                textoSinFoto.style.display = 'none'; btnAppCapturar.style.display = 'none';
+            } else {
+                imagen.src = ""; imagen.style.display = 'none';
+                textoSinFoto.style.display = 'block'; btnAppCapturar.style.display = 'block';
+            }
+            btnRestar.style.display = (totalCromos > 1) ? 'block' : 'none';
             modal.style.display = 'flex';
         }
 
-        function cerrarFoto() {
-            document.getElementById('vista-foto').style.display = 'none';
-        }
+        function cerrarFoto() { document.getElementById('vista-foto').style.display = 'none'; cromoSeleccionadoActual = null; }
 
         function actualizarContador(sigla) {
-            const total = document.querySelectorAll(`#block-${sigla} .casilla`).length;
-            const poseidos = document.querySelectorAll(`#block-${sigla} .casilla.poseido`).length;
-            const bloquePais = document.getElementById(`block-${sigla}`);
-            
-            document.getElementById(`cont-${sigla}`).textContent = `${poseidos} / ${total}`;
-            
-            if (poseidos === total && total > 0) {
-                bloquePais.classList.add('completo');
-            } else {
-                bloquePais.classList.remove('completo');
-            }
+            const b = document.getElementById(`block-${sigla}`); if(!b) return;
+            const tot = b.querySelectorAll('.casilla').length;
+            let pos = 0;
+            b.querySelectorAll('.casilla').forEach(c => {
+                const idStr = c.getAttribute('data-id'); const val = localStorage.getItem(idStr);
+                if(val && val !== 'false') pos++;
+            });
+            document.getElementById(`cont-${sigla}`).textContent = `${pos} / ${tot}`;
+            if (pos === tot && tot > 0) b.classList.add('completo'); else b.classList.remove('completo');
         }
 
-        function aplicarReglasVisibilidad() {
+        function aplicarRulesVisibilidad() {
             estructuraGrupos.forEach(g => {
-                let todosOcultosEnGrupo = true;
-
+                let ocultos = true;
                 g.paises.forEach(p => {
-                    const bloquePais = document.getElementById(`block-${p.sigla}`);
-                    const esCompleto = bloquePais.classList.contains('completo');
-
-                    if (filtroActual === 'faltantes' && esCompleto) {
-                        bloquePais.style.display = 'none';
-                    } else {
-                        bloquePais.style.display = 'block';
-                        todosOcultosEnGrupo = false;
+                    const b = document.getElementById(`block-${p.sigla}`);
+                    if(b) {
+                        if (filtroActual === 'faltantes' && b.classList.contains('completo')) b.style.display = 'none';
+                        else { b.style.display = 'block'; ocultos = false; }
                     }
                 });
-
-                const idBloqueGrupo = `bloque-grupo-${g.nombre.replace(' ', '').replace('-', '')}`;
-                const bloqueGrupo = document.getElementById(idBloqueGrupo);
-                if (todosOcultosEnGrupo) {
-                    bloqueGrupo.style.display = 'none';
-                } else {
-                    bloqueGrupo.style.display = 'block';
-                }
+                const gBlk = document.getElementById(`bloque-grupo-${g.nombre.replace(/ /g, '').replace(/-/g, '')}`);
+                if(gBlk) gBlk.style.display = (filtroActual === 'todos' || !ocultos) ? 'block' : 'none';
             });
-        }
-
-        function alternarFiltro() {
-            const boton = document.getElementById('btn-filtro-vista');
-            if (filtroActual === 'faltantes') {
-                filtroActual = 'todos';
-                boton.textContent = '👁️ Modo: Ver Todos';
-                boton.style.backgroundColor = '#27ae60';
-            } else {
-                filtroActual = 'faltantes';
-                boton.textContent = '👁️ Modo: Ver Faltantes';
-                boton.style.backgroundColor = '#d35400';
-            }
-            aplicarReglasVisibilidad();
         }
 
         function actualizarConteoGeneral() {
-            const totalCromos = document.querySelectorAll('.casilla').length;
-            const poseidosCromos = document.querySelectorAll('.casilla.poseido').length;
-            
-            document.getElementById('total-general').textContent = `${poseidosCromos} / ${totalCromos}`;
-            
-            const porcentaje = totalCromos > 0 ? ((poseidosCromos / totalCromos) * 100).toFixed(1) : 0;
-            document.getElementById('porcentaje-general').textContent = `${porcentaje}%`;
+            const casillas = document.querySelectorAll('.casilla');
+            let pos = 0; casillas.forEach(c => { if(c.classList.contains('poseido')) pos++; });
+            document.getElementById('total-general').textContent = `${pos} / ${casillas.length}`;
+            document.getElementById('porcentaje-general').textContent = `(${casillas.length > 0 ? ((pos / casillas.length) * 100).toFixed(1) : 0}%)`;
         }
 
-        function exportarProgreso() {
-            const respaldo = {};
+        async function exportarProgreso() {
+            const respaldo = { cromos: {}, fotos: {} };
             for (let i = 0; i < localStorage.length; i++) {
-                const clave = localStorage.key(i);
-                if (clave.startsWith('panini-')) {
-                    respaldo[clave] = localStorage.getItem(clave);
+                const k = localStorage.key(i); if (k.startsWith('panini-')) respaldo.cromos[k] = localStorage.getItem(k);
+            }
+            const tx = db.transaction(["fotos"], "readonly");
+            const almacen = tx.objectStore("fotos");
+            const llavesReq = almacen.getAllKeys();
+            
+            llavesReq.onsuccess = () => {
+                const llaves = llavesReq.result; const fotosReq = almacen.getAll();
+                fotosReq.onsuccess = () => {
+                    llaves.forEach((llave, idx) => { respaldo.fotos[llave] = fotosReq.result[idx]; });
+                    const blob = new Blob([JSON.stringify(respaldo)], { type: "application/json" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a'); a.href = url; a.download = `respaldo_panini_${new Date().toISOString().slice(0,10)}.json`;
+                    document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+                };
+            };
+        }
+
+        function solicitarArchivoImportar() {
+            if (navigator.clipboard && navigator.clipboard.readText) {
+                navigator.clipboard.readText().then(texto => {
+                    if (texto && texto.trim().length > 0) {
+                        const esModoRepetidos = (filtroActual === 'todos');
+                        const msg = esModoRepetidos ? "¿Usar texto del portapapeles para DECREMENTAR?" : "¿Usar texto para cruzar con tus faltantes?";
+                        if (confirm(msg)) {
+                            if (esModoRepetidos) ejecutarDescuentoRepetidasTextoPlano(texto); else ejecutarCruceTextoPlano(texto); return; 
+                        }
+                    }
+                    document.getElementById('input-importar-archivo').click();
+                }).catch(() => { document.getElementById('input-importar-archivo').click(); });
+            } else { document.getElementById('input-importar-archivo').click(); }
+        }
+
+        function procesarArchivoImportado(input) {
+            if (input.files && input.files[0]) {
+                const archivo = input.files[0]; const lector = new FileReader();
+                if (archivo.name.endsWith('.txt')) {
+                    lector.onload = (e) => {
+                        if (filtroActual === 'todos') ejecutarDescuentoRepetidasTextoPlano(e.target.result); else ejecutarCruceTextoPlano(e.target.result);
+                        input.value = "";
+                    };
+                    lector.readAsText(archivo); return;
+                }
+                lector.onload = async (e) => {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        if (data.cromos) Object.keys(data.cromos).forEach(k => localStorage.setItem(k, data.cromos[k]));
+                        if (data.fotos) { for (let k of Object.keys(data.fotos)) { await guardarFotoDB(k, data.fotos[k]); } }
+                        alert("¡Respaldo restaurado!"); inicializarGuia();
+                    } catch (err) { alert("Archivo JSON inválido."); }
+                    input.value = "";
+                };
+                lector.readAsText(archivo);
+            }
+        }
+
+        function ejecutarCruceTextoPlano(textoContenido) {
+            document.querySelectorAll('.casilla').forEach(c => c.classList.remove('match-intercambio'));
+            let matches = 0; let claves = []; const lineas = textoContenido.split('\n');
+            
+            estructuraGrupos.forEach(g => {
+                g.paises.forEach(p => {
+                    lineas.forEach(linea => {
+                        const limpia = linea.toUpperCase().trim();
+                        if (limpia.includes(p.sigla)) {
+                            const nums = limpia.match(/\d+/g);
+                            if (nums) {
+                                nums.forEach(num => {
+                                    const numStr = String(num).padStart(2, '0');
+                                    const key = `panini-${p.sigla}-${numStr}`;
+                                    if (!localStorage.getItem(key) || localStorage.getItem(key) === 'false') {
+                                        const cDOM = document.querySelector(`.casilla[data-id="${key}"]`);
+                                        if (cDOM && !cDOM.classList.contains('match-intercambio')) {
+                                            cDOM.classList.add('match-intercambio'); claves.push(key); matches++;
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    });
+                });
+            });
+
+            if (matches === 0) alert("Sin coincidencias.");
+            else {
+                if (confirm(`¡Match! Se iluminaron ${matches} en AZUL. ¿Sumarlos al álbum como poseídos?`)) {
+                    claves.forEach(k => localStorage.setItem(k, '1')); actualizarInterfazDOM();
                 }
             }
-            const textoData = JSON.stringify(respaldo);
-            if (Object.keys(respaldo).length === 0) {
-                alert("No tienes stickers marcados para exportar todavía.");
-                return;
-            }
-            navigator.clipboard.writeText(textoData).then(() => {
-                alert("¡Copiado con éxito!");
-            }).catch(err => {
-                alert("Tu progreso actual es:\n\n" + textoData);
-            });
         }
 
-        function importarProgreso() {
-            const entrada = prompt("Pega aquí tu código de respaldo:");
-            if (!entrada) return;
-            try {
-                const datosParseados = JSON.parse(entrada);
-                Object.keys(datosParseados).forEach(clave => {
-                    if (clave.startsWith('panini-')) {
-                        localStorage.setItem(clave, datosParseados[clave]);
-                    }
+        function ejecutarDescuentoRepetidasTextoPlano(textoContenido) {
+            let desc = 0; const lineas = textoContenido.split('\n');
+            estructuraGrupos.forEach(g => {
+                g.paises.forEach(p => {
+                    lineas.forEach(linea => {
+                        const limpia = linea.toUpperCase().trim();
+                        if (limpia.includes(p.sigla)) {
+                            const nums = limpia.match(/\d+/g);
+                            if (nums) {
+                                nums.forEach(num => {
+                                    const numStr = String(num).padStart(2, '0');
+                                    const key = `panini-${p.sigla}-${numStr}`;
+                                    let cant = parseInt(localStorage.getItem(key)) || 0;
+                                    if (cant > 1) { localStorage.setItem(key, String(cant - 1)); desc++; }
+                                });
+                            }
+                        }
+                    });
                 });
-                alert("¡Progreso importado!");
-                inicializarGuia();
-            } catch (e) {
-                alert("Error en el formato del código.");
-            }
+            });
+            if (desc > 0) { alert(`Descontados ${desc} repetidos.`); actualizarInterfazDOM(); }
         }
 
         inicializarGuia();
