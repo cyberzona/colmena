@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Guía de Bolsillo Panini 2026</title>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <style>
         * { box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 8px; color: #333; background-color: #f4f6f7; }
@@ -21,7 +22,7 @@
         .btn-copiar-top:active { background-color: #a04000; }
 
         .panel-respaldo { display: flex; gap: 8px; margin-bottom: 12px; background: #fff; padding: 8px; border-radius: 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-        .btn-respaldo { flex: 1; background-color: #1a5276; color: white; border: none; padding: 10px 14px; font-size: 12px; font-weight: bold; border-radius: 20px; cursor: pointer; text-transform: uppercase; -webkit-tap-highlight-color: transparent; text-align: center; white-space: nowrap; min-height: 38px; }
+        .btn-respaldo { flex: 1; background-color: #1a5276; color: white; border: none; padding: 10px 14px; font-size: 12px; font-weight: bold; border-radius: 20px; cursor: pointer; text-transform: uppercase; -webkit-tap-highlight-color: transparent; text-align: center; white-space: nowrap; min-height: 38px; user-select: none; -webkit-user-select: none; }
         .btn-respaldo:active { background-color: #11364f; }
         .btn-importar { background-color: #7f8c8d; }
         .btn-importar:active { background-color: #5d6d7e; }
@@ -83,7 +84,7 @@
         .btn-flotante-inicio { position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px; background-color: #2c3e50; color: white; border: 2px solid #5d6d7e; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.4); z-index: 999; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; -webkit-tap-highlight-color: transparent; }
         .btn-flotante-inicio.visible { opacity: 1; visibility: visible; }
         
-        #input-camara, #input-importar-archivo { display: none; }
+        #input-camara, #input-importar-archivo, #input-camara-ocr { display: none; }
     </style>
 </head>
 <body>
@@ -91,6 +92,7 @@
     <h1>📋 GUÍA DE BOLSILLO – PANINI 2026</h1>
     
     <input type="file" id="input-camara" accept="image/*" capture="environment" onchange="procesarFotoCapturada(this)">
+    <input type="file" id="input-camara-ocr" accept="image/*" capture="environment" onchange="procesarEscaneoOCR(this)">
     <input type="file" id="input-importar-archivo" accept=".json,.txt" onchange="procesarArchivoImportado(this)">
 
     <div class="marcador-general">
@@ -105,7 +107,7 @@
 
     <div class="panel-respaldo">
         <button class="btn-respaldo" onclick="exportarProgreso()">📤 Exportar</button>
-        <button class="btn-respaldo btn-importar" onclick="solicitarArchivoImportar()">📥 Importar</button>
+        <button class="btn-respaldo btn-importar" id="btn-importar-lote" onclick="solicitarArchivoImportar()">📥 Importar</button>
         <button class="btn-vista-toggle" id="btn-modo-alternar" onclick="alternarModoVista()">👁️ Modo: Faltantes</button>
     </div>
 
@@ -134,6 +136,7 @@
         let db;
         let cromoSeleccionadoActual = null;
         let bloqueoToque = false; 
+        let timerPulsacionImportar;
 
         const estructuraGrupos = [
             { nombre: "Especiales", esEspecial: true, estiloClase: "especial-title", paises: [ { sigla: "FWC", nombre: "FIFA World Cup", total: 20, pagInicio: 1 } ] },
@@ -200,7 +203,6 @@
 
         function alternarModoVista() {
             filtroActual = (filtroActual === 'faltantes') ? 'todos' : 'faltantes';
-            
             const elModoBtn = document.getElementById('btn-modo-alternar');
             const elBtnDinamico = document.getElementById('btn-dinamico-lista');
             
@@ -223,7 +225,6 @@
 
         function procesarAccionLista() {
             const elBtnDinamico = document.getElementById('btn-dinamico-lista');
-            
             if (elBtnDinamico.style.backgroundColor === 'rgb(41, 128, 185)' || elBtnDinamico.style.backgroundColor === '#2980b9') {
                 compartirListaMatchAzul();
             } else if (filtroActual === 'faltantes') {
@@ -254,7 +255,6 @@
                             totalMatch++;
                         }
                     }
-
                     if (matchPais.length > 0) {
                         textoLista += `${p.sigla}: ${matchPais.join(', ')}\n`;
                     }
@@ -296,7 +296,6 @@
                             totalFaltantesContador++;
                         }
                     }
-
                     if (faltantesDelPais.length > 0) {
                         textoLista += `${p.sigla}: ${faltantesDelPais.join(', ')}\n`;
                     }
@@ -307,7 +306,6 @@
                 alert("¡Felicidades! No te falta ningún cromo. ¡Álbum Completo!");
                 return;
             }
-
             textoLista += `\nTotal faltantes: ${totalFaltantesContador} cromos.`;
             enviarTextoCompartir(textoLista, 'Mis Faltantes Panini 2026');
         }
@@ -337,7 +335,6 @@
                             }
                         }
                     }
-
                     if (listaRepetidosPais.length > 0) {
                         textoLista += `${p.sigla}: ${listaRepetidosPais.join(', ')}\n`;
                     }
@@ -348,7 +345,6 @@
                 alert("No tienes ningún cromo repetido registrado actualmente.");
                 return;
             }
-
             textoLista += `\nTotal cromos repetidos: ${totalRepetidosContador}`;
             enviarTextoCompartir(textoLista, 'Mis Repetidos Panini 2026');
         }
@@ -382,7 +378,6 @@
                     document.getElementById('foto-img').style.display = 'block';
                     document.getElementById('txt-sin-foto').style.display = 'none';
                     document.getElementById('btn-modal-capturar').style.display = 'none';
-
                     input.value = "";
                 };
                 lector.readAsDataURL(input.files[0]);
@@ -403,12 +398,8 @@
         function avanzarContadorConBloqueo(idCromo) {
             if (bloqueoToque) return; 
             bloqueoToque = true;
-
             avanzarContadorSticker(idCromo);
-
-            setTimeout(() => {
-                bloqueoToque = false;
-            }, 250);
+            setTimeout(() => { bloqueoToque = false; }, 250);
         }
 
         async function restarRepetida() {
@@ -422,7 +413,6 @@
                     
                     document.getElementById('foto-titulo').textContent = `${cromoSeleccionadoActual.paisNombre} (${cromoSeleccionadoActual.sigla}-${cromoSeleccionadoActual.numero}) [Tienes: ${nuevaCant}]`;
                     document.getElementById('btn-modal-restar').style.display = (nuevaCant > 1) ? 'block' : 'none';
-                    
                     actualizarInterfazDOM();
                 }
             }
@@ -625,6 +615,14 @@
                 contenedor.appendChild(divGrupo);
             });
 
+            // Configurar los manejadores de pulsación larga sobre el botón "Importar" para activar la Cámara OCR
+            const btnImp = document.getElementById('btn-importar-lote');
+            btnImp.addEventListener('touchstart', iniciarPulsacionLargaImportar, { passive: true });
+            btnImp.addEventListener('touchend', cancelarPulsacionLargaImportar);
+            btnImp.addEventListener('mousedown', iniciarPulsacionLargaImportar);
+            btnImp.addEventListener('mouseup', cancelarPulsacionLargaImportar);
+            btnImp.addEventListener('mouseleave', cancelarPulsacionLargaImportar);
+
             actualizarInterfazDOM();
         }
 
@@ -651,7 +649,6 @@
             const totalCromos = parseInt(localStorage.getItem(idSticker)) || 1;
             
             titulo.textContent = `${paisNombre} (${sigla}-${numero}) [Tienes: ${totalCromos}]`;
-            
             const base64Data = await obtenerFotoDB(idSticker);
             
             if (base64Data) {
@@ -761,6 +758,26 @@
             };
         }
 
+        function iniciarPulsacionLargaImportar(e) {
+            clearTimeout(timerPulsacionImportar);
+            pulsacionLargaEjecutada = false;
+            timerPulsacionImportar = setTimeout(() => {
+                pulsacionLargaEjecutada = true;
+                if (e.cancelable) e.preventDefault();
+                if (navigator.vibrate) navigator.vibrate(50);
+                
+                alert("📸 Activando Escáner OCR por lote...\n\nToma una foto bien iluminada a tu lista física.");
+                document.getElementById('input-camara-ocr').click();
+            }, 800);
+        }
+
+        function cancelarPulsacionLargaImportar(e) {
+            clearTimeout(timerPulsacionImportar);
+            if (pulsacionLargaEjecutada) {
+                if (e.cancelable) e.preventDefault();
+            }
+        }
+
         function solicitarArchivoImportar() {
             if (navigator.clipboard && navigator.clipboard.readText) {
                 navigator.clipboard.readText().then(textoPortapapeles => {
@@ -769,11 +786,11 @@
                         let mensaje = `Detectamos un lote de texto en tu portapapeles.\n\n`;
                         
                         if (esModoRepetidos) {
-                            mensaje += `¿Deseas procesar este lote para DECREMENTAR/ACTUALIZAR tus repetidas entregadas?`;
+                            mensaje += `¿Deseas procesar este lote para DECREMENTAR tus repetidas?`;
                         } else {
                             mensaje += `¿Deseas procesar este lote para CRUZAR datos con tus faltantes?`;
                         }
-                        mensaje += `\n\n(Presiona 'Aceptar' para escanear el lote, o 'Cancelar' para abrir el explorador de archivos JSON/TXT).`;
+                        mensaje += `\n\n(Presiona 'Aceptar' para escanear el portapapeles, o 'Cancelar' para abrir el explorador de archivos JSON/TXT).`;
                         
                         if (confirm(mensaje)) {
                             if (esModoRepetidos) {
@@ -818,14 +835,12 @@
                 lector.onload = async (e) => {
                     try {
                         const data = JSON.parse(e.target.result);
-                        
                         if (!data.cromos && !data.fotos) {
                             Object.keys(data).forEach(k => { if(k.startsWith('panini-')) localStorage.setItem(k, data[k]); });
                             alert("Progreso básico importado.");
                             inicializarGuia();
                             return;
                         }
-                        
                         if (data.cromos) {
                             Object.keys(data.cromos).forEach(k => localStorage.setItem(k, data.cromos[k]));
                         }
@@ -833,7 +848,6 @@
                             const llaves = Object.keys(data.fotos);
                             for (let k of llaves) { await guardarFotoDB(k, data.fotos[k]); }
                         }
-                        
                         alert("¡Respaldo restaurado con éxito!");
                         inicializarGuia();
                     } catch (err) {
@@ -845,13 +859,33 @@
             }
         }
 
+        function procesarEscaneoOCR(input) {
+            if (!input.files || !input.files[0]) return;
+            alert("⏳ Procesando imagen...\nPor favor espera un momento a que el motor lea los cromos.");
+
+            Tesseract.recognize(
+                input.files[0],
+                'eng',
+                { logger: m => console.log(m) }
+            ).then(({ data: { text } }) => {
+                if (filtroActual === 'todos') {
+                    ejecutarDescuentoRepetidasTextoPlano(text);
+                } else {
+                    ejecutarCruceTextoPlano(text);
+                }
+                input.value = "";
+            }).catch(err => {
+                alert("❌ Error al procesar el OCR. Intenta tomar la foto con mejor luz y enfoque.");
+                input.value = "";
+            });
+        }
+
         function ejecutarCruceTextoPlano(textoContenido) {
             document.querySelectorAll('.casilla').forEach(c => c.classList.remove('match-intercambio'));
             let matchesEncontrados = 0;
             let clavesAIncorporar = []; 
             
             const lineas = textoContenido.toUpperCase().split('\n');
-            
             estructuraGrupos.forEach(g => {
                 g.paises.forEach(p => {
                     lineas.forEach(linea => {
@@ -881,14 +915,11 @@
             if (matchesEncontrados === 0) {
                 alert("📋 Escaneo por Lote:\nNo coincide ningún cromo de la lista con tus faltantes actuales.");
             } else {
-                alert(`⚡ ¡Lote Escaneado con Éxito!\nSe identificaron ${matchesEncontrados} cromos que te hacen falta.\nLas casillas compatibles se iluminaron en AZUL.`);
-                
-                const mensajeIncorporar = `¿Deseas INCORPORAR automáticamente estos ${matchesEncontrados} cromos a tu álbum como poseídos?\n\n(Presiona 'Aceptar' para sumarlos ya, o 'Cancelar' para mantener el botón azul activo y gestionar el intercambio).`;
+                alert(`⚡ ¡Lote Escaneado!\nSe identificaron ${matchesEncontrados} cromos que te hacen falta.\nLas casillas compatibles se iluminaron en AZUL.`);
+                const mensajeIncorporar = `¿Deseas INCORPORAR automáticamente estos ${matchesEncontrados} cromos a tu álbum como poseídos?\n\n(Presiona 'Aceptar' para sumarlos ya, o 'Cancelar' para mantenerlos marcados y gestionar el intercambio).`;
                 
                 if (confirm(mensajeIncorporar)) {
-                    clavesAIncorporar.forEach(key => {
-                        localStorage.setItem(key, '1'); 
-                    });
+                    clavesAIncorporar.forEach(key => { localStorage.setItem(key, '1'); });
                     alert(`📥 ¡Álbum Actualizado!\nSe agregaron ${matchesEncontrados} nuevos cromos de golpe.`);
                     actualizarInterfazDOM();
                 } else {
@@ -896,10 +927,7 @@
                     elBtnDinamico.textContent = '📋 Faltantes';
                     elBtnDinamico.style.backgroundColor = '#2980b9';
                     elBtnDinamico.style.borderColor = '#1b4f72';
-                    
-                    if (filtroActual !== 'faltantes') {
-                        alternarModoVista();
-                    }
+                    if (filtroActual !== 'faltantes') alternarModoVista();
                 }
             }
         }
@@ -917,11 +945,10 @@
                                 numerosEncontrados.forEach(num => {
                                     const numStr = String(num).padStart(2, '0');
                                     const keyUnica = `panini-${p.sigla}-${numStr}`;
-                                    
                                     const valPropio = localStorage.getItem(keyUnica);
+                                    
                                     if (valPropio && valPropio !== 'false') {
                                         let cantidad = parseInt(valPropio) || 1;
-                                        
                                         if (cantidad > 1) {
                                             localStorage.setItem(keyUnica, String(cantidad - 1));
                                             cromosActualizados++;
@@ -937,11 +964,12 @@
             if (cromosActualizados === 0) {
                 alert("No se encontraron coincidencias de tus repetidas en el lote ingresado.");
             } else {
-                alert(`📊 ¡Inventario de Repetidas Actualizado!\nSe descontaron exitosamente ${cromosActualizados} cromos repetidos.`);
+                alert(`📊 ¡Inventario Actualizado!\n\nSe descontaron exitosamente ${cromosActualizados} cromos repetidos de tu base de datos.`);
                 actualizarInterfazDOM();
             }
         }
 
+        let pulsacionLargaEjecutada = false;
         inicializarGuia();
     </script>
 </body>
