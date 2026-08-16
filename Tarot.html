@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lectura de Arcanos Menores con Baraja de Póker</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #121214;
+      color: #e1e1e6;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      background-color: #202024;
+      border-radius: 16px;
+      padding: 30px;
+      max-width: 580px;
+      width: 100%;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+      color: #9466ff;
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      color: #a8a8b3;
+      margin-bottom: 24px;
+    }
+
+    .card-display {
+      background: linear-gradient(145deg, #18181b, #0f0f11);
+      border: 1px solid #323238;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      min-height: 580px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Naipe Maximizado */
+    .poker-card-graphic {
+      width: 280px;
+      height: 410px;
+      background-color: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 14px 32px rgba(0,0,0,0.55);
+      position: relative;
+      padding: 16px;
+      margin-bottom: 20px;
+      user-select: none;
+      overflow: hidden;
+    }
+
+    .card-corner {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-weight: bold;
+      font-size: 1.8rem;
+      line-height: 1;
+      z-index: 5;
+    }
+
+    .card-corner.top-left {
+      top: 16px;
+      left: 16px;
+    }
+
+    .card-corner.bottom-right {
+      bottom: 16px;
+      right: 16px;
+      transform: rotate(180deg);
+    }
+
+    /* Iconos e Ilustraciones de Gran Tamaño */
+    .card-inner-pattern {
+      position: absolute;
+      top: 48px;
+      bottom: 48px;
+      left: 52px;
+      right: 52px;
+      display: flex;
+      justify-content: space-between;
+      align-items: stretch;
+    }
+
+    .pattern-col {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      align-items: center;
+      flex: 1;
+    }
+
+    .pattern-col.center-col {
+      justify-content: space-evenly;
+    }
+
+    .suit-symbol {
+      font-size: 3.5rem;
+      line-height: 1;
+    }
+
+    .suit-symbol.rotated {
+      transform: rotate(180deg);
+    }
+
+    /* Marco para Figuras Reales Wikimedia */
+    .face-card-container {
+      position: absolute;
+      top: 42px;
+      bottom: 42px;
+      left: 48px;
+      right: 48px;
+      border: 1px solid #1a202c;
+      border-radius: 6px;
+      background: #ffffff;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .face-real-img {
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+    }
+
+    .red {
+      color: #e53e3e;
+    }
+
+    .black {
+      color: #1a202c;
+    }
+
+    .arcana-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #04d361;
+      margin-bottom: 8px;
+    }
+
+    .meta-badge {
+      display: inline-block;
+      background-color: #29292e;
+      color: #e1e1e6;
+      padding: 6px 16px;
+      border-radius: 18px;
+      font-size: 0.9rem;
+      margin: 4px;
+      border: 1px solid #323238;
+    }
+
+    .meta-domain {
+      font-size: 1rem;
+      color: #c4c4cc;
+      margin-top: 8px;
+    }
+
+    button {
+      background-color: #9466ff;
+      color: #ffffff;
+      border: none;
+      padding: 16px 32px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      width: 100%;
+      box-shadow: 0 4px 12px rgba(148, 102, 255, 0.3);
+    }
+
+    button:hover {
+      background-color: #8257e5;
+      transform: translateY(-2px);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Arcanos Menores con Póker</h1>
+    <p class="subtitle">Equivalencia simbólica con naipes de póker</p>
+    
+    <div class="card-display" id="cardDisplay">
+      <p style="color: #737380;">Presiona el botón para realizar una lectura.</p>
+    </div>
+
+    <button onclick="drawCard()">Robar Carta</button>
+  </div>
+
+  <script>
+    const SUIT_MAPPING = {
+      '♠': { tarotSuit: 'Espadas', element: 'Aire', theme: 'Pensamiento, decisiones y mente', color: 'black' },
+      '♥': { tarotSuit: 'Copas', element: 'Agua', theme: 'Emociones, relaciones e intuición', color: 'red' },
+      '♣': { tarotSuit: 'Bastos', element: 'Fuego', theme: 'Acción, creatividad y trabajo', color: 'black' },
+      '♦': { tarotSuit: 'Oros', element: 'Tierra', theme: 'Dinero, bienes materiales y estabilidad', color: 'red' }
+    };
+
+    const VALUE_MAPPING = {
+      'A': 'As',
+      '2': '2', '3': '3', '4': '4', '5': '5',
+      '6': '6', '7': '7', '8': '8', '9': '9', '10': '10',
+      'J': 'Sota',
+      'Q': 'Reina',
+      'K': 'Rey'
+    };
+
+    // Mapeo directo a vectores oficiales de Wikimedia Commons (Baraja Estándar Francesa/Póker)
+    const COURT_IMAGES = {
+      'J♠': 'https://upload.wikimedia.org/wikipedia/commons/4/4f/English_pattern_jack_of_spades.svg',
+      'J♥': 'https://upload.wikimedia.org/wikipedia/commons/5/56/English_pattern_jack_of_hearts.svg',
+      'J♣': 'https://upload.wikimedia.org/wikipedia/commons/2/22/English_pattern_jack_of_clubs.svg',
+      'J♦': 'https://upload.wikimedia.org/wikipedia/commons/e/ea/English_pattern_jack_of_diamonds.svg',
+
+      'Q♠': 'https://upload.wikimedia.org/wikipedia/commons/c/ca/English_pattern_queen_of_spades.svg',
+      'Q♥': 'https://upload.wikimedia.org/wikipedia/commons/9/9d/English_pattern_queen_of_hearts.svg',
+      'Q♣': 'https://upload.wikimedia.org/wikipedia/commons/1/12/English_pattern_queen_of_clubs.svg',
+      'Q♦': 'https://upload.wikimedia.org/wikipedia/commons/e/e6/English_pattern_queen_of_diamonds.svg',
+
+      'K♠': 'https://upload.wikimedia.org/wikipedia/commons/f/f1/English_pattern_king_of_spades.svg',
+      'K♥': 'https://upload.wikimedia.org/wikipedia/commons/d/d0/English_pattern_king_of_hearts.svg',
+      'K♣': 'https://upload.wikimedia.org/wikipedia/commons/d/d3/English_pattern_king_of_clubs.svg',
+      'K♦': 'https://upload.wikimedia.org/wikipedia/commons/1/1c/English_pattern_king_of_diamonds.svg'
+    };
+
+    let currentDeck = [];
+
+    function buildDeck() {
+      const suits = ['♠', '♥', '♣', '♦'];
+      const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+      const deck = [];
+
+      for (const suit of suits) {
+        for (const value of values) {
+          deck.push({ value, suit });
+        }
+      }
+      return deck;
+    }
+
+    function shuffle(deck) {
+      const shuffled = [...deck];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+
+    function getFaceSVG(value, suit) {
+      const key = `${value}${suit}`;
+      const imageUrl = COURT_IMAGES[key];
+
+      return `
+        <div class="face-card-container">
+          <img src="${imageUrl}" class="face-real-img" alt="${value} de ${suit}" />
+        </div>
+      `;
+    }
+
+    function renderCardPattern(value, suit, colorClass) {
+      if (['J', 'Q', 'K'].includes(value)) {
+        return getFaceSVG(value, suit);
+      }
+
+      const sym = (rot = false) => `<span class="suit-symbol ${rot ? 'rotated' : ''}">${suit}</span>`;
+
+      let left = [], center = [], right = [];
+
+      switch (value) {
+        case 'A':
+          center = [sym()];
+          break;
+        case '2':
+          center = [sym(), sym(true)];
+          break;
+        case '3':
+          center = [sym(), sym(), sym(true)];
+          break;
+        case '4':
+          left = [sym(), sym(true)];
+          right = [sym(), sym(true)];
+          break;
+        case '5':
+          left = [sym(), sym(true)];
+          center = [sym()];
+          right = [sym(), sym(true)];
+          break;
+        case '6':
+          left = [sym(), sym(), sym(true)];
+          right = [sym(), sym(), sym(true)];
+          break;
+        case '7':
+          left = [sym(), sym(), sym(true)];
+          center = [sym()];
+          right = [sym(), sym(), sym(true)];
+          break;
+        case '8':
+          left = [sym(), sym(), sym(true)];
+          center = [sym(), sym(true)];
+          right = [sym(), sym(), sym(true)];
+          break;
+        case '9':
+          left = [sym(), sym(), sym(true), sym(true)];
+          center = [sym()];
+          right = [sym(), sym(), sym(true), sym(true)];
+          break;
+        case '10':
+          left = [sym(), sym(), sym(true), sym(true)];
+          center = [sym(), sym(true)];
+          right = [sym(), sym(), sym(true)];
+          break;
+      }
+
+      const renderCol = (items, isCenter = false) => {
+        if (items.length === 0) return '';
+        return `<div class="pattern-col ${isCenter ? 'center-col' : ''}">${items.join('')}</div>`;
+      };
+
+      return `
+        <div class="card-inner-pattern">
+          ${renderCol(left)}
+          ${renderCol(center, true)}
+          ${renderCol(right)}
+        </div>
+      `;
+    }
+
+    function translateToMinorArcana(card) {
+      const suitInfo = SUIT_MAPPING[card.suit];
+      const arcanaValue = VALUE_MAPPING[card.value];
+      
+      return {
+        value: card.value,
+        suit: card.suit,
+        pokerCardName: `${card.value} de ${card.suit === '♠' ? 'Picas' : card.suit === '♥' ? 'Corazones' : card.suit === '♣' ? 'Tréboles' : 'Diamantes'}`,
+        arcanaName: `${arcanaValue} de ${suitInfo.tarotSuit}`,
+        element: suitInfo.element,
+        domain: suitInfo.theme,
+        colorClass: suitInfo.color
+      };
+    }
+
+    function drawCard() {
+      if (currentDeck.length === 0) {
+        currentDeck = shuffle(buildDeck());
+      }
+
+      const card = currentDeck.pop();
+      const result = translateToMinorArcana(card);
+      const innerPattern = renderCardPattern(result.value, result.suit, result.colorClass);
+      
+      const display = document.getElementById('cardDisplay');
+      display.innerHTML = `
+        <div class="poker-card-graphic ${result.colorClass}">
+          <div class="card-corner top-left">
+            <span>${result.value}</span>
+            <span>${result.suit}</span>
+          </div>
+          ${innerPattern}
+          <div class="card-corner bottom-right">
+            <span>${result.value}</span>
+            <span>${result.suit}</span>
+          </div>
+        </div>
+        <div class="arcana-title">${result.arcanaName}</div>
+        <div>
+          <span class="meta-badge">Naipe: ${result.pokerCardName}</span>
+          <span class="meta-badge">Elemento: ${result.element}</span>
+        </div>
+        <div class="meta-domain"><strong>Ámbito:</strong> ${result.domain}</div>
+      `;
+    }
+  </script>
+
+</body>
+</html>
