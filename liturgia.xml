@@ -115,7 +115,13 @@
         <acto actor="MC" tema="[Apaga la estrella de 2V∴ , Apaga la estrella del 1V∴ y Apaga la estrella del VM∴ Retira la Escuadra y el Compás, y cierra el Libro de la Ley]" />
       </parte>
     </seccion>
-    <seccion id="4" titulo="Proposiciones por Escrito">
+       <seccion id="4" titulo="Asuntos Familiares y Otros">
+      <parte titulo="De los Asuntos Familiares y Otros">
+        <acto actor="VM" tema="QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ como yo lo hago en el Or∴ que vamos a tratar asuntos familiares." />
+        <acto actor="VM" tema="Invitad al MC∴.. a que dé un paseo al salón de actos perdidos a ver si hay algún visitante." />
+      </parte>
+    </seccion>
+    <seccion id="5" titulo="Proposiciones por Escrito">
       <parte titulo="De las Proposiciones por Escrito">
         <acto actor="VM" tema="QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ como yo lo hago en el Or∴ que nuestro QH∴ MC∴ va a circular el saco de proposiciones. [El MC∴ cumple con su deber y se coloca entre CCol∴.]" />
         <acto actor="1V" tema="VM∴, el saco de proposiciones se encuentra entre CCol∴ para circular." />
@@ -132,13 +138,7 @@
         <acto actor="2V" tema="QH∴ 1V∴, reina el silencio en mi Col∴.." />
         <acto actor="1V" tema="VM∴, reina silencio en ambas CCol∴." />
       </parte>
-    </seccion>
-    <seccion id="5" titulo="Asuntos Familiares y Otros">
-      <parte titulo="De los Asuntos Familiares y Otros">
-        <acto actor="VM" tema="QQHH∴ 1V∴ y 2V∴ anunciad a los HH∴ de vuestras respectivas CCol∴ como yo lo hago en el Or∴ que vamos a tratar asuntos familiares." />
-        <acto actor="VM" tema="Invitad al MC∴.. a que dé un paseo al salón de actos perdidos a ver si hay algún visitante." />
-      </parte>
-    </seccion>
+    </seccion> 
     <seccion id="6" titulo="Instrucción: Simbolismo">
       <parte titulo="Estudio Profundo">
         <acto actor="Ora" tema="La Piedra Bruta representa el estado de imperfección..." />
