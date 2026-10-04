@@ -13,15 +13,15 @@
         <acto actor="VM" tema="Aseguraos de ello, Hermano Primer Vigilante (1V∴)." />
         <acto actor="1V" tema="Hermano Guarda Templo (GT∴) Cumplid con vuestro deber. [El GT da tres golpes en la puerta y la respuesta externa es similar]" />
         <acto actor="GT" tema="Hermano 1V∴, el Temp∴ está a cubierto de toda indiscreción profana." />
-        <acto actor="1V" tema="VM∴ el Templo está cubierto de toda indiscreción. (Da tres golpes de Mallete)" />
+        <acto actor="1V" tema="VM∴ el Templo está cubierto de toda indiscreción. [Golpe de Mallete]" />
       </parte>
       <parte titulo="El Cuerpo del Taller">
         <acto actor="VM" tema="¿Cuál es vuestro segundo deber en Hermano 1V∴?" />
         <acto actor="1V" tema="Ver si todos los HH∴ que decoran ambas columnas son aprendices masones." />
-        <acto actor="VM" tema="Aseguraos de ello, QQHH∴ Primer y Segundo Vigilantes, de pie y al orden." />
-        <acto actor="2V" tema="Hermano 1V∴, los HH∴ que decoran mi Col∴ son masones y están de pie y al orden en el Grado de Aprendiz. [Da un golpe de mallete]" />
+        <acto actor="VM" tema="Aseguraos de ello, QQHH∴ Primer y Segundo Vigilantes, de pie y al orden. [Golpe de Mallete]" />
+        <acto actor="2V" tema="Hermano 1V∴, los HH∴ que decoran mi Col∴ son masones y están de pie y al orden en el Grado de Aprendiz. [Golpe de Mallete]" />
         <acto actor="1V" tema="VM∴ los HH∴ que se cobijan bajo la bóveda de nuestro templo son Masones y se hallan al orden, prontos para cumplir con vuestro mandato, y dispuestos a laborar en la construcción del Templo moral erigido a la ciencia, a la virtud y al trabajo. [Da un golpe de Mallete]." />
-        <acto actor="VM" tema="HH∴ míos, también son masones los que decoran el Oriente, y están prontos para trabajar en la construcción del Templo Moral que la Masonería eleva en la gloria del perfeccionamiento humano, mediante la conquista de los sublimes principios de Libertad, Igualdad y Fraternidad [Da un golpe de Mallete seguido por los Vigilantes]." />
+        <acto actor="VM" tema="HH∴ míos, también son masones los que decoran el Oriente, y están prontos para trabajar en la construcción del Templo Moral que la Masonería eleva en la gloria del perfeccionamiento humano, mediante la conquista de los sublimes principios de Libertad, Igualdad y Fraternidad. Sentémonos, QQHH∴ [Golpe de Mallete seguido por los Vigilantes]." />
       </parte>
       <parte titulo="El Propósito del Cuerpo">
         <acto actor="VM" tema="¿Para qué ocupáis ese puesto, Querido Hermano 2V∴?" />
@@ -42,14 +42,20 @@
         <acto actor="1V" tema="Al mediodía, VM∴." />
         <acto actor="VM" tema="¿Qué hora es, Querido Hermano 2V∴?" />
         <acto actor="2V" tema="La hora de empezar, mediodía en punto, VM∴." />
-        <acto actor="VM" tema="Siendo mediodía en punto, hora que los Apr∴ Mas∴ abren sus trabajos QQHH∴, 1V∴ y 2V∴, servios invitar a los obreros que decoran vuestras respectivas CCol∴, como yo a los de Oriente, para que se unan a vosotros y a mí a fin de abrir los trabajos de esta Augusta y RL∴" />
-        <acto actor="1V" tema="QH∴ 2V∴ y HH∴ que decoráis mi Col∴, por orden del VM∴, os invito que os unáis a él y a mí para abrir los trabajos de esta RL∴ en el grado de Apr∴ M∴." />
-        <acto actor="2V" tema="QQHH∴ de la Col∴ del Norte, por orden del VM∴ comunicada a mí por nuestro QH∴ 1V∴, que os unáis a él y a nosotros para abrir los trabajos de esta RL∴ en grado de Apr∴M∴. [Anunciado en mi Col∴, QH∴ 1V∴.]" />
-        <acto actor="1V" tema="Anunciado en ambas CCol∴, VM∴." />
+        <acto actor="VM" tema="Siendo mediodía en punto, hora que los Apr∴ Mas∴ abren sus trabajos QQHH∴, 1V∴ y 2V∴, servios invitar a los obreros que decoran vuestras respectivas CCol∴, como yo a los de Oriente, para que se unan a vosotros y a mí a fin de abrir los trabajos de esta Augusta y RLS∴ Colmena No. 8 [Golpe de Mallete]" />
+        <acto actor="1V" tema="QH∴ 2V∴ y HH∴ que decoráis mi Col∴, por orden del VM∴, os invito que os unáis a él y a mí para abrir los trabajos de esta RLS∴ Colmena No. 8 en el grado de Apr∴ M∴." />
+        <acto actor="2V" tema="QQHH∴ de la Col∴ del Norte, por orden del VM∴ comunicada a mí por nuestro QH∴ 1V∴, que os unáis a él y a nosotros para abrir los trabajos de esta RLS∴ Colmena No. 8 en grado de Apr∴M∴. [Golpe de Mallete]" />
+        <acto actor="1V" tema="Anunciado en ambas CCol∴, VM∴. [Golpe de Mallete]" />
       </parte>
       <parte titulo="La Consagración de la Luz">
-        <acto actor="VM" tema="¡En pie y al Orden, Queridos Hermanos! [Da un golpe de Mallete seguido por los Vigilantes]. " />
-        <acto actor="VM" tema= "QH∴ Maestro de Ceremonias (MC∴) , prended las Luces. [MC∴ Abre el Libro de la Ley y coloca la Escuadra y sobre esta el Compás. Enciende la estrella del VM∴, quien dice: ¡Que la Sabiduría guíe nuestros trabajos! ; MC∴ Enciende la estrella del 1V∴ VM∴, dice: ¡Que la Fuerza los sostenga! ;MC∴ Enciende la estrella del 2V∴, VM∴ dice: ¡Que la Belleza los adorne!]"/>
+        <acto actor="VM" tema="¡En pie y al Orden, Queridos Hermanos! [Da tres golpes de Mallete seguido por los Vigilantes]. " />
+        <acto actor="VM" tema= "QH∴ Maestro de Ceremonias (MC∴) , prended las Luces. " />
+        <acto actor="MC" tema= "[MC∴ Abre el Libro de la Ley y coloca la Escuadra y sobre esta el Compás. Enciende la estrella del VM∴]" />
+        <acto actor="VM" tema= "¡Que la Sabiduría guíe nuestros trabajos!" />
+        <acto actor="MC" tema= "[Enciende la estrella del 1V∴]" />
+        <acto actor="1V" tema= "¡Que la Fuerza los sostenga!" />
+        <acto actor="MC" tema= "[MC∴ Enciende la estrella del 2V∴]" />
+        <acto actor="2V" tema= "¡Que la Belleza los adorne!"/>
         <acto actor="VM" tema="Puesto que todo está justo y perfecto, y que es la hora que los AAp∴ MM∴ empiezan sus trabajos, uníos a mí HH∴ míos, ALGDGADU∴ y en su nombre y bajo la obediencia de la Ser∴ Gran L∴ de Lengua Española para los EE. UU. de A., declaro abiertos los trabajos de esta RL∴ en el grado de Apr∴ M∴ del REAA∴. Queda prohibido a todo H∴ pasar de una a otra Col∴ ni cubrir el Templo sin permiso de su respectivo V∴; ni tratar asuntos políticos ni religiosos, a mí HH∴ con el signo y Bat∴ de Grado. [Da tres golpes de Mall∴ que repiten los VV∴] Tomad asiento, QQHH∴." />
       </parte>
     </seccion>
