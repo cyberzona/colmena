@@ -42,9 +42,9 @@
         <acto actor="1V" tema="Al mediodía, VM∴." />
         <acto actor="VM" tema="¿Qué hora es, Querido Hermano 2V∴?" />
         <acto actor="2V" tema="La hora de empezar, mediodía en punto, VM∴." />
-        <acto actor="VM" tema="Siendo mediodía en punto, hora que los Apr∴ Mas∴ abren sus trabajos QQHH∴, 1V∴ y 2V∴, servios invitar a los obreros que decoran vuestras respectivas CCol∴, como yo a los de Oriente, para que se unan a vosotros y a mí a fin de abrir los trabajos de esta Augusta y RLS∴ Colmena No. 8 [Golpe de Mallete]" />
-        <acto actor="1V" tema="QH∴ 2V∴ y HH∴ que decoráis mi Col∴, por orden del VM∴, os invito que os unáis a él y a mí para abrir los trabajos de esta RLS∴ Colmena No. 8 en el grado de Apr∴ M∴." />
-        <acto actor="2V" tema="QQHH∴ de la Col∴ del Norte, por orden del VM∴ comunicada a mí por nuestro QH∴ 1V∴, que os unáis a él y a nosotros para abrir los trabajos de esta RLS∴ Colmena No. 8 en grado de Apr∴M∴. [Golpe de Mallete]" />
+        <acto actor="VM" tema="Siendo mediodía en punto, hora que los Apr∴ Mas∴ abren sus trabajos QQHH∴, 1V∴ y 2V∴, servios invitar a los obreros que decoran vuestras respectivas CCol∴, como yo a los de Oriente, para que se unan a vosotros y a mí a fin de abrir los trabajos de esta Augusta y RLS∴ {{logia}} [Golpe de Mallete]" />
+        <acto actor="1V" tema="QH∴ 2V∴ y HH∴ que decoráis mi Col∴, por orden del VM∴, os invito que os unáis a él y a mí para abrir los trabajos de esta RLS∴ {{logia}} en el grado de Apr∴ M∴." />
+        <acto actor="2V" tema="QQHH∴ de la Col∴ del Norte, por orden del VM∴ comunicada a mí por nuestro QH∴ 1V∴, que os unáis a él y a nosotros para abrir los trabajos de esta RLS∴ {{logia}} en grado de Apr∴M∴. [Golpe de Mallete]" />
         <acto actor="1V" tema="Anunciado en ambas CCol∴, VM∴. [Golpe de Mallete]" />
       </parte>
       <parte titulo="La Consagración de la Luz">
