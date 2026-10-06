@@ -1,209 +1,225 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <liturgia>
   <ritual libro="1" logia="Colmena No. 8">
+    
+    <!-- ========================================== -->
+    <!-- SECCIÓN 1: APERTURA DE LOS TRABAJOS        -->
+    <!-- ========================================== -->
     <seccion id="1" titulo="Apertura de los Trabajos">
       <parte titulo="Comprobación de los Puestos">
-        <acto actor="VM" tema="En Log∴, mis HH∴. H∴ Maest∴ de Cer∴, los puestos están cubiertos." />
-        <acto actor="MC" tema="Sí, Ven∴ Maest∴, los puestos están cubiertos, y los HH∴ prontos a iniciar los trabajos." />
-        <acto actor="VM" tema="¿Sois Masón, H∴ Prim∴ Vig∴?" />
-        <acto actor="1V" tema="Por tal me reconocen mis HH∴, Ven∴ Maest∴." />
-        <acto actor="VM" tema="¿Cuál es nuestro primer deber en Log∴, H∴ Prim∴ Vig∴?" />
+        <acto actor="VM" tema="En Logia, mis HH∴. H∴ MC∴, los puestos están cubiertos." />
+        <acto actor="MC" tema="Sí, VM∴, los puestos están cubiertos, y los HH∴ prontos a iniciar los trabajos." />
+        <acto actor="VM" tema="¿Sois Masón, H∴ 1V∴?" />
+        <acto actor="1V" tema="Por tal me reconocen mis HH∴, VM∴." />
+        <acto actor="VM" tema="¿Cuál es nuestro primer deber en Logia, H∴ 1V∴?" />
         <acto actor="1V" tema="Ver si el Templo está a cubierto de toda indiscreción profana." />
-        <acto actor="VM" tema="Cercioraos de ello, H∴ Prim∴ Vig∴." />
-        <acto actor="1V" tema="H∴ Guard∴ Temp∴ Cumplid con nuestro deber. [El H∴ G∴ T∴ da tres golpes en la puerta del Templo, los que deben ser contestados por el G∴ Temp∴ Ext∴]" />
-        <acto actor="GT" tema="Prim∴ Vig∴, el Temp∴ está a cubierto de toda indiscreción profana." />
-        <acto actor="1V" tema="Ven∴ Maest∴ [da tres golpes de Mallete] el Templo está a cubierto y lejos de toda indiscreción." />
+        <acto actor="VM" tema="Cercioraos de ello, H∴ 1V∴." />
+        <acto actor="1V" tema="H∴ GT∴ Cumplid con nuestro deber. [El H∴ GT∴ da tres golpes en la puerta del Templo, los que deben ser contestados por el Guarda Templo Exterior]" />
+        <acto actor="GT" tema="1V∴, el Templo está a cubierto de toda indiscreción profana." />
+        <acto actor="1V" tema="VM∴ [da tres golpes de Mallete] el Templo está a cubierto y lejos de toda indiscreción." />
       </parte>
       <parte titulo="Comprobación de Aprendices">
-        <acto actor="VM" tema="¿Cuál es vuestro segundo deber en Log∴, H∴ Prim∴ Vig∴?" />
-        <acto actor="1V" tema="Ver si todos los HH∴ que decoran ambas CCol∴ son AApr∴ MMas∴." />
-        <acto actor="VM" tema="Aseguraos de ello, QQ∴ HH∴ Prim∴ y Seg∴ Vig∴ de pie y al orden." />
-        <acto actor="2V" tema="H∴ Prim∴ Vig∴, los HH∴ que decoran mi Col∴ son masones y están de pie y al orden de Aprendiz." />
-        <acto actor="1V" tema="Ven∴ Maest∴, los HH∴ que se cobijan bajo la bóveda de nuestro Templo son Masones y se hallan al orden, prontos para cumplir con vuestro mandato, y dispuestos a laborar en la construcción del Templo moral erigido a la ciencia, a la virtud y al trabajo." />
-        <acto actor="VM" tema="HH∴ míos, también son Masones los que decoran el Oriente, y están prontos para trabajar en la construcción del Templo Moral que la Masonería eleva en la gloria del perfeccionamiento humano, mediante la conquista de los sublimes principios de Libertad, Igualdad y Fraternidad. [Sentémonos, QQ∴ HH∴]" />
+        <acto actor="VM" tema="¿Cuál es vuestro segundo deber en Logia, H∴ 1V∴?" />
+        <acto actor="1V" tema="Ver si todos los HH∴ que decoran ambas CCol∴ son Aprendices Masones." />
+        <acto actor="VM" tema="Aseguraos de ello, QQHH∴ 1V∴ y 2V∴ de pie y al orden." />
+        <acto actor="2V" tema="H∴ 1V∴, los HH∴ que decoran mi Col∴ son masones y están de pie y al orden de Aprendiz." />
+        <acto actor="1V" tema="VM∴, los HH∴ que se cobijan bajo la bóveda de nuestro Templo son Masones y se hallan al orden, prontos para cumplir con vuestro mandato, y dispuestos a laborar en la construcción del Templo moral erigido a la ciencia, a la virtud y al trabajo." />
+        <acto actor="VM" tema="HH∴ míos, también son Masones los que decoran el Oriente, y están prontos para trabajar en la construcción del Templo Moral que la Masonería eleva en la gloria del perfeccionamiento humano, mediante la conquista de los sublimes principios de Libertad, Igualdad y Fraternidad. [Sentémonos, QQHH∴]" />
       </parte>
       <parte titulo="Función de cada Puesto">
-        <acto actor="VM" tema="¿Para qué ocupáis ese puesto, Q∴ H∴ Seg∴ Vig∴?" />
+        <acto actor="VM" tema="¿Para qué ocupáis ese puesto, QH∴ 2V∴?" />
         <acto actor="2V" tema="Para mejor observar el Sol en su meridiano, mandar los obreros al trabajo y llamarlos a la recreación, y de la recreación al trabajo a fin de que la humanidad coseche el resplandor de los principios Masónicos." />
-        <acto actor="VM" tema="Q∴ H∴ Seg∴ Vig∴ ¿Dónde toma asiento nuestro Q∴ H∴ Prim∴ Vig∴?" />
-        <acto actor="2V" tema="Al Occidente, Ven∴ Maest∴." />
-        <acto actor="VM" tema="¿Para qué ocupáis ese puesto, Q∴ H∴ Prim∴ Vig∴?" />
-        <acto actor="1V" tema="Así como el Sol se oculta en el Occidente al terminar el día, así se sienta aquí el Prim∴ Vig∴ para ayudar al Ven∴ Maest∴, abrir y cerrar la Log∴, pagar los obreros y despedirlos contentos y satisfechos de sus actos en la obra de Amor y de Justicia en que estamos empeñados." />
-        <acto actor="VM" tema="¿Dónde toma asiento el Ven∴ Maest∴, Q∴ H∴ Prim∴ Vig∴?" />
+        <acto actor="VM" tema="QH∴ 2V∴ ¿Dónde toma asiento nuestro QH∴ 1V∴?" />
+        <acto actor="2V" tema="Al Occidente, VM∴." />
+        <acto actor="VM" tema="¿Para qué ocupáis ese puesto, QH∴ 1V∴?" />
+        <acto actor="1V" tema="Así como el Sol se oculta en el Occidente al terminar el día, así se sienta aquí el 1V∴ para ayudar al VM∴, abrir y cerrar la Logia, pagar los obreros y despedirlos contentos y satisfechos de sus actos en la obra de Amor y de Justicia en que estamos empeñados." />
+        <acto actor="VM" tema="¿Dónde toma asiento el VM∴, QH∴ 1V∴?" />
         <acto actor="1V" tema="En Oriente." />
         <acto actor="VM" tema="¿Para qué, H∴ mío?" />
-        <acto actor="1V" tema="Así como el Sol nace en Oriente al iniciar su carrera y romper el Día, de igual manera se alza allí el Ven∴ Maest∴ para abrir la Log∴, dirigirla en sus trabajos e iluminarla con sus luces, esclareciendo así los sublimes preceptos de nuestra institución." />
+        <acto actor="1V" tema="Así como el Sol nace en Oriente al iniciar su carrera y romper el Día, de igual manera se alza allí el VM∴ para abrir la Logia, dirigirla en sus trabajos e iluminarla con sus luces, esclareciendo así los sublimes preceptos de nuestra institución." />
       </parte>
       <parte titulo="Edad y Hora de Apertura">
-        <acto actor="VM" tema="Q∴ H∴ Seg∴ Vig∴ ¿Qué edad tenéis como Aprendiz Masón?" />
-        <acto actor="2V" tema="Tres años, Ven∴ Maest∴." />
-        <acto actor="VM" tema="¿A qué hora empiezan los trabajos de AApr∴ MMas∴, Q∴ H∴ Prim∴ Vig∴?" />
-        <acto actor="1V" tema="A mediodía, Ven∴ Maest∴." />
-        <acto actor="VM" tema="¿Qué hora es, Q∴ H∴ Seg∴ Vig∴?" />
-        <acto actor="2V" tema="La hora de empezar, mediodía en punto, Ven∴ Maest∴." />
+        <acto actor="VM" tema="QH∴ 2V∴ ¿Qué edad tenéis como Aprendiz Masón?" />
+        <acto actor="2V" tema="Tres años, VM∴." />
+        <acto actor="VM" tema="¿A qué hora empiezan los trabajos de Aprendices, QH∴ 1V∴?" />
+        <acto actor="1V" tema="A mediodía, VM∴." />
+        <acto actor="VM" tema="¿Qué hora es, QH∴ 2V∴?" />
+        <acto actor="2V" tema="La hora de empezar, mediodía en punto, VM∴." />
       </parte>
       <parte titulo="Declaración de Apertura">
-        <acto actor="VM" tema="Siendo mediodía en punto, hora que AApr∴ MMas∴ abren sus trabajos, QQ∴ HH∴ Prim∴ y Seg∴ VVig∴, servíos invitar a los obreros que ocupan vuestras respectivas CCol∴, como yo a los de Oriente, para que se unan a vosotros y a mí a fin de abrir los trabajos de esta Aug∴ Resp∴ Log∴." />
-        <acto actor="1V" tema="Q∴ H∴ Seg∴ Vig∴ y HH∴ que ocupáis mi Col∴, por orden del Ven∴ Maest∴ os invito a que os unáis a él y a mí para abrir los trabajos de esta Resp∴ Log∴ en el grado de AApr∴ MMas∴." />
-        <acto actor="2V" tema="QQ∴ HH∴ de la Col∴ del Norte, por orden del Ven∴ Maest∴ comunicada a mí por nuestro Q∴ H∴ Prim∴ Vig∴, que os unáis a él y a nosotros para abrir los trabajos de esta Resp∴ Log∴ en grado de AApr∴ MMas∴." />
-        <acto actor="1V" tema="[Anunciado en mi Col∴, Q∴ H∴ Prim∴ Vig∴] Anunciado en ambas CCol∴, Ven∴ Maest∴." />
-        <acto actor="VM" tema="Mis HH∴, en pie y al orden. [Da golpes de Mall∴ que repiten los VVig∴] Q∴ H∴ Maest∴ de Cer∴, prended las tres Grandes Luces." />
-        <acto actor="2V" tema="Todo está justo y perfecto, Ven∴ Maest∴." />
-        <acto actor="VM" tema="Puesto que todo está justo y perfecto, y que es la hora en que los AApr∴ MMas∴ empiezan sus trabajos, uníos a mí, HH∴ míos, A L∴ G∴ del G∴ A∴ D∴ U∴ y en su nombre y bajo la obediencia de la Ser∴ Gran Log∴ de Lengua Española a los E. U. de A., Inc., declaro abiertos los trabajos de esta Resp∴ Log∴ en el grado de AApr∴ MMas∴ del Rit∴ Esc∴ Ant∴ y Acept∴. Queda prohibido a todo H∴ pasar de una a otra Col∴ ni cubrir el Templo sin permiso de su respectivo Vig∴; ni tratar asuntos políticos ni Religiosos. A mí HH∴, por el signo y Bat∴ de Grado. [Tomad asiento, QQ∴ HH∴]" />
+        <acto actor="VM" tema="Siendo mediodía en punto, hora que los Aprendices abren sus trabajos, QQHH∴ 1V∴ y 2V∴, servíos invitar a los obreros que ocupan vuestras respectivas CCol∴, como yo a los de Oriente, para que se unan a vosotros y a mí a fin de abrir los trabajos de esta Augusta y Respetable Logia." />
+        <acto actor="1V" tema="QH∴ 2V∴ y HH∴ que ocupáis mi Col∴, por orden del VM∴ os invito a que os unáis a él y a mí para abrir los trabajos de esta Respetable Logia en el grado de Aprendiz." />
+        <acto actor="2V" tema="QQHH∴ de la Col∴ del Norte, por orden del VM∴ comunicada a mí por nuestro QH∴ 1V∴, que os unáis a él y a nosotros para abrir los trabajos de esta Respetable Logia en grado de Aprendiz." />
+        <acto actor="1V" tema="[Anunciado en mi Col∴, QH∴ 1V∴] Anunciado en ambas CCol∴, VM∴." />
+        <acto actor="VM" tema="Mis HH∴, en pie y al orden. [Da golpes de Mallete que repiten los Vigilantes] QH∴ MC∴, prended las tres Grandes Luces." />
+        <acto actor="2V" tema="Todo está justo y perfecto, VM∴." />
+        <acto actor="VM" tema="Puesto que todo está justo y perfecto, y que es la hora en que los Aprendices empiezan sus trabajos, uníos a mí, HH∴ míos, ALGDGADU∴ y en su nombre y bajo la obediencia de la Serenísima Gran Logia de Lengua Española a los E. U. de A., Inc., declaro abiertos los trabajos de esta Respetable Logia en el grado de Aprendiz del Rito Escocés Antiguo y Aceptado. Queda prohibido a todo H∴ pasar de una a otra Col∴ ni cubrir el Templo sin permiso de su respectivo Vigilante; ni tratar asuntos políticos ni Religiosos. A mí HH∴, por el signo y Batería de Grado. [Tomad asiento, QQHH∴]" />
       </parte>
     </seccion>
 
+    <!-- ========================================== -->
+    <!-- SECCIÓN 2: ASUNTOS DE LA TENIDA            -->
+    <!-- ========================================== -->
     <seccion id="2" titulo="Asuntos de la Tenida">
       <parte titulo="Lectura de la Plancha Anterior">
-        <acto actor="VM" tema="QQ∴ HH∴ Prim∴ y Seg∴ VVig∴, anunciad en vuestras respectivas CCol∴ que presten atención, que nuestro Q∴ H∴ Sec∴ va a dar lectura a la Plancha de nuestros últimos trabajos." />
-        <acto actor="VM" tema="QQ∴ HH∴ Prim∴ y Seg∴ VVig∴, anunciad en vuestras respectivas CCol∴, como yo lo hago en Ort∴, que está en consideración la Pl∴ trazada por nuestro Q∴ H∴ Sec∴, en tal sentido, si algún H∴ desea hacer uso de la palabra podéis concedérsela." />
-        <acto actor="Sec" tema="[El Secretario lee la plancha de los últimos trabajos] [[INSTANCIA]]" />
-        <acto actor="2V" tema="Reina el silencio en mi Columna H∴ Prim∴ Vig∴." />
-        <acto actor="1V" tema="Reina el silencio en ambas CCol∴, Ven∴ Maest∴." />
-        <acto actor="VM" tema="Q∴ H∴ Orad∴ ¿Queréis darnos vuestras conclusiones respecto a la Pl∴ trazada por nuestro H∴ Sec∴ de nuestros últimos trabajos? [El H∴ Ord∴ da las conclusiones]" />
-        <acto actor="VM" tema="Después de las conclusiones del H∴ Ord∴, los HH∴ que estén de acuerdo se servirán de hacer la señal de aprobación al primer golpe de Mall∴. [El M∴ de Cer∴ da a conocer el resultado de la votación]." />
+        <acto actor="VM" tema="QQHH∴ 1V∴ y 2V∴, anunciad en vuestras respectivas CCol∴ que presten atención, que nuestro QH∴ Sec∴ va a dar lectura a la Plancha de nuestros últimos trabajos." />
+        <acto actor="VM" tema="QQHH∴ 1V∴ y 2V∴, anunciad en vuestras respectivas CCol∴, como yo lo hago en Oriente, que está en consideración la Plancha trazada por nuestro QH∴ Sec∴, en tal sentido, si algún H∴ desea hacer uso de la palabra podéis concedérsela." />
+        <acto actor="Sec" tema="[El Sec∴ lee la plancha de los últimos trabajos] [[INSTANCIA]]" />
+        <acto actor="2V" tema="Reina el silencio en mi Col∴, H∴ 1V∴." />
+        <acto actor="1V" tema="Reina el silencio en ambas CCol∴, VM∴." />
+        <acto actor="VM" tema="QH∴ OF∴ ¿Queréis darnos vuestras conclusiones respecto a la Plancha trazada por nuestro H∴ Sec∴ de nuestros últimos trabajos? [El H∴ OF∴ da las conclusiones]" />
+        <acto actor="VM" tema="Después de las conclusiones del H∴ OF∴, los HH∴ que estén de acuerdo se servirán de hacer la señal de aprobación al primer golpe de Mallete. [El MC∴ da a conocer el resultado de la votación]." />
       </parte>
       <parte titulo="Asuntos de Familia">
-        <acto actor="VM" tema="QQ∴ HH∴ Prim∴ y Seg∴ VVig∴, Anunciad a los HH∴ de vuestras respectivas CCol∴, como yo lo hago en Ort∴, que vamos a tratar asuntos de familia. [Invita al M∴ de Cer∴ a que dé un paseo al salón de pasos perdidos a ver si hay algún visitante]." />
+        <acto actor="VM" tema="QQHH∴ 1V∴ y 2V∴, Anunciad a los HH∴ de vuestras respectivas CCol∴, como yo lo hago en Oriente, que vamos a tratar asuntos de familia. [Invita al MC∴ a que dé un paseo al salón de pasos perdidos a ver si hay algún visitante]." />
       </parte>
       <parte titulo="Saco de Proposiciones">
-        <acto actor="VM" tema="QQ∴ HH∴ Prim∴ y Seg∴ VVig∴, anunciad a los HH∴ de vuestras respectivas CCol∴, como yo lo hago en Ort∴, que nuestro Q∴ H∴ Maest∴ de Cer∴ va a circular el saco de proposiciones. [El Q∴ H∴ Maest∴ de Cer∴ cumple con su deber y se coloca entre CCol∴]" />
-        <acto actor="1V" tema="Ven∴ Maest∴, el saco de proposiciones se encuentra entre CCol∴ para circular." />
-        <acto actor="VM" tema="Ordenad que circule empezando por mi derecha. [Con Cer∴ o sin Cer∴, cumplida su misión, se coloca entre CCol∴]" />
+        <acto actor="VM" tema="QQHH∴ 1V∴ y 2V∴, anunciad a los HH∴ de vuestras respectivas CCol∴, como yo lo hago en Oriente, que nuestro QH∴ MC∴ va a circular el saco de proposiciones. [El QH∴ MC∴ cumple con su deber y se coloca entre CCol∴]" />
+        <acto actor="1V" tema="VM∴, el saco de proposiciones se encuentra entre CCol∴ para circular." />
+        <acto actor="VM" tema="Ordenad que circule empezando por mi derecha. [Con Ceremonia o sin Ceremonia, cumplida su misión, se coloca entre CCol∴]" />
         <acto actor="1V" tema="He cumplido con mi deber." />
-        <acto actor="1V" tema="Ven∴ Maest∴, el saco de proposiciones, después de haber circulado por los cuatro puntos cardinales, se halla nuevamente entre CCol∴." />
-        <acto actor="VM" tema="Ordenad que pase a Ort∴ y que en compañía del H∴ Ord∴ nos enteremos de su contenido. [El H∴ Ord∴ da cuenta de la cantidad de PPl∴ producidas]" />
+        <acto actor="1V" tema="VM∴, el saco de proposiciones, después de haber circulado por los cuatro puntos cardinales, se halla nuevamente entre CCol∴." />
+        <acto actor="VM" tema="Ordenad que pase a Oriente y que en compañía del H∴ OF∴ nos enteremos de su contenido. [El H∴ OF∴ da cuenta de la cantidad de Planchas producidas]" />
         <acto actor="VM" tema="[[INSTANCIA]]" />
       </parte>
       <parte titulo="Proposiciones Verbales">
-        <acto actor="VM" tema="QQ∴ HH∴ Prim∴ y Seg∴ VVig∴, anunciad en vuestras respectivas CCol∴ que vamos a pasar a proposiciones verbales." />
-        <acto actor="2V" tema="[Reinando silencio el Seg∴ Vig∴, dice]: H∴ Prim∴ Vig∴, reina el silencio en mi Col∴." />
-        <acto actor="1V" tema="Ven∴ Maest∴, reina silencio en ambas CCol∴." />
-        <acto actor="VM" tema="QQ∴ HH∴ Prim∴ y Seg∴ VVig∴, anunciad a los HH∴ de vuestras respectivas CCol∴ que voy a conceder la palabra en bien general de la orden y en particular de este Tall∴." />
-        <acto actor="2V" tema="Q∴ H∴ de la Col∴ del Norte, por orden del Ven∴ Maest∴ y transmitida a mí por el Q∴ H∴ Prim∴ Vig∴, que está concedida la palabra en bien general de la orden y en particular de este Tall∴." />
-        <acto actor="2V" tema="Q∴ H∴ Prim∴ Vig∴, reina silencio en mi Col∴." />
-        <acto actor="1V" tema="Ven∴ Maest∴, reina silencio en ambas Columnas." />
+        <acto actor="VM" tema="QQHH∴ 1V∴ y 2V∴, anunciad en vuestras respectivas CCol∴ que vamos a pasar a proposiciones verbales." />
+        <acto actor="2V" tema="[Reinando silencio el 2V∴, dice]: H∴ 1V∴, reina el silencio en mi Col∴." />
+        <acto actor="1V" tema="VM∴, reina silencio en ambas CCol∴." />
+        <acto actor="VM" tema="QQHH∴ 1V∴ y 2V∴, anunciad a los HH∴ de vuestras respectivas CCol∴ que voy a conceder la palabra en bien general de la orden y en particular de este Taller." />
+        <acto actor="2V" tema="QH∴ de la Col∴ del Norte, por orden del VM∴ y transmitida a mí por el QH∴ 1V∴, que está concedida la palabra en bien general de la orden y en particular de este Taller." />
+        <acto actor="2V" tema="QH∴ 1V∴, reina silencio en mi Col∴." />
+        <acto actor="1V" tema="VM∴, reina silencio en ambas CCol∴." />
       </parte>
       <parte titulo="Tronco de Beneficencia">
-        <acto actor="VM" tema="QQ∴ HH∴ Prim∴ y Seg∴ VVig∴, anunciad en vuestras CCol∴ que el H∴ Hosp∴ va a circular el tronco de beneficencia." />
-        <acto actor="2V" tema="Anunciado en la Col∴ del Mediodía, H∴ Prim∴ Vig∴." />
-        <acto actor="1V" tema="Anunciado en ambas CCol∴, Ven∴ Maest∴." />
-        <acto actor="VM" tema="Q∴ H∴ Hosp∴, cumplid con vuestro deber. [El H∴ Hosp∴ se coloca entre CCol∴]" />
-        <acto actor="1V" tema="Ven∴ Maest∴, el H∴ Hosp∴ se encuentra entre CCol∴ pronto para circular entre los HH∴." />
+        <acto actor="VM" tema="QQHH∴ 1V∴ y 2V∴, anunciad en vuestras CCol∴ que el H∴ Hos∴ va a circular el tronco de beneficencia." />
+        <acto actor="2V" tema="Anunciado en la Col∴ del Mediodía, H∴ 1V∴." />
+        <acto actor="1V" tema="Anunciado en ambas CCol∴, VM∴." />
+        <acto actor="VM" tema="QH∴ Hos∴, cumplid con vuestro deber. [El H∴ Hos∴ se coloca entre CCol∴]" />
+        <acto actor="1V" tema="VM∴, el H∴ Hos∴ se encuentra entre CCol∴ pronto para circular entre los HH∴." />
         <acto actor="VM" tema="Ordenad que circule empezando por mi derecha." />
-        <acto actor="1V" tema="Q∴ H∴ Hosp∴, cumplid con vuestro deber. [El H∴ Hosp∴, después de haber circulado se coloca entre CCol∴]" />
-        <acto actor="Hosp" tema="Q∴ H∴ Prim∴ Vig∴, he cumplido vuestro mandato." />
-        <acto actor="1V" tema="Ven∴ Maest∴, el tronco de beneficencia después de circular por los cuatro puntos Cardinales del Templo se encuentra nuevamente entre CCol∴." />
+        <acto actor="1V" tema="QH∴ Hos∴, cumplid con vuestro deber. [El H∴ Hos∴, después de haber circulado se coloca entre CCol∴]" />
+        <acto actor="Hos" tema="QH∴ 1V∴, he cumplido vuestro mandato." />
+        <acto actor="1V" tema="VM∴, el tronco de beneficencia después de circular por los cuatro puntos Cardinales del Templo se encuentra nuevamente entre CCol∴." />
         <acto actor="VM" tema="Ordenad que ocupe su puesto y nos dé cuenta de su contenido." />
       </parte>
     </seccion>
 
+    <!-- ========================================== -->
+    <!-- SECCIÓN 3: CLAUSURA DE LOS TRABAJOS        -->
+    <!-- ========================================== -->
     <seccion id="3" titulo="Clausura de los Trabajos">
       <parte titulo="Conclusiones y Caracteres">
-        <acto actor="VM" tema="Q∴ H∴ Orad∴, ¿nos queréis dar las conclusiones de los trabajos de la Ten∴ de hoy?" />
-        <acto actor="Orad" tema="[Da a conocer el resultado del Trazado] [[INSTANCIA]]" />
-        <acto actor="VM" tema="En virtud de haber sido en un todo favorable las conclusiones del H∴ Ord∴ a la labor realizada, vamos a proceder al cierre de los trabajos de esta Resp∴ Log∴. Pero antes, Q∴ H∴ Prim∴ Vig∴ podéis decirnos, ¿cuáles son los caracteres distintivos que deben de adornar al verdadero Mas∴?" />
+        <acto actor="VM" tema="QH∴ OF∴, ¿nos queréis dar las conclusiones de los trabajos de la Tenida de hoy?" />
+        <acto actor="OF" tema="[Da a conocer el resultado del Trazado] [[INSTANCIA]]" />
+        <acto actor="VM" tema="En virtud de haber sido en un todo favorable las conclusiones del H∴ OF∴ a la labor realizada, vamos a proceder al cierre de los trabajos de esta Respetable Logia. Pero antes, QH∴ 1V∴ podéis decirnos, ¿cuáles son los caracteres distintivos que deben de adornar al verdadero Masón?" />
         <acto actor="1V" tema="Ser virtuoso y amante con los HH∴ y tolerante con todos." />
-        <acto actor="VM" tema="Q∴ H∴ Seg∴ Vig∴ ¿Qué se deben los Masones entre sí?" />
-        <acto actor="2V" tema="Respeto mutuo y amor fraternal, Ven∴ Maest∴." />
-        <acto actor="VM" tema="¿Cuál debe ser la conducta del Masón en el mundo profano, Q∴ H∴ Prim∴ Vig∴?" />
+        <acto actor="VM" tema="QH∴ 2V∴ ¿Qué se deben los Masones entre sí?" />
+        <acto actor="2V" tema="Respeto mutuo y amor fraternal, VM∴." />
+        <acto actor="VM" tema="¿Cuál debe ser la conducta del Masón en el mundo profano, QH∴ 1V∴?" />
         <acto actor="1V" tema="Enseñar con la práctica el ejercicio de todas las virtudes." />
       </parte>
       <parte titulo="Edad y Hora de Cierre">
-        <acto actor="VM" tema="Q∴ H∴ Prim∴ Vig∴ ¿Qué edad tenéis como Apr∴ Mas∴?" />
-        <acto actor="1V" tema="Tres años, Ven∴ Maest∴." />
-        <acto actor="VM" tema="Q∴ H∴ Seg∴ Vig∴ ¿A qué hora cierran los trabajos los AApr∴ MMas∴?" />
-        <acto actor="2V" tema="Medianoche en punto, Ven∴ Maest∴." />
-        <acto actor="VM" tema="¿Qué hora es, Q∴ H∴ Prim∴ Vig∴?" />
-        <acto actor="1V" tema="La hora de cerrar, medianoche en punto, Ven∴ Maest∴." />
+        <acto actor="VM" tema="QH∴ 1V∴ ¿Qué edad tenéis como Aprendiz Masón?" />
+        <acto actor="1V" tema="Tres años, VM∴." />
+        <acto actor="VM" tema="QH∴ 2V∴ ¿A qué hora cierran los trabajos los Aprendices Masones?" />
+        <acto actor="2V" tema="Medianoche en punto, VM∴." />
+        <acto actor="VM" tema="¿Qué hora es, QH∴ 1V∴?" />
+        <acto actor="1V" tema="La hora de cerrar, medianoche en punto, VM∴." />
       </parte>
       <parte titulo="Declaración de Cierre y Juramento">
-        <acto actor="VM" tema="Puesto que es la hora en que los AApr∴ MMas∴ cierran sus trabajos, QQ∴ HH∴ Prim∴ y Seg∴ VVig∴, invitad a los obreros de vuestras respectivas CCol∴ como yo invito a los de Ort∴ para que se unan a vosotros y a mí a fin de cerrar los trabajos de esta Aug∴ Resp∴ Log∴. [El Ven∴ Maest∴ da tres golpes de Mall∴ que repiten los VVig∴ y dice: de pie y al orden mis HH∴]" />
-        <acto actor="2V" tema="Todo está justo y perfecto, Ven∴ Maest∴." />
-        <acto actor="1V" tema="Reina completa armonía, Ven∴ Maest∴ y estamos en condición de luchar por la emancipación Moral y Material de los seres humanos." />
-        <acto actor="VM" tema="Ya que todo está justo y perfecto y en condiciones de luchar para que la bandera de la justicia desde la cúpula de los Templos Masónicos flamee sobre la humanidad, acompañadme a cerrar los trabajos de esta Resp∴ Log∴ A L∴ G∴ D∴ G∴ A∴ D∴ U∴ y en su nombre y bajo la obediencia de la Ser∴ Gr∴ Log∴ de Lengua Española para los E. U. de A. Inc., quedan cerrados los trabajos de esta Resp∴ Log∴ por el día de hoy. A mí HH∴ por el signo y Bat∴ de Grado." />
-        <acto actor="VM" tema="QQ∴ HH∴, antes de partir ¿juráis no revelar nada de lo que aquí habéis visto y oído ni aun a los HH∴ que no han asistido a esta Ten∴?" />
+        <acto actor="VM" tema="Puesto que es la hora en que los Aprendices cierran sus trabajos, QQHH∴ 1V∴ y 2V∴, invitad a los obreros de vuestras respectivas CCol∴ como yo invito a los de Oriente para que se unan a vosotros y a mí a fin de cerrar los trabajos de esta Augusta y Respetable Logia. [El VM∴ da tres golpes de Mallete que repiten los Vigilantes y dice: de pie y al orden mis HH∴]" />
+        <acto actor="2V" tema="Todo está justo y perfecto, VM∴." />
+        <acto actor="1V" tema="Reina completa armonía, VM∴ y estamos en condición de luchar por la emancipación Moral y Material de los seres humanos." />
+        <acto actor="VM" tema="Ya que todo está justo y perfecto y en condiciones de luchar para que la bandera de la justicia desde la cúpula de los Templos Masónicos flamee sobre la humanidad, acompañadme a cerrar los trabajos de esta Respetable Logia ALGDGADU∴ y en su nombre y bajo la obediencia de la Serenísima Gran Logia de Lengua Española para los E. U. de A. Inc., quedan cerrados los trabajos de esta Respetable Logia por el día de hoy. A mí HH∴ por el signo y Batería de Grado." />
+        <acto actor="VM" tema="QQHH∴, antes de partir ¿juráis no revelar nada de lo que aquí habéis visto y oído ni aun a los HH∴ que no han asistido a esta Tenida?" />
         <acto actor="Todos" tema="[Juramos]." />
-        <acto actor="VM" tema="Si así lo hiciéreis que el G∴ A∴ D∴ U∴ os lo premie o de lo contrario os lo demande. M∴ de Cer∴ cierre el Ara. HH∴ míos, retirémonos en Paz y Fraternalmente. [El Venerable mandará formar la cadena mística cuando corresponda]" />
+        <acto actor="VM" tema="Si así lo hiciéreis que el GADU∴ os lo premie o de lo contrario os lo demande. H∴ MC∴ cierre el Ara. HH∴ míos, retirémonos en Paz y Fraternalmente. [El Venerable mandará formar la cadena mística cuando corresponda]" />
       </parte>
     </seccion>
 
+    <!-- ========================================== -->
+    <!-- SECCIÓN 4: RECEPCIÓN DE VISITANTES         -->
+    <!-- ========================================== -->
     <seccion id="4" titulo="Recepción de Visitantes">
       <parte titulo="Examen y Bienvenida">
         <acto actor="VM" tema="H∴ mío, ¿de dónde venís?" />
-        <acto actor="Vis" tema="De una Logia de San Juan, del Rit∴ Esc∴ Ant∴ Acep∴ que trabaja bajo la Obediencia de la Ser∴ Gr∴ Log∴ de Lengua Española para los E. U. de A. Inc." />
-        <acto actor="VM" tema="¿Qué nos traéis de vuestra Log∴ H∴ mío?" />
-        <acto actor="Vis" tema="Os traigo Amor, Salud y Prosperidad para todos los QQ∴ HH∴." />
+        <acto actor="Visitante" tema="De una Logia de San Juan, del Rito Escocés Antiguo y Aceptado que trabaja bajo la Obediencia de la Serenísima Gran Logia de Lengua Española para los E. U. de A. Inc." />
+        <acto actor="VM" tema="¿Qué nos traéis de vuestra Logia H∴ mío?" />
+        <acto actor="Visitante" tema="Os traigo Amor, Salud y Prosperidad para todos los QQHH∴." />
         <acto actor="VM" tema="¿Nada más nos traes?" />
-        <acto actor="Vis" tema="El Ven∴ Maest∴ de mi Logia os saluda por tres veces tres." />
-        <acto actor="VM" tema="¿Qué se hace en vuestra Log∴, Q∴ H∴?" />
-        <acto actor="Vis" tema="Se levantan Templos a la Virtud, y se combate contra el Vicio y la Iniquidad." />
-        <acto actor="VM" tema="¿Qué venís ha hacer aquí entre nosotros, H∴ mío?" />
-        <acto actor="Vis" tema="Vengo a vencer mis pasiones, someter mi voluntad a la obra del bien, y a estrechar los lazos de fraternidad que nos unen como verdaderos HH∴." />
-        <acto actor="VM" tema="¿Qué solicitáis del Tall∴ H∴ mío?" />
-        <acto actor="Vis" tema="Un lugar entre sus obreros, al fin de poder trabajar con el Mazo y el Cincel, sobre la Piedra Bruta." />
+        <acto actor="Visitante" tema="El VM∴ de mi Logia os saluda por tres veces tres." />
+        <acto actor="VM" tema="¿Qué se hace en vuestra Logia, QH∴?" />
+        <acto actor="Visitante" tema="Se levantan Templos a la Virtud, y se combate contra el Vicio y la Iniquidad." />
+        <acto actor="VM" tema="¿Qué venís a hacer aquí entre nosotros, H∴ mío?" />
+        <acto actor="Visitante" tema="Vengo a vencer mis pasiones, someter mi voluntad a la obra del bien, y a estrechar los lazos de fraternidad que nos unen como verdaderos HH∴." />
+        <acto actor="VM" tema="¿Qué solicitáis del Taller H∴ mío?" />
+        <acto actor="Visitante" tema="Un lugar entre sus obreros, al fin de poder trabajar con el Mazo y el Cincel, sobre la Piedra Bruta." />
         <acto actor="VM" tema="Pasad a ocuparlo." />
       </parte>
     </seccion>
 
+    <!-- ========================================== -->
+    <!-- SECCIÓN 5: INICIACIÓN DE APRENDIZ          -->
+    <!-- ========================================== -->
     <seccion id="5" titulo="Iniciación de Aprendiz">
       <parte titulo="Gabinete de Reflexiones y Respuestas">
-        <acto actor="2Exp" tema="Señor, van a empezar las ceremonias de su Iniciación en nuestros Augustos Misterios... Le entrego a usted esta hoja de papel en la cual está el interrogatorio al que debe de responder antes de dar comienzo a la ceremonia... Y ahora debe usted entregarme todos los metales y joyas que tenga en su poder." />
-        <acto actor="VM" tema="Antes de proceder a la recepción del propuesto: H∴ Seg∴ Experto, servíos ir al Gabinete de Reflexiones y traernos las contestaciones del profano. [El H∴ Seg∴ Experto sale llevando en la mano izquierda una espada]" />
-        <acto actor="GT" tema="Q∴ H∴ Seg∴ Vig∴ En las puertas del Temp∴ llaman regularmente." />
-        <acto actor="2V" tema="Q∴ H∴ Prim∴ Vig∴ En las puertas del Temp∴ llaman regularmente." />
-        <acto actor="1V" tema="Ven∴ Maest∴ Llaman a las puertas de nuestro Templo." />
-        <acto actor="VM" tema="Averiguad la causa. Si es el H∴ Seg∴ Exp∴ dadle entrada." />
-        <acto actor="1V" tema="H∴ Guarda Temp∴ Ved quién llama. Si es el H∴ Seg∴ Exp∴ dadle entrada." />
-        <acto actor="2Exp" tema="Ven∴ Maest∴ ¿Me permitís avanzar hacia Ort∴ para hacerle entrega de las contestaciones dadas por el Profano al interrogatorio que se le hubo formulado?" />
-        <acto actor="VM" tema="Podéis avanzar, Q∴ H∴ Seg∴ Exp∴. [Da lectura a las respuestas] ¿Algún H∴ tiene alguna objeción qué hacer? Q∴ H∴ Ord∴, ¿tenéis algo que observar a las respuestas dadas por el Profano a nuestro interrogatorio?" />
-        <acto actor="Orad" tema="[El H∴ Orad∴ da sus conclusiones]." />
-        <acto actor="VM" tema="Siendo favorables las conclusiones del H∴ Ord∴ a las respuestas dadas por el Profano, vamos a proceder a su Iniciación. Q∴ H∴ Prim∴ Exp∴, Padrino del Profano, id a buscarlo y conducidle a las puertas de nuestro Templo." />
+        <acto actor="Experto" tema="Señor, van a empezar las ceremonias de su Iniciación en nuestros Augustos Misterios... Le entrego a usted esta hoja de papel en la cual está el interrogatorio al que debe de responder antes de dar comienzo a la ceremonia... Y ahora debe usted entregarme todos los metales y joyas que tenga en su poder." />
+        <acto actor="VM" tema="Antes de proceder a la recepción del propuesto: H∴ Segundo Experto, servíos ir al Gabinete de Reflexiones y traernos las contestaciones del profano. [El H∴ Experto sale llevando en la mano izquierda una espada]" />
+        <acto actor="GT" tema="QH∴ 2V∴ En las puertas del Templo llaman regularmente." />
+        <acto actor="2V" tema="QH∴ 1V∴ En las puertas del Templo llaman regularmente." />
+        <acto actor="1V" tema="VM∴ Llaman a las puertas de nuestro Templo." />
+        <acto actor="VM" tema="Averiguad la causa. Si es el H∴ Experto dadle entrada." />
+        <acto actor="1V" tema="H∴ GT∴ Ved quién llama. Si es el H∴ Experto dadle entrada." />
+        <acto actor="Experto" tema="VM∴ ¿Me permitís avanzar hacia Oriente para hacerle entrega de las contestaciones dadas por el Profano al interrogatorio que se le hubo formulado?" />
+        <acto actor="VM" tema="Podéis avanzar, QH∴ Experto. [Da lectura a las respuestas] ¿Algún H∴ tiene alguna objeción qué hacer? QH∴ OF∴, ¿tenéis algo que observar a las respuestas dadas por el Profano a nuestro interrogatorio?" />
+        <acto actor="OF" tema="[El H∴ OF∴ da sus conclusiones]." />
+        <acto actor="VM" tema="Siendo favorables las conclusiones del H∴ OF∴ a las respuestas dadas por el Profano, vamos a proceder a su Iniciación. QH∴ Primer Experto, Padrino del Profano, id a buscarlo y conducidle a las puertas de nuestro Templo." />
       </parte>
       
       <parte titulo="Llamada Profana y Admisión">
-        <acto actor="GT" tema="Q∴ H∴ Seg∴ Vig∴ Llaman irregularmente a las puertas del Templo." />
-        <acto actor="2V" tema="Q∴ H∴ Prim∴ Vig∴ Llaman profanamente a las puertas del Templo." />
-        <acto actor="1V" tema="Ven∴ Maest∴ Golpes profanos interrumpen la serenidad de nuestros trabajos." />
+        <acto actor="GT" tema="QH∴ 2V∴ Llaman irregularmente a las puertas del Templo." />
+        <acto actor="2V" tema="QH∴ 1V∴ Llaman profanamente a las puertas del Templo." />
+        <acto actor="1V" tema="VM∴ Golpes profanos interrumpen la serenidad de nuestros trabajos." />
         <acto actor="VM" tema="Cercioraos quién es el que interrumpe nuestra augusta labor." />
-        <acto actor="1V" tema="Q∴ H∴ G∴ Temp∴ Ved quién es el temerario que tan decididamente llama en nuestro Templo." />
+        <acto actor="1V" tema="QH∴ GT∴ Ved quién es el temerario que tan decididamente llama en nuestro Templo." />
         <acto actor="GT" tema="[Entreabre la puerta y extiende su Espada] ¿Quién es el que se atreve a turbar la Paz de nuestros trabajos?" />
-        <acto actor="1Exp" tema="Retirad vuestra Espada, Q∴ H∴ G∴ Templo... Anunciad a los QQ∴ HH∴ que el H∴ Prim∴ Exp∴ ha encontrado perdida en la oscuridad del Mundo profano un Alma ansiosa de perfeccionamiento y ávida de recibir la Luz de la Iniciación." />
-        <acto actor="GT" tema="Ven∴ Maest∴ Es el H∴ Exp∴ que ha encontrado perdida en la oscuridad del mundo un alma ansiosa de perfeccionamiento y ávida de recibir la Luz de la Iniciación." />
+        <acto actor="Experto" tema="Retirad vuestra Espada, QH∴ GT∴... Anunciad a los QQHH∴ que el H∴ Experto ha encontrado perdida en la oscuridad del Mundo profano un Alma ansiosa de perfeccionamiento y ávida de recibir la Luz de la Iniciación." />
+        <acto actor="GT" tema="VM∴ Es el H∴ Experto que ha encontrado perdida en la oscuridad del mundo un alma ansiosa de perfeccionamiento y ávida de recibir la Luz de la Iniciación." />
         <acto actor="VM" tema="¿En qué funda su esperanza de ser Iniciado en nuestros Augustos Misterios?" />
-        <acto actor="1Exp" tema="En que es un hombre libre, de buenas costumbres e inmensamente rico en virtudes Morales e Intelectuales." />
-        <acto actor="VM" tema="Siendo así, dadnos su nombre, patria, edad, estado, profesión y domicilio. [El H∴ Exp∴ en alta voz da lectura a los datos solicitados] Cerrad las puertas, H∴ G∴ Temp∴... Mis HH∴ habéis oído las declaraciones... si los juzgáis dignos de recibir la revelación de nuestros Augustos Misterios, haced la señal de la aprobación al primer golpe de Mall∴." />
-        <acto actor="MC" tema="Unanimidad, Ven∴ Maest∴." />
-        <acto actor="VM" tema="H∴ G∴ Temp∴, franqueadles la entrada y veremos en el curso de la Iniciación si son dignos de la gracia que solicitan." />
+        <acto actor="Experto" tema="En que es un hombre libre, de buenas costumbres e inmensamente rico en virtudes Morales e Intelectuales." />
+        <acto actor="VM" tema="Siendo así, dadnos su nombre, patria, edad, estado, profesión y domicilio. [El H∴ Experto en alta voz da lectura a los datos solicitados] Cerrad las puertas, H∴ GT∴... Mis HH∴ habéis oído las declaraciones... si los juzgáis dignos de recibir la revelación de nuestros Augustos Misterios, haced la señal de la aprobación al primer golpe de Mallete." />
+        <acto actor="MC" tema="Unanimidad, VM∴." />
+        <acto actor="VM" tema="H∴ GT∴, franqueadles la entrada y veremos en el curso de la Iniciación si son dignos de la gracia que solicitan." />
       </parte>
       
       <parte titulo="Ingreso y Primeras Pruebas">
         <acto actor="VM" tema="Profanos... ¿Nos prometéis por vuestra lealtad de caballero no revelar jamás lo que aquí oyéreis o viéreis, aun en el caso de no ser recibido?" />
-        <acto actor="Prof" tema="Lo prometo bajo mi palabra de honor." />
-        <acto actor="VM" tema="Q∴ H∴ Exp∴, sentad al profano entre CCol∴... Señor, ¿véis algo?" />
-        <acto actor="Prof" tema="[Responde el profano]." />
+        <acto actor="Profano" tema="Lo prometo bajo mi palabra de honor." />
+        <acto actor="VM" tema="QH∴ Experto, sentad al profano entre CCol∴... Señor, ¿véis algo?" />
+        <acto actor="Profano" tema="[Responde el profano]." />
         <acto actor="VM" tema="Esa oscuridad en que os encontráis simboliza la ceguedad de quien no conoce la senda de la Virtud... Señor, ¿sentís en vuestro pecho alguna impresión? [El Padrino le coloca la punta de la Espada sobre el corazón]." />
-        <acto actor="Prof" tema="La punta de una Espada." />
+        <acto actor="Profano" tema="La punta de una Espada." />
         <acto actor="VM" tema="Ahí tenéis nuestra gran lección, no seas nunca indiscreto... ¿Me prometéis contestar leal y sinceramente a todas las preguntas que os voy a dirigir?" />
-        <acto actor="Prof" tema="Sí, lo prometo." />
+        <acto actor="Profano" tema="Sí, lo prometo." />
         <acto actor="VM" tema="¿Venís aquí libremente y por vuestra espontánea voluntad?" />
-        <acto actor="Prof" tema="Sí, señor." />
+        <acto actor="Profano" tema="Sí, señor." />
       </parte>
 
       <parte titulo="Los Tres Viajes Simbólicos">
-        <acto actor="VM" tema="Os invito a practicar el primer viaje. H∴ Maest∴ de Cer∴, conducid al recipiendario en su primer viaje... Marchad, pues. [En este viaje sólo debe sentirse el roce de cuerpos pesados y el murmullo de voces]." />
+        <acto actor="VM" tema="Os invito a practicar el primer viaje. H∴ MC∴, conducid al recipiendario en su primer viaje... Marchad, pues. [En este viaje sólo debe sentirse el roce de cuerpos pesados y el murmullo de voces]." />
         <acto actor="2V" tema="¿Quién va?" />
         <acto actor="MC" tema="Un profano que desea Iniciarse en nuestros Augustos Misterios." />
         <acto actor="2V" tema="¿Cómo pudo concebir tal esperanza?" />
         <acto actor="MC" tema="Porque es libre y de buenas costumbres y anhela contribuir a la realización de la solidaridad y a la libertad de los oprimidos." />
         <acto actor="2V" tema="Pasad, pasad, y que estas virtudes sean vuestro más firme escudo para vencer el mal." />
-        <acto actor="VM" tema="¿Estáis dispuesto a continuar vuestro viaje...? Q∴ H∴ Maest∴ de Cer∴ Conducid al candidato en su segundo viaje... [Durante este viaje los HH∴ chocan sus espadas entre sí]." />
+        <acto actor="VM" tema="¿Estáis dispuesto a continuar vuestro viaje...? QH∴ MC∴ Conducid al candidato en su segundo viaje... [Durante este viaje los HH∴ chocan sus espadas entre sí]." />
         <acto actor="1V" tema="¿Quién va?" />
         <acto actor="MC" tema="Un profano que desea iniciarse en nuestros Augustos Misterios." />
         <acto actor="1V" tema="¿Y cómo pudo concebir tal esperanza?" />
         <acto actor="MC" tema="Porque triunfador de la Libertad en su primer viaje... anhela luchar por la Igualdad de los seres humanos." />
         <acto actor="1V" tema="Pasad, pasad y no desmayéis en vuestros propósitos." />
-        <acto actor="VM" tema="Váis a realizar vuestro tercer viaje. Q∴ H∴ Maest∴ de Cer∴ Guiad al candidato en su último viaje y quitad de su camino todas las asperezas conduciéndole al Oriente. [En este viaje pasará por el fuego y reinará completo silencio]." />
+        <acto actor="VM" tema="Váis a realizar vuestro tercer viaje. QH∴ MC∴ Guiad al candidato en su último viaje y quitad de su camino todas las asperezas conduciéndole al Oriente. [En este viaje pasará por el fuego y reinará completo silencio]." />
         <acto actor="VM" tema="¿Quién va?" />
         <acto actor="MC" tema="Un profano que desea Iniciarse en nuestros Augustos Misterios." />
         <acto actor="VM" tema="¿Cómo pudo concebir tal esperanza?" />
@@ -212,39 +228,42 @@
 
       <parte titulo="Pruebas de Sangre, Agua y Cáliz">
         <acto actor="VM" tema="H∴ Terrible, presentad las palanganas para recibir la sangre... ¿De qué parte de vuestro cuerpo queréis que se os extraiga?" />
-        <acto actor="Prof" tema="[Responde el profano]." />
-        <acto actor="VM" tema="Váis a ser purificado por el agua. H∴ Maest∴ de Cer∴, cumplid con vuestro deber... Preciso es que llevéis en vuestro pecho un sello marcado con un hierro candente... ¿En qué parte de vuestro cuerpo queréis que el sello Masónico os sea aplicado?" />
-        <acto actor="Prof" tema="Una marca sería vana y estéril si no estuviera en el mismo corazón." />
-        <acto actor="VM" tema="H∴ Maest∴ de Cer∴, presentad al candidato el Cáliz de la amargura... Señor, ha terminado la parte simbólica de las pruebas iniciales... es necesario que prestéis la promesa sagrada que os ligará para siempre a nuestra Orden." />
+        <acto actor="Profano" tema="[Responde el profano]." />
+        <acto actor="VM" tema="Váis a ser purificado por el agua. H∴ MC∴, cumplid con vuestro deber... Preciso es que llevéis en vuestro pecho un sello marcado con un hierro candente... ¿En qué parte de vuestro cuerpo queréis que el sello Masónico os sea aplicado?" />
+        <acto actor="Profano" tema="Una marca sería vana y estéril si no estuviera en el mismo corazón." />
+        <acto actor="VM" tema="H∴ MC∴, presentad al candidato el Cáliz de la amargura... Señor, ha terminado la parte simbólica de las pruebas iniciales... es necesario que prestéis la promesa sagrada que os ligará para siempre a nuestra Orden." />
       </parte>
 
       <parte titulo="La Luz y la Consagración">
-        <acto actor="VM" tema="H∴ Maest∴ de Cer∴ Conducid al candidato a la Sala de Pasos Perdidos y preparadle para recibir la Luz de la Iniciación." />
-        <acto actor="GT" tema="Q∴ H∴ Prim∴ Vig∴ Llaman regularmente a las puertas del Temp∴." />
-        <acto actor="1V" tema="Ven∴ Maest∴ Llaman a las puertas del Temp∴." />
-        <acto actor="VM" tema="Sí, es el Maest∴ de Cer∴, dadle entrada. HH∴ míos, de pie y al orden. H∴ Prim∴ Vig∴... ¿qué pedís para el profano?" />
+        <acto actor="VM" tema="H∴ MC∴ Conducid al candidato a la Sala de Pasos Perdidos y preparadle para recibir la Luz de la Iniciación." />
+        <acto actor="GT" tema="QH∴ 1V∴ Llaman regularmente a las puertas del Templo." />
+        <acto actor="1V" tema="VM∴ Llaman a las puertas del Templo." />
+        <acto actor="VM" tema="Sí, es el MC∴, dadle entrada. HH∴ míos, de pie y al orden. H∴ 1V∴... ¿qué pedís para el profano?" />
         <acto actor="1V" tema="La Luz." />
-        <acto actor="VM" tema="Seg∴ Vig∴... ¿qué pedís para el profano?" />
+        <acto actor="VM" tema="2V∴... ¿qué pedís para el profano?" />
         <acto actor="2V" tema="La Luz." />
         <acto actor="VM" tema="Y vosotros, mis HH∴... ¿qué pedís para el profano?" />
         <acto actor="Todos" tema="La Luz." />
-        <acto actor="VM" tema="La luz le será dada al tercer golpe de Mall∴. [Las luces se apagarán al primer golpe y se encenderán al tercero] Señor, ya la venda ha caído de vuestros ojos... HH∴ míos, bajad vuestras espadas." />
+        <acto actor="VM" tema="La luz le será dada al tercer golpe de Mallete. [Las luces se apagarán al primer golpe y se encenderán al tercero] Señor, ya la venda ha caído de vuestros ojos... HH∴ míos, bajad vuestras espadas." />
         <acto actor="VM" tema="Señor, váis a ratificar la promesa de honor que anteriormente prestásteis... ¿os ratificáis, ahora que véis, en la promesa de honor que prestásteis cuando nada veíais?" />
-        <acto actor="Neofito" tema="Sí, me ratifico." />
-        <acto actor="VM" tema="Yo, Ven∴ Maest∴ de esta Respetable Logia... os instituyo y consagro AApr∴ MMas∴ del Rit∴ Esc∴ Ant∴ y Acep∴... recibid el abrazo fraternal. [Le da un Trip∴ Abr∴ Frat∴]." />
+        <acto actor="Neófito" tema="Sí, me ratifico." />
+        <acto actor="VM" tema="Yo, VM∴ de esta Respetable Logia... os instituyo y consagro Aprendiz Masón del Rito Escocés Antiguo y Aceptado... recibid el abrazo fraternal. [Le da un Triple Abrazo Fraternal]." />
       </parte>
 
       <parte titulo="Herramientas y Proclamación">
         <acto actor="VM" tema="En vuestra mano izquierda traéis los instrumentos propios de vuestra labor: un Mazo, símbolo de la Fuerza Moral, que debéis usar con el Cincel... ¿estáis prontos a iniciar vuestro perfeccionamiento?" />
-        <acto actor="Neofito" tema="Sí, Ven∴ Maest∴." />
-        <acto actor="VM" tema="[Los Iniciados dan tres golpes sobre el Cincel apoyado en la Piedra Bruta]. Q∴ H∴ Maest∴ de Cer∴ Proclamad a los HH∴ entre CCol∴." />
-        <acto actor="MC" tema="Desde Oriente a Occidente, y Septentrión a Mediodía, admitimos al H∴ como Apr∴ Mas∴ de esta Respetable Logia. Reconocemos. Proclamamos." />
-        <acto actor="VM" tema="Q∴ H∴ Ord∴ Tenéis la palabra." />
-        <acto actor="Orad" tema="[Pronuncia el discurso de bienvenida]." />
-        <acto actor="VM" tema="H∴ Sec∴, hacer constar en actas la satisfacción con que el Tall∴ ha escuchado y aplaudido el brillante discurso del H∴ Orador." />
+        <acto actor="Neófito" tema="Sí, VM∴." />
+        <acto actor="VM" tema="[Los Iniciados dan tres golpes sobre el Cincel apoyado en la Piedra Bruta]. QH∴ MC∴ Proclamad a los HH∴ entre CCol∴." />
+        <acto actor="MC" tema="Desde Oriente a Occidente, y Septentrión a Mediodía, admitimos al H∴ como Aprendiz Masón de esta Respetable Logia. Reconocemos. Proclamamos." />
+        <acto actor="VM" tema="QH∴ OF∴ Tenéis la palabra." />
+        <acto actor="OF" tema="[Pronuncia el discurso de bienvenida]." />
+        <acto actor="VM" tema="H∴ Sec∴, hacer constar en actas la satisfacción con que el Taller ha escuchado y aplaudido el brillante discurso del H∴ OF∴." />
       </parte>
     </seccion>
 
+    <!-- ========================================== -->
+    <!-- SECCIÓN 6: CATECISMO DEL APRENDIZ          -->
+    <!-- ========================================== -->
     <seccion id="6" titulo="Catecismo de Aprendiz">
       <parte titulo="Instrucción de los Misterios">
         <acto actor="VM" tema="¿Hay algo común entre nosotros?" />
