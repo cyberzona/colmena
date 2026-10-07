@@ -88,9 +88,14 @@
         <acto actor="VM" tema="QQHH∴ 1V∴ y 2V∴, anunciad a los HH∴ de vuestras respectivas CCol∴ que voy a conceder la palabra en bien general de la orden y en particular de este Taller." />
         <acto actor="2V" tema="QH∴ de la Col∴ del Norte, por orden del VM∴ y transmitida a mí por el QH∴ 1V∴, que está concedida la palabra en bien general de la orden y en particular de este Taller." />
         <acto actor="2V" tema="QH∴ 1V∴, reina silencio en mi Col∴." />
-        <acto actor="1V" tema="VM∴, reina silencio en ambas CCol∴." />
-        <acto actor="VM" tema="[[INSTANCIA]]" />
+        <acto actor="1V" tema="VM∴, reina silencio en ambas CCol∴." />        
       </parte>   
+      <parte titulo="Trabajos Especiales y Transición de Cámara">
+        <!-- El script evaluará este bloque. Si no hay eventos en la bitácora, ocultará los <acto> y mostrará la rúbrica predeterminada. -->
+        <acto actor="VM" tema="H∴ 1V∴, sírvase disponer lo necesario para suspender los trabajos en esta cámara y proceder al retejado..." />
+        <acto actor="1V" tema="HH∴ que decoráis mi Columna, por mandato del Venerable Maestro..." />  
+        <acto actor="VM" tema="[[INSTANCIA]]" />   
+      </parte>
       <parte titulo="Tronco de Beneficencia">
         <acto actor="VM" tema="QQHH∴ 1V∴ y 2V∴, anunciad en vuestras CCol∴ que el H∴ Hos∴ va a circular el tronco de beneficencia." />
         <acto actor="2V" tema="Anunciado en la Col∴ del Mediodía, H∴ 1V∴." />
