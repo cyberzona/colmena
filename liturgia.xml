@@ -96,11 +96,11 @@
         <acto actor="2V" tema="HH∴ que decoráis la Col∴ del Norte, por mandato de nuestro VM∴, comunicado por conducto del QH∴ 1V∴, os anuncio que los trabajos de esta Cámara se suspenderán temporalmente. [Da un golpe de mallete] Anunciado en mi Col∴, QH∴ 1V∴." />
         <acto actor="1V" tema="[Da un golpe de mallete] Anunciado en ambas CCol∴, VM∴." />
         <acto actor="VM" tema="[Da un golpe de mallete] A los QQHH∴ que no posean el grado en el que vamos a trabajar, se les ruega cubrir el Templo bajo la conducción de nuestro QH∴ Maestro de Ceremonias." />
-        <acto actor="Rúbrica" tema="(El MC∴ acompaña a los Aprendices fuera del Templo. Una vez que regresan y las puertas están aseguradas, el VM∴ continúa)." />
+        <acto actor="MC" tema="(El MC∴ acompaña a los Aprendices fuera del Templo. Una vez que regresan y las puertas están aseguradas, el VM∴ continúa)." />
         <acto actor="VM" tema="QH∴ 1V∴, ¿estamos a cubierto de toda indiscreción y sois vos de este grado?" />
         <acto actor="1V" tema="Estamos a cubierto, VM∴, y todos los presentes son reconocidos como tales." />
         <acto actor="VM" tema="QH∴ Maestro de Ceremonias, servíos acercaros al Ara y disponer las Grandes Luces según corresponde a la Cámara en la que vamos a trabajar." />
-        <acto actor="Rúbrica" tema="(El MC∴ se dirige al Ara y reacomoda la Escuadra y el Compás según la configuración del nuevo grado, rindiendo los honores correspondientes)." />
+        <acto actor="MC" tema="(El MCc∴ se dirige al Ara y reacomoda la Escuadra y el Compás según la configuración del nuevo grado, rindiendo los honores correspondientes)." />
         <acto actor="VM" tema="[Da los golpes de mallete correspondientes al grado] ¡En pie y al Orden, HH∴ míos! Por el Signo y la Batería del Grado. Declaro abiertos los trabajos en esta Cámara. Tomad asiento." />
         <acto actor="VM" tema="[[INSTANCIA]]" /> 
         <acto actor="VM" tema="QQHH∴ 1V∴ y 2V∴, anunciad en vuestras CCol∴ que los trabajos en esta Cámara quedan cerrados y se reanudan en el grado de Aprendiz." />          
