@@ -164,14 +164,14 @@
     <!-- ========================================== -->
     <seccion id="5" titulo="Iniciación de Aprendiz">
       <parte titulo="Gabinete de Reflexiones y Respuestas">
-        <acto actor="Experto" tema="Señor, van a empezar las ceremonias de su Iniciación en nuestros Augustos Misterios... Le entrego a usted esta hoja de papel en la cual está el interrogatorio al que debe de responder antes de dar comienzo a la ceremonia... Y ahora debe usted entregarme todos los metales y joyas que tenga en su poder." />
+        <acto actor="Exp" tema="Señor, van a empezar las ceremonias de su Iniciación en nuestros Augustos Misterios... Le entrego a usted esta hoja de papel en la cual está el interrogatorio al que debe de responder antes de dar comienzo a la ceremonia... Y ahora debe usted entregarme todos los metales y joyas que tenga en su poder." />
         <acto actor="VM" tema="Antes de proceder a la recepción del propuesto: H∴ Segundo Experto, servíos ir al Gabinete de Reflexiones y traernos las contestaciones del profano. [El H∴ Experto sale llevando en la mano izquierda una espada]" />
         <acto actor="GT" tema="QH∴ 2V∴ En las puertas del Templo llaman regularmente." />
         <acto actor="2V" tema="QH∴ 1V∴ En las puertas del Templo llaman regularmente." />
         <acto actor="1V" tema="VM∴ Llaman a las puertas de nuestro Templo." />
-        <acto actor="VM" tema="Averiguad la causa. Si es el H∴ Experto dadle entrada." />
-        <acto actor="1V" tema="H∴ GT∴ Ved quién llama. Si es el H∴ Experto dadle entrada." />
-        <acto actor="Experto" tema="VM∴ ¿Me permitís avanzar hacia Oriente para hacerle entrega de las contestaciones dadas por el Profano al interrogatorio que se le hubo formulado?" />
+        <acto actor="VM" tema="Averiguad la causa. Si es el H∴ Exp∴ dadle entrada." />
+        <acto actor="1V" tema="H∴ GT∴ Ved quién llama. Si es el H∴ Exp∴ dadle entrada." />
+        <acto actor="Exp" tema="VM∴ ¿Me permitís avanzar hacia Oriente para hacerle entrega de las contestaciones dadas por el Profano al interrogatorio que se le hubo formulado?" />
         <acto actor="VM" tema="Podéis avanzar, QH∴ Experto. [Da lectura a las respuestas] ¿Algún H∴ tiene alguna objeción qué hacer? QH∴ OF∴, ¿tenéis algo que observar a las respuestas dadas por el Profano a nuestro interrogatorio?" />
         <acto actor="OF" tema="[El H∴ OF∴ da sus conclusiones]." />
         <acto actor="VM" tema="Siendo favorables las conclusiones del H∴ OF∴ a las respuestas dadas por el Profano, vamos a proceder a su Iniciación. QH∴ Primer Experto, Padrino del Profano, id a buscarlo y conducidle a las puertas de nuestro Templo." />
@@ -184,10 +184,10 @@
         <acto actor="VM" tema="Cercioraos quién es el que interrumpe nuestra augusta labor." />
         <acto actor="1V" tema="QH∴ GT∴ Ved quién es el temerario que tan decididamente llama en nuestro Templo." />
         <acto actor="GT" tema="[Entreabre la puerta y extiende su Espada] ¿Quién es el que se atreve a turbar la Paz de nuestros trabajos?" />
-        <acto actor="Experto" tema="Retirad vuestra Espada, QH∴ GT∴... Anunciad a los QQHH∴ que el H∴ Experto ha encontrado perdida en la oscuridad del Mundo profano un Alma ansiosa de perfeccionamiento y ávida de recibir la Luz de la Iniciación." />
-        <acto actor="GT" tema="VM∴ Es el H∴ Experto que ha encontrado perdida en la oscuridad del mundo un alma ansiosa de perfeccionamiento y ávida de recibir la Luz de la Iniciación." />
+        <acto actor="Exp" tema="Retirad vuestra Espada, QH∴ GT∴... Anunciad a los QQHH∴ que el H∴ Experto ha encontrado perdida en la oscuridad del Mundo profano un Alma ansiosa de perfeccionamiento y ávida de recibir la Luz de la Iniciación." />
+        <acto actor="GT" tema="VM∴ Es el H∴ Exp∴ que ha encontrado perdida en la oscuridad del mundo un alma ansiosa de perfeccionamiento y ávida de recibir la Luz de la Iniciación." />
         <acto actor="VM" tema="¿En qué funda su esperanza de ser Iniciado en nuestros Augustos Misterios?" />
-        <acto actor="Experto" tema="En que es un hombre libre, de buenas costumbres e inmensamente rico en virtudes Morales e Intelectuales." />
+        <acto actor="Exp" tema="En que es un hombre libre, de buenas costumbres e inmensamente rico en virtudes Morales e Intelectuales." />
         <acto actor="VM" tema="Siendo así, dadnos su nombre, patria, edad, estado, profesión y domicilio. [El H∴ Experto en alta voz da lectura a los datos solicitados] Cerrad las puertas, H∴ GT∴... Mis HH∴ habéis oído las declaraciones... si los juzgáis dignos de recibir la revelación de nuestros Augustos Misterios, haced la señal de la aprobación al primer golpe de Mallete." />
         <acto actor="MC" tema="Unanimidad, VM∴." />
         <acto actor="VM" tema="H∴ GT∴, franqueadles la entrada y veremos en el curso de la Iniciación si son dignos de la gracia que solicitan." />
@@ -197,13 +197,13 @@
         <acto actor="VM" tema="Profanos... ¿Nos prometéis por vuestra lealtad de caballero no revelar jamás lo que aquí oyéreis o viéreis, aun en el caso de no ser recibido?" />
         <acto actor="Profano" tema="Lo prometo bajo mi palabra de honor." />
         <acto actor="VM" tema="QH∴ Experto, sentad al profano entre CCol∴... Señor, ¿véis algo?" />
-        <acto actor="Profano" tema="[Responde el profano]." />
+        <acto actor="Pro" tema="[Responde el profano]." />
         <acto actor="VM" tema="Esa oscuridad en que os encontráis simboliza la ceguedad de quien no conoce la senda de la Virtud... Señor, ¿sentís en vuestro pecho alguna impresión? [El Padrino le coloca la punta de la Espada sobre el corazón]." />
-        <acto actor="Profano" tema="La punta de una Espada." />
+        <acto actor="Pro" tema="La punta de una Espada." />
         <acto actor="VM" tema="Ahí tenéis nuestra gran lección, no seas nunca indiscreto... ¿Me prometéis contestar leal y sinceramente a todas las preguntas que os voy a dirigir?" />
-        <acto actor="Profano" tema="Sí, lo prometo." />
+        <acto actor="Pro" tema="Sí, lo prometo." />
         <acto actor="VM" tema="¿Venís aquí libremente y por vuestra espontánea voluntad?" />
-        <acto actor="Profano" tema="Sí, señor." />
+        <acto actor="Pro" tema="Sí, señor." />
       </parte>
 
       <parte titulo="Los Tres Viajes Simbólicos">
@@ -228,9 +228,9 @@
 
       <parte titulo="Pruebas de Sangre, Agua y Cáliz">
         <acto actor="VM" tema="H∴ Terrible, presentad las palanganas para recibir la sangre... ¿De qué parte de vuestro cuerpo queréis que se os extraiga?" />
-        <acto actor="Profano" tema="[Responde el profano]." />
+        <acto actor="Pro" tema="[Responde el profano]." />
         <acto actor="VM" tema="Váis a ser purificado por el agua. H∴ MC∴, cumplid con vuestro deber... Preciso es que llevéis en vuestro pecho un sello marcado con un hierro candente... ¿En qué parte de vuestro cuerpo queréis que el sello Masónico os sea aplicado?" />
-        <acto actor="Profano" tema="Una marca sería vana y estéril si no estuviera en el mismo corazón." />
+        <acto actor="Pro" tema="Una marca sería vana y estéril si no estuviera en el mismo corazón." />
         <acto actor="VM" tema="H∴ MC∴, presentad al candidato el Cáliz de la amargura... Señor, ha terminado la parte simbólica de las pruebas iniciales... es necesario que prestéis la promesa sagrada que os ligará para siempre a nuestra Orden." />
       </parte>
 
@@ -246,13 +246,13 @@
         <acto actor="Todos" tema="La Luz." />
         <acto actor="VM" tema="La luz le será dada al tercer golpe de Mallete. [Las luces se apagarán al primer golpe y se encenderán al tercero] Señor, ya la venda ha caído de vuestros ojos... HH∴ míos, bajad vuestras espadas." />
         <acto actor="VM" tema="Señor, váis a ratificar la promesa de honor que anteriormente prestásteis... ¿os ratificáis, ahora que véis, en la promesa de honor que prestásteis cuando nada veíais?" />
-        <acto actor="Neófito" tema="Sí, me ratifico." />
+        <acto actor="Neo" tema="Sí, me ratifico." />
         <acto actor="VM" tema="Yo, VM∴ de esta Respetable Logia... os instituyo y consagro Aprendiz Masón del Rito Escocés Antiguo y Aceptado... recibid el abrazo fraternal. [Le da un Triple Abrazo Fraternal]." />
       </parte>
 
       <parte titulo="Herramientas y Proclamación">
         <acto actor="VM" tema="En vuestra mano izquierda traéis los instrumentos propios de vuestra labor: un Mazo, símbolo de la Fuerza Moral, que debéis usar con el Cincel... ¿estáis prontos a iniciar vuestro perfeccionamiento?" />
-        <acto actor="Neófito" tema="Sí, VM∴." />
+        <acto actor="Neo" tema="Sí, VM∴." />
         <acto actor="VM" tema="[Los Iniciados dan tres golpes sobre el Cincel apoyado en la Piedra Bruta]. QH∴ MC∴ Proclamad a los HH∴ entre CCol∴." />
         <acto actor="MC" tema="Desde Oriente a Occidente, y Septentrión a Mediodía, admitimos al H∴ como Aprendiz Masón de esta Respetable Logia. Reconocemos. Proclamamos." />
         <acto actor="VM" tema="QH∴ OF∴ Tenéis la palabra." />
