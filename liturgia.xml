@@ -79,8 +79,7 @@
         <acto actor="VM" tema="Ordenad que circule empezando por mi derecha. [Con Ceremonia o sin Ceremonia, cumplida su misión, se coloca entre CCol∴]" />
         <acto actor="1V" tema="He cumplido con mi deber." />
         <acto actor="1V" tema="VM∴, el saco de proposiciones, después de haber circulado por los cuatro puntos cardinales, se halla nuevamente entre CCol∴." />
-        <acto actor="VM" tema="Ordenad que pase a Oriente y que en compañía del H∴ OF∴ nos enteremos de su contenido. [El H∴ OF∴ da cuenta de la cantidad de Planchas producidas]" />
-        <acto actor="VM" tema="[[INSTANCIA]]" />
+        <acto actor="VM" tema="Ordenad que pase a Oriente y que en compañía del H∴ OF∴ nos enteremos de su contenido. [El H∴ OF∴ da cuenta de la cantidad de Planchas producidas]" />       
       </parte>
       <parte titulo="Proposiciones Verbales">
         <acto actor="VM" tema="QQHH∴ 1V∴ y 2V∴, anunciad en vuestras respectivas CCol∴ que vamos a pasar a proposiciones verbales." />
