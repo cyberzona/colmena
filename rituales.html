@@ -253,6 +253,7 @@
             if (!nodoSec) return;
             let html = "";
             let contador = 1;
+            let contadorParte = 1;
 
             Array.from(nodoSec.getElementsByTagName("parte")).forEach(parte => {
                 const tituloParte = (parte.getAttribute("titulo") || "").trim();
@@ -261,6 +262,7 @@
                 let htmlParte = `<div class="parte-header">${tituloParte}</div>`;
                 let contadorTemp = contador;
                 let ocultarParte = false;
+                let contadorVerso = 1;
 
                 Array.from(parte.getElementsByTagName("acto")).forEach(acto => {
                     const actor = (acto.getAttribute("actor") || "Actor").trim();                    
@@ -286,12 +288,14 @@
                     const claseDt = esFoco ? 'class="actor-activo"' : '';
                     htmlParte += `<dt ${claseDt}>${actor}∴</dt><dd id="verso-${contadorTemp}" class="${esFoco ? 'resaltado' : ''}">${texto}${btns}</dd>`;
                     contadorTemp++;
+                    contadorVerso++;
                 });
 
                 if (!ocultarParte) {
                     html += htmlParte;
                     contador = contadorTemp;
                 }
+                contadorParte++;
             });
 
             const sel = document.getElementById("seccionFilter");
