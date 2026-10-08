@@ -95,7 +95,7 @@
         <acto actor="1V" tema="QH∴ 2V∴ y HH∴ de la Col∴ del Sur, nuestro VM∴ anuncia que daremos paso a las ceremonias y tributos del Orden del Día." />
         <acto actor="2V" tema="HH∴ de la Col∴ del Norte, nuestro VM∴ anuncia el inicio de las ceremonias y tributos programados. [Da un golpe de mallete] Anunciado en mi Col∴, QH∴ 1V∴." />
         <acto actor="1V" tema="[Da un golpe de mallete] Anunciado en ambas CCol∴, VM∴." />
-        <acto actor="VM" tema="Acto seguido, daremos curso a los siguientes puntos: [[INSTANCIA]]" />
+        <acto actor="VM" tema="[[INSTANCIA]]" />
       </parte>
       <parte titulo="Tronco de Beneficencia">
         <acto actor="VM" tema="QQHH∴ 1V∴ y 2V∴, anunciad en vuestras CCol∴ que el H∴ Hos∴ va a circular el tronco de beneficencia." />
