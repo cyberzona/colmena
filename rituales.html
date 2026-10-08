@@ -261,7 +261,7 @@
                 let contadorTemp = 1;
                 let ocultarParte = false;
 
-                Array.from(parte.getElementsByTagName("acto")).forEach(acto => {
+                Array.from(parte.getElementsByTagName("acto")).forEach((acto, j) => {
                     const actor = (acto.getAttribute("actor") || "Actor").trim();                    
                     let texto = (acto.getAttribute("tema") || acto.textContent).trim();
                     let btns = "";                    
@@ -283,7 +283,7 @@
                     texto = texto.replace(/\[(.*?)\]/g, '<span class="acotacion">($1)</span>');
                     const esFoco = actorSel && actor === actorSel;
                     const claseDt = esFoco ? 'class="actor-activo"' : '';
-                    htmlParte += `<dt ${claseDt}>${actor}∴</dt><dd id="verso-${contadorTemp}" class="${esFoco ? 'resaltado' : ''}">${texto}${btns}</dd>`;
+                    htmlParte += `<dt ${claseDt}>${actor}∴</dt><dd id="verso-${j+1}" class="${esFoco ? 'resaltado' : ''}">${texto}${btns}</dd>`;
                     contadorTemp++;
                 });
 
