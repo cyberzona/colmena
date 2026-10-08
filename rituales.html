@@ -261,7 +261,7 @@
                 let contadorTemp = 1;
                 let ocultarParte = false;
 
-                Array.from(parte.getElementsByTagName("acto")).forEach(acto => {
+                Array.from(parte.getElementsByTagName("acto")).forEach((acto,j) => {
                     const actor = (acto.getAttribute("actor") || "Actor").trim();                    
                     let texto = (acto.getAttribute("tema") || acto.textContent).trim();
                     let btns = "";                    
@@ -269,7 +269,7 @@
                         btns += `<br><button class="btn-ritual" style="margin-top:10px;" onclick="mostrarVisor('${decodeURIComponent(extURL)}')">📄 Ver Documento</button>`;
                     }
                     if (texto.includes("[[INSTANCIA]]")) {
-                        const inst = inyectarInstancia(actor, idSec, contadorTemp, esParteCeremonias);
+                        const inst = inyectarInstancia(actor, idSec, `${j + 1}`, esParteCeremonias);
                         if (esParteCeremonias && !inst) ocultarParte = true;
                         btns += inst;
                         texto = texto.replace("[[INSTANCIA]]", "");
