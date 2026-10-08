@@ -252,7 +252,7 @@
             const nodoSec = Array.from(Ritual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == idSec);
             if (!nodoSec) return;
             let html = "";
-            let contadorTemp = 1;
+            
             Array.from(nodoSec.getElementsByTagName("parte")).forEach((parte,i) => {
                 const tituloParte = (parte.getAttribute("titulo") || "").trim();
                 const esParteCeremonias = tituloParte.includes("Ceremonias y Tributos");
