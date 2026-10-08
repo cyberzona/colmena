@@ -330,71 +330,51 @@
         }
 
         function inyectarInstancia(actor, sec, verso) {
-    const t = Array.from(Bitacora.getElementsByTagName("evento")).find(x => x.getAttribute("fecha") === fecha);        
-    
-    // Si estamos en el VM, verificamos si existen ascensos o tributos en esta fecha
-    const items = t ? Array.from(t.getElementsByTagName("item")) : [];
-    const hayCeremonias = items.some(i => ["ascensos", "tributos"].includes(i.getAttribute("tipo")));
-
-    // Si NO hay ceremonias ni tributos, ocultamos automáticamente la parte "Ceremonias y Tributos" en pantalla
-    if (!hayCeremonias) {
-        setTimeout(() => {
-            document.querySelectorAll("h3, .titulo-parte, div").forEach(el => {
-                if (el.textContent.trim() === "Ceremonias y Tributos" && el.parentElement) {
-                    el.parentElement.style.display = "none";
-                }
+            const t = Array.from(Bitacora.getElementsByTagName("evento")).find(x => x.getAttribute("fecha") === fecha);        
+            if (!t) { return `<p class="dialogo-vm">No habiendo asuntos registrados, continuemos con orden del día.${t}</p>`; }           
+            const actorActual = document.getElementById("actorFilter").value;            
+            const items = Array.from(t.getElementsByTagName("item"));  
+            let h = ""; // Inicializamos h como cadena vacía siempre
+            const itemsValidos = items.filter(i => {
+                const tipo = i.getAttribute("tipo");
+                const reglas = {
+                    "cronicas": (actor === "Sec" && actorActual === "Sec"),
+                    "sintesis": (actor === "MC" && actorActual === "MC"),
+                    "sintesis": (actor === "OF" && actorActual === "OF"),
+                    "trazados": (actor === "VM"),
+                    "ascensos": (actor === "VM"),                   
+                    "tributos": (actor === "VM")
+                };
+                return reglas[tipo]||false;
             });
-        }, 0);
-    }
-
-    if (!t) { 
-        return (actor === "VM") ? `<p class="dialogo-vm">No habiendo asuntos registrados, continuemos con el orden del día.</p>` : ""; 
-    }           
-    
-    const actorActual = document.getElementById("actorFilter").value;            
-    let h = ""; 
-
-    const itemsValidos = items.filter(i => {
-        const tipo = i.getAttribute("tipo");
-        const reglas = {
-            "cronicas": (actor === "Sec" && actorActual === "Sec"),
-            "sintesis": ((actor === "MC" && actorActual === "MC") || (actor === "OF" && actorActual === "OF")),
-            "trazados": (actor === "VM"),
-            "ascensos": (actor === "VM"),                   
-            "tributos": (actor === "VM")
-        };
-        return reglas[tipo] || false;
-    });
-
-    if (itemsValidos.length > 0) {
-        if (actor === "VM") {
-            h += `<p class="dialogo-vm">Acto seguido, daremos curso a los siguientes puntos:</p>`;
-        }
-        const debeEnumerar = itemsValidos.length > 1;                            
-        itemsValidos.forEach((i, index) => {
-            const url = i.getAttribute("url");
-            const pre = debeEnumerar ? `${index + 1}. ` : "";
-            const tit = pre + (i.getAttribute("asunto") || "Acta");                                                     
-            
-            if (url.includes('rituales.html')) {
-                const urlParams = new URLSearchParams(url.split('?')[1]);
-                const linkExterno = urlParams.get('ext') || "";
-                let urlDestino = url;
-                if (linkExterno && !url.includes('&ext=')) {
-                    urlDestino += `&ext=${encodeURIComponent(linkExterno)}`;
-                }                        
-                h += `<button class="btn-instancia-exec" onclick="capturarOrigenYSalir('${urlDestino}', '${actorActual}', '${sec}', '${verso}')">${tit}</button>`;
-            } else { 
-                const tip = i.getAttribute("tipo");
-                const icon = tip === "cronicas" ? "📜 " : (tip === "tributos" ? "🌐 " : (tip === "trazados" ? "📍 " : ""));
-                h += `<button class="btn-ritual" onclick="mostrarVisor('${url}')">${icon}${tit}</button>`; 
+            if (itemsValidos.length > 0) {
+                h = `<p class="dialogo-vm">Acto seguido, daremos curso a los siguientes puntos:</p>`;
+                const debeEnumerar = itemsValidos.length > 1;                            
+                itemsValidos.forEach((i, index) => { // Se añadió (i, index) para corregir el error
+                    const url = i.getAttribute("url");
+                    const pre = debeEnumerar ? `${index + 1}. ` : "";
+                    const tit = pre + (i.getAttribute("asunto") || "Acta");                                                            
+                    if (url.includes('rituales.html')) {
+                        const urlParams = new URLSearchParams(url.split('?')[1]);
+                        const linkExterno = urlParams.get('ext') || "";
+                        let urlDestino = url;
+                        if (linkExterno && !url.includes('&ext=')) {
+                            urlDestino += `&ext=${encodeURIComponent(linkExterno)}`;
+                        }                        
+                        h += `<button class="btn-instancia-exec" onclick="capturarOrigenYSalir('${urlDestino}', '${actorActual}', '${sec}', '${verso}')">${tit}</button>`;
+                    } else { 
+                        const tip = i.getAttribute("tipo");
+                        const icon = tip === "cronicas" ? "📜 " : (tip === "tributos" ? "🌐 " : (tip === "trazados" ? "📍 " : ""));
+                        h += `<button class="btn-ritual" onclick="mostrarVisor('${url}')">${icon}${tit}</button>`; 
+                    }
+                });
+            } else {
+                h = `<p class="dialogo-vm">No habiendo más asuntos registrados, daremos continuidad al orden del día.${t}</p>`;
             }
-        });
-    } else if (actor === "VM") {
-        h = `<p class="dialogo-vm">No habiendo más asuntos registrados, daremos continuidad al orden del día.</p>`;
-    }
-    return h;
-}        function mostrarVisor(url) {
+            return h;
+        }
+
+        function mostrarVisor(url) {
             if (url.includes('blank')) { const urlLimpia = url.replace('blank', ''); window.open(urlLimpia, '_blank');return; }
             const v = document.createElement('div');
             v.className = 'visor-overlay';
