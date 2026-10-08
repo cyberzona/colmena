@@ -10,13 +10,13 @@
     <item sigla="MM" expansion="Maestro Masón" />
     <item sigla="QH" expansion="Querido Hermano" />
     <item sigla="VH" expansion="Venerable Hermano" />
-    <item sigla="Sec" expansion="Secretario" />
-    <item sigla="Col" expansion="Columna" />
-    <item sigla="CCol" expansion="Columnas" />    
+    <item sigla="Sec" expansion="Secretario" />       
     <item sigla="Hos" expansion="Maestro Hospitalario" />
     <item sigla="Exp" expansion="Maestro Experto" />
     <item sigla="Pro" expansion="Caballero Profano" />
     <item sigla="Neo" expansion="Neófito" />
+    <item sigla="Col" expansion="Columna" />
+     <item sigla="CCol" expansion="Columnas" />
     <item sigla="MRM" expansion="Muy Respetable Maestro" />   
     <item sigla="QQHH" expansion="Queridos Hermanos" />
     <item sigla="GADU" expansion="Gran Arquitecto Del Universo" />
