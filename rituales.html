@@ -258,7 +258,7 @@
                 const esParteCeremonias = tituloParte.includes("Ceremonias y Tributos");
                 
                 let htmlParte = `<div class="parte-header">${i + 1}. ${tituloParte}</div>`;
-                
+                let contadorTemp = 1;
                 let ocultarParte = false;
 
                 Array.from(parte.getElementsByTagName("acto")).forEach(acto => {
@@ -289,7 +289,7 @@
 
                 if (!ocultarParte) {
                     html += htmlParte;
-                    contador = contadorTemp;
+                    
                 }
             });
 
