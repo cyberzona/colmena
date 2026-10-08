@@ -90,20 +90,12 @@
         <acto actor="2V" tema="QH∴ 1V∴, reina silencio en mi Col∴." />
         <acto actor="1V" tema="VM∴, reina silencio en ambas CCol∴." />        
       </parte>   
-      <parte titulo="Trabajos Especiales">  
-        <acto actor="VM" tema="QQHH∴ 1V∴ y 2V∴, servíos anunciar en vuestras respectivas CCol∴, como yo lo hago en el Or∴, que los trabajos en la Cámara de Aprendiz van a ser suspendidos temporalmente para abrir los de la Cámara que nos convoca la bitácora, a fin de llevar a cabo nuestros trabajos especiales." />
-        <acto actor="1V" tema="QH∴ 2V∴ y HH∴ que decoráis mi Col∴, por mandato de nuestro VM∴, os anuncio que los trabajos en esta Cámara serán suspendidos temporalmente." />
-        <acto actor="2V" tema="HH∴ que decoráis la Col∴ del Norte, por mandato de nuestro VM∴, comunicado por conducto del QH∴ 1V∴, os anuncio que los trabajos de esta Cámara se suspenderán temporalmente. [Da un golpe de mallete] Anunciado en mi Col∴, QH∴ 1V∴." />
+      <parte titulo="Ceremonias y Tributos">
+        <acto actor="VM" tema="QQHH∴ 1V∴ y 2V∴, agotados los asuntos administrativos, anunciad en vuestras CCol∴ que daremos paso a las ceremonias y tributos registrados en la bitácora para la presente tenida." />
+        <acto actor="1V" tema="QH∴ 2V∴ y HH∴ de la Col∴ del Sur, nuestro VM∴ anuncia que daremos paso a las ceremonias y tributos del Orden del Día." />
+        <acto actor="2V" tema="HH∴ de la Col∴ del Norte, nuestro VM∴ anuncia el inicio de las ceremonias y tributos programados. [Da un golpe de mallete] Anunciado en mi Col∴, QH∴ 1V∴." />
         <acto actor="1V" tema="[Da un golpe de mallete] Anunciado en ambas CCol∴, VM∴." />
-        <acto actor="VM" tema="[Da un golpe de mallete] A los QQHH∴ que no posean el grado en el que vamos a trabajar, se les ruega cubrir el Templo bajo la conducción de nuestro QH∴ Maestro de Ceremonias." />
-        <acto actor="MC" tema="(El MC∴ acompaña a los Aprendices fuera del Templo. Una vez que regresan y las puertas están aseguradas, el VM∴ continúa)." />
-        <acto actor="VM" tema="QH∴ 1V∴, ¿estamos a cubierto de toda indiscreción y sois vos de este grado?" />
-        <acto actor="1V" tema="Estamos a cubierto, VM∴, y todos los presentes son reconocidos como tales." />
-        <acto actor="VM" tema="QH∴ Maestro de Ceremonias, servíos acercaros al Ara y disponer las Grandes Luces según corresponde a la Cámara en la que vamos a trabajar." />
-        <acto actor="MC" tema="(El MCc∴ se dirige al Ara y reacomoda la Escuadra y el Compás según la configuración del nuevo grado, rindiendo los honores correspondientes)." />
-        <acto actor="VM" tema="[Da los golpes de mallete correspondientes al grado] ¡En pie y al Orden, HH∴ míos! Por el Signo y la Batería del Grado. Declaro abiertos los trabajos en esta Cámara. Tomad asiento." />
-        <acto actor="VM" tema="[[INSTANCIA]]" /> 
-        <acto actor="VM" tema="QQHH∴ 1V∴ y 2V∴, anunciad en vuestras CCol∴ que los trabajos en esta Cámara quedan cerrados y se reanudan en el grado de Aprendiz." />          
+        <acto actor="VM" tema="[[INSTANCIA]]" />
       </parte>
       <parte titulo="Tronco de Beneficencia">
         <acto actor="VM" tema="QQHH∴ 1V∴ y 2V∴, anunciad en vuestras CCol∴ que el H∴ Hos∴ va a circular el tronco de beneficencia." />
@@ -169,7 +161,18 @@
         <acto actor="Visitante" tema="Vengo a vencer mis pasiones, someter mi voluntad a la obra del bien, y a estrechar los lazos de fraternidad que nos unen como verdaderos HH∴." />
         <acto actor="VM" tema="¿Qué solicitáis del Taller H∴ mío?" />
         <acto actor="Visitante" tema="Un lugar entre sus obreros, al fin de poder trabajar con el Mazo y el Cincel, sobre la Piedra Bruta." />
-        <acto actor="VM" tema="Pasad a ocuparlo." />
+        <acto actor="VM" tema="Pasad a ocuparlo." />        
+      </parte>
+      <parte titulo="Investiduras y Condecoraciones">
+        <acto actor="VM" tema="QQHH∴ 1V∴ y 2V∴, anunciad en vuestras respectivas CCol∴, como yo lo hago en Or∴, que vamos a rendir un justo tributo al mérito y la constancia en el trabajo masónico." />
+        <acto actor="1V" tema="QH∴ 2V∴ y HH∴ de la Col∴ del Sur, nuestro VM∴ anuncia que procederemos al acto de tributo y condecoración." />
+        <acto actor="2V" tema="HH∴ de la Col∴ del Norte, nuestro VM∴ anuncia que daremos paso al acto de condecoración. [Da un golpe de mallete] Anunciado en mi Col∴, QH∴ 1V∴." />
+        <acto actor="1V" tema="[Da un golpe de mallete] Anunciado en ambas CCol∴, VM∴." />
+        <acto actor="VM" tema="QH∴ Secretario (Sec∴), servíos dar lectura al decreto o plancha de otorgamiento." />
+        <acto actor="Sec" tema="[QH∴ Sec∴ procede con la lectura del documento.] [[INSTANCIA]]" />
+        <acto actor="VM" tema="QH∴ Maestro de Ceremonias (MC∴), servíos conducir a nuestro QH∴ homenajeado entre CCol∴ (o al pie de Or∴)." />
+        <acto actor="VM" tema="¡En pie y al Orden, QQHH∴! En virtud de vuestros méritos y celo por nuestra Augusta Orden, me complazco en imponeros esta distinción. Que ella os recuerde siempre el deber de iluminar con el ejemplo. QH∴ MC∴, proclamad el reconocimiento." />
+        <acto actor="VM" tema="A mí, HH∴ míos, por el Signo y una triple Batería de Júbilo en honor a nuestro Querido Hermano. Tomad asiento." />
       </parte>
     </seccion>
 
