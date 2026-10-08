@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+Aprendiz<?xml version="1.0" encoding="UTF-8"?>
 <bitacora> 
   <evento fecha="2026-01-18">
      <item tipo="cronicas" asunto="Acta Anterior" url="https://drive.google.com/file/d/1CwqivGnLMgU6ex3FB9WZ3cDKeyV98Plk/preview" />
@@ -39,6 +39,6 @@
   </evento>
   <evento fecha="2026-10-07">
      <item tipo="cronicas" asunto="Acta Anterior" url="https://drive.google.com/file/d/15_ioVr1gV4EkXJnjjLEekZpkBP1vccml/preview" />    
-     <item tipo="ascensos" asunto="Iniciaciones" url="rituales.html?num=1&amp;sec=5" />
+     <item tipo="ascensos" asunto="Iniciaciones de Aprendiz" url="rituales.html?num=1&amp;sec=5" />
   </evento>
 </bitacora>
