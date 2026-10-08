@@ -351,56 +351,64 @@
         return reglas[tipo] || false;
     });
 
-    if (itemsValidos.length > 0) {
-        // Verificamos si dentro de los puntos del VM hay Ceremonias (ascensos) o Tributos
-        const hayCeremoniasOTributos = (actor === "VM") && itemsValidos.some(i => {
+    // Función auxiliar interna para crear cada botón sin repetir código
+    const crearBoton = (i, pre = "") => {
+        const url = i.getAttribute("url");
+        const tit = pre + (i.getAttribute("asunto") || "Acta");
+        if (url.includes('rituales.html')) {
+            const urlParams = new URLSearchParams(url.split('?')[1]);
+            const linkExterno = urlParams.get('ext') || "";
+            let urlDestino = url;
+            if (linkExterno && !url.includes('&ext=')) {
+                urlDestino += `&ext=${encodeURIComponent(linkExterno)}`;
+            }                        
+            return `<button class="btn-instancia-exec" onclick="capturarOrigenYSalir('${urlDestino}', '${actorActual}', '${sec}', '${verso}')">${tit}</button>`;
+        } else { 
             const tip = i.getAttribute("tipo");
-            return tip === "ascensos" || tip === "tributos";
-        });
+            const icon = tip === "cronicas" ? "📜 " : (tip === "tributos" ? "🌐 " : (tip === "trazados" ? "📍 " : ""));
+            return `<button class="btn-ritual" onclick="mostrarVisor('${url}')">${icon}${tit}</button>`; 
+        }
+    };
 
-        // Si existen, inyectamos el diálogo ritual de transición antes de los botones; si no, no aparece nada
-        if (hayCeremoniasOTributos) {
-            h += `
-                <div class="bloque-ceremonias">
+    if (itemsValidos.length > 0) {
+        if (actor !== "VM") {
+            // Para Sec, MC u OF (Crónicas y Síntesis)
+            itemsValidos.forEach((i, idx) => {
+                h += crearBoton(i, itemsValidos.length > 1 ? `${idx + 1}. ` : "");
+            });
+        } else {
+            // Para el VM: separamos Trazados de Ceremonias/Tributos
+            const trazados = itemsValidos.filter(i => i.getAttribute("tipo") === "trazados");
+            const ceremonias = itemsValidos.filter(i => ["ascensos", "tributos"].includes(i.getAttribute("tipo")));
+
+            // 1. Si hay Trazados (Saco / Familiares)
+            if (trazados.length > 0) {
+                h += `<p class="dialogo-vm">Acto seguido, daremos curso a los siguientes puntos:</p>`;
+                trazados.forEach((i, idx) => {
+                    h += crearBoton(i, trazados.length > 1 ? `${idx + 1}. ` : "");
+                });
+            }
+
+            // 2. Si hay Ceremonias o Tributos (aparece SOLO cuando existen en bitacora.xml)
+            if (ceremonias.length > 0) {
+                h += `
+                    <h3 style="text-align:right; font-style:italic; margin-top:15px;">Ceremonias y Tributos</h3>
                     <p><strong>VM∴</strong> - QQHH∴ 1V∴ y 2V∴, agotados los asuntos administrativos, anunciad en vuestras CCol∴ que daremos paso a las ceremonias y tributos registrados en la bitácora para la presente tenida.</p>
                     <p><strong>1V∴</strong> - QH∴ 2V∴ y HH∴ de la Col∴ del Sur, nuestro VM∴ anuncia que daremos paso a las ceremonias y tributos del Orden del Día.</p>
-                    <p><strong>2V∴</strong> - HH∴ de la Col∴ del Norte, nuestro VM∴ anuncia el inicio de las ceremonias y tributos programados. <em>(Da un golpe de mallete)</em> Anunciado en mi Col∴, QH∴ 1V∴.</p>
-                    <p><strong>1V∴</strong> - <em>(Da un golpe de mallete)</em> Anunciado en ambas CCol∴, VM∴.</p>
-                </div>
-            `;
-        }
-
-        if (actor === "VM") {
-            h += `<p class="dialogo-vm">Acto seguido, daremos curso a los siguientes puntos:</p>`;
-        }
-
-        const debeEnumerar = itemsValidos.length > 1;                            
-        itemsValidos.forEach((i, index) => {
-            const url = i.getAttribute("url");
-            const pre = debeEnumerar ? `${index + 1}. ` : "";
-            const tit = pre + (i.getAttribute("asunto") || "Acta");                                                     
-            
-            if (url.includes('rituales.html')) {
-                const urlParams = new URLSearchParams(url.split('?')[1]);
-                const linkExterno = urlParams.get('ext') || "";
-                let urlDestino = url;
-                if (linkExterno && !url.includes('&ext=')) {
-                    urlDestino += `&ext=${encodeURIComponent(linkExterno)}`;
-                }                        
-                h += `<button class="btn-instancia-exec" onclick="capturarOrigenYSalir('${urlDestino}', '${actorActual}', '${sec}', '${verso}')">${tit}</button>`;
-            } else { 
-                const tip = i.getAttribute("tipo");
-                const icon = tip === "cronicas" ? "📜 " : (tip === "tributos" ? "🌐 " : (tip === "trazados" ? "📍 " : ""));
-                h += `<button class="btn-ritual" onclick="mostrarVisor('${url}')">${icon}${tit}</button>`; 
+                    <p><strong>2V∴</strong> - HH∴ de la Col∴ del Norte, nuestro VM∴ anuncia el inicio de las ceremonias y tributos programados. (Da un golpe de mallete) Anunciado en mi Col∴, QH∴ 1V∴.</p>
+                    <p><strong>1V∴</strong> - (Da un golpe de mallete) Anunciado en ambas CCol∴, VM∴.</p>
+                    <p class="dialogo-vm">Acto seguido, daremos curso a los siguientes puntos:</p>
+                `;
+                ceremonias.forEach((i, idx) => {
+                    h += crearBoton(i, ceremonias.length > 1 ? `${idx + 1}. ` : "");
+                });
             }
-        });
+        }
     } else if (actor === "VM") {
         h = `<p class="dialogo-vm">No habiendo más asuntos registrados, daremos continuidad al orden del día.</p>`;
     }
-    
     return h;
-}
-        function mostrarVisor(url) {
+}        function mostrarVisor(url) {
             if (url.includes('blank')) { const urlLimpia = url.replace('blank', ''); window.open(urlLimpia, '_blank');return; }
             const v = document.createElement('div');
             v.className = 'visor-overlay';
