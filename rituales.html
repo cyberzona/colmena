@@ -331,7 +331,7 @@
 
         function inyectarInstancia(actor, sec, verso) {
             const t = Array.from(Bitacora.getElementsByTagName("evento")).find(x => x.getAttribute("fecha") === fecha);        
-            if (!t) { return `<p class="dialogo-vm">No habiendo asuntos registrados, continuemos con orden del día.</p>`; }           
+            if (!t) { return `<p class="dialogo-vm">No habiendo asuntos registrados, continuemos con orden del día.${t}</p>`; }           
             const actorActual = document.getElementById("actorFilter").value;            
             const items = Array.from(t.getElementsByTagName("item"));  
             let h = ""; // Inicializamos h como cadena vacía siempre
