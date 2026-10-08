@@ -41,4 +41,11 @@
     <item tipo="cronicas" asunto="Acta Anterior" url="https://drive.google.com/file/d/15_ioVr1gV4EkXJnjjLEekZpkBP1vccml/preview" />
     <item tipo="ascensos" asunto="Iniciaciones de Aprendiz" url="rituales.html?num=1&amp;sec=5" />
   </evento>
+  <evento fecha="2026-09-19">
+     <item tipo="cronicas" asunto="Acta Anterior" url="https://drive.google.com/file/d/A8P0-0606/preview" />
+  </evento>
+  <evento fecha="2026-10-10">
+     <item tipo="cronicas" asunto="Acta Anterior" url="https://drive.google.com/file/d/A8P0-0607/preview" />
+     <item tipo="ascensos" asunto="Iniciaciones de Aprendiz" url="rituales.html?num=1&amp;sec=5" />
+  </evento>
 </bitacora>
