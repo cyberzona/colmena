@@ -253,18 +253,26 @@
             if (!nodoSec) return;
             let html = "";
             let contador = 1;
+
             Array.from(nodoSec.getElementsByTagName("parte")).forEach(parte => {
-                html += `<div class="parte-header">${parte.getAttribute("titulo")}</div>`;
+                const tituloParte = (parte.getAttribute("titulo") || "").trim();
+                const esParteCeremonias = tituloParte.includes("Ceremonias y Tributos");
+                
+                let htmlParte = `<div class="parte-header">${tituloParte}</div>`;
+                let contadorTemp = contador;
+                let ocultarParte = false;
+
                 Array.from(parte.getElementsByTagName("acto")).forEach(acto => {
                     const actor = (acto.getAttribute("actor") || "Actor").trim();                    
                     let texto = (acto.getAttribute("tema") || acto.textContent).trim();
                     let btns = "";                    
-                    // Validación de sección y actor para mostrar el documento externo
                     if (extURL && idSec === secURL_ext && actor === "OF") {
                         btns += `<br><button class="btn-ritual" style="margin-top:10px;" onclick="mostrarVisor('${decodeURIComponent(extURL)}')">📄 Ver Documento</button>`;
                     }
                     if (texto.includes("[[INSTANCIA]]")) {
-                        btns += inyectarInstancia(actor, idSec, contador);
+                        const inst = inyectarInstancia(actor, idSec, contadorTemp, esParteCeremonias);
+                        if (esParteCeremonias && !inst) ocultarParte = true;
+                        btns += inst;
                         texto = texto.replace("[[INSTANCIA]]", "");
                     }
                     texto = texto.replace(/(\b\S+∴)/gi, (match) => {
@@ -276,11 +284,16 @@
                     texto = texto.replace(/\[(.*?)\]/g, '<span class="acotacion">($1)</span>');
                     const esFoco = actorSel && actor === actorSel;
                     const claseDt = esFoco ? 'class="actor-activo"' : '';
-                    html += `<dt ${claseDt}>${actor}∴</dt><dd id="verso-${contador}" class="${esFoco ? 'resaltado' : ''}">${texto}${btns}</dd>`;
-                    // html += `<dt>${actor}∴</dt><dd id="verso-${contador}" class="${esFoco ? 'resaltado' : ''}">${texto}${btns}</dd>`;
-                    contador++;
+                    htmlParte += `<dt ${claseDt}>${actor}∴</dt><dd id="verso-${contadorTemp}" class="${esFoco ? 'resaltado' : ''}">${texto}${btns}</dd>`;
+                    contadorTemp++;
                 });
+
+                if (!ocultarParte) {
+                    html += htmlParte;
+                    contador = contadorTemp;
+                }
             });
+
             const sel = document.getElementById("seccionFilter");
             const idx = sel.selectedIndex;
             let nav = `<div class="nav-footer">`;
@@ -306,7 +319,6 @@
                 }, 10);
             }
         }
-
         function navRelativa(d) {
             const s = document.getElementById("seccionFilter");
             s.selectedIndex += d;
@@ -329,31 +341,34 @@
             window.location.href = url;
         }
 
-        function inyectarInstancia(actor, sec, verso) {
+        function inyectarInstancia(actor, sec, verso, esParteCeremonias = false) {
             const t = Array.from(Bitacora.getElementsByTagName("evento")).find(x => x.getAttribute("fecha") === fecha);        
-            if (!t) { return `<p class="dialogo-vm">No habiendo asuntos registrados, continuemos con orden del día.${t}</p>`; }           
+            if (!t) { 
+                return (actor === "VM" && !esParteCeremonias) ? `<p class="dialogo-vm">No habiendo asuntos registrados, continuemos con el orden del día.</p>` : ""; 
+            }           
             const actorActual = document.getElementById("actorFilter").value;            
             const items = Array.from(t.getElementsByTagName("item"));  
-            let h = ""; // Inicializamos h como cadena vacía siempre
+            let h = ""; 
             const itemsValidos = items.filter(i => {
                 const tipo = i.getAttribute("tipo");
                 const reglas = {
                     "cronicas": (actor === "Sec" && actorActual === "Sec"),
-                    "sintesis": (actor === "MC" && actorActual === "MC"),
-                    "sintesis": (actor === "OF" && actorActual === "OF"),
-                    "trazados": (actor === "VM"),
-                    "ascensos": (actor === "VM"),                   
-                    "tributos": (actor === "VM")
+                    "sintesis": ((actor === "MC" && actorActual === "MC") || (actor === "OF" && actorActual === "OF")),
+                    "trazados": (actor === "VM" && !esParteCeremonias),
+                    "ascensos": (actor === "VM" && esParteCeremonias),                   
+                    "tributos": (actor === "VM" && esParteCeremonias)
                 };
-                return reglas[tipo]||false;
+                return reglas[tipo] || false;
             });
             if (itemsValidos.length > 0) {
-                h = `<p class="dialogo-vm">Acto seguido, daremos curso a los siguientes puntos:</p>`;
+                if (actor === "VM") {
+                    h += `<p class="dialogo-vm">Acto seguido, daremos curso a los siguientes puntos:</p>`;
+                }
                 const debeEnumerar = itemsValidos.length > 1;                            
-                itemsValidos.forEach((i, index) => { // Se añadió (i, index) para corregir el error
+                itemsValidos.forEach((i, index) => {
                     const url = i.getAttribute("url");
                     const pre = debeEnumerar ? `${index + 1}. ` : "";
-                    const tit = pre + (i.getAttribute("asunto") || "Acta");                                                            
+                    const tit = pre + (i.getAttribute("asunto") || "Acta");                                                     
                     if (url.includes('rituales.html')) {
                         const urlParams = new URLSearchParams(url.split('?')[1]);
                         const linkExterno = urlParams.get('ext') || "";
@@ -368,12 +383,11 @@
                         h += `<button class="btn-ritual" onclick="mostrarVisor('${url}')">${icon}${tit}</button>`; 
                     }
                 });
-            } else {
-                h = `<p class="dialogo-vm">No habiendo más asuntos registrados, daremos continuidad al orden del día.${t}</p>`;
+            } else if (actor === "VM" && !esParteCeremonias) {
+                h = `<p class="dialogo-vm">No habiendo más asuntos registrados, daremos continuidad al orden del día.</p>`;
             }
             return h;
         }
-
         function mostrarVisor(url) {
             if (url.includes('blank')) { const urlLimpia = url.replace('blank', ''); window.open(urlLimpia, '_blank');return; }
             const v = document.createElement('div');
