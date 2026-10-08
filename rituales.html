@@ -284,7 +284,6 @@
                     const esFoco = actorSel && actor === actorSel;
                     const claseDt = esFoco ? 'class="actor-activo"' : '';
                     htmlParte += `<dt ${claseDt}>${actor}∴</dt><dd id="verso-${j+1}" class="${esFoco ? 'resaltado' : ''}">${texto}${btns}</dd>`;
-                    contadorTemp++;
                 });
 
                 if (!ocultarParte) {
