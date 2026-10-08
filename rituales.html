@@ -319,6 +319,7 @@
                 }, 10);
             }
         }
+        
         function navRelativa(d) {
             const s = document.getElementById("seccionFilter");
             s.selectedIndex += d;
@@ -388,6 +389,7 @@
             }
             return h;
         }
+        
         function mostrarVisor(url) {
             if (url.includes('blank')) { const urlLimpia = url.replace('blank', ''); window.open(urlLimpia, '_blank');return; }
             const v = document.createElement('div');
