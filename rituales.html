@@ -255,10 +255,8 @@
             
             Array.from(nodoSec.getElementsByTagName("parte")).forEach((parte,i) => {
                 const tituloParte = (parte.getAttribute("titulo") || "").trim();
-                const esParteCeremonias = tituloParte.includes("Ceremonias y Tributos");
-                
-                let htmlParte = `<div class="parte-header">${i + 1}. ${tituloParte}</div>`;
-                let contadorTemp = 1;
+                const esParteCeremonias = tituloParte.includes("Ceremonias y Tributos");                
+                let htmlParte = `<div class="parte-header">${i + 1}. ${tituloParte}</div>`;               
                 let ocultarParte = false;
 
                 Array.from(parte.getElementsByTagName("acto")).forEach((acto, j) => {
@@ -269,7 +267,7 @@
                         btns += `<br><button class="btn-ritual" style="margin-top:10px;" onclick="mostrarVisor('${decodeURIComponent(extURL)}')">📄 Ver Documento</button>`;
                     }
                     if (texto.includes("[[INSTANCIA]]")) {
-                        const inst = inyectarInstancia(actor, idSec, `${i + 1}-${j + 1}`, esParteCeremonias);
+                        const inst = inyectarInstancia(actor, idSec, `${j + 1}`, esParteCeremonias);
                         if (esParteCeremonias && !inst) ocultarParte = true;
                         btns += inst;
                         texto = texto.replace("[[INSTANCIA]]", "");
@@ -286,10 +284,7 @@
                     htmlParte += `<dt ${claseDt}>${actor}∴</dt><dd id="verso-${j+1}" class="${esFoco ? 'resaltado' : ''}">${texto}${btns}</dd>`;
                 });
 
-                if (!ocultarParte) {
-                    html += htmlParte;
-                    
-                }
+                if (!ocultarParte) { html += htmlParte; }
             });
 
             const sel = document.getElementById("seccionFilter");
