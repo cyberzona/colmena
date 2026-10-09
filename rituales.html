@@ -17,7 +17,7 @@
         .select-secciones, .select-actores { padding: 8px; font-size: 0.95rem; border-radius: 4px; border: 1px solid #a1887f; font-weight: bold; outline: none; background: #fff; }
         .select-secciones { width: 250px; }
         .select-actores { width: 65px; }
-        .parte-header { font-weight: bold; color: #795548; font-size: 1.1rem; border-bottom: 2px solid #d7ccc8; text-align: right; margin-top: 20px; margin-bottom: 10px; }
+        .parte-header { font-weight: bold; color: #795548; font-size: 1.1rem; border-bottom: 2px solid #d7ccc8; text-align: right; margin-top: 20px; margin-bottom: 10px; counter-reset: line-counter;}
         
         /* Estructura de diálogos con transiciones suaves incorporadas */
         dl { counter-reset: line-counter; }
@@ -281,7 +281,7 @@
                     texto = texto.replace(/\[(.*?)\]/g, '<span class="acotacion">($1)</span>');
                     const esFoco = actorSel && actor === actorSel;
                     const claseDt = esFoco ? 'class="actor-activo"' : '';
-                    htmlParte += `<dt ${claseDt}>${actor}∴</dt><dd id="verso-${j+1}" class="${esFoco ? 'resaltado' : ''}">${texto}${btns}</dd>`;
+                    htmlParte += `<dt ${claseDt}>${actor}∴</dt><dd id="verso-${i + 1}-${j + 1}" class="${esFoco ? 'resaltado' : ''}">${texto}${btns}</dd>`;
                 });
 
                 if (!ocultarParte) { html += htmlParte; }
