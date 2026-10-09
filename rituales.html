@@ -281,7 +281,7 @@
                     texto = texto.replace(/\[(.*?)\]/g, '<span class="acotacion">($1)</span>');
                     const esFoco = actorSel && actor === actorSel;
                     const claseDt = esFoco ? 'class="actor-activo"' : '';
-                    htmlParte += `<dt ${claseDt}>${actor}∴</dt><dd id="verso-${i + 1}-${j + 1}" class="${esFoco ? 'resaltado' : ''}">${texto}${btns}</dd>`;
+                    htmlParte += `<dt ${claseDt}>${actor}∴</dt><dd id="verso-${j + 1}" data-verso="${j + 1}" class="${esFoco ? 'resaltado' : ''}">${texto}${btns}</dd>`;
                 });
 
                 if (!ocultarParte) { html += htmlParte; }
