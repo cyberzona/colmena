@@ -23,7 +23,7 @@
         dl { counter-reset: line-counter; }
         dt { font-weight: bold; color: #5d4037; margin-top: 12px; font-size: 0.9rem; transition: opacity 0.25s ease-in-out; }
         dd { margin-left: 55px; border-left: 3px solid #d7ccc8; padding-left: 10px; position: relative; margin-bottom: 8px; text-align: justify; counter-increment: line-counter; min-height: 1.2em; transition: opacity 0.25s ease-in-out; }
-        dd::before { content: counter(line-counter); position: absolute; left: -45px; color: #8d6e63; font-size: 0.75rem; font-weight: bold; width: 35px; text-align: right; top: 0; }
+        dd::before { content: attr(data-verso); position: absolute; left: -45px; color: #8d6e63; font-size: 0.75rem; font-weight: bold; width: 35px; text-align: right; top: 0; }
         .acotacion { display: block; font-style: italic; color: rgba(0,0,0,0.5); font-size: 0.85rem; margin-top: 4px; margin-bottom: 4px; }
         
         /* El diseño original de tu línea resaltada unificado */
