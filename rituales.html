@@ -269,7 +269,7 @@
                         btns += `<br><button class="btn-ritual" style="margin-top:10px;" onclick="mostrarVisor('${decodeURIComponent(extURL)}')">📄 Ver Documento</button>`;
                     }
                     if (texto.includes("[[INSTANCIA]]")) {
-                        const inst = inyectarInstancia(actor, idSec, `${j + 1}`, esParteCeremonias);
+                        const inst = inyectarInstancia(actor, idSec, `${j + 1}`, false);
                         if (esParteCeremonias && !inst) ocultarParte = true;
                         btns += inst;
                         texto = texto.replace("[[INSTANCIA]]", "");
