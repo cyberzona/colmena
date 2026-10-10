@@ -254,8 +254,7 @@
             let html = "";
             
             Array.from(nodoSec.getElementsByTagName("parte")).forEach((parte,i) => {
-                const cod = Number(`${idSec}${i + 1}`);
-                if (hayCeremonia && cod >= 22 && cod <= 25) return;
+               
                 const tituloParte = (parte.getAttribute("titulo") || "").trim();
                 const esParteCeremonias = tituloParte.includes("Ceremonias y Tributos");                
                 let htmlParte = `<div class="parte-header">${i + 1}. ${tituloParte}</div>`;               
