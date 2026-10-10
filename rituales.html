@@ -343,7 +343,7 @@
         function inyectarInstancia(actor, sec, verso) {
             const t = Array.from(Bitacora.getElementsByTagName("evento")).find(x => x.getAttribute("fecha") === fecha);        
             if (!t) { 
-                return (actor === "VM" ) ? `<p class="dialogo-vm">No habiendo asuntos registrados, continuemos con el orden del díaContinuia el orden del día.</p>` : ""; 
+                return (actor === "VM" ) ? `<p class="dialogo-vm">Continúa el orden del día.</p>` : ""; 
             }           
             const actorActual = document.getElementById("actorFilter").value;            
             const items = Array.from(t.getElementsByTagName("item"));  
@@ -383,7 +383,7 @@
                     }
                 });
             } else if (actor === "VM" ) {
-                h = `<p class="dialogo-vm">Continuia el orden del día.</p>`;
+                h = `<p class="dialogo-vm">Continúa el orden del día.</p>`;
             }
             return h;
         }
