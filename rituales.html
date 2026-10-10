@@ -251,7 +251,8 @@
             const actorSel = document.getElementById("actorFilter").value;            
             const nodoSec = Array.from(Ritual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == idSec);
             if (!nodoSec) return;
-            const hayCeremonia = Boolean(typeof bitacora !== "undefined" && (bitacora.ascensos || bitacora.getAttribute?.("ascensos")));
+            const eventoActivo = typeof Bitacora !== "undefined" ? Array.from(Bitacora.getElementsByTagName("evento")).find(x => x.getAttribute("fecha") === fecha): null;
+            const hayCeremonia = eventoActivo ? Array.from(eventoActivo.getElementsByTagName("item")).some(i => i.getAttribute("tipo") === "ascensos") : false;
            
             let html = "";
             
