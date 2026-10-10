@@ -271,7 +271,7 @@
                         btns += `<br><button class="btn-ritual" style="margin-top:10px;" onclick="mostrarVisor('${decodeURIComponent(extURL)}')">📄 Ver Documento</button>`;
                     }
                     if (texto.includes("[[INSTANCIA]]")) {
-                        const inst = inyectarInstancia(actor, idSec, `${j + 1}`, false);
+                        const inst = inyectarInstancia(actor, idSec, `${j + 1}`);
                         if (esParteCeremonias && !inst) ocultarParte = true;
                         btns += inst;
                         texto = texto.replace("[[INSTANCIA]]", "");
@@ -339,10 +339,10 @@
             window.location.href = url;
         }
 
-        function inyectarInstancia(actor, sec, verso, esParteCeremonias = false) {
+        function inyectarInstancia(actor, sec, verso) {
             const t = Array.from(Bitacora.getElementsByTagName("evento")).find(x => x.getAttribute("fecha") === fecha);        
             if (!t) { 
-                return (actor === "VM" && !esParteCeremonias) ? `<p class="dialogo-vm">No habiendo asuntos registrados, continuemos con el orden del día.</p>` : ""; 
+                return (actor === "VM" ) ? `<p class="dialogo-vm">No habiendo asuntos registrados, continuemos con el orden del día.</p>` : ""; 
             }           
             const actorActual = document.getElementById("actorFilter").value;            
             const items = Array.from(t.getElementsByTagName("item"));  
@@ -352,9 +352,9 @@
                 const reglas = {
                     "cronicas": (actor === "Sec" && actorActual === "Sec"),
                     "sintesis": ((actor === "MC" && actorActual === "MC") || (actor === "OF" && actorActual === "OF")),
-                    "trazados": (actor === "VM" && !esParteCeremonias),
-                    "ascensos": (actor === "VM" && esParteCeremonias),                   
-                    "tributos": (actor === "VM" && esParteCeremonias)
+                    "trazados": (actor === "VM" ),
+                    "ascensos": (actor === "VM" ),                   
+                    "tributos": (actor === "VM" )
                 };
                 return reglas[tipo] || false;
             });
@@ -381,7 +381,7 @@
                         h += `<button class="btn-ritual" onclick="mostrarVisor('${url}')">${icon}${tit}</button>`; 
                     }
                 });
-            } else if (actor === "VM" && !esParteCeremonias) {
+            } else if (actor === "VM" ) {
                 h = `<p class="dialogo-vm">No habiendo más asuntos registrados, daremos continuidad al orden del día.</p>`;
             }
             return h;
