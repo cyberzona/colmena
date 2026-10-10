@@ -251,10 +251,12 @@
             const actorSel = document.getElementById("actorFilter").value;            
             const nodoSec = Array.from(Ritual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == idSec);
             if (!nodoSec) return;
+            const hayCeremonia = (typeof ceremoniaActiva !== "undefined" && Boolean(ceremoniaActiva));
             let html = "";
             
             Array.from(nodoSec.getElementsByTagName("parte")).forEach((parte,i) => {
-               
+                const cod = Number(`${idSec}${i + 1}`);
+                if (hayCeremonia && cod >= 22 && cod <= 25) return;
                 const tituloParte = (parte.getAttribute("titulo") || "").trim();
                 const esParteCeremonias = tituloParte.includes("Ceremonias y Tributos");                
                 let htmlParte = `<div class="parte-header">${i + 1}. ${tituloParte}</div>`;               
@@ -268,7 +270,7 @@
                         btns += `<br><button class="btn-ritual" style="margin-top:10px;" onclick="mostrarVisor('${decodeURIComponent(extURL)}')">📄 Ver Documento</button>`;
                     }
                     if (texto.includes("[[INSTANCIA]]")) {
-                        const inst = inyectarInstancia(actor, idSec, `${j + 1}`, esParteCeremonias);
+                        const inst = inyectarInstancia(actor, idSec, `${j + 1}`, false);
                         if (esParteCeremonias && !inst) ocultarParte = true;
                         btns += inst;
                         texto = texto.replace("[[INSTANCIA]]", "");
