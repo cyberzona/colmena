@@ -17,8 +17,6 @@
         .select-secciones, .select-actores { padding: 8px; font-size: 0.95rem; border-radius: 4px; border: 1px solid #a1887f; font-weight: bold; outline: none; background: #fff; }
         .select-secciones { width: 250px; }
         .select-actores { width: 65px; }
-        .btn-cerrar-camara { background: #5d4037; color: #fff; border: none; border-radius: 4px; width: 36px; height: 36px; font-size: 1.1rem; font-weight: bold; cursor: pointer; display: none; align-items: center; justify-content: center; }
-        .btn-cerrar-camara:hover { background: #3e2723; }
         .parte-header { font-weight: bold; color: #795548; font-size: 1.1rem; border-bottom: 2px solid #d7ccc8; text-align: right; margin-top: 20px; margin-bottom: 10px; counter-reset: line-counter; }
         
         /* Diálogos y acotaciones */
@@ -34,6 +32,7 @@
         .btn-ritual, .btn-instancia-exec { display: inline-block; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em; font-weight: bold; background: #A87C00 !important; color: #fff !important; margin: 8px 10px 8px 0; border: none; outline: none; width: auto; text-align: left; }
         .nav-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding: 15px; border-top: 1px solid #d7ccc8; }
         .btn-flechas { background: transparent !important; color: #A87C00 !important; width: 45px; height: 32px; font-size: 1.4rem; display: flex; align-items: center; justify-content: center; border: none; outline: none; cursor: pointer; }
+        .btn-flechas-cierre { font-weight: bold; font-size: 1.3rem; }
         .flip-h { transform: scaleX(-1); display: inline-block; }
         .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; align-items: center; justify-content: center; }
         .visor-content { width: 95%; height: 90%; background: #fff; border-radius: 8px; position: relative; }
@@ -78,7 +77,6 @@
                 <span class="select-label">Actor</span>
                 <select id="actorFilter" class="select-actores" onchange="actualizarActorGlobal()"></select>
             </div>
-            <button id="btnCerrarCamara" class="btn-cerrar-camara" title="Retornar a Grado 1" onclick="retornarGradoUno()">✕</button>
         </div>
 
         <div id="rituales-content"></div>
@@ -222,8 +220,8 @@
                 secParam = uParams.get("sec") || "";
             }
 
-            // CASO A: Ejecución dentro de la Cámara 2 (disparada tras pulsar el botón del orden del día)
-            if (sel && sel.startsWith(`${libTarget}:`) && libTarget !== "1") {
+            // CASO A: Cámara 2 activa
+            if (sel && sel.startsWith(`${libTarget}:`)) {
                 actualizarEncabezadoLibro(libTarget);
                 const [inicio, fin] = (secParam.includes(":") ? secParam : "1:3").split(":").map(Number);
                 for (let i = inicio; i <= fin; i++) {
@@ -234,7 +232,7 @@
                 return;
             }
 
-            // CASO B: Estado en Grado 1 (Aprendiz)
+            // CASO B: Estado en Grado 1
             actualizarEncabezadoLibro("1");
 
             // Iniciación de Aprendiz: sustituye sección 2 por 5
@@ -246,7 +244,7 @@
                 return;
             }
 
-            // Flujo ordinario (o Grado 1 previo al ascenso): exactamente secciones 1, 2 y 3 canónicas
+            // Tenida ordinaria (o apertura previa al ascenso): secciones 1, 2 y 3 canónicas
             [1, 2, 3].forEach(num => {
                 const idStr = num.toString();
                 combo.add(new Option(tituloDeSeccion("1", idStr), idStr));
@@ -271,21 +269,8 @@
             setTimeout(() => { renderizarLiturgia(true); }, 280); 
         }
 
-        function alternarBotonCerrarCamara(idSec) {
-            const btn = document.getElementById("btnCerrarCamara");
-            if (!btn) return;
-            btn.style.display = (idSec && idSec.includes(":") && !idSec.startsWith("1:")) ? "flex" : "none";
-        }
-
-        function retornarGradoUno() {
-            actualizarSelectorSecciones("3");
-            actualizarSeccionGlobal();
-        }
-
         async function gestionarCambioSeccion() {
             const idSec = document.getElementById("seccionFilter").value;
-            alternarBotonCerrarCamara(idSec);
-
             const comboActor = document.getElementById("actorFilter");
             const actorPendiente = comboActor.dataset.actorPendiente || comboActor.value;
             delete comboActor.dataset.actorPendiente;
@@ -312,7 +297,6 @@
             const nodoSec = obtenerNodoSeccion(idSec);
             if (!nodoSec) return;
 
-            // Detección de ascenso a cámara superior
             const ev = typeof Bitacora !== "undefined" ? Bitacora.querySelector(`evento[fecha="${fecha}"]`) : null;
             const ascenso = ev ? ev.querySelector('item[tipo="ascensos"]') : null;
             let hayAscensoSuperior = false;
@@ -327,7 +311,7 @@
             const partes = Array.from(nodoSec.getElementsByTagName("parte"));
 
             for (let i = 0; i < partes.length; i++) {
-                if (suspenderRestoDeSeccion) break; // Omite propuestas verbales y tronco si hay ascenso
+                if (suspenderRestoDeSeccion) break;
 
                 const parte = partes[i];
                 const tituloParte = (parte.getAttribute("titulo") || "").trim();
@@ -368,7 +352,6 @@
 
                 html += htmlParte;
 
-                // Si esta parte procesó la orden del día con ascenso, omite las propuestas verbales y el tronco
                 if (contieneInstanciaAscenso && (idSec === "2" || idSec === "1:2")) {
                     suspenderRestoDeSeccion = true;
                 }
@@ -378,7 +361,11 @@
             const idx = sel.selectedIndex;
             let nav = `<div class="nav-footer">`;
             nav += idx > 0 ? `<button class="btn-flechas" onclick="navRelativa(-1)"><span class="flip-h">➤</span></button>` : `<span></span>`;            
-            if (idx < sel.options.length - 1 || idSec.startsWith("2:")) {
+            
+            // Si está en la última sección de la Cámara 2, coloca '✕' en vez de '>' para regresar a Aprendiz
+            if (idSec.startsWith("2:") && idx === sel.options.length - 1) {
+                nav += `<button class="btn-flechas btn-flechas-cierre" title="Retornar a Clausura de Grado 1" onclick="navRelativa(1)">✕</button>`;
+            } else if (idx < sel.options.length - 1) {
                 nav += `<button class="btn-flechas" onclick="navRelativa(1)">➤</button>`;
             } else {
                 nav += `<span></span>`;
@@ -403,14 +390,14 @@
             const s = document.getElementById("seccionFilter");
             const actual = s.value;
 
-            // Retorno a Clausura de Aprendiz (3) al terminar la Cámara 2 (2:3) y avanzar
+            // Al pulsar '✕' al término de la Cámara 2 (2:3), retorna directamente a Clausura de Aprendiz (3)
             if (actual.startsWith("2:") && d > 0 && s.selectedIndex === s.options.length - 1) {
                 actualizarSelectorSecciones("3");
                 actualizarSeccionGlobal();
                 return;
             }
 
-            // Retroceso desde Clausura de Aprendiz (3) hacia el fin de Cámara 2 (2:3)
+            // Retroceso desde Clausura de Aprendiz hacia el final de la Cámara 2
             if (actual === "3" && d < 0 && s.selectedIndex === 2) {
                 const ev = typeof Bitacora !== "undefined" ? Bitacora.querySelector(`evento[fecha="${fecha}"]`) : null;
                 const ascenso = ev ? ev.querySelector('item[tipo="ascensos"]') : null;
