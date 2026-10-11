@@ -208,30 +208,17 @@
         function actualizarSelectorSecciones(sel) {
             const combo = document.getElementById("seccionFilter");
             combo.innerHTML = "";
-            const ev = typeof Bitacora !== "undefined" ? Bitacora.querySelector(`evento[fecha="${fecha}"]`) : null;
-            const ascenso = ev ? ev.querySelector('item[tipo="ascensos"]') : null;
 
-            if (ascenso) {
-                const uParams = new URLSearchParams((ascenso.getAttribute("url") || "").split('?')[1] || "");
-                const targetSec = uParams.get("sec") || "5";
-    
-                // 1. Apertura de Aprendiz (Sección 1)
-                combo.add(new Option(tituloDeSeccion("1", "1"), "1"));
-
-                // 2. Ceremonia de Iniciación (Sección 5, tomando el título del XML)
-                combo.add(new Option(tituloDeSeccion("1", targetSec), targetSec));
-
-                // 3. Clausura de Aprendiz (Sección 3)
-                combo.add(new Option(tituloDeSeccion("1", "3"), "3"));
-
-                combo.value = (sel === "5" || sel === targetSec) ? targetSec : (sel || "1");
-            } else {
-                // Tenida ordinaria estándar
-                ["1", "2", "3"].forEach(id => {
-                    combo.add(new Option(tituloDeSeccion(libURL, id), id));
+            // Lee directa y exclusivamente las secciones del Ritual activo en liturgia.xml
+            if (Ritual) {
+                Array.from(Ritual.getElementsByTagName("seccion")).forEach(s => {
+                    const id = s.getAttribute("id");
+                    const titulo = s.getAttribute("titulo");
+                    combo.add(new Option(titulo, id));
                 });
-                combo.value = sel || "1";
             }
+
+            combo.value = sel || (combo.options[0] ? combo.options[0].value : "1");
         }
         
         function actualizarSeccionGlobal() {
