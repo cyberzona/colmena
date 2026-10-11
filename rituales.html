@@ -200,41 +200,48 @@
             return Ritual ? Ritual.querySelector(`seccion[id="${idSec}"]`) : null;
         }
 
+        function tituloDeSeccion(lib, sec) {
+            const s = liturgiaDoc ? liturgiaDoc.querySelector(`ritual[libro="${lib}"] seccion[id="${sec}"]`) : null;
+            return s ? (s.getAttribute("titulo") || "").trim() : "";
+        }
+
         function actualizarSelectorSecciones(sel) {
             const combo = document.getElementById("seccionFilter");
             combo.innerHTML = "";
+
             const ev = typeof Bitacora !== "undefined" ? Bitacora.querySelector(`evento[fecha="${fecha}"]`) : null;
             const ascenso = ev ? ev.querySelector('item[tipo="ascensos"]') : null;
 
             if (ascenso) {
                 const asunto = (ascenso.getAttribute("asunto") || "").toLowerCase();
-        
-                if (asunto.includes("medio") || asunto.includes("maestro")) {
-                    // Secuencia completa de Cámara del Medio (Libro 3)
-                    combo.add(new Option("Apertura de los Trabajos", "1:1"));
-                    combo.add(new Option("Apertura Cámara del Medio", "3:1"));
-                    combo.add(new Option("Exaltación al Magisterio", "3:2"));
-                    combo.add(new Option("Clausura Cámara del Medio", "3:3"));
-                    combo.add(new Option("Clausura de los Trabajos", "1:3"));
-                } else {
-                // Secuencia completa de Cámara de Compañero (Libro 2)
-                    combo.add(new Option("Apertura de los Trabajos", "1:1"));
-                    combo.add(new Option("Paso a Cámara de Compañero", "2:1"));
-                    combo.add(new Option("Cámara de Compañero", "2:2"));
-                    combo.add(new Option("Clausura de Compañero", "2:3"));
-                    combo.add(new Option("Clausura de los Trabajos", "1:3"));
-                }
-        
-                combo.value = (sel && sel.includes(":")) ? sel : "1:1";
-                } else {
-                // Tenida ordinaria estándar (Libro 1)
-                    combo.add(new Option("Apertura de los Trabajos", "1"));
-                    combo.add(new Option("Asuntos de la Tenida", "2"));
-                    combo.add(new Option("Clausura de los Trabajos", "3"));
-                    combo.value = sel || "1";
-                }
-        }
+                const esMaestro = asunto.includes("medio") || asunto.includes("maestro");
+                const libTarget = esMaestro ? "3" : "2";
 
+                // 1. Apertura de Aprendiz (Libro 1, Sección 1)
+                combo.add(new Option(tituloDeSeccion("1", "1"), "1:1"));
+
+                // 2, 3 y 4. Secciones completas de la Cámara (Libro 2 o 3) tomadas directo del XML
+                const ritualCamara = liturgiaDoc.querySelector(`ritual[libro="${libTarget}"]`);
+                if (ritualCamara) {
+                    Array.from(ritualCamara.getElementsByTagName("seccion")).forEach(s => {
+                        const idSec = s.getAttribute("id");
+                        const titSec = s.getAttribute("titulo") || `Sección ${idSec}`;
+                        combo.add(new Option(titSec, `${libTarget}:${idSec}`));
+                    });
+                }
+
+                // 5. Clausura de Aprendiz (Libro 1, Sección 3)
+                combo.add(new Option(tituloDeSeccion("1", "3"), "1:3"));
+
+                combo.value = (sel && sel.includes(":")) ? sel : "1:1";
+            } else {
+                // Flujo ordinario: toma los títulos directamente de las secciones del ritual activo
+                ["1", "2", "3"].forEach(id => {
+                    combo.add(new Option(tituloDeSeccion(libURL, id), id));
+                });
+                combo.value = sel || "1";
+            }
+        }
         function actualizarSeccionGlobal() {
             const val = document.getElementById("seccionFilter").value;
             if (parseInt(val) <= 3) {
