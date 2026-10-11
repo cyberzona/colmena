@@ -26,7 +26,7 @@
         dd::before { content: counter(line-counter); position: absolute; left: -45px; color: #8d6e63; font-size: 0.75rem; font-weight: bold; width: 35px; text-align: right; top: 0; }
         .acotacion { display: block; font-style: italic; color: rgba(0,0,0,0.5); font-size: 0.85rem; margin-top: 4px; margin-bottom: 4px; }
         
-        /* Resaltado del oficial seleccionado */
+        /* Línea resaltada */
         .resaltado { background: rgba(168, 124, 0, 0.12) !important; border-left: 5px solid #A87C00 !important; transition: background 0.3s ease, opacity 0.25s ease-in-out; }
         
         .btn-ritual, .btn-instancia-exec { display: inline-block; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em; font-weight: bold; background: #A87C00 !important; color: #fff !important; margin: 8px 10px 8px 0; border: none; outline: none; width: auto; text-align: left; }
@@ -41,7 +41,7 @@
         .actor-hint { cursor: help; border-bottom: 1px dotted #0277bd; position: relative; }
         .actor-hint:hover::after { content: attr(data-memo); position: absolute; bottom: 125%; left: 50%; transform: translateX(-50%); background-color: #333; color: #fff; padding: 5px 10px; border-radius: 6px; white-space: nowrap; font-size: 14px; z-index: 100; }
         
-        /* Enfoque visual por rol */
+        /* Enfoque visual de oficiales */
         .filtro-activo dt { color: #cbc0b9 !important; }
         .filtro-activo dd { color: #bcaaa4 !important; border-left-color: #efebe9 !important; }
         .filtro-activo dd::before { color: #efebe9 !important; }
@@ -99,19 +99,35 @@
                 } 
                 if (claveUrl) { window.history.replaceState({}, document.title, window.location.pathname + window.location.search); }
                 fecha = params.get('fec') || new Date().toLocaleDateString('en-CA');
-                libURL = (params.get('num') || "1").toString();                
+                
                 extURL = params.get('ext') || "";
                 secURL_ext = params.get('sec') || "4"; 
                 const secURL = params.get('sec');
                 const actURL = params.get('act'); 
+                
                 await cargarArchivosBase();                
+
+                // Garantizar inicio siempre en Cámara de Aprendiz (Libro 1)
+                const ev = typeof Bitacora !== "undefined" ? Bitacora.querySelector(`evento[fecha="${fecha}"]`) : null;
+                const tieneAscenso = ev ? ev.querySelector('item[tipo="ascensos"]') : null;
+                
+                if (tieneAscenso) {
+                    libURL = "1"; // Siempre inicia en Grado 1 (Apertura de Aprendiz)
+                } else {
+                    libURL = (params.get('num') || "1").toString();
+                }
+
+                Ritual = Array.from(liturgiaDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("libro") === libURL);
+
                 if (Ritual) {
                     document.getElementById("capa-bloqueo").style.display = "none";
                     document.getElementById("contenedor-principal").style.display = "block";
                     const Dic = { "1": "Liturgia de Aprendiz", "2": "Liturgia de Compañero", "3": "Liturgia de Maestro" };
                     document.getElementById("titulo-ritual-header").textContent = Dic[libURL];                   
+                    
                     let seccionInicial = secURL || sessionStorage.getItem('seccionRetornoLogia') || "1";
                     actualizarSelectorSecciones(seccionInicial);                   
+                    
                     if (sessionStorage.getItem('actorRetornoLogia')) {
                         document.getElementById("actorFilter").dataset.actorPendiente = sessionStorage.getItem('actorRetornoLogia');
                     }                                        
@@ -174,7 +190,6 @@
             liturgiaDoc = dp.parseFromString(dl, "text/xml");
             Glosario = dp.parseFromString(dg, "text/xml");
             Bitacora = dp.parseFromString(de, "text/xml");            
-            Ritual = Array.from(liturgiaDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("libro") === libURL);           
         }
 
         function obtenerNodoSeccion(idSec) {
@@ -183,6 +198,12 @@
                 const ascenso = ev ? ev.querySelector('item[tipo="ascensos"]') : null;
 
                 if (ascenso) {
+                    const asunto = (ascenso.getAttribute("asunto") || "").toLowerCase();
+                    // Si el ascenso es a Maestro / Cámara del Medio
+                    if (asunto.includes("medio") || asunto.includes("maestro")) {
+                        return liturgiaDoc.querySelector('ritual[libro="3"] seccion[id="1"]');
+                    }
+                    // Por defecto: Cámara de Compañero (Libro 2, Sección 1)
                     return liturgiaDoc.querySelector('ritual[libro="2"] seccion[id="1"]');
                 }
             }
@@ -371,7 +392,11 @@
                     const url = i.getAttribute("url");
                     const pre = debeEnumerar ? `${index + 1}. ` : "";
                     const tit = pre + (i.getAttribute("asunto") || "Acta");                                                                     
-                    if (url.includes('rituales.html')) {
+                    
+                    // Si el ítem es un ascenso masónico, pasa directamente a la sección 2 sin recargar el rito
+                    if (i.getAttribute("tipo") === "ascensos") {
+                        h += `<button class="btn-instancia-exec" onclick="document.getElementById('seccionFilter').value='2'; actualizarSeccionGlobal();">${tit}</button>`;
+                    } else if (url.includes('rituales.html')) {
                         const urlParams = new URLSearchParams(url.split('?')[1]);
                         const linkExterno = urlParams.get('ext') || "";
                         let urlDestino = url;
