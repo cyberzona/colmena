@@ -394,7 +394,8 @@
                     
                     // Si el ítem es un ascenso masónico, pasa directamente a la sección 2 sin recargar el rito
                     if (i.getAttribute("tipo") === "ascensos") {
-                        h += `<button class="btn-instancia-exec" onclick="document.getElementById('seccionFilter').value='2'; actualizarSeccionGlobal();">${tit}</button>`;
+                        const targetSec = (i.getAttribute("asunto") || "").toLowerCase().includes("medio") ? "3:1" : "2:1";
+                        h += `<button class="btn-instancia-exec" onclick="document.getElementById('seccionFilter').value='${targetSec}'; actualizarSeccionGlobal();">${tit}</button>`;
                     } else if (url.includes('rituales.html')) {
                         const urlParams = new URLSearchParams(url.split('?')[1]);
                         const linkExterno = urlParams.get('ext') || "";
