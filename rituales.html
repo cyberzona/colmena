@@ -213,27 +213,26 @@
                 secParam = uParams.get("sec") || "";
             }
 
-            // Flujo con rango transversal a cámara superior (ej. num=2 con sec=1:3 o sec=2:3)
+            // CASO A: Cámara de Grado Superior con rango (ej. Libro 2 o 3 con sec=1:3)
+            // Ejecuta Apertura (1:1), Asuntos de Aprendiz (1:2), recorre la cámara y cierra en 1:3
             if (ascenso && libTarget !== "1" && secParam.includes(":")) {
                 const [inicio, fin] = secParam.split(":").map(Number);
 
-                // Apertura en Libro 1, Sección 1
                 combo.add(new Option(tituloDeSeccion("1", "1"), "1:1"));
+                combo.add(new Option(tituloDeSeccion("1", "2"), "1:2"));
 
-                // Secciones intermedias de la cámara solicitada
                 for (let i = inicio; i <= fin; i++) {
                     const idStr = i.toString();
                     combo.add(new Option(tituloDeSeccion(libTarget, idStr), `${libTarget}:${idStr}`));
                 }
 
-                // Clausura en Libro 1, Sección 3
                 combo.add(new Option(tituloDeSeccion("1", "3"), "1:3"));
 
                 combo.value = (sel && sel.includes(":")) ? sel : "1:1";
                 return;
             }
 
-            // Sustitución puntual de sección 2 por sección 5 en Libro 1 (Iniciación)
+            // CASO B: Iniciación de Aprendiz (mismo Libro 1, sustituye la Sección 2 por la 5)
             if (ascenso && libTarget === "1" && secParam === "5") {
                 combo.add(new Option(tituloDeSeccion("1", "1"), "1"));
                 combo.add(new Option(tituloDeSeccion("1", "5"), "5"));
@@ -243,10 +242,10 @@
                 return;
             }
 
-            // Flujo ordinario estándar: 1, 2 y 3 del libro activo
+            // CASO C: Tenida ordinaria estándar (1, 2 y 3)
             [1, 2, 3].forEach(num => {
                 const idStr = num.toString();
-                combo.add(new Option(tituloDeSeccion(libURL, idStr), idStr));
+                combo.add(new Option(tituloDeSeccion("1", idStr), idStr));
             });
             combo.value = sel || "1";
         }
@@ -296,12 +295,28 @@
             const nodoSec = obtenerNodoSeccion(idSec);
             if (!nodoSec) return;
 
+            // Detectar si hoy corresponde ascenso a cámara superior
+            const ev = typeof Bitacora !== "undefined" ? Bitacora.querySelector(`evento[fecha="${fecha}"]`) : null;
+            const ascenso = ev ? ev.querySelector('item[tipo="ascensos"]') : null;
+            let hayAscensoSuperior = false;
+            if (ascenso) {
+                const uParams = new URLSearchParams((ascenso.getAttribute("url") || "").split('?')[1] || "");
+                hayAscensoSuperior = (uParams.get("num") || "1") !== "1" && (uParams.get("sec") || "").includes(":");
+            }
+
             let html = "";
+            let suspenderRestoDeSeccion = false;
             
-            Array.from(nodoSec.getElementsByTagName("parte")).forEach((parte) => {
+            const partes = Array.from(nodoSec.getElementsByTagName("parte"));
+
+            for (let i = 0; i < partes.length; i++) {
+                if (suspenderRestoDeSeccion) break; // Omite propuestas verbales y tronco en Grado 1
+
+                const parte = partes[i];
                 const tituloParte = (parte.getAttribute("titulo") || "").trim();
                 let htmlParte = `<div class="parte-header">${tituloParte}</div>`;               
                 let ocultarParte = false;
+                let contieneInstancia = false;
 
                 Array.from(parte.getElementsByTagName("acto")).forEach((acto, j) => {
                     const actor = (acto.getAttribute("actor") || "Actor").trim();                    
@@ -311,26 +326,37 @@
                     if (extURL && idSec === secURL_ext && actor === "OF") {
                         btns += `<br><button class="btn-ritual" style="margin-top:10px;" onclick="mostrarVisor('${decodeURIComponent(extURL)}')">📄 Ver Documento</button>`;
                     }
+
                     if (texto.includes("[[INSTANCIA]]")) {
+                        contieneInstancia = true;
                         const inst = inyectarInstancia(actor, idSec, `${j + 1}`);
                         if (!inst) ocultarParte = true;
                         btns += inst;
                         texto = texto.replace("[[INSTANCIA]]", "");
                     }
+
                     texto = texto.replace(/(\b\S+∴)/gi, (match) => {
                         const gsigla = match.replace('∴', '').trim();
                         const ginfo = Glosario.querySelector(`item[sigla="${gsigla}"]`);
                         const names = ginfo ? ginfo.getAttribute("expansion") : gsigla;
                         return `<span class="actor-hint" data-memo="${names}" style="color:#0277bd; font-weight:bold;">${match}</span>`;
                     });
+
                     texto = texto.replace(/\[(.*?)\]/g, '<span class="acotacion">($1)</span>');
                     const esFoco = actorSel && actor === actorSel;
                     const claseDt = esFoco ? 'class="actor-activo"' : '';
                     htmlParte += `<dt ${claseDt}>${actor}∴</dt><dd id="verso-${j + 1}" data-verso="${j + 1}" class="${esFoco ? 'resaltado' : ''}">${texto}${btns}</dd>`;
                 });
 
-                if (!ocultarParte) { html += htmlParte; }
-            });
+                if (!ocultarParte) { 
+                    html += htmlParte; 
+                }
+
+                // Trunca la sección 2 tras despachar los puntos del orden del día
+                if (contieneInstancia && hayAscensoSuperior && (idSec === "2" || idSec === "1:2")) {
+                    suspenderRestoDeSeccion = true;
+                }
+            }
 
             const sel = document.getElementById("seccionFilter");
             const idx = sel.selectedIndex;
@@ -397,6 +423,7 @@
                 };
                 return reglas[tipo] || false;
             });
+
             if (itemsValidos.length > 0) {
                 if (actor === "VM") {
                     h += `<p class="dialogo-vm">En el orden del día, daremos curso a los siguientes puntos:</p>`;
