@@ -17,10 +17,12 @@
         .select-secciones, .select-actores { padding: 8px; font-size: 0.95rem; border-radius: 4px; border: 1px solid #a1887f; font-weight: bold; outline: none; background: #fff; }
         .select-secciones { width: 250px; }
         .select-actores { width: 65px; }
+        
+        /* Encabezado de parte: reinicia el contador de líneas para cada parte */
         .parte-header { font-weight: bold; color: #795548; font-size: 1.1rem; border-bottom: 2px solid #d7ccc8; text-align: right; margin-top: 20px; margin-bottom: 10px; counter-reset: line-counter; }
         
         /* Diálogos y acotaciones */
-        dl { counter-reset: line-counter; }
+        dl { margin: 0; padding: 0; }
         dt { font-weight: bold; color: #5d4037; margin-top: 12px; font-size: 0.9rem; transition: opacity 0.25s ease-in-out; }
         dd { margin-left: 55px; border-left: 3px solid #d7ccc8; padding-left: 10px; position: relative; margin-bottom: 8px; text-align: justify; counter-increment: line-counter; min-height: 1.2em; transition: opacity 0.25s ease-in-out; }
         dd::before { content: counter(line-counter); position: absolute; left: -45px; color: #8d6e63; font-size: 0.75rem; font-weight: bold; width: 35px; text-align: right; top: 0; }
@@ -85,7 +87,7 @@
     <script>         
         const dominio = "https://www.colmena8.org/";
         let liturgiaDoc, Glosario, Bitacora;
-        let libURL = "1", fecha = "", extURL = "", secURL_ext = "";        
+        let fecha = "", extURL = "", secURL_ext = "";        
 
         async function inicializarPortal() { 
             try { 
@@ -99,7 +101,6 @@
                 } 
                 if (claveUrl) { window.history.replaceState({}, document.title, window.location.pathname + window.location.search); }
                 fecha = params.get('fec') || new Date().toLocaleDateString('en-CA');
-                libURL = "1"; // Inicio fijado estrictamente en Aprendiz
                 extURL = params.get('ext') || "";
                 secURL_ext = params.get('sec') || "4"; 
                 const actURL = params.get('act'); 
@@ -112,7 +113,7 @@
                     
                     actualizarEncabezadoLibro("1");
                     
-                    // Comienza siempre en Sección 1 de Aprendiz
+                    // Inicia canónicamente en Grado 1 (Aprendiz)
                     actualizarSelectorSecciones("1");                   
                     
                     if (sessionStorage.getItem('actorRetornoLogia')) {
@@ -121,7 +122,7 @@
                     await gestionarCambioSeccion();                  
                     if (actURL) {
                         setTimeout(() => {
-                            const el = document.getElementById(`verso-${actURL}`);
+                            const el = document.getElementById(`verso-1-${actURL}`);
                             if (el) {
                                 el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                                 el.classList.add('resaltado');
@@ -218,7 +219,7 @@
                 secParam = uParams.get("sec") || "";
             }
 
-            // Transición a Cámara Superior solo si sel lo indica formalmente
+            // CASO A: Cámara Superior activa cuando sel viene prefijado con su número de grado
             if (sel && sel.startsWith(`${libTarget}:`) && libTarget !== "1") {
                 actualizarEncabezadoLibro(libTarget);
                 const [inicio, fin] = (secParam.includes(":") ? secParam : "1:3").split(":").map(Number);
@@ -230,19 +231,23 @@
                 return;
             }
 
-            // Inicio y flujo en Grado 1 (Aprendiz)
+            // CASO B: Estado en Grado 1 (Aprendiz)
             actualizarEncabezadoLibro("1");
 
-            // Si hay sustitución directa de Sección 2 dentro de Grado 1 (ej. sec=5 sin ':')
-            if (ascenso && libTarget === "1" && secParam && !secParam.includes(":")) {
+            // Si hay un ascenso directo sin ':' (sustituye Asuntos Ordinarios por la sección requerida)
+            if (ascenso && secParam && !secParam.includes(":")) {
+                const valorDestino = (libTarget !== "1") ? `${libTarget}:${secParam}` : secParam;
+                const etiquetaDestino = tituloDeSeccion(libTarget, secParam);
+
                 combo.add(new Option(tituloDeSeccion("1", "1"), "1"));
-                combo.add(new Option(tituloDeSeccion("1", secParam), secParam));
+                combo.add(new Option(etiquetaDestino, valorDestino));
                 combo.add(new Option(tituloDeSeccion("1", "3"), "3"));
-                combo.value = (sel === "2" || sel === secParam) ? secParam : (sel || "1");
+
+                combo.value = (sel === "2" || sel === valorDestino) ? valorDestino : (sel || "1");
                 return;
             }
 
-            // Opciones estándar de Grado 1
+            // Tenida ordinaria con secciones canónicas 1, 2 y 3
             [1, 2, 3].forEach(num => {
                 const idStr = num.toString();
                 combo.add(new Option(tituloDeSeccion("1", idStr), idStr));
@@ -316,6 +321,7 @@
             
             const partes = Array.from(nodoSec.getElementsByTagName("parte"));
 
+            // Bucle por cada parte
             for (let i = 0; i < partes.length; i++) {
                 if (suspenderRestoDeSeccion) break;
 
@@ -324,7 +330,9 @@
                 let htmlParte = `<div class="parte-header">${tituloParte}</div>`;                
                 let contieneInstanciaAscenso = false;
 
+                // En cada parte, j reinicia en 0 (los versos comienzan desde 1)
                 Array.from(parte.getElementsByTagName("acto")).forEach((acto, j) => {
+                    const versoNum = j + 1;
                     const actor = (acto.getAttribute("actor") || "Actor").trim();                    
                     let texto = (acto.getAttribute("tema") || acto.textContent).trim();
                     let btns = "";                    
@@ -335,7 +343,7 @@
 
                     if (texto.includes("[[INSTANCIA]]")) {
                         if (hayAscensoSuperior) {
-                            const inst = inyectarInstancia(actor, idSec, `${j + 1}`);
+                            const inst = inyectarInstancia(actor, idSec, `${versoNum}`);
                             if (inst) btns += inst;
                             if (actor === "VM") {
                                 contieneInstanciaAscenso = true;
@@ -354,7 +362,7 @@
                     texto = texto.replace(/\[(.*?)\]/g, '<span class="acotacion">($1)</span>');
                     const esFoco = actorSel && actor === actorSel;
                     const claseDt = esFoco ? 'class="actor-activo"' : '';
-                    htmlParte += `<dt ${claseDt}>${actor}∴</dt><dd id="verso-${j + 1}" data-verso="${j + 1}" class="${esFoco ? 'resaltado' : ''}">${texto}${btns}</dd>`;
+                    htmlParte += `<dt ${claseDt}>${actor}∴</dt><dd id="verso-${i + 1}-${versoNum}" data-verso="${versoNum}" class="${esFoco ? 'resaltado' : ''}">${texto}${btns}</dd>`;
                 });
 
                 html += htmlParte;
