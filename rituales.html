@@ -204,15 +204,35 @@
 
         function actualizarSelectorSecciones(sel) {
             const combo = document.getElementById("seccionFilter");
-            combo.innerHTML = "";
-            if (Ritual) {
-                Array.from(Ritual.getElementsByTagName("seccion")).forEach(s => {
-                    const id = s.getAttribute("id");
-                    const titulo = s.getAttribute("titulo") || `Sección ${id}`;
-                    combo.add(new Option(titulo, id));
-                });
-            }
-            combo.value = sel || (combo.options[0] ? combo.options[0].value : "1");
+            combo.innerHTML = "";    
+            const ev = typeof Bitacora !== "undefined" ? Bitacora.querySelector(`evento[fecha="${fecha}"]`) : null;
+            const ascenso = ev ? ev.querySelector('item[tipo="ascensos"]') : null;
+            let secCeremonia = null;
+            let titCeremonia = null;
+            if (ascenso && libURL === "1") {
+                const uParams = new URLSearchParams((ascenso.getAttribute("url") || "").split('?')[1] || "");
+                secCeremonia = uParams.get("sec") || "5";
+                titCeremonia = ascenso.getAttribute("asunto");
+            }    
+            [1, 2, 3].forEach(num => {
+                let idReal = num.toString();
+                let titulo = "";
+
+                if (num === 2 && secCeremonia) {
+                    idReal = secCeremonia; // Reemplaza la 2 por la 5
+                    const nodo = Ritual ? Ritual.querySelector(`seccion[id="${idReal}"]`) : null;
+                    titulo = titCeremonia || (nodo ? nodo.getAttribute("titulo") : "Ceremonia");
+                } else {
+                    const nodo = Ritual ? Ritual.querySelector(`seccion[id="${idReal}"]`) : null;
+                    titulo = nodo ? (nodo.getAttribute("titulo") || `Sección ${idReal}`) : `Sección ${idReal}`;
+                }
+
+                combo.add(new Option(titulo, idReal));
+            });
+
+            // 3. Establecer valor inicial
+            combo.value = (sel === "2" && secCeremonia) ? secCeremonia : (sel || "1");
+            if (!combo.value && combo.options.length > 0) combo.selectedIndex = 0;
         }
         
         function actualizarSeccionGlobal() {
