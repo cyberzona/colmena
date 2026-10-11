@@ -194,19 +194,37 @@
         }
 
         function actualizarSelectorSecciones(sel) {
-            const combo = document.getElementById("seccionFilter");
-            combo.innerHTML = "";
-            const numSel = parseInt(sel);
-            Array.from(Ritual.getElementsByTagName("seccion")).forEach(s => {
-                const id = s.getAttribute("id");
-                if (numSel > 3) {
-                    if (id === sel) combo.add(new Option(s.getAttribute("titulo"), id));
-                } else {
-                    if (parseInt(id) <= 3) combo.add(new Option(s.getAttribute("titulo"), id));
-                }
-            });
-            combo.value = sel;
+    const combo = document.getElementById("seccionFilter");
+    combo.innerHTML = "";
+    const numSel = parseInt(sel);
+
+    // Buscar si hay una ceremonia programada en bitácora para la fecha
+    const ev = typeof Bitacora !== "undefined" 
+        ? Array.from(Bitacora.getElementsByTagName("evento")).find(x => x.getAttribute("fecha") === fecha) 
+        : null;
+    const ascenso = ev 
+        ? Array.from(ev.getElementsByTagName("item")).find(i => i.getAttribute("tipo") === "ascensos") 
+        : null;
+
+    Array.from(Ritual.getElementsByTagName("seccion")).forEach(s => {
+        let id = s.getAttribute("id");
+        let titulo = s.getAttribute("titulo");
+
+        // Si hay ceremonia en agenda y toca la sección 2 (Tenida), se sustituye por la sección ceremonial
+        if (id === "2" && ascenso) {
+            id = ascenso.getAttribute("sec") || "4"; // ID de la ceremonia en el XML
+            titulo = ascenso.getAttribute("asunto") || "Ceremonia";
         }
+
+        if (numSel > 3) {
+            if (id === sel) combo.add(new Option(titulo, id));
+        } else {
+            if (parseInt(s.getAttribute("id")) <= 3) combo.add(new Option(titulo, id));
+        }
+    });
+
+    combo.value = sel === "2" && ascenso ? (ascenso.getAttribute("sec") || "4") : sel;
+}
 
         function actualizarSeccionGlobal() {
             const val = document.getElementById("seccionFilter").value;
