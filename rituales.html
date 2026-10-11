@@ -208,40 +208,32 @@
         function actualizarSelectorSecciones(sel) {
             const combo = document.getElementById("seccionFilter");
             combo.innerHTML = "";
-
             const ev = typeof Bitacora !== "undefined" ? Bitacora.querySelector(`evento[fecha="${fecha}"]`) : null;
             const ascenso = ev ? ev.querySelector('item[tipo="ascensos"]') : null;
 
             if (ascenso) {
-                const asunto = (ascenso.getAttribute("asunto") || "").toLowerCase();
-                const esMaestro = asunto.includes("medio") || asunto.includes("maestro");
-                const libTarget = esMaestro ? "3" : "2";
+                const uParams = new URLSearchParams((ascenso.getAttribute("url") || "").split('?')[1] || "");
+                const targetSec = uParams.get("sec") || "5";
+    
+                // 1. Apertura de Aprendiz (Sección 1)
+                combo.add(new Option(tituloDeSeccion("1", "1"), "1"));
 
-                // 1. Apertura de Aprendiz (Libro 1, Sección 1)
-                combo.add(new Option(tituloDeSeccion("1", "1"), "1:1"));
+                // 2. Ceremonia de Iniciación (Sección 5, tomando el título del XML)
+                combo.add(new Option(tituloDeSeccion("1", targetSec), targetSec));
 
-                // 2, 3 y 4. Secciones completas de la Cámara (Libro 2 o 3) tomadas directo del XML
-                const ritualCamara = liturgiaDoc.querySelector(`ritual[libro="${libTarget}"]`);
-                if (ritualCamara) {
-                    Array.from(ritualCamara.getElementsByTagName("seccion")).forEach(s => {
-                        const idSec = s.getAttribute("id");
-                        const titSec = s.getAttribute("titulo") || `Sección ${idSec}`;
-                        combo.add(new Option(titSec, `${libTarget}:${idSec}`));
-                    });
-                }
+                // 3. Clausura de Aprendiz (Sección 3)
+                combo.add(new Option(tituloDeSeccion("1", "3"), "3"));
 
-                // 5. Clausura de Aprendiz (Libro 1, Sección 3)
-                combo.add(new Option(tituloDeSeccion("1", "3"), "1:3"));
-
-                combo.value = (sel && sel.includes(":")) ? sel : "1:1";
+                combo.value = (sel === "5" || sel === targetSec) ? targetSec : (sel || "1");
             } else {
-                // Flujo ordinario: toma los títulos directamente de las secciones del ritual activo
+                // Tenida ordinaria estándar
                 ["1", "2", "3"].forEach(id => {
                     combo.add(new Option(tituloDeSeccion(libURL, id), id));
                 });
                 combo.value = sel || "1";
             }
         }
+        
         function actualizarSeccionGlobal() {
             const val = document.getElementById("seccionFilter").value;
             if (parseInt(val) <= 3) {
