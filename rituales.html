@@ -18,17 +18,14 @@
         .select-secciones { width: 250px; }
         .select-actores { width: 65px; }
         
-        /* Encabezado de parte: reinicia el contador de líneas para cada parte */
         .parte-header { font-weight: bold; color: #795548; font-size: 1.1rem; border-bottom: 2px solid #d7ccc8; text-align: right; margin-top: 20px; margin-bottom: 10px; counter-reset: line-counter; }
         
-        /* Diálogos y acotaciones */
         dl { margin: 0; padding: 0; }
         dt { font-weight: bold; color: #5d4037; margin-top: 12px; font-size: 0.9rem; transition: opacity 0.25s ease-in-out; }
         dd { margin-left: 55px; border-left: 3px solid #d7ccc8; padding-left: 10px; position: relative; margin-bottom: 8px; text-align: justify; counter-increment: line-counter; min-height: 1.2em; transition: opacity 0.25s ease-in-out; }
         dd::before { content: counter(line-counter); position: absolute; left: -45px; color: #8d6e63; font-size: 0.75rem; font-weight: bold; width: 35px; text-align: right; top: 0; }
         .acotacion { display: block; font-style: italic; color: rgba(0,0,0,0.5); font-size: 0.85rem; margin-top: 4px; margin-bottom: 4px; }
         
-        /* Línea resaltada */
         .resaltado { background: rgba(168, 124, 0, 0.12) !important; border-left: 5px solid #A87C00 !important; transition: background 0.3s ease, opacity 0.25s ease-in-out; }
         
         .btn-ritual, .btn-instancia-exec { display: inline-block; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em; font-weight: bold; background: #A87C00 !important; color: #fff !important; margin: 8px 10px 8px 0; border: none; outline: none; width: auto; text-align: left; }
@@ -43,7 +40,6 @@
         .actor-hint { cursor: help; border-bottom: 1px dotted #0277bd; position: relative; }
         .actor-hint:hover::after { content: attr(data-memo); position: absolute; bottom: 125%; left: 50%; transform: translateX(-50%); background-color: #333; color: #fff; padding: 5px 10px; border-radius: 6px; white-space: nowrap; font-size: 14px; z-index: 100; }
         
-        /* Enfoque visual de oficiales */
         .filtro-activo dt { color: #cbc0b9 !important; }
         .filtro-activo dd { color: #bcaaa4 !important; border-left-color: #efebe9 !important; }
         .filtro-activo dd::before { color: #efebe9 !important; }
@@ -112,8 +108,6 @@
                     document.getElementById("contenedor-principal").style.display = "block";
                     
                     actualizarEncabezadoLibro("1");
-                    
-                    // Inicia canónicamente en Grado 1 (Aprendiz)
                     actualizarSelectorSecciones("1");                   
                     
                     if (sessionStorage.getItem('actorRetornoLogia')) {
@@ -321,7 +315,6 @@
             
             const partes = Array.from(nodoSec.getElementsByTagName("parte"));
 
-            // Bucle por cada parte
             for (let i = 0; i < partes.length; i++) {
                 if (suspenderRestoDeSeccion) break;
 
@@ -330,7 +323,6 @@
                 let htmlParte = `<div class="parte-header">${tituloParte}</div>`;                
                 let contieneInstanciaAscenso = false;
 
-                // En cada parte, j reinicia en 0 (los versos comienzan desde 1)
                 Array.from(parte.getElementsByTagName("acto")).forEach((acto, j) => {
                     const versoNum = j + 1;
                     const actor = (acto.getAttribute("actor") || "Actor").trim();                    
@@ -377,7 +369,9 @@
             let nav = `<div class="nav-footer">`;
             nav += idx > 0 ? `<button class="btn-flechas" onclick="navRelativa(-1)"><span class="flip-h">➤</span></button>` : `<span></span>`;            
             
-            if (idSec.startsWith("2:") && idx === totalOpciones - 1) {
+            // Botón de salida '✕' tanto para Libro 2 como para Libro 3
+            const esCamaraSuperior = idSec.startsWith("2:") || idSec.startsWith("3:");
+            if (esCamaraSuperior && idx === totalOpciones - 1) {
                 nav += `<button class="btn-flechas btn-flechas-cierre" title="Retornar a Clausura de Grado 1" onclick="navRelativa(1)">✕</button>`;
             } else if (idx < totalOpciones - 1) {
                 nav += `<button class="btn-flechas" onclick="navRelativa(1)">➤</button>`;
@@ -403,22 +397,28 @@
         function navRelativa(d) {
             const s = document.getElementById("seccionFilter");
             const actual = s.value;
+            const esCamaraSuperior = actual.startsWith("2:") || actual.startsWith("3:");
 
-            // Retorno a Clausura de Aprendiz (3) desde la última sección de Cámara 2
-            if (actual.startsWith("2:") && d > 0 && s.selectedIndex === s.options.length - 1) {
+            // Retorno directo a Clausura de Aprendiz (3) desde la última sección de Cámara 2 o 3
+            if (esCamaraSuperior && d > 0 && s.selectedIndex === s.options.length - 1) {
                 actualizarSelectorSecciones("3");
                 actualizarSeccionGlobal();
                 return;
             }
 
-            // Retroceso desde Clausura de Aprendiz hacia el final de Cámara 2
+            // Retroceso desde Clausura de Aprendiz hacia el final de la cámara superior respectiva
             if (actual === "3" && d < 0 && s.selectedIndex === 2) {
                 const ev = typeof Bitacora !== "undefined" ? Bitacora.querySelector(`evento[fecha="${fecha}"]`) : null;
                 const ascenso = ev ? ev.querySelector('item[tipo="ascensos"]') : null;
-                if (ascenso && (ascenso.getAttribute("url") || "").includes("num=2")) {
-                    actualizarSelectorSecciones("2:3");
-                    actualizarSeccionGlobal();
-                    return;
+                if (ascenso) {
+                    const uParams = new URLSearchParams((ascenso.getAttribute("url") || "").split('?')[1] || "");
+                    const num = uParams.get("num");
+                    if (num === "2" || num === "3") {
+                        const sec = (uParams.get("sec") || "").split(":").pop() || "3";
+                        actualizarSelectorSecciones(`${num}:${sec}`);
+                        actualizarSeccionGlobal();
+                        return;
+                    }
                 }
             }
 
