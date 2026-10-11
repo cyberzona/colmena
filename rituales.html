@@ -196,36 +196,59 @@
         function actualizarSelectorSecciones(sel) {
     const combo = document.getElementById("seccionFilter");
     combo.innerHTML = "";
-    const numSel = parseInt(sel);
 
-    // Buscar si hay una ceremonia programada en bitácora para la fecha
+    // 1. Buscar si hay una ceremonia/ascenso o trazado especial en la fecha
     const ev = typeof Bitacora !== "undefined" 
         ? Array.from(Bitacora.getElementsByTagName("evento")).find(x => x.getAttribute("fecha") === fecha) 
         : null;
-    const ascenso = ev 
-        ? Array.from(ev.getElementsByTagName("item")).find(i => i.getAttribute("tipo") === "ascensos") 
+
+    // Busca ítem de ascensos o trazado que apunte a una sección de rituales
+    const itemCeremonia = ev 
+        ? Array.from(ev.getElementsByTagName("item")).find(i => 
+            (i.getAttribute("tipo") === "ascensos" || i.getAttribute("tipo") === "trazados") && 
+            (i.getAttribute("url") || "").includes("rituales.html")
+          )
         : null;
 
-    Array.from(Ritual.getElementsByTagName("seccion")).forEach(s => {
-        let id = s.getAttribute("id");
-        let titulo = s.getAttribute("titulo");
+    let targetLib = libURL;
+    let targetSec = null;
+    let tituloCeremonia = "Ceremonia";
 
-        // Si hay ceremonia en agenda y toca la sección 2 (Tenida), se sustituye por la sección ceremonial
-        if (id === "2" && ascenso) {
-            id = ascenso.getAttribute("sec") || "4"; // ID de la ceremonia en el XML
-            titulo = ascenso.getAttribute("asunto") || "Ceremonia";
+    if (itemCeremonia) {
+        const urlStr = itemCeremonia.getAttribute("url");
+        const uParams = new URLSearchParams(urlStr.split('?')[1] || "");
+        targetLib = uParams.get("num") || libURL;
+        targetSec = uParams.get("sec") || null;
+        tituloCeremonia = itemCeremonia.getAttribute("asunto") || "Ceremonia";
+
+        // Si la ceremonia corresponde a otra Cámara (Libro 2 o 3), redirige de inmediato
+        if (targetLib !== libURL) {
+            window.location.href = `rituales.html?num=${targetLib}&fec=${fecha}&sec=${targetSec || "1"}`;
+            return;
         }
+    }
 
-        if (numSel > 3) {
-            if (id === sel) combo.add(new Option(titulo, id));
+    // 2. Construir el selector secuencial de la Cámara activa:
+    // Si hay targetSec (ej. sec=5 para Iniciación en Libro 1), sustituye la sección 2 ordinaria
+    ["1", "2", "3"].forEach(idBase => {
+        let idReal = idBase;
+        let nodo;
+
+        if (idBase === "2" && targetSec) {
+            idReal = targetSec;
+            nodo = Array.from(Ritual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") === idReal);
+            const titulo = tituloCeremonia || (nodo ? nodo.getAttribute("titulo") : "Ceremonia");
+            combo.add(new Option(titulo, idReal));
         } else {
-            if (parseInt(s.getAttribute("id")) <= 3) combo.add(new Option(titulo, id));
+            nodo = Array.from(Ritual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") === idReal);
+            if (nodo) combo.add(new Option(nodo.getAttribute("titulo"), idReal));
         }
     });
 
-    combo.value = sel === "2" && ascenso ? (ascenso.getAttribute("sec") || "4") : sel;
+    // Sincronizar selección
+    combo.value = (sel === "2" && targetSec) ? targetSec : sel;
+    if (!combo.value && combo.options.length > 0) combo.selectedIndex = 0;
 }
-
         function actualizarSeccionGlobal() {
             const val = document.getElementById("seccionFilter").value;
             if (parseInt(val) <= 3) {
@@ -313,13 +336,15 @@
             const sel = document.getElementById("seccionFilter");
             const idx = sel.selectedIndex;
             let nav = `<div class="nav-footer">`;
+    
+            // Retroceder si no es el primer paso
             nav += idx > 0 ? `<button class="btn-flechas" onclick="navRelativa(-1)"><span class="flip-h">➤</span></button>` : `<span></span>`;            
-            if (parseInt(idSec) < 3 && idx < sel.options.length - 1) {
+    
+            // Avanzar continuo por las opciones del selector hasta la última (Clausura)
+            if (idx < sel.options.length - 1) {
                 nav += `<button class="btn-flechas" onclick="navRelativa(1)">➤</button>`;
-            } else if (parseInt(idSec) === 3) {
-                nav += `<span></span>`; 
             } else {
-                nav += `<button class="btn-flechas" onclick="irA('VOLVER')"><span class="icon-exit">✖</span></button>`;
+                nav += `<span></span>`; 
             }
             nav += `</div>`;
             const contenedorRitual = document.getElementById('rituales-content');
