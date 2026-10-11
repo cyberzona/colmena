@@ -213,23 +213,16 @@
         function actualizarSelectorSecciones(sel) {
             const combo = document.getElementById("seccionFilter");
             combo.innerHTML = "";
-
-            const ev = typeof Bitacora !== "undefined" 
-                ? Bitacora.querySelector(`evento[fecha="${fecha}"]`) 
-                : null;
-            const ascenso = ev 
-                ? ev.querySelector('item[tipo="ascensos"]') 
-                : null;
-
+            const ev = typeof Bitacora !== "undefined" ? Bitacora.querySelector(`evento[fecha="${fecha}"]`) : null;
+            const ascenso = ev ? ev.querySelector('item[tipo="ascensos"]') : null;
             const secciones = [
-                { id: "1", titulo: "1. Apertura de los Trabajos" },
+                { id: "1", titulo: "Apertura de los Trabajos" },
                 { 
                     id: "2", 
                     titulo: ascenso 
-                        ? `2. ${ascenso.getAttribute("asunto") || "Cámara de Compañero"}` 
-                        : "2. Asuntos de la Tenida" 
+                        ? (ascenso.getAttribute("asunto") || "Cámara de Compañero") : "2. Asuntos de la Tenida" 
                 },
-                { id: "3", titulo: "3. Clausura de los Trabajos" }
+                { id: "3", titulo: "Clausura de los Trabajos" }
             ];
 
             secciones.forEach(sec => combo.add(new Option(sec.titulo, sec.id)));
