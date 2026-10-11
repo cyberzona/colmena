@@ -193,19 +193,9 @@
         }
 
         function obtenerNodoSeccion(idSec) {
-            if (idSec === "2" && typeof Bitacora !== "undefined") {
-                const ev = Bitacora.querySelector(`evento[fecha="${fecha}"]`);
-                const ascenso = ev ? ev.querySelector('item[tipo="ascensos"]') : null;
-
-                if (ascenso) {
-                    const asunto = (ascenso.getAttribute("asunto") || "").toLowerCase();
-                    // Si el ascenso es a Maestro / Cámara del Medio
-                    if (asunto.includes("medio") || asunto.includes("maestro")) {
-                        return liturgiaDoc.querySelector('ritual[libro="3"] seccion[id="1"]');
-                    }
-                    // Por defecto: Cámara de Compañero (Libro 2, Sección 1)
-                    return liturgiaDoc.querySelector('ritual[libro="2"] seccion[id="1"]');
-                }
+            if (idSec && idSec.includes(":")) {
+                const [lib, sec] = idSec.split(":");
+                return liturgiaDoc.querySelector(`ritual[libro="${lib}"] seccion[id="${sec}"]`);
             }
             return Ritual ? Ritual.querySelector(`seccion[id="${idSec}"]`) : null;
         }
