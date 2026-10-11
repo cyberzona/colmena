@@ -11,22 +11,22 @@
         .line-logia { font-size: 1.0rem; color: #5d4037; font-weight: bold; }
         #titulo-ritual-header { font-size: 0.95rem; color: #5d4037; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px; }
         .logo-mini { width: 65px; height: auto; }
-        #control-panel { background: #d7ccc8; padding: 10px; border-radius: 8px; border: 1px solid #a1887f; position: sticky; top: 0; z-index: 1000; display: flex; gap: 10px; transform: translateZ(0);will-change: transform;}
+        #control-panel { background: #d7ccc8; padding: 10px; border-radius: 8px; border: 1px solid #a1887f; position: sticky; top: 0; z-index: 1000; display: flex; gap: 10px; transform: translateZ(0); will-change: transform; }
         .container-select { display: flex; flex-direction: column; }
         .select-label { font-size: 0.65rem; color: #4e342e; font-weight: 800; text-transform: uppercase; margin-bottom: 2px; }
         .select-secciones, .select-actores { padding: 8px; font-size: 0.95rem; border-radius: 4px; border: 1px solid #a1887f; font-weight: bold; outline: none; background: #fff; }
         .select-secciones { width: 250px; }
         .select-actores { width: 65px; }
-        .parte-header { font-weight: bold; color: #795548; font-size: 1.1rem; border-bottom: 2px solid #d7ccc8; text-align: right; margin-top: 20px; margin-bottom: 10px; counter-reset: line-counter;}
+        .parte-header { font-weight: bold; color: #795548; font-size: 1.1rem; border-bottom: 2px solid #d7ccc8; text-align: right; margin-top: 20px; margin-bottom: 10px; counter-reset: line-counter; }
         
-        /* Estructura de diálogos con transiciones suaves incorporadas */
+        /* Estructura de diálogos */
         dl { counter-reset: line-counter; }
         dt { font-weight: bold; color: #5d4037; margin-top: 12px; font-size: 0.9rem; transition: opacity 0.25s ease-in-out; }
         dd { margin-left: 55px; border-left: 3px solid #d7ccc8; padding-left: 10px; position: relative; margin-bottom: 8px; text-align: justify; counter-increment: line-counter; min-height: 1.2em; transition: opacity 0.25s ease-in-out; }
         dd::before { content: counter(line-counter); position: absolute; left: -45px; color: #8d6e63; font-size: 0.75rem; font-weight: bold; width: 35px; text-align: right; top: 0; }
         .acotacion { display: block; font-style: italic; color: rgba(0,0,0,0.5); font-size: 0.85rem; margin-top: 4px; margin-bottom: 4px; }
         
-        /* El diseño original de tu línea resaltada unificado */
+        /* Resaltado del oficial seleccionado */
         .resaltado { background: rgba(168, 124, 0, 0.12) !important; border-left: 5px solid #A87C00 !important; transition: background 0.3s ease, opacity 0.25s ease-in-out; }
         
         .btn-ritual, .btn-instancia-exec { display: inline-block; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em; font-weight: bold; background: #A87C00 !important; color: #fff !important; margin: 8px 10px 8px 0; border: none; outline: none; width: auto; text-align: left; }
@@ -39,34 +39,16 @@
         .visor-close { position: absolute; top: -10px; right: -10px; background: #ff0000; color: #fff; border: 2px solid #fff; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; z-index: 2001; }
         .dialogo-vm { margin-bottom: 10px; font-style: normal; }
         .actor-hint { cursor: help; border-bottom: 1px dotted #0277bd; position: relative; }
-        .actor-hint:hover::after { content: attr(data-memo);position: absolute;bottom: 125%;left: 50%;transform: translateX(-50%);background-color: #333;color: #fff;padding: 5px 10px;border-radius: 6px;white-space: nowrap;font-size: 14px;z-index: 100;}
+        .actor-hint:hover::after { content: attr(data-memo); position: absolute; bottom: 125%; left: 50%; transform: translateX(-50%); background-color: #333; color: #fff; padding: 5px 10px; border-radius: 6px; white-space: nowrap; font-size: 14px; z-index: 100; }
         
-       /* --- ENFOQUE VISUAL INMEDIATO (SIN ANIMACIONES) --- */
-        /* Al usar cambios instantáneos sin 'transition', la GPU del móvil no se congela */
-        .filtro-activo dt {
-            color: #cbc0b9 !important;
-        }
-        .filtro-activo dd {
-            color: #bcaaa4 !important;
-            border-left-color: #efebe9 !important;
-        }
-        .filtro-activo dd::before {
-            color: #efebe9 !important;
-        }
-
-        /* Oficial seleccionado con su brillo íntegro original */
-        .filtro-activo dt.actor-activo {
-            color: #5d4037 !important;
-        }
-        .filtro-activo dd.resaltado {
-            color: #2c2c2c !important;
-            border-left-color: #A87C00 !important;
-        }
-        .filtro-activo dd.resaltado::before {
-            color: #8d6e63 !important;
-        }
-</style>
-
+        /* Enfoque visual por rol */
+        .filtro-activo dt { color: #cbc0b9 !important; }
+        .filtro-activo dd { color: #bcaaa4 !important; border-left-color: #efebe9 !important; }
+        .filtro-activo dd::before { color: #efebe9 !important; }
+        .filtro-activo dt.actor-activo { color: #5d4037 !important; }
+        .filtro-activo dd.resaltado { color: #2c2c2c !important; border-left-color: #A87C00 !important; }
+        .filtro-activo dd.resaltado::before { color: #8d6e63 !important; }
+    </style>
 </head>
 <body onload="inicializarPortal()">
     <div id="capa-bloqueo" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 10000; display: none; justify-content: center; align-items: center; flex-direction: column; font-family: 'Segoe UI', sans-serif;">        
@@ -76,33 +58,35 @@
             <p id="mensaje-estado" style="color: #7f8c8d; font-style: italic;">Sincronizando estación ...</p>
         </div>
     </div>
+
     <div id="contenedor-principal" style="display: none;">
-    <div class="header-container">
-        <img src="./images/logo-mini.png" class="logo-mini">
-        <div class="logia-info">
-            <span class="line-logia">RLS∴ COLMENA # 8</span>
-            <span id="titulo-ritual-header">Cargando...</span>
+        <div class="header-container">
+            <img src="./images/logo-mini.png" class="logo-mini">
+            <div class="logia-info">
+                <span class="line-logia">RLS∴ COLMENA # 8</span>
+                <span id="titulo-ritual-header">Cargando...</span>
+            </div>
         </div>
-    </div>
 
-    <div id="control-panel">
-        <div class="container-select">
-            <span class="select-label">Secciones</span>
-            <select id="seccionFilter" class="select-secciones" onchange="actualizarSeccionGlobal()"></select>
+        <div id="control-panel">
+            <div class="container-select">
+                <span class="select-label">Secciones</span>
+                <select id="seccionFilter" class="select-secciones" onchange="actualizarSeccionGlobal()"></select>
+            </div>
+            <div class="container-select">
+                <span class="select-label">Actor</span>
+                <select id="actorFilter" class="select-actores" onchange="actualizarActorGlobal()"></select>
+            </div>
         </div>
-        <div class="container-select">
-            <span class="select-label">Actor</span>
-            <select id="actorFilter" class="select-actores" onchange="actualizarActorGlobal()"></select>
-        </div>
-    </div>
 
-    <div id="rituales-content"></div>
+        <div id="rituales-content"></div>
     </div>
 
     <script>         
         const dominio = "https://www.colmena8.org/";
-        let Ritual, Glosario, Bitacora;
+        let liturgiaDoc, Ritual, Glosario, Bitacora;
         let libURL = "1", fecha = "", extURL = "", secURL_ext = "";        
+
         async function inicializarPortal() { 
             try { 
                 const params = new URLSearchParams(window.location.search);
@@ -113,7 +97,7 @@
                     document.getElementById("capa-bloqueo").style.display = "flex";
                     return; 
                 } 
-               if (claveUrl) { window.history.replaceState({}, document.title, window.location.pathname + window.location.search); }
+                if (claveUrl) { window.history.replaceState({}, document.title, window.location.pathname + window.location.search); }
                 fecha = params.get('fec') || new Date().toLocaleDateString('en-CA');
                 libURL = (params.get('num') || "1").toString();                
                 extURL = params.get('ext') || "";
@@ -130,7 +114,7 @@
                     actualizarSelectorSecciones(seccionInicial);                   
                     if (sessionStorage.getItem('actorRetornoLogia')) {
                         document.getElementById("actorFilter").dataset.actorPendiente = sessionStorage.getItem('actorRetornoLogia');
-                    }                    
+                    }                                        
                     await gestionarCambioSeccion();                  
                     if (actURL) {
                         setTimeout(() => {
@@ -145,45 +129,45 @@
             } catch (e) { console.error(e); }
         }
         
-      async function AccesoRito(pass = null) {
-          let acceso = false;
-          try {
-              const { hash: HASH_MAESTRO } = await (await fetch('velo.json')).json();
-              const rawCookie = document.cookie.match(/(^|;)\s*memory\s*=\s*([^;]+)/)?.[2] || null;
-              const cookieMem = rawCookie ? decodeURIComponent(rawCookie) : null;
-              const urlParams = new URLSearchParams(window.location.search);
-              const llave = pass || urlParams.get('key') || cookieMem; 
-                if (llave) { acceso = (llave === HASH_MAESTRO);      
+        async function AccesoRito(pass = null) {
+            let acceso = false;
+            try {
+                const { hash: HASH_MAESTRO } = await (await fetch('velo.json')).json();
+                const rawCookie = document.cookie.match(/(^|;)\s*memory\s*=\s*([^;]+)/)?.[2] || null;
+                const cookieMem = rawCookie ? decodeURIComponent(rawCookie) : null;
+                const urlParams = new URLSearchParams(window.location.search);
+                const llave = pass || urlParams.get('key') || cookieMem; 
+                if (llave) { 
+                    acceso = (llave === HASH_MAESTRO);      
                     if (acceso) {        
                         if (cookieMem !== llave) { 
-                          document.cookie = `memory=${encodeURIComponent(llave)}; max-age=86400; path=/`; 
+                            document.cookie = `memory=${encodeURIComponent(llave)}; max-age=86400; path=/`; 
                         }
                         if (urlParams.has('key') || pass !== null) { 
-                          window.history.replaceState({}, document.title, window.location.pathname);
-                          window.location.reload(); // Recarga limpia con acceso garantizado vía cookie
+                            window.history.replaceState({}, document.title, window.location.pathname);
+                            window.location.reload();
                         }
                     } else {
                         let necesitaRecarga = false;
                         if (urlParams.has('key')) {
-                          window.history.replaceState({}, document.title, window.location.pathname);
-                          necesitaRecarga = true; // Marcamos que requiere limpiar el flujo
+                            window.history.replaceState({}, document.title, window.location.pathname);
+                            necesitaRecarga = true;
                         }
                         if (cookieMem) {
-                          document.cookie = "memory=; max-age=0; path=/";
-                          necesitaRecarga = true;
+                            document.cookie = "memory=; max-age=0; path=/";
+                            necesitaRecarga = true;
                         }
                         if (necesitaRecarga) {
-                          window.location.reload();
+                            window.location.reload();
                         }
                     }
                 }
-          } catch (e) { console.error(e); }
-          return acceso;
+            } catch (e) { console.error(e); }
+            return acceso;
         } 
         
         async function cargarArchivosBase() {
             const t = new Date().getTime();
-            //const f = u => fetch(`${dominio}${u}?v=${t}`).then(r => r.text());
             const f = u => fetch(`${u}?v=${t}`).then(r => r.text());
             const [dg, dl, de] = await Promise.all([f('glosario.xml'), f('liturgia.xml'), f('bitacora.xml').catch(() => '<bitacora/>')]);
             const dp = new DOMParser();
@@ -193,62 +177,44 @@
             Ritual = Array.from(liturgiaDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("libro") === libURL);           
         }
 
+        function obtenerNodoSeccion(idSec) {
+            if (idSec === "2" && typeof Bitacora !== "undefined") {
+                const ev = Bitacora.querySelector(`evento[fecha="${fecha}"]`);
+                const ascenso = ev ? ev.querySelector('item[tipo="ascensos"]') : null;
+
+                if (ascenso) {
+                    return liturgiaDoc.querySelector('ritual[libro="2"] seccion[id="1"]');
+                }
+            }
+            return Ritual ? Ritual.querySelector(`seccion[id="${idSec}"]`) : null;
+        }
+
         function actualizarSelectorSecciones(sel) {
-    const combo = document.getElementById("seccionFilter");
-    combo.innerHTML = "";
+            const combo = document.getElementById("seccionFilter");
+            combo.innerHTML = "";
 
-    // 1. Buscar si hay una ceremonia/ascenso o trazado especial en la fecha
-    const ev = typeof Bitacora !== "undefined" 
-        ? Array.from(Bitacora.getElementsByTagName("evento")).find(x => x.getAttribute("fecha") === fecha) 
-        : null;
+            const ev = typeof Bitacora !== "undefined" 
+                ? Bitacora.querySelector(`evento[fecha="${fecha}"]`) 
+                : null;
+            const ascenso = ev 
+                ? ev.querySelector('item[tipo="ascensos"]') 
+                : null;
 
-    // Busca ítem de ascensos o trazado que apunte a una sección de rituales
-    const itemCeremonia = ev 
-        ? Array.from(ev.getElementsByTagName("item")).find(i => 
-            (i.getAttribute("tipo") === "ascensos" || i.getAttribute("tipo") === "trazados") && 
-            (i.getAttribute("url") || "").includes("rituales.html")
-          )
-        : null;
+            const secciones = [
+                { id: "1", titulo: "1. Apertura de los Trabajos" },
+                { 
+                    id: "2", 
+                    titulo: ascenso 
+                        ? `2. ${ascenso.getAttribute("asunto") || "Cámara de Compañero"}` 
+                        : "2. Asuntos de la Tenida" 
+                },
+                { id: "3", titulo: "3. Clausura de los Trabajos" }
+            ];
 
-    let targetLib = libURL;
-    let targetSec = null;
-    let tituloCeremonia = "Ceremonia";
-
-    if (itemCeremonia) {
-        const urlStr = itemCeremonia.getAttribute("url");
-        const uParams = new URLSearchParams(urlStr.split('?')[1] || "");
-        targetLib = uParams.get("num") || libURL;
-        targetSec = uParams.get("sec") || null;
-        tituloCeremonia = itemCeremonia.getAttribute("asunto") || "Ceremonia";
-
-        // Si la ceremonia corresponde a otra Cámara (Libro 2 o 3), redirige de inmediato
-        if (targetLib !== libURL) {
-            window.location.href = `rituales.html?num=${targetLib}&fec=${fecha}&sec=${targetSec || "1"}`;
-            return;
+            secciones.forEach(sec => combo.add(new Option(sec.titulo, sec.id)));
+            combo.value = sel || "1";
         }
-    }
 
-    // 2. Construir el selector secuencial de la Cámara activa:
-    // Si hay targetSec (ej. sec=5 para Iniciación en Libro 1), sustituye la sección 2 ordinaria
-    ["1", "2", "3"].forEach(idBase => {
-        let idReal = idBase;
-        let nodo;
-
-        if (idBase === "2" && targetSec) {
-            idReal = targetSec;
-            nodo = Array.from(Ritual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") === idReal);
-            const titulo = tituloCeremonia || (nodo ? nodo.getAttribute("titulo") : "Ceremonia");
-            combo.add(new Option(titulo, idReal));
-        } else {
-            nodo = Array.from(Ritual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") === idReal);
-            if (nodo) combo.add(new Option(nodo.getAttribute("titulo"), idReal));
-        }
-    });
-
-    // Sincronizar selección
-    combo.value = (sel === "2" && targetSec) ? targetSec : sel;
-    if (!combo.value && combo.options.length > 0) combo.selectedIndex = 0;
-}
         function actualizarSeccionGlobal() {
             const val = document.getElementById("seccionFilter").value;
             if (parseInt(val) <= 3) {
@@ -271,7 +237,8 @@
             const comboActor = document.getElementById("actorFilter");
             const actorPendiente = comboActor.dataset.actorPendiente || comboActor.value;
             delete comboActor.dataset.actorPendiente;
-            const nodoSec = Array.from(Ritual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == idSec);
+
+            const nodoSec = obtenerNodoSeccion(idSec);
             const actoresEnSec = new Set();
             if (nodoSec) {
                 Array.from(nodoSec.getElementsByTagName("acto")).forEach(p => {
@@ -290,18 +257,13 @@
         function renderizarLiturgia(hacerScroll = false) {
             const idSec = document.getElementById("seccionFilter").value;
             const actorSel = document.getElementById("actorFilter").value;            
-            const nodoSec = Array.from(Ritual.getElementsByTagName("seccion")).find(s => s.getAttribute("id") == idSec);
+            const nodoSec = obtenerNodoSeccion(idSec);
             if (!nodoSec) return;
-            const eventoActivo = typeof Bitacora !== "undefined" ? Array.from(Bitacora.getElementsByTagName("evento")).find(x => x.getAttribute("fecha") === fecha): null;
-            const hayCeremonia = eventoActivo ? Array.from(eventoActivo.getElementsByTagName("item")).some(i => i.getAttribute("tipo") === "ascensos") : false;
-           
+
             let html = "";
             
-            Array.from(nodoSec.getElementsByTagName("parte")).forEach((parte,i) => {
-                const cod = Number(`${idSec}${i + 1}`);
-                if (hayCeremonia && cod >= 22 && cod <= 25) return;
+            Array.from(nodoSec.getElementsByTagName("parte")).forEach((parte, i) => {
                 const tituloParte = (parte.getAttribute("titulo") || "").trim();
-                const esParteCeremonias = tituloParte.includes("Ceremonias y Tributos");                
                 let htmlParte = `<div class="parte-header">${i + 1}. ${tituloParte}</div>`;               
                 let ocultarParte = false;
 
@@ -309,12 +271,13 @@
                     const actor = (acto.getAttribute("actor") || "Actor").trim();                    
                     let texto = (acto.getAttribute("tema") || acto.textContent).trim();
                     let btns = "";                    
+
                     if (extURL && idSec === secURL_ext && actor === "OF") {
                         btns += `<br><button class="btn-ritual" style="margin-top:10px;" onclick="mostrarVisor('${decodeURIComponent(extURL)}')">📄 Ver Documento</button>`;
                     }
                     if (texto.includes("[[INSTANCIA]]")) {
                         const inst = inyectarInstancia(actor, idSec, `${j + 1}`);
-                        if (esParteCeremonias && !inst) ocultarParte = true;
+                        if (!inst) ocultarParte = true;
                         btns += inst;
                         texto = texto.replace("[[INSTANCIA]]", "");
                     }
@@ -336,17 +299,14 @@
             const sel = document.getElementById("seccionFilter");
             const idx = sel.selectedIndex;
             let nav = `<div class="nav-footer">`;
-    
-            // Retroceder si no es el primer paso
             nav += idx > 0 ? `<button class="btn-flechas" onclick="navRelativa(-1)"><span class="flip-h">➤</span></button>` : `<span></span>`;            
-    
-            // Avanzar continuo por las opciones del selector hasta la última (Clausura)
             if (idx < sel.options.length - 1) {
                 nav += `<button class="btn-flechas" onclick="navRelativa(1)">➤</button>`;
             } else {
-                nav += `<span></span>`; 
+                nav += `<span></span>`;
             }
             nav += `</div>`;
+
             const contenedorRitual = document.getElementById('rituales-content');
             if (contenedorRitual) {
                 contenedorRitual.innerHTML = ""; 
@@ -386,7 +346,7 @@
         function inyectarInstancia(actor, sec, verso) {
             const t = Array.from(Bitacora.getElementsByTagName("evento")).find(x => x.getAttribute("fecha") === fecha);        
             if (!t) { 
-                return (actor === "VM" ) ? `<p class="dialogo-vm">Continúa el orden del día.</p>` : ""; 
+                return (actor === "VM") ? `<p class="dialogo-vm">Continúa el orden del día.</p>` : ""; 
             }           
             const actorActual = document.getElementById("actorFilter").value;            
             const items = Array.from(t.getElementsByTagName("item"));  
@@ -396,9 +356,9 @@
                 const reglas = {
                     "cronicas": (actor === "Sec" && actorActual === "Sec"),
                     "sintesis": ((actor === "MC" && actorActual === "MC") || (actor === "OF" && actorActual === "OF")),
-                    "trazados": (actor === "VM" ),
-                    "ascensos": (actor === "VM" ),                   
-                    "tributos": (actor === "VM" )
+                    "trazados": (actor === "VM"),
+                    "ascensos": (actor === "VM"),                   
+                    "tributos": (actor === "VM")
                 };
                 return reglas[tipo] || false;
             });
@@ -410,7 +370,7 @@
                 itemsValidos.forEach((i, index) => {
                     const url = i.getAttribute("url");
                     const pre = debeEnumerar ? `${index + 1}. ` : "";
-                    const tit = pre + (i.getAttribute("asunto") || "Acta");                                                     
+                    const tit = pre + (i.getAttribute("asunto") || "Acta");                                                                     
                     if (url.includes('rituales.html')) {
                         const urlParams = new URLSearchParams(url.split('?')[1]);
                         const linkExterno = urlParams.get('ext') || "";
@@ -425,14 +385,18 @@
                         h += `<button class="btn-ritual" onclick="mostrarVisor('${url}')">${icon}${tit}</button>`; 
                     }
                 });
-            } else if (actor === "VM" ) {
+            } else if (actor === "VM") {
                 h = `<p class="dialogo-vm">Continúa el orden del día.</p>`;
             }
             return h;
         }
         
         function mostrarVisor(url) {
-            if (url.includes('blank')) { const urlLimpia = url.replace('blank', ''); window.open(urlLimpia, '_blank');return; }
+            if (url.includes('blank')) { 
+                const urlLimpia = url.replace('blank', ''); 
+                window.open(urlLimpia, '_blank'); 
+                return; 
+            }
             const v = document.createElement('div');
             v.className = 'visor-overlay';
             v.innerHTML = `<div class="visor-content">
