@@ -19,7 +19,7 @@
         .select-actores { width: 65px; }
         .parte-header { font-weight: bold; color: #795548; font-size: 1.1rem; border-bottom: 2px solid #d7ccc8; text-align: right; margin-top: 20px; margin-bottom: 10px; counter-reset: line-counter; }
         
-        /* Estructura de diálogos */
+        /* Diálogos y acotaciones */
         dl { counter-reset: line-counter; }
         dt { font-weight: bold; color: #5d4037; margin-top: 12px; font-size: 0.9rem; transition: opacity 0.25s ease-in-out; }
         dd { margin-left: 55px; border-left: 3px solid #d7ccc8; padding-left: 10px; position: relative; margin-bottom: 8px; text-align: justify; counter-increment: line-counter; min-height: 1.2em; transition: opacity 0.25s ease-in-out; }
@@ -31,9 +31,8 @@
         
         .btn-ritual, .btn-instancia-exec { display: inline-block; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em; font-weight: bold; background: #A87C00 !important; color: #fff !important; margin: 8px 10px 8px 0; border: none; outline: none; width: auto; text-align: left; }
         .nav-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding: 15px; border-top: 1px solid #d7ccc8; }
-        .btn-flechas { background: transparent !important; color: #A87C00 !important; width: 45px; height: 32px; font-size: 1.4rem; display: flex; align-items: center; justify-content: center; border: none; outline: none; }
-        .flip-h { transform: scaleX(-1); }
-        .icon-exit { color: #A87C00; font-weight: bold; font-size: 1.2rem; }
+        .btn-flechas { background: transparent !important; color: #A87C00 !important; width: 45px; height: 32px; font-size: 1.4rem; display: flex; align-items: center; justify-content: center; border: none; outline: none; cursor: pointer; }
+        .flip-h { transform: scaleX(-1); display: inline-block; }
         .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; align-items: center; justify-content: center; }
         .visor-content { width: 95%; height: 90%; background: #fff; border-radius: 8px; position: relative; }
         .visor-close { position: absolute; top: -10px; right: -10px; background: #ff0000; color: #fff; border: 2px solid #fff; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; z-index: 2001; }
@@ -85,8 +84,7 @@
     <script>         
         const dominio = "https://www.colmena8.org/";
         let liturgiaDoc, Ritual, Glosario, Bitacora;
-        libURL = (params.get('num') || "1").toString();
-        Ritual = Array.from(liturgiaDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("libro") === libURL);        
+        let libURL = "1", fecha = "", extURL = "", secURL_ext = "";        
 
         async function inicializarPortal() { 
             try { 
@@ -100,31 +98,19 @@
                 } 
                 if (claveUrl) { window.history.replaceState({}, document.title, window.location.pathname + window.location.search); }
                 fecha = params.get('fec') || new Date().toLocaleDateString('en-CA');
-                
+                libURL = (params.get('num') || "1").toString();                
                 extURL = params.get('ext') || "";
                 secURL_ext = params.get('sec') || "4"; 
                 const secURL = params.get('sec');
                 const actURL = params.get('act'); 
-                
+
                 await cargarArchivosBase();                
 
-                // Garantizar inicio siempre en Cámara de Aprendiz (Libro 1)
-                const ev = typeof Bitacora !== "undefined" ? Bitacora.querySelector(`evento[fecha="${fecha}"]`) : null;
-                const tieneAscenso = ev ? ev.querySelector('item[tipo="ascensos"]') : null;
-                
-                if (tieneAscenso) {
-                    libURL = "1"; // Siempre inicia en Grado 1 (Apertura de Aprendiz)
-                } else {
-                    libURL = (params.get('num') || "1").toString();
-                }
-
-                Ritual = Array.from(liturgiaDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("libro") === libURL);
-
-                if (Ritual) {
+                if (liturgiaDoc) {
                     document.getElementById("capa-bloqueo").style.display = "none";
                     document.getElementById("contenedor-principal").style.display = "block";
                     const Dic = { "1": "Liturgia de Aprendiz", "2": "Liturgia de Compañero", "3": "Liturgia de Maestro" };
-                    document.getElementById("titulo-ritual-header").textContent = Dic[libURL];                   
+                    document.getElementById("titulo-ritual-header").textContent = Dic[libURL] || "Liturgia";                   
                     
                     let seccionInicial = secURL || sessionStorage.getItem('seccionRetornoLogia') || "1";
                     actualizarSelectorSecciones(seccionInicial);                   
@@ -191,68 +177,83 @@
             liturgiaDoc = dp.parseFromString(dl, "text/xml");
             Glosario = dp.parseFromString(dg, "text/xml");
             Bitacora = dp.parseFromString(de, "text/xml");            
-        }
-
-        function obtenerNodoSeccion(idSec) {
-            return Ritual ? Ritual.querySelector(`seccion[id="${idSec}"]`) : null;
+            Ritual = Array.from(liturgiaDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("libro") === libURL);           
         }
 
         function tituloDeSeccion(lib, sec) {
             const s = liturgiaDoc ? liturgiaDoc.querySelector(`ritual[libro="${lib}"] seccion[id="${sec}"]`) : null;
-            return s ? (s.getAttribute("titulo") || "").trim() : "";
+            return s ? (s.getAttribute("titulo") || "").trim() : `Sección ${sec}`;
+        }
+
+        function obtenerNodoSeccion(idSec) {
+            if (idSec && idSec.includes(":")) {
+                const [lib, sec] = idSec.split(":");
+                return liturgiaDoc ? liturgiaDoc.querySelector(`ritual[libro="${lib}"] seccion[id="${sec}"]`) : null;
+            }
+            return Ritual ? Ritual.querySelector(`seccion[id="${idSec}"]`) : null;
         }
 
         function actualizarSelectorSecciones(sel) {
             const combo = document.getElementById("seccionFilter");
             combo.innerHTML = "";
-            const ev = typeof Bitacora !== "undefined" ? Bitacora.querySelector(`evento[fecha="${fecha}"]`) : null;
-            const ascenso = ev ? ev.querySelector('item[tipo="ascensos"]') : null;
-            let secParam = null;
-            let titAscenso = null;
+
+            const ev = typeof Bitacora !== "undefined" 
+                ? Bitacora.querySelector(`evento[fecha="${fecha}"]`) 
+                : null;
+            const ascenso = ev 
+                ? ev.querySelector('item[tipo="ascensos"]') 
+                : null;
+
+            let libTarget = "1";
+            let secParam = "";
+
             if (ascenso) {
                 const uParams = new URLSearchParams((ascenso.getAttribute("url") || "").split('?')[1] || "");
-                secParam = uParams.get("sec"); // "1:3", "1:4", "1:5" o "5"
-                titAscenso = ascenso.getAttribute("asunto");
+                libTarget = uParams.get("num") || "1";
+                secParam = uParams.get("sec") || "";
             }
 
-            // CASO A: Rango dinámico (1:3, 1:4, 1:5, etc.)
-            if (secParam && secParam.includes(":")) {
+            // Flujo con rango transversal a cámara superior (ej. num=2 con sec=1:3 o sec=2:3)
+            if (ascenso && libTarget !== "1" && secParam.includes(":")) {
                 const [inicio, fin] = secParam.split(":").map(Number);
+
+                // Apertura en Libro 1, Sección 1
+                combo.add(new Option(tituloDeSeccion("1", "1"), "1:1"));
+
+                // Secciones intermedias de la cámara solicitada
                 for (let i = inicio; i <= fin; i++) {
                     const idStr = i.toString();
-                    const nodo = Ritual ? Ritual.querySelector(`seccion[id="${idStr}"]`) : null;
-                    if (nodo) {
-                        const titulo = nodo.getAttribute("titulo") || `Sección ${idStr}`;
-                        combo.add(new Option(titulo, idStr));
-                    }
+                    combo.add(new Option(tituloDeSeccion(libTarget, idStr), `${libTarget}:${idStr}`));
                 }
-                combo.value = sel || inicio.toString();
-                if (!combo.value && combo.options.length > 0) combo.selectedIndex = 0; return;
+
+                // Clausura en Libro 1, Sección 3
+                combo.add(new Option(tituloDeSeccion("1", "3"), "1:3"));
+
+                combo.value = (sel && sel.includes(":")) ? sel : "1:1";
+                return;
             }
 
-            // CASO B: Sustitución puntual de la sección 2 (ej. sec=5 para Iniciación en Libro 1)
+            // Sustitución puntual de sección 2 por sección 5 en Libro 1 (Iniciación)
+            if (ascenso && libTarget === "1" && secParam === "5") {
+                combo.add(new Option(tituloDeSeccion("1", "1"), "1"));
+                combo.add(new Option(tituloDeSeccion("1", "5"), "5"));
+                combo.add(new Option(tituloDeSeccion("1", "3"), "3"));
+
+                combo.value = (sel === "5" || sel === "2") ? "5" : (sel || "1");
+                return;
+            }
+
+            // Flujo ordinario estándar: 1, 2 y 3 del libro activo
             [1, 2, 3].forEach(num => {
-                let idReal = num.toString();
-                let titulo = "";
-                if (num === 2 && secParam) {
-                    idReal = secParam;
-                    const nodo = Ritual ? Ritual.querySelector(`seccion[id="${idReal}"]`) : null;
-                    titulo = titAscenso || (nodo ? nodo.getAttribute("titulo") : "Ceremonia");
-                } else {
-                    const nodo = Ritual ? Ritual.querySelector(`seccion[id="${idReal}"]`) : null;
-                    titulo = nodo ? (nodo.getAttribute("titulo") || `Sección ${idReal}`) : `Sección ${idReal}`;
-                }
-
-                combo.add(new Option(titulo, idReal));
+                const idStr = num.toString();
+                combo.add(new Option(tituloDeSeccion(libURL, idStr), idStr));
             });
-
-            combo.value = (sel === "2" && secParam) ? secParam : (sel || "1");
-            if (!combo.value && combo.options.length > 0) combo.selectedIndex = 0;
+            combo.value = sel || "1";
         }
-        
+
         function actualizarSeccionGlobal() {
             const val = document.getElementById("seccionFilter").value;
-            if (parseInt(val) <= 3) {
+            if (!val.includes(":") && parseInt(val) <= 3) {
                 sessionStorage.setItem('seccionRetornoLogia', val);
             }
             gestionarCambioSeccion();
@@ -297,9 +298,9 @@
 
             let html = "";
             
-            Array.from(nodoSec.getElementsByTagName("parte")).forEach((parte, i) => {
+            Array.from(nodoSec.getElementsByTagName("parte")).forEach((parte) => {
                 const tituloParte = (parte.getAttribute("titulo") || "").trim();
-                let htmlParte = `<div class="parte-header">${i + 1}. ${tituloParte}</div>`;               
+                let htmlParte = `<div class="parte-header">${tituloParte}</div>`;               
                 let ocultarParte = false;
 
                 Array.from(parte.getElementsByTagName("acto")).forEach((acto, j) => {
@@ -392,8 +393,7 @@
                     "cronicas": (actor === "Sec" && actorActual === "Sec"),
                     "sintesis": ((actor === "MC" && actorActual === "MC") || (actor === "OF" && actorActual === "OF")),
                     "trazados": (actor === "VM"),
-                    "ascensos": (actor === "VM"),                   
-                    "tributos": (actor === "VM")
+                    "ascensos": (actor === "VM")
                 };
                 return reglas[tipo] || false;
             });
@@ -407,10 +407,19 @@
                     const pre = debeEnumerar ? `${index + 1}. ` : "";
                     const tit = pre + (i.getAttribute("asunto") || "Acta");                                                                     
                     
-                    // Si el ítem es un ascenso masónico, pasa directamente a la sección 2 sin recargar el rito
                     if (i.getAttribute("tipo") === "ascensos") {
-                        const targetSec = (i.getAttribute("asunto") || "").toLowerCase().includes("medio") ? "3:1" : "2:1";
-                        h += `<button class="btn-instancia-exec" onclick="document.getElementById('seccionFilter').value='${targetSec}'; actualizarSeccionGlobal();">${tit}</button>`;
+                        const uParams = new URLSearchParams((url || "").split('?')[1] || "");
+                        const targetLib = uParams.get("num") || "1";
+                        const targetSecParam = uParams.get("sec") || "2";
+
+                        let destino = "2";
+                        if (targetLib !== "1" && targetSecParam.includes(":")) {
+                            destino = `${targetLib}:${targetSecParam.split(":")[0]}`;
+                        } else if (targetLib === "1" && targetSecParam === "5") {
+                            destino = "5";
+                        }
+
+                        h += `<button class="btn-instancia-exec" onclick="document.getElementById('seccionFilter').value='${destino}'; actualizarSeccionGlobal();">${tit}</button>`;
                     } else if (url.includes('rituales.html')) {
                         const urlParams = new URLSearchParams(url.split('?')[1]);
                         const linkExterno = urlParams.get('ext') || "";
@@ -421,7 +430,7 @@
                         h += `<button class="btn-instancia-exec" onclick="capturarOrigenYSalir('${urlDestino}', '${actorActual}', '${sec}', '${verso}')">${tit}</button>`;
                     } else { 
                         const tip = i.getAttribute("tipo");
-                        const icon = tip === "cronicas" ? "📜 " : (tip === "tributos" ? "🌐 " : (tip === "trazados" ? "📍 " : ""));
+                        const icon = tip === "cronicas" ? "📜 " : (tip === "trazados" ? "📍 " : "");
                         h += `<button class="btn-ritual" onclick="mostrarVisor('${url}')">${icon}${tit}</button>`; 
                     }
                 });
