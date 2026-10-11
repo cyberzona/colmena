@@ -85,7 +85,8 @@
     <script>         
         const dominio = "https://www.colmena8.org/";
         let liturgiaDoc, Ritual, Glosario, Bitacora;
-        let libURL = "1", fecha = "", extURL = "", secURL_ext = "";        
+        libURL = (params.get('num') || "1").toString();
+        Ritual = Array.from(liturgiaDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("libro") === libURL);        
 
         async function inicializarPortal() { 
             try { 
@@ -193,10 +194,6 @@
         }
 
         function obtenerNodoSeccion(idSec) {
-            if (idSec && idSec.includes(":")) {
-                const [lib, sec] = idSec.split(":");
-                return liturgiaDoc.querySelector(`ritual[libro="${lib}"] seccion[id="${sec}"]`);
-            }
             return Ritual ? Ritual.querySelector(`seccion[id="${idSec}"]`) : null;
         }
 
@@ -208,16 +205,13 @@
         function actualizarSelectorSecciones(sel) {
             const combo = document.getElementById("seccionFilter");
             combo.innerHTML = "";
-
-            // Lee directa y exclusivamente las secciones del Ritual activo en liturgia.xml
             if (Ritual) {
                 Array.from(Ritual.getElementsByTagName("seccion")).forEach(s => {
                     const id = s.getAttribute("id");
-                    const titulo = s.getAttribute("titulo");
+                    const titulo = s.getAttribute("titulo") || `Sección ${id}`;
                     combo.add(new Option(titulo, id));
                 });
             }
-
             combo.value = sel || (combo.options[0] ? combo.options[0].value : "1");
         }
         
