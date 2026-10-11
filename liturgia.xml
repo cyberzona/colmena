@@ -305,4 +305,72 @@
       </parte>
     </seccion>
   </ritual>
+  <ritual libro="2" logia="Colmena No. 8">
+<seccion id="1" titulo="Apertura de Trabajos">
+<parte titulo="Apertura de Trabajos">
+<acto actor="VM" tema="HH∴ 1V∴ y 2V∴ Servios anunciar alo HH∴ de vuestras respectivas columnas, como yo lo hago en el Or∴ que voy a suspender los trabajos con un solo golpe de Mall∴ para abrir la de Compañero."/>
+<acto actor="1V" tema="H∴ 2V∴ y HH∴ de mi columna, nuestro VM∴ va a suspender los trabajos por un solo golpe de Mall∴"/>
+<acto actor="2V" tema="HH∴ de la Col∴ del Sur os anuncio que el VM∴ va a suspender los Trabajos con un solo golpe de Mall∴"/>
+<acto actor="1V" tema="Anunciado VM∴"/>
+<acto actor="VM" tema="[Da un golpe de Mallete]... y clausura los trabajos invitando a los HH∴ Aprendices a que cubran el Tempo"/>
+</parte>
+</seccion>
+<seccion id="2" titulo="Cámara de Compañeros">
+<parte titulo="Inicio de Trabajos">
+<acto actor="VM" tema="Servios H∴ GT∴ avisar al H∴ GTE∴ que voy a abrir la Log∴ en el Grado de Compañero y que vigile en consecuencia."/>
+<acto actor="GT" tema="Seguimos a cubierto y el GTE∴ está avisado Muy VM∴"/>
+<acto actor="VM" tema="H∴ 1V∴ ¿Cuál es el primer deber de un Vigilante en Cámara de Compañeros?"/>
+<acto actor="1V" tema="Asegurarse que el Templo esté cubierto de las indiscreciones de profanos y Aprendices."/>
+<acto actor="VM" tema="Aseguraos de ello, querido hermano"/>
+</parte>
+</seccion>
+</ritual>
+<ritual libro="3" logia="Colmena No. 8">
+<seccion id="1" titulo="Apertura de Trabajos">
+<parte titulo="Preliminares de la Apertura">
+<acto actor="VM" tema="Muy Venerables HH∴ 1V∴ y 2V∴, servios pedir a todos los presentes la Palabra del Tercer Grado. En pie y al orden, mirando al Oriente Venerables HH∴. [Lo ejecutan los HH∴ los Venerables hacen el reconocimiento en la forma debida y vueltos a sus tronos, da un golpe.]"/>
+<acto actor="2V" tema="Todos los que decoran mi Columna son Maestros Masones, Venerable H∴ 1V∴"/>
+<acto actor="1V" tema="Todos somos del Grado Muy Respetable Maestro (MRM∴). [El MRM∴, da un golpe de mallete con el mango de la cuchara y hace las siete preguntas que dan principio a los trabajos del Maestro]"/>
+</parte>
+<parte titulo="Apertura de la Cámara del Medio">
+<acto actor="VM" tema="Venerable H∴ 1V∴, ¿sois Maestro Masón?"/>
+<acto actor="1V" tema="La acacia me es conocida."/>
+<acto actor="VM" tema="¿Qué significa esa frase Venerable H∴ 2V∴?"/>
+<acto actor="2V" tema="Que sé cómo se alcanza la inmortalidad."/>
+<acto actor="VM" tema="¿Qué es la inmortalidad? Venerable H∴ 1V∴"/>
+<acto actor="1V" tema="El pensamiento elevándose a su idealidad y tomando posesión de su propia divinidad."/>
+<acto actor="VM" tema="¿Por qué os rodeáis de cuadros de la muerte para simbolizar la Muy Venerable H∴ 2V∴?"/>
+<acto actor="2V" tema="Porque la del iniciador era el complemento necesario de la iniciación, según la ley palingenésica y nosotros representamos en el drama astronómico de Hiram la metempsícosis, en el sentido en que la tomaban aquellos sabios"/>
+<acto actor="VM" tema="¿Cuál es el secreto de la Maestría? Muy Venerable H∴ 1V∴"/>
+<acto actor="1V" tema="Revelar el de la creación al iniciado demostrándole que la Materia y la Inteligencia Suma, de la que nuestro pensamiento es un efluvio, son inmortales; y si la primera cambia sin cesar de formas, lo que hace de la Idea, en vez de transformarse como aquella, se fecunda y perfecciona más y más, propagada de una a otra generación, y, por consecuencia, morir por la idea no es morir, sino perder la forma para eternizarse en el Panteón de los Bienhechores de nuestro linaje"/>
+<acto actor="VM" tema="¿A qué hora acostumbran los Maestros Masones abrir trabajos? Muy Venerable H∴ 2V∴"/>
+<acto actor="2V" tema="Al medio día MRM∴"/>
+<acto actor="VM" tema="¿Qué hora es? Muy Venerable H∴ 1V∴"/>
+<acto actor="1V" tema="Mediodía en punto, MRM∴"/>
+<acto actor="VM" tema="Servios pedir a los Venerables HH∴ que decoran vuestras respectivas columnas, como yo lo hago a los de Oriente, se unan a Vosotros y a Mí para abrir la Cámara del Medio por los golpes y signos misteriosos."/>
+<acto actor="1V" tema="Muy Venerable H∴ 2V∴ y Venerables HH∴ de la columna del Sur, nuestro Muy Respetable Maestro os pide os unáis a él y a nosotros para abrir los trabajos de la Cámara del Medio."/>
+<acto actor="2V" tema="Anunciado, Muy Venerable H∴ 1V∴ [Da un golpe en su trono]"/>
+<acto actor="1V" tema="Anunciado, MRM∴ [Da otro golpe]"/>
+<acto actor="VM" tema="En pie y al orden Venerables HH∴ [ Todos se levantan al orden del Grado. El MRM∴ da un golpe con el mango de la cuchara e inmediatamente lo repiten los HH∴ Vigilantes después de un brevísimo intervalo; da otro golpe el MRM∴, que repiten sucesivamente los Hermanos Vigilantes y, pasando un cortisimo tiempo, como el anterior, se repite lo mismo; de suerte que se dan nueve golpes por tres veces]"/>
+<acto actor="VM" tema="Los trabajos de Maestros están abiertos. A mi Venerables H∴, Signo y la batería por tres veces, con Houzzé."/>
+<acto actor="VM" tema="Sentaos Venerables HH∴ [Lo hacen. Se aunica, lee y sanciona la Plancha de Arquitectura de los últimos trabajos; se circula el saco de proposiciones; en seguida se envía al Maestro de Ceremonia por los candidatos; aquél atará en el brazo derecho del que ha de entrar en el ataúd, un triángulo de oro. En el intermedio se apagan todas las luces, menos las de los transparentes de las tres linternas, que serán las que alumbran la Cámara, con las del Cuadro del Templo en su oscuridad]"/>
+</parte>
+</seccion>
+<seccion id="2" titulo="Exaltación a Maestro">
+<parte titulo="Iniciación de la Ceremonia">
+<acto actor="GT" tema="[El MC∴ hace que los Compañeros toquen en su grado y, al oirle, dice: ] Muy Venerable H∴ 2V∴, a la puerta de la Cámara toca un Compañero."/>
+<acto actor="2Vig" tema="Muy Venerable H∴ 1V∴, a las puertas de la cámara toca un Compañero."/>
+<acto actor="1V" tema="MRM∴, a las puertas de la cámara toca un Compañero."/>
+<acto actor="VM" tema="Venerable H∴ 1V∴, preguntad quién viene a turbar nuestro dolor."/>
+<acto actor="1V" tema="¿Quién viene a turbar nuestro dolor?"/>
+<acto actor="2V" tema="Venerable H∴ GT∴, ved quién viene a turbar nuestro dolor."/>
+<acto actor="GT" tema="[El GT∴, entreabre la puerta y no vuelve a cerrarla para que los graduandos oigan lo que sigue. Pregunta al abrir:] ¿Quién viene a turbar nuestro dolor?"/>
+<acto actor="MC" tema="Es el MC∴ que trae a un H∴ que pide pasar de la escuadra al compas."/>
+<acto actor="VM" tema="¿Cómo se atreve ese Compañero a esperar se le admita entre nosotros? ¿Ha concluido su tiempo? ¿Le es favorable el testimonio de sus maestros?"/>
+<acto actor="1V" tema="Si, MRM∴"/>
+<acto actor="VM" tema="Pues siendo así, dejadle entrar. ¡En pie y al orden, Venerables HH∴! [Da un golpe con la cuchara. Todos los Hermanos se ponen en pie. Si hay música, tocará en un modo solemne y grave. El GT∴ abre la puerta y da un paso. El MC∴ se pone entre columnas con el candidato, y saluda como compañero]"/>
+<acto actor="VM" tema="Compañeros, concibo vuestra admisión al hallarás en este sitio donde todo respira tristeza y duelo. Creíais tal vez que al abrirse las puertas del Santuario, su lujo y esplendor deslumbraron vuestras miradas; en lugar de ello os hayáis en la estancia de la muerte, en la Cámara del Medio… ¡En la Cámara del Juicio!... Comparecéis hoy vivos, llenos de vigor, de salud y de esperanza. Un día vendrá, ¡Y Dios quiera que sea lo más tarde posible! En que vuestro cuerpo inanimado recibirá aquí también los últimos honores. Todos los Maestros recomiendan por vuestra aplicación, inteligencia y constancia en el trabajo, y piden os recompensamos. Para ello vamos a juzgaros vivos, como os juzgaremos muertos. Tenéis que darnos cuenta de vuestras opiniones en asuntos muy serios, y de vuestra conducta en otros muy graves; de la misma manera que antes de conducir vuestros restos al campo del reposo, le pediremos al mundo de la que hayáis seguido como hombres y como masones. Sentaos, Hermanos [Todos se sientan, así como los graduados]"/>
+</parte>
+</seccion>
+</ritual>
 </liturgia>
