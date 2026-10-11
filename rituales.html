@@ -215,18 +215,34 @@
             combo.innerHTML = "";
             const ev = typeof Bitacora !== "undefined" ? Bitacora.querySelector(`evento[fecha="${fecha}"]`) : null;
             const ascenso = ev ? ev.querySelector('item[tipo="ascensos"]') : null;
-            const secciones = [
-                { id: "1", titulo: "Apertura de los Trabajos" },
-                { 
-                    id: "2", 
-                    titulo: ascenso 
-                        ? (ascenso.getAttribute("asunto") || "Cámara de Compañero") : "2. Asuntos de la Tenida" 
-                },
-                { id: "3", titulo: "Clausura de los Trabajos" }
-            ];
 
-            secciones.forEach(sec => combo.add(new Option(sec.titulo, sec.id)));
-            combo.value = sel || "1";
+            if (ascenso) {
+                const asunto = (ascenso.getAttribute("asunto") || "").toLowerCase();
+        
+                if (asunto.includes("medio") || asunto.includes("maestro")) {
+                    // Secuencia completa de Cámara del Medio (Libro 3)
+                    combo.add(new Option("Apertura de los Trabajos", "1:1"));
+                    combo.add(new Option("Apertura Cámara del Medio", "3:1"));
+                    combo.add(new Option("Exaltación al Magisterio", "3:2"));
+                    combo.add(new Option("Clausura Cámara del Medio", "3:3"));
+                    combo.add(new Option("Clausura de los Trabajos", "1:3"));
+                } else {
+                // Secuencia completa de Cámara de Compañero (Libro 2)
+                    combo.add(new Option("Apertura de los Trabajos", "1:1"));
+                    combo.add(new Option("Paso a Cámara de Compañero", "2:1"));
+                    combo.add(new Option("Cámara de Compañero", "2:2"));
+                    combo.add(new Option("Clausura de Compañero", "2:3"));
+                    combo.add(new Option("Clausura de los Trabajos", "1:3"));
+                }
+        
+                combo.value = (sel && sel.includes(":")) ? sel : "1:1";
+                } else {
+                // Tenida ordinaria estándar (Libro 1)
+                    combo.add(new Option("Apertura de los Trabajos", "1"));
+                    combo.add(new Option("Asuntos de la Tenida", "2"));
+                    combo.add(new Option("Clausura de los Trabajos", "3"));
+                    combo.value = sel || "1";
+                }
         }
 
         function actualizarSeccionGlobal() {
