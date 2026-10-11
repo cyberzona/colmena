@@ -111,7 +111,8 @@
                     document.getElementById("capa-bloqueo").style.display = "none";
                     document.getElementById("contenedor-principal").style.display = "block";
                     
-                    actualizarEncabezadoLibro(libURL);
+                    // Siempre inicia en Liturgia de Aprendiz
+                    actualizarEncabezadoLibro("1");
                     
                     let seccionInicial = secURL || sessionStorage.getItem('seccionRetornoLogia') || "1";
                     actualizarSelectorSecciones(seccionInicial);                   
@@ -178,7 +179,7 @@
             liturgiaDoc = dp.parseFromString(dl, "text/xml");
             Glosario = dp.parseFromString(dg, "text/xml");
             Bitacora = dp.parseFromString(de, "text/xml");            
-            Ritual = Array.from(liturgiaDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("libro") === libURL);           
+            Ritual = Array.from(liturgiaDoc.getElementsByTagName("ritual")).find(r => r.getAttribute("libro") === "1");           
         }
 
         function actualizarEncabezadoLibro(libro) {
@@ -197,7 +198,7 @@
                 const [lib, sec] = idSec.split(":");
                 return liturgiaDoc ? liturgiaDoc.querySelector(`ritual[libro="${lib}"] seccion[id="${sec}"]`) : null;
             }
-            return Ritual ? Ritual.querySelector(`seccion[id="${idSec}"]`) : null;
+            return liturgiaDoc ? liturgiaDoc.querySelector(`ritual[libro="1"] seccion[id="${idSec}"]`) : null;
         }
 
         function actualizarSelectorSecciones(sel) {
@@ -220,30 +221,22 @@
                 secParam = uParams.get("sec") || "";
             }
 
-            // CASO A: Cámara Superior activa
-            const esCamaraSuperior = (sel && sel.startsWith(`${libTarget}:`)) || (libTarget !== "1" && !secParam.includes(":"));
-
-            if (esCamaraSuperior && libTarget !== "1") {
+            // CASO A: Cámara Superior SOLO se activa si sel viene explícitamente con prefijo 'libTarget:'
+            if (sel && sel.startsWith(`${libTarget}:`) && libTarget !== "1") {
                 actualizarEncabezadoLibro(libTarget);
-                if (secParam.includes(":")) {
-                    const [inicio, fin] = secParam.split(":").map(Number);
-                    for (let i = inicio; i <= fin; i++) {
-                        const idStr = i.toString();
-                        combo.add(new Option(tituloDeSeccion(libTarget, idStr), `${libTarget}:${idStr}`));
-                    }
-                    combo.value = sel;
-                } else {
-                    const valorDestino = `${libTarget}:${secParam || "1"}`;
-                    combo.add(new Option(tituloDeSeccion(libTarget, secParam || "1"), valorDestino));
-                    combo.value = valorDestino;
+                const [inicio, fin] = (secParam.includes(":") ? secParam : "1:3").split(":").map(Number);
+                for (let i = inicio; i <= fin; i++) {
+                    const idStr = i.toString();
+                    combo.add(new Option(tituloDeSeccion(libTarget, idStr), `${libTarget}:${idStr}`));
                 }
+                combo.value = sel;
                 return;
             }
 
-            // CASO B: Grado 1
+            // CASO B: Estado en Grado 1 (Aprendiz)
             actualizarEncabezadoLibro("1");
 
-            // Si hay un cambio directo de Sección 2 (sin dos puntos) en Grado 1 (ej. sec=5)
+            // Si hay sustitución directa de Sección 2 dentro de Grado 1 (ej. sec=5 sin ':')
             if (ascenso && libTarget === "1" && secParam && !secParam.includes(":")) {
                 combo.add(new Option(tituloDeSeccion("1", "1"), "1"));
                 combo.add(new Option(tituloDeSeccion("1", secParam), secParam));
@@ -252,7 +245,7 @@
                 return;
             }
 
-            // Flujo canónico ordinario (o con rango que interactúa en [[INSTANCIA]])
+            // Secuencia estándar canónica de Grado 1 (Apertura, Asuntos Ordinarios, Clausura)
             [1, 2, 3].forEach(num => {
                 const idStr = num.toString();
                 combo.add(new Option(tituloDeSeccion("1", idStr), idStr));
@@ -313,7 +306,7 @@
                 const paramSec = uParams.get("sec") || "";
                 const paramNum = uParams.get("num") || "1";
 
-                // Rango con dos puntos activa el flujo [[INSTANCIA]]
+                // Se activa la instancia si sec trae rango con ':'
                 if (paramSec.includes(":")) {
                     hayAscensoSuperior = (paramNum !== "1");
                 }
