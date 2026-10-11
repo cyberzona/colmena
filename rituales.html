@@ -204,33 +204,38 @@
 
         function actualizarSelectorSecciones(sel) {
             const combo = document.getElementById("seccionFilter");
-            combo.innerHTML = "";    
+            combo.innerHTML = "";
             const ev = typeof Bitacora !== "undefined" ? Bitacora.querySelector(`evento[fecha="${fecha}"]`) : null;
-            const ascenso = ev ? ev.querySelector('item[tipo="ascensos"]'): null;
+            const ascenso = ev ? ev.querySelector('item[tipo="ascensos"]') : null;
             let secParam = null;
             let titAscenso = null;
             if (ascenso) {
                 const uParams = new URLSearchParams((ascenso.getAttribute("url") || "").split('?')[1] || "");
-                secParam = uParams.get("sec"); // Puede ser "5" o "1:3"
+                secParam = uParams.get("sec"); // "1:3", "1:4", "1:5" o "5"
                 titAscenso = ascenso.getAttribute("asunto");
-            }   
+            }
+
+            // CASO A: Rango dinámico (1:3, 1:4, 1:5, etc.)
             if (secParam && secParam.includes(":")) {
                 const [inicio, fin] = secParam.split(":").map(Number);
                 for (let i = inicio; i <= fin; i++) {
                     const idStr = i.toString();
                     const nodo = Ritual ? Ritual.querySelector(`seccion[id="${idStr}"]`) : null;
-                    const titulo = nodo ? (nodo.getAttribute("titulo") || `Sección ${idStr}`) : `Sección ${idStr}`;
-                    combo.add(new Option(titulo, idStr));
+                    if (nodo) {
+                        const titulo = nodo.getAttribute("titulo") || `Sección ${idStr}`;
+                        combo.add(new Option(titulo, idStr));
+                    }
                 }
                 combo.value = sel || inicio.toString();
-                return;
+                if (!combo.value && combo.options.length > 0) combo.selectedIndex = 0; return;
             }
 
+            // CASO B: Sustitución puntual de la sección 2 (ej. sec=5 para Iniciación en Libro 1)
             [1, 2, 3].forEach(num => {
                 let idReal = num.toString();
                 let titulo = "";
                 if (num === 2 && secParam) {
-                    idReal = secParam; // Pasa a ser "5"
+                    idReal = secParam;
                     const nodo = Ritual ? Ritual.querySelector(`seccion[id="${idReal}"]`) : null;
                     titulo = titAscenso || (nodo ? nodo.getAttribute("titulo") : "Ceremonia");
                 } else {
