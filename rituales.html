@@ -292,30 +292,40 @@
         }
 
         function renderizarLiturgia(hacerScroll = false) {
-            const idSec = document.getElementById("seccionFilter").value;
+            let idSec = document.getElementById("seccionFilter").value;
             const actorSel = document.getElementById("actorFilter").value;            
-            const nodoSec = obtenerNodoSeccion(idSec);
-            if (!nodoSec) return;
 
             const ev = typeof Bitacora !== "undefined" ? Bitacora.querySelector(`evento[fecha="${fecha}"]`) : null;
             const ascenso = ev ? ev.querySelector('item[tipo="ascensos"]') : null;
             let hayAscensoSuperior = false;
+            let secDirecta = null;
+
             if (ascenso) {
                 const uParams = new URLSearchParams((ascenso.getAttribute("url") || "").split('?')[1] || "");
-                hayAscensoSuperior = (uParams.get("num") || "1") !== "1" && (uParams.get("sec") || "").includes(":");
+                const paramSec = uParams.get("sec") || "";
+                const paramNum = uParams.get("num") || "1";
+
+                if (paramSec.includes(":")) {
+                    // Caso con dos puntos (ej. 1:3): activa la lógica de [[INSTANCIA]]
+                    hayAscensoSuperior = (paramNum !== "1");
+                } else if (paramSec) {
+                    // Caso sin dos puntos (ej. 3): define la sección directa de reemplazo
+                    secDirecta = paramSec;
+                }
             }
 
+            // Si toca la sección 2 ordinaria y hay salto directo definido, sustituye idSec
+            if (secDirecta && idSec === "2") { idSec = secDirecta; }
+            const nodoSec = obtenerNodoSeccion(idSec);
+            if (!nodoSec) return;
             let html = "";
-            let suspenderRestoDeSeccion = false;
-            
+            let suspenderRestoDeSeccion = false;    
             const partes = Array.from(nodoSec.getElementsByTagName("parte"));
-
             for (let i = 0; i < partes.length; i++) {
                 if (suspenderRestoDeSeccion) break;
-
                 const parte = partes[i];
                 const tituloParte = (parte.getAttribute("titulo") || "").trim();
-                let htmlParte = `<div class="parte-header">${tituloParte}</div>`;               
+                let htmlParte = `<div class="parte-header">${tituloParte}</div>`;                
                 let contieneInstanciaAscenso = false;
 
                 Array.from(parte.getElementsByTagName("acto")).forEach((acto, j) => {
@@ -328,13 +338,14 @@
                     }
 
                     if (texto.includes("[[INSTANCIA]]")) {
-                        const inst = inyectarInstancia(actor, idSec, `${j + 1}`);
-                        if (inst) btns += inst;
-                        texto = texto.replace("[[INSTANCIA]]", "");
-
-                        if (hayAscensoSuperior && actor === "VM") {
-                            contieneInstanciaAscenso = true;
+                        if (hayAscensoSuperior) {
+                            const inst = inyectarInstancia(actor, idSec, `${j + 1}`);
+                            if (inst) btns += inst;
+                            if (actor === "VM") {
+                                contieneInstanciaAscenso = true;
+                            }
                         }
+                        texto = texto.replace("[[INSTANCIA]]", "");
                     }
 
                     texto = texto.replace(/(\b\S+∴)/gi, (match) => {
@@ -361,8 +372,7 @@
             const idx = sel.selectedIndex;
             let nav = `<div class="nav-footer">`;
             nav += idx > 0 ? `<button class="btn-flechas" onclick="navRelativa(-1)"><span class="flip-h">➤</span></button>` : `<span></span>`;            
-            
-            // Si está en la última sección de la Cámara 2, coloca '✕' en vez de '>' para regresar a Aprendiz
+    
             if (idSec.startsWith("2:") && idx === sel.options.length - 1) {
                 nav += `<button class="btn-flechas btn-flechas-cierre" title="Retornar a Clausura de Grado 1" onclick="navRelativa(1)">✕</button>`;
             } else if (idx < sel.options.length - 1) {
