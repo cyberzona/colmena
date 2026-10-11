@@ -206,22 +206,33 @@
             const combo = document.getElementById("seccionFilter");
             combo.innerHTML = "";    
             const ev = typeof Bitacora !== "undefined" ? Bitacora.querySelector(`evento[fecha="${fecha}"]`) : null;
-            const ascenso = ev ? ev.querySelector('item[tipo="ascensos"]') : null;
-            let secCeremonia = null;
-            let titCeremonia = null;
-            if (ascenso && libURL === "1") {
+            const ascenso = ev ? ev.querySelector('item[tipo="ascensos"]'): null;
+            let secParam = null;
+            let titAscenso = null;
+            if (ascenso) {
                 const uParams = new URLSearchParams((ascenso.getAttribute("url") || "").split('?')[1] || "");
-                secCeremonia = uParams.get("sec") || "5";
-                titCeremonia = ascenso.getAttribute("asunto");
-            }    
+                secParam = uParams.get("sec"); // Puede ser "5" o "1:3"
+                titAscenso = ascenso.getAttribute("asunto");
+            }   
+            if (secParam && secParam.includes(":")) {
+                const [inicio, fin] = secParam.split(":").map(Number);
+                for (let i = inicio; i <= fin; i++) {
+                    const idStr = i.toString();
+                    const nodo = Ritual ? Ritual.querySelector(`seccion[id="${idStr}"]`) : null;
+                    const titulo = nodo ? (nodo.getAttribute("titulo") || `Sección ${idStr}`) : `Sección ${idStr}`;
+                    combo.add(new Option(titulo, idStr));
+                }
+                combo.value = sel || inicio.toString();
+                return;
+            }
+
             [1, 2, 3].forEach(num => {
                 let idReal = num.toString();
                 let titulo = "";
-
-                if (num === 2 && secCeremonia) {
-                    idReal = secCeremonia; // Reemplaza la 2 por la 5
+                if (num === 2 && secParam) {
+                    idReal = secParam; // Pasa a ser "5"
                     const nodo = Ritual ? Ritual.querySelector(`seccion[id="${idReal}"]`) : null;
-                    titulo = titCeremonia || (nodo ? nodo.getAttribute("titulo") : "Ceremonia");
+                    titulo = titAscenso || (nodo ? nodo.getAttribute("titulo") : "Ceremonia");
                 } else {
                     const nodo = Ritual ? Ritual.querySelector(`seccion[id="${idReal}"]`) : null;
                     titulo = nodo ? (nodo.getAttribute("titulo") || `Sección ${idReal}`) : `Sección ${idReal}`;
@@ -230,8 +241,7 @@
                 combo.add(new Option(titulo, idReal));
             });
 
-            // 3. Establecer valor inicial
-            combo.value = (sel === "2" && secCeremonia) ? secCeremonia : (sel || "1");
+            combo.value = (sel === "2" && secParam) ? secParam : (sel || "1");
             if (!combo.value && combo.options.length > 0) combo.selectedIndex = 0;
         }
         
