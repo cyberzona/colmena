@@ -241,7 +241,7 @@
         <acto actor="Pro" tema="[Contesta el profano]." />
       </parte>
 
-      <parte titulo="Los Tres Viajes Simbólicos">
+      <parte titulo="Primer viaje: Libertad">
         <acto actor="VM" tema="Os invito a practicar el primer viaje. H∴ MC∴, conducid al recipiendario en su primer viaje y emplead vuestros esfuerzos para librarle de todo peligro, y vos, señor, concentrad vuestra atención en las pruebas que vais a realizar a fin de comprender su carácter misterioso y emblemático, porque la venda que cubre vuestros ojos no os impide la penetración de vuestra vista intelectual. La Masonería nada realiza que no tenga su razón de ser, esforzaos por penetrar en su significado oculto, de vuestra comprensión dependen los conocimientos que como Masón debéis adquirir. H∴ MC∴, cumplid vuestro deber. [En este viaje sólo debe sentirse el roce de cuerpos pesados y el murmullo de voces que disputan entre sí]" />
         <acto actor="2V" tema="[Coloca el Mallete sobre el pecho del profano] ¿Quién va?" />
         <acto actor="MC" tema="Un profano que desea Iniciarse en nuestros Augustos Misterios." />
@@ -251,6 +251,8 @@
         <acto actor="MC" tema="VM∴: El candidato, después de haber efectuado su primer viaje consagrado a la Libertad, se encuentra entre CCol∴." />
         <acto actor="VM" tema="Dadle asiento, que repose un momento. Señor, ese bullicio y esos ruidos que habéis oído, son la imagen de las pasiones diversas que hacen del mundo una mansión de escándalo y de corrupción, simboliza la soberbia de los poderosos que no atendiendo a la posición elevada a que fueron encumbrados por la fortuna, se olvidan de los deberes que su misma posición les impone para con los menesterosos. Simboliza la pasión desordenada del lujurioso, cuya vida coloca al hombre al nivel del bruto y para quien nada hay digno de respeto, y ante cuya torpeza nada son los afectos de amor y solidaridad para nuestros semejantes. Simbolizan, en fin, las guerras, las traiciones y las desgracias que alteran la Paz y de los hombres, quienes se ven precisados a sostener la Virtud contra el Vicio; la Caridad contra el Egoísmo; y la Libertad de los Pueblos contra la tiranía de los déspotas. Y vos, señor, en medio de ese tumulto del cual habéis salido airoso, nos representáis las generaciones del pasado sufriendo cruentas persecuciones a través del tiempo y del espacio. Tal vez es la enseñanza simbólica del viaje que habéis realizado, y que sintetiza el primer enunciado de nuestro lema, la Libertad. ¿Tenéis algo que observar a lo que acabo de decir?" />
         <acto actor="Pro" tema="[Contesta el profano]." />
+      </parte>  
+      <parte titulo="Segundo viaje: Igualdad">
         <acto actor="VM" tema="¿Estáis dispuesto a continuar vuestro viaje y tenéis confianza en las fuerzas de vuestras virtudes morales para realizarlos?" />
         <acto actor="Pro" tema="[Contesta el profano]." />
         <acto actor="VM" tema="QH∴ MC∴: Conducid al candidato en su segundo viaje y cuidad de que ningún accidente desagradable le suceda, vedle ciego, compadeceos de él y no olvidéis que busca el Sendero de la Virtud; que vuestra mano benéfica separe los escollos que el mal quiera ponerle en su camino. [Golpe de Mallete] Marchad, pues. [Durante este viaje los HH∴ chocan sus espadas entre sí, imitando una lucha de arma blanca; ningún otro ruido debe producirse]" />
@@ -264,6 +266,8 @@
         <acto actor="Pro" tema="[Contesta el profano]." />
         <acto actor="VM" tema="Señor, si algún temor os martiriza, si algo sentís en vuestra conciencia que no se avenga con nuestras tendencias, podéis manifestarlo. Hasta el presente estáis completamente desligado de todo compromiso con nosotros y nada afectará la estimación de vuestros amigos la actitud que adoptéis. Lo que aquí manifestéis, enterrado queda en el fondo de una tumba, porque no hay poder en la tierra que sea capaz de sacar el secreto depositado en el pecho de los Masones. ¿Persistís aún en los propósitos de ser Iniciado en nuestra Augusta Institución?" />
         <acto actor="Pro" tema="[Contesta el profano]." />
+      </parte>  
+      <parte titulo="Tercer viaje: Fraternidad">  
         <acto actor="VM" tema="Váis a realizar vuestro tercer viaje. QH∴ MC∴: Guiad al candidato en su último viaje y quitad de su camino todas las asperezas conduciéndole al Oriente. Avanzad, QH∴ MC∴. [En este viaje pasará por el fuego y reinará completo silencio]" />
         <acto actor="VM" tema="¿Quién va?" />
         <acto actor="MC" tema="Un profano que desea Iniciarse en nuestros Augustos Misterios." />
