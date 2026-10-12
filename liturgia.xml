@@ -191,7 +191,7 @@
         <acto actor="1V" tema="H∴ Guarda Temp∴, ved quién llama. Si es el H∴ Seg∴ Exp∴ dadle entrada." />
         <acto actor="Exp" tema="Ven∴ Maest∴, ¿me permitís avanzar hacia Ort∴ para hacerle entrega de las contestaciones dadas por el Profano al interrogatorio que se le hubo formulado?" />
         <acto actor="VM" tema="Podéis avanzar, Q∴ H∴ Seg∴ Exp∴. [El H∴ Seg∴ Exp∴ hace entrega al Ven∴ Maest∴ de las contestaciones del Profano y pasa a ocupar su puesto]" />
-        <acto actor="VM" tema="QQ∴ HH∴ Voy a daros a conocer las respuestas dadas por el Profano. [Da lectura y pregunta:] ¿Algún H∴ tiene alguna objeción qué hacer? Q∴ H∴ Ord∴, ¿tenéis algo que observar a las respuestas dadas por el Profano a nuestro interrogatorio?" />
+        <acto actor="VM" tema="QQ∴ HH∴ Voy a daros a conocer las respuestas dadas por el Profano. [Da lectura y pregunta:] ¿Algún H∴ tiene alguna objeción qué hacer? Q∴ H∴ Ord∴, ¿tenéis algo que observar a las respuestas dadas por el Profano a nuestro interrogatorio?[El H∴ Seg∴ Experto de regreso llama al Temp∴]" />
         <acto actor="OF" tema="[El H∴ Orad∴ da sus conclusiones]." />
         <acto actor="VM" tema="Siendo favorables las conclusiones del H∴ Ord∴ a las respuestas dadas por el Profano, vamos a proceder a su Iniciación. Q∴ H∴ Prim∴ Exp∴, Padrino del Profano, id a buscarlo y conducidle a las puertas de nuestro Templo." />
       </parte>
