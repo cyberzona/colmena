@@ -183,21 +183,21 @@
       <parte titulo="Gabinete de Reflexiones y Respuestas">
         <acto actor="Exp" tema="Señor, van a empezar las ceremonias de su Iniciación en nuestros Augustos Misterios y a la cual usted espontáneamente solicitó ingresar, y antes de dar cumplimiento a su pedido, hemos creído justo introducirlo en este gabinete al que le damos el nombre de Reflexiones. Este acto tiene por objeto el de darle a usted a que medite seriamente sobre el paso que va a dar. Fíjese usted en las inscripciones que decoran las paredes y reflexione sobre los diversos atributos que se encierran en este gabinete. Le entrego a usted esta hoja de papel en la cual está el interrogatorio al que debe de responder antes de dar comienzo a la ceremonia de su iniciación. Y ahora debe usted entregarme todos los metales y joyas que tenga en su poder y dentro de algunos instantes volveré por las contestaciones del interrogatorio que le formulamos, y que encierran las siguientes preguntas: ¿Qué debe el hombre al G∴ A∴ D∴ U∴ (Dios)? ¿Cuáles son los deberes para consigo mismo? ¿Cuáles son los deberes para con sus semejantes? Finalmente, ¿cómo haría Ud. su testamento en caso de muerte? Si después de haber reflexionado sobre el paso que va a dar, no se siente con valor necesario para las pruebas, llame y saldrá de inmediato de este recinto, en la misma forma en que hubo entrado. Hasta luego, pues." />
         <acto actor="VM" tema="Antes de proceder a la recepción del propuesto: H∴ Seg∴ Experto, servíos ir al Gabinete de Reflexiones y traernos las contestaciones del profano. [El H∴ Seg∴ Experto sale llevando en la mano izquierda una espada en cuya punta debe traer las contestaciones del profano]" />
-        <acto actor="VM" tema="QQ∴ HH∴ El acto que vamos a realizar es necesario que esté garantizado por todas las formalidades encaminadas a la solemnidad del mismo, puesto que la Iniciación a nuestros Augustos Misterios es el primordial objeto de nuestras reuniones, deben ser expuestas con suma claridad a fin de que el Iniciado, al ver la Luz, se sienta cohibido ante la grandiosidad de la Revelación y el resplandecer de los eternos principios de Amor y Fraternidad, sintiendo en sí la magnanimidad de nuestras luchas puestas en transparencia a través de los viajes que debe realizar y que sintetizados están en la conquista de los eternos postulados de la Fraternidad Masónica: Libertad, Igualdad, Fraternidad." />
-        <acto actor="GT" tema="Q∴ H∴ Seg∴ Vig∴, en las puertas del Templo llaman regularmente." />
-        <acto actor="2V" tema="Q∴ H∴ Prim∴ Vig∴, en las puertas del Templo llaman regularmente." />
-        <acto actor="1V" tema="Ven∴ Maest∴, llaman a las puertas de nuestro Templo." />
+        <acto actor="VM" tema="QQHH∴ El acto que vamos a realizar es necesario que esté garantizado por todas las formalidades encaminadas a la solemnidad del mismo, puesto que la Iniciación a nuestros Augustos Misterios es el primordial objeto de nuestras reuniones, deben ser expuestas con suma claridad a fin de que el Iniciado, al ver la Luz, se sienta cohibido ante la grandiosidad de la Revelación y el resplandecer de los eternos principios de Amor y Fraternidad, sintiendo en sí la magnanimidad de nuestras luchas puestas en transparencia a través de los viajes que debe realizar y que sintetizados están en la conquista de los eternos postulados de la Fraternidad Masónica: Libertad, Igualdad, Fraternidad." />
+        <acto actor="GT" tema="QH∴ 2V∴, en las puertas del Templo llaman regularmente." />
+        <acto actor="2V" tema="QH∴ 1V∴, en las puertas del Templo llaman regularmente." />
+        <acto actor="1V" tema="VM∴, llaman a las puertas de nuestro Templo." />
         <acto actor="VM" tema="Averiguad la causa. Si es el H∴ Seg∴ Exp∴ dadle entrada." />
-        <acto actor="1V" tema="H∴ Guarda Temp∴, ved quién llama. Si es el H∴ Seg∴ Exp∴ dadle entrada." />
-        <acto actor="Exp" tema="Ven∴ Maest∴, ¿me permitís avanzar hacia Ort∴ para hacerle entrega de las contestaciones dadas por el Profano al interrogatorio que se le hubo formulado?" />
-        <acto actor="VM" tema="Podéis avanzar, Q∴ H∴ Seg∴ Exp∴. [El H∴ Seg∴ Exp∴ hace entrega al Ven∴ Maest∴ de las contestaciones del Profano y pasa a ocupar su puesto]" />
-        <acto actor="VM" tema="QQ∴ HH∴ Voy a daros a conocer las respuestas dadas por el Profano. [Da lectura y pregunta:] ¿Algún H∴ tiene alguna objeción qué hacer? Q∴ H∴ Ord∴, ¿tenéis algo que observar a las respuestas dadas por el Profano a nuestro interrogatorio?[El H∴ Seg∴ Experto de regreso llama al Temp∴]" />
-        <acto actor="OF" tema="[El H∴ Orad∴ da sus conclusiones]." />
-        <acto actor="VM" tema="Siendo favorables las conclusiones del H∴ Ord∴ a las respuestas dadas por el Profano, vamos a proceder a su Iniciación. Q∴ H∴ Prim∴ Exp∴, Padrino del Profano, id a buscarlo y conducidle a las puertas de nuestro Templo." />
+        <acto actor="1V" tema="H∴ GT∴, ved quién llama. Si es el H∴ Seg∴ Exp∴ dadle entrada." />
+        <acto actor="Exp" tema="VM∴, ¿me permitís avanzar hacia Ort∴ para hacerle entrega de las contestaciones dadas por el Profano al interrogatorio que se le hubo formulado?" />
+        <acto actor="VM" tema="Podéis avanzar, QH∴ Seg∴ Exp∴. [El H∴ Seg∴ Exp∴ hace entrega al Ven∴ Maest∴ de las contestaciones del Profano y pasa a ocupar su puesto]" />
+        <acto actor="VM" tema="QQHH∴ Voy a daros a conocer las respuestas dadas por el Profano. [Da lectura y pregunta:] ¿Algún H∴ tiene alguna objeción qué hacer? QH∴ OF∴, ¿tenéis algo que observar a las respuestas dadas por el Profano a nuestro interrogatorio?[El H∴ Seg∴ Experto de regreso llama al Temp∴]" />
+        <acto actor="OF" tema="[El H∴ OF∴ da sus conclusiones]." />
+        <acto actor="VM" tema="Siendo favorables las conclusiones del H∴ Ord∴ a las respuestas dadas por el Profano, vamos a proceder a su Iniciación. QH∴ Prim∴ Exp∴, Padrino del Profano, id a buscarlo y conducidle a las puertas de nuestro Templo." />
       </parte>
       
       <parte titulo="Llamada Profana y Admisión">
-        <acto actor="GT" tema="Q∴ H∴ Seg∴ Vig∴ Llaman irregularmente a las puertas del Templo." />
+        <acto actor="GT" tema="QH∴ Seg∴ Vig∴ Llaman irregularmente a las puertas del Templo." />
         <acto actor="2V" tema="Q∴ H∴ Prim∴ Vig∴ Llaman profanamente a las puertas del Templo." />
         <acto actor="1V" tema="Ven∴ Maest∴ Golpes profanos interrumpen la serenidad de nuestros trabajos." />
         <acto actor="VM" tema="Cercioraos quién es el que interrumpe nuestra augusta labor." />
