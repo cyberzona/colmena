@@ -185,58 +185,79 @@
             return s ? (s.getAttribute("titulo") || "").trim() : `Sección ${sec}`;
         }
 
-        function obtenerNodoSeccion(idSec) {
-            if (idSec && idSec.includes(":")) {
-                const [lib, sec] = idSec.split(":");
-                return liturgiaDoc ? liturgiaDoc.querySelector(`ritual[libro="${lib}"] seccion[id="${sec}"]`) : null;
-            }
-            return liturgiaDoc ? liturgiaDoc.querySelector(`ritual[libro="1"] seccion[id="${idSec}"]`) : null;
-        }
+        // Parser compacto para desglosar "1:4", "1-3", "[2,5,3]", "[1,4,3]", etc.
+function desglosarSec(str) {
+    if (!str) return [];
+    return str.toString().replace(/[\[\]\s]/g, '').split(',').flatMap(tok => {
+        const m = tok.match(/^(\d+)[-:](\d+)$/);
+        if (!m) return tok ? [tok] : [];
+        const [ini, fin] = [+m[1], +m[2]];
+        return Array.from({ length: Math.abs(fin - ini) + 1 }, (_, i) => String(ini + (ini <= fin ? i : -i)));
+    });
+}
 
-        function actualizarSelectorSecciones(sel) {
+function actualizarSelectorSecciones(sel) {
     const combo = document.getElementById("seccionFilter");
-    combo.textContent = "";
+    combo.innerHTML = "";
 
-    const { num, secs } = obtenerParametrosRitual();
-    let items = [];
-    let valorSel = sel;
+    // Lee los parámetros tanto de la URL directa como de bitacora
+    const paramsURL = new URLSearchParams(window.location.search);
+    const ev = typeof Bitacora !== "undefined" 
+        ? Bitacora.querySelector(`evento[fecha="${fecha}"]`) 
+        : null;
+    const ascenso = ev 
+        ? ev.querySelector('item[tipo="ascensos"]') 
+        : null;
+    const paramsEv = new URLSearchParams((ascenso?.getAttribute("url") || "").split('?')[1] || "");
 
-    // Lista activa para grados superiores: usa sec si existe, de lo contrario [1, 4, 3] por defecto para ascensos/exaltaciones
-    const listaSuperior = secs.length ? secs : ["1", "4", "3"];
+    const libTarget = paramsURL.get("num") || paramsEv.get("num") || "1";
+    const secParam = paramsURL.get("sec") || paramsEv.get("sec") || "";
+    const listaSecciones = desglosarSec(secParam);
 
-    // 1. Navegación activa en Cámara Superior (ej: sel="2:1", sel="2:4", etc.)
-    if (sel && sel.startsWith(`${num}:`) && num !== "1") {
-        actualizarEncabezadoLibro(num);
-        items = listaSuperior.map(s => ({ val: `${num}:${s}`, txt: tituloDeSeccion(num, s) }));
-        valorSel = sel;
-    }
-    // 2. Grado Superior pendiente (num = 2 o 3 mientras se está en Grado 1)
-    else if (num !== "1") {
-        actualizarEncabezadoLibro("1");
-        // La sección central de la ceremonia suele ser la 4 (o la segunda de la lista)
-        const secCeremonia = listaSuperior.includes("4") ? "4" : (listaSuperior[1] || listaSuperior[0]);
-        const destino = `${num}:${secCeremonia}`;
-
-        items = [
-            { val: "1", txt: tituloDeSeccion("1", "1") },
-            { val: destino, txt: tituloDeSeccion(num, secCeremonia) },
-            { val: "3", txt: tituloDeSeccion("1", "3") }
-        ];
-        valorSel = (sel === "2" || sel === destino) ? destino : (sel || "1");
-    }
-    // 3. Grado 1 (Iniciación con [1, 5, 3] o Tenida Ordinaria [1, 2, 3])
-    else {
-        actualizarEncabezadoLibro("1");
-        const listaAprendiz = secs.length ? secs : ["1", "2", "3"];
-        items = listaAprendiz.map(s => ({ val: s, txt: tituloDeSeccion("1", s) }));
-        valorSel = (sel && listaAprendiz.includes(sel)) ? sel : listaAprendiz[0];
+    // CASO A: Cámara Superior activa (cuando sel viene prefijado con su grado, ej: "2:4")
+    if (sel && sel.startsWith(`${libTarget}:`) && libTarget !== "1") {
+        actualizarEncabezadoLibro(libTarget);
+        // Si viene sec=[1,4,3] usa esa lista; si no, 1, 2 y 3
+        const seccionesCarga = listaSecciones.length ? listaSecciones : ["1", "2", "3"];
+        seccionesCarga.forEach(idStr => {
+            combo.add(new Option(tituloDeSeccion(libTarget, idStr), `${libTarget}:${idStr}`));
+        });
+        combo.value = sel;
+        return;
     }
 
-    // Inserción en bloque
-    const fragment = document.createDocumentFragment();
-    items.forEach(({ val, txt }) => fragment.appendChild(new Option(txt, val)));
-    combo.appendChild(fragment);
-    combo.value = valorSel;
+    // CASO B: Estado en Grado 1 (Aprendiz)
+    actualizarEncabezadoLibro("1");
+
+    // Subcaso B1: Secciones personalizadas para Grado 1 (Iniciación con sec=[1,5,3])
+    if (libTarget === "1" && listaSecciones.length > 0) {
+        listaSecciones.forEach(idStr => {
+            combo.add(new Option(tituloDeSeccion("1", idStr), idStr));
+        });
+        combo.value = (sel && listaSecciones.includes(sel)) ? sel : listaSecciones[0];
+        return;
+    }
+
+    // Subcaso B2: Ascenso a Grado Superior (libTarget = 2 o 3)
+    // En Grado 1 sustituye la sección 2 por la sección de ceremonia (4, o la primera definida)
+    if (libTarget !== "1" && (ascenso || paramsURL.get("num"))) {
+        const secCeremonia = listaSecciones.length ? (listaSecciones.includes("4") ? "4" : listaSecciones[0]) : "4";
+        const valorDestino = `${libTarget}:${secCeremonia}`;
+        const etiquetaDestino = tituloDeSeccion(libTarget, secCeremonia);
+
+        combo.add(new Option(tituloDeSeccion("1", "1"), "1"));
+        combo.add(new Option(etiquetaDestino, valorDestino));
+        combo.add(new Option(tituloDeSeccion("1", "3"), "3"));
+
+        combo.value = (sel === "2" || sel === valorDestino) ? valorDestino : (sel || "1");
+        return;
+    }
+
+    // Subcaso B3: Tenida ordinaria estándar de Aprendiz (1, 2 y 3)
+    ["1", "2", "3"].forEach(num => {
+        combo.add(new Option(tituloDeSeccion("1", num), num));
+    });
+    combo.value = sel || "1";
 }
 
 
