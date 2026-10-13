@@ -505,6 +505,8 @@
         <acto actor="2V" tema="Todos los que decoran mi Col∴ son MM∴, VH∴ 1V∴." />
         <acto actor="1V" tema="Todos somos del Grado, MRM∴. [El MRM∴ da un golpe de Mallete con el mango de la cuchara y hace las siete preguntas que dan principio a los trabajos del Maestro]" />
       </parte>
+    </seccion>  
+    <seccion id="2" titulo="Cámara del Maestros">
       <parte titulo="Apertura de la Cámara del Medio">
         <acto actor="VM" tema="VH∴ 1V∴, ¿sois MM∴?" />
         <acto actor="1V" tema="La acacia me es conocida." />
@@ -529,8 +531,14 @@
         <acto actor="VM" tema="Sentaos, VH∴. [Lo hacen. Se anuncia, lee y sanciona la Plancha de Arquitectura de los últimos trabajos; se circula el saco de proposiciones; en seguida se envía al MC∴ por los candidatos; aquel atará en el brazo derecho del que ha de entrar en el ataúd un triángulo de oro. En el intermedio se apagan todas las luces, menos las de los transparentes de las tres linternas, que serán las que alumbren la Cámara, con las del Cuadro del Templo en su oscuridad]" />
       </parte>
     </seccion>
-
-    <seccion id="2" titulo="Exaltación a Maestro">
+    <seccion id="3" titulo="Clausura de la Cámara del Medio">
+      <parte titulo="Cierre de los Trabajos">
+        <acto actor="VM" tema="Muy VH∴ 1V∴ y 2V∴, anunciad que vamos a cerrar los trabajos de esta Cámara del Medio." />
+        <acto actor="1V" tema="Anunciado en ambas CCol∴, MRM∴." />
+        <acto actor="VM" tema="[Da los golpes correspondientes con la cuchara] Quedan cerrados los trabajos de la Cámara del Medio. A mí, VH∴, por el signo, la Batería y Houzzé." />
+      </parte>
+    </seccion>
+    <seccion id="4" titulo="Exaltación a Maestro">
       <parte titulo="Iniciación de la Ceremonia">
         <acto actor="GT" tema="[El MC∴ hace que los Compañeros toquen en su Grado y, al oírle, dice:] Muy VH∴ 2V∴, a la puerta de la Cámara toca un Compañero." />
         <acto actor="2V" tema="Muy VH∴ 1V∴, a las puertas de la Cámara toca un Compañero." />
@@ -544,14 +552,6 @@
         <acto actor="1V" tema="Sí, MRM∴." />
         <acto actor="VM" tema="Pues siendo así, dejadle entrar. ¡En pie y al orden, VH∴! [Da un golpe con la cuchara. Todos los HH∴ se ponen en pie. Si hay música, tocará en un modo solemne y grave. El GT∴ abre la puerta y da un paso. El MC∴ se pone entre CCol∴ con el candidato, y saluda como compañero]" />
         <acto actor="VM" tema="Compañeros, concibo vuestra admiración al hallaros en este sitio donde todo respira tristeza y duelo. Creíais tal vez que al abrirse las puertas del Santuario, su lujo y esplendor deslumbrarían vuestras miradas; en lugar de ello os halláis en la estancia de la muerte, en la Cámara del Medio… ¡En la Cámara del Juicio!... Comparecéis hoy vivos, llenos de vigor, de salud y de esperanza. Un día vendrá, ¡y Dios quiera que sea lo más tarde posible!, en que vuestro cuerpo inanimado recibirá aquí también los últimos honores. Todos los Maestros os recomiendan por vuestra aplicación, inteligencia y constancia en el trabajo, y piden os recompensemos. Para ello vamos a juzgaros vivos, como os juzgaremos muertos. Tenéis que darnos cuenta de vuestras opiniones en asuntos muy serios, y de vuestra conducta en otros muy graves; de la misma manera que antes de conducir vuestros restos al campo del reposo, le pediremos al mundo cuenta de la que hayáis seguido como hombres y como masones. Sentaos, HH∴. [Todos se sientan, así como los graduados]" />
-      </parte>
-    </seccion>
-
-    <seccion id="3" titulo="Clausura de la Cámara del Medio">
-      <parte titulo="Cierre de los Trabajos">
-        <acto actor="VM" tema="Muy VH∴ 1V∴ y 2V∴, anunciad que vamos a cerrar los trabajos de esta Cámara del Medio." />
-        <acto actor="1V" tema="Anunciado en ambas CCol∴, MRM∴." />
-        <acto actor="VM" tema="[Da los golpes correspondientes con la cuchara] Quedan cerrados los trabajos de la Cámara del Medio. A mí, VH∴, por el signo, la Batería y Houzzé." />
       </parte>
     </seccion>
   </ritual>
