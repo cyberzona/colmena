@@ -338,7 +338,7 @@
 
                 const parte = partes[i];
                 const tituloParte = (parte.getAttribute("titulo") || "").trim();
-                let htmlParte = `<div class="parte-header">${tituloParte}</div>`;                
+                let htmlParte = `<div class="parte-header">${i + 1}. ${tituloParte}</div>`;               
                 let contieneInstanciaAscenso = false;
 
                 Array.from(parte.getElementsByTagName("acto")).forEach((acto, j) => {
