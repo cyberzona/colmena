@@ -106,7 +106,7 @@
                     document.getElementById("contenedor-principal").style.display = "block";
                     
                     actualizarEncabezadoLibro("1");
-                    actualizarSelectorSecciones();                   
+                    actualizarSelectorSecciones("1");                   
                     
                     if (sessionStorage.getItem('actorRetornoLogia')) {
                         document.getElementById("actorFilter").dataset.actorPendiente = sessionStorage.getItem('actorRetornoLogia');
@@ -142,6 +142,212 @@
                         if (urlParams.has('key') || pass !== null) { 
                             window.history.replaceState({}, document.title, window.location.pathname);
                             window.location.reload();
+                        }
+                    } else {
+                        let necesitaRecarga = false;
+                        if (urlParams.has('key')) {
+                            window.history.replaceState({}, document.title, window.location.pathname);
+                            necesitaRecarga = true;
+                        }
+                        if (cookieMem) {
+                            document.cookie = "memory=; max-age=0; path=/";
+                            necesitaRecarga = true;
+                        }
+                        if (necesitaRecarga) {
+                            window.location.reload();
+                        }
+                    }
+                }
+            } catch (e) { console.error(e); }
+            return acceso;
+        } 
+        
+        async function cargarArchivosBase() {
+            const t = new Date().getTime();
+            const f = u => fetch(`${u}?v=${t}`).then(r => r.text());
+            const [dg, dl, de] = await Promise.all([f('glosario.xml'), f('liturgia.xml'), f('bitacora.xml').catch(() => '<bitacora/>')]);
+            const dp = new DOMParser();
+            liturgiaDoc = dp.parseFromString(dl, "text/xml");
+            Glosario = dp.parseFromString(dg, "text/xml");
+            Bitacora = dp.parseFromString(de, "text/xml");            
+        }
+
+        function actualizarEncabezadoLibro(libro) {
+            const Dic = { "1": "Liturgia de Aprendiz", "2": "Liturgia de Compañero", "3": "Liturgia de Maestro" };
+            const el = document.getElementById("titulo-ritual-header");
+            if (el) el.textContent = Dic[libro] || "Liturgia";
+        }
+
+        function tituloDeSeccion(lib, sec) {
+            const s = liturgiaDoc ? liturgiaDoc.querySelector(`ritual[libro="${lib}"] seccion[id="${sec}"]`) : null;
+            return s ? (s.getAttribute("titulo") || "").trim() : `Sección ${sec}`;
+        }
+
+        function obtenerNodoSeccion(idSec) {
+            if (idSec && idSec.includes(":")) {
+                const [lib, sec] = idSec.split(":");
+                return liturgiaDoc ? liturgiaDoc.querySelector(`ritual[libro="${lib}"] seccion[id="${sec}"]`) : null;
+            }
+            return liturgiaDoc ? liturgiaDoc.querySelector(`ritual[libro="1"] seccion[id="${idSec}"]`) : null;
+        }
+
+        // Parsea formatos: 4, 1:4, 1-3, [2,5,3], [1,4,3], etc.
+        function desglosarSec(str) {
+            if (!str) return [];
+            return str.toString().replace(/[\[\]\s]/g, '').split(',').flatMap(tok => {
+                const m = tok.match(/^(\d+)[-:](\d+)$/);
+                if (!m) return tok ? [tok] : [];
+                const [ini, fin] = [+m[1], +m[2]];
+                return Array.from({ length: Math.abs(fin - ini) + 1 }, (_, i) => String(ini + (ini <= fin ? i : -i)));
+            });
+        }
+
+        function actualizarSelectorSecciones(sel) {
+            const combo = document.getElementById("seccionFilter");
+            combo.innerHTML = "";
+
+            const paramsURL = new URLSearchParams(window.location.search);
+            const ev = typeof Bitacora !== "undefined" 
+                ? Bitacora.querySelector(`evento[fecha="${fecha}"]`) 
+                : null;
+            const ascenso = ev 
+                ? ev.querySelector('item[tipo="ascensos"]') 
+                : null;
+            const paramsEv = new URLSearchParams((ascenso?.getAttribute("url") || "").split('?')[1] || "");
+
+            // num se presume 1 si no está presente
+            const libTarget = paramsURL.get("num") || paramsEv.get("num") || "1";
+            const secRaw = paramsURL.get("sec") || paramsEv.get("sec") || "";
+            const listaSecciones = desglosarSec(secRaw);
+
+            // CASO A: Cámara Superior activa (cuando sel viene prefijado con el grado, ej: "2:1")
+            if (sel && sel.startsWith(`${libTarget}:`) && libTarget !== "1") {
+                actualizarEncabezadoLibro(libTarget);
+                const seccionesCarga = listaSecciones.length ? listaSecciones : ["1", "4", "3"];
+                seccionesCarga.forEach(idStr => {
+                    combo.add(new Option(tituloDeSeccion(libTarget, idStr), `${libTarget}:${idStr}`));
+                });
+                combo.value = sel;
+                return;
+            }
+
+            // CASO B: Estado en Grado 1 (Aprendiz)
+            actualizarEncabezadoLibro("1");
+
+            // Subcaso B1: Secuencias personalizadas en Grado 1 (ej: Iniciación con sec=[1,5,3])
+            if (libTarget === "1" && listaSecciones.length > 0) {
+                listaSecciones.forEach(idStr => {
+                    combo.add(new Option(tituloDeSeccion("1", idStr), idStr));
+                });
+                combo.value = (sel && listaSecciones.includes(sel)) ? sel : listaSecciones[0];
+                return;
+            }
+
+            // Subcaso B2: Ascenso a Grado Superior (2 o 3)
+            // Se mantiene Grado 1 abriendo normalmente; el paso lo gobierna la [[INSTANCIA]]
+            if (libTarget !== "1" && (ascenso || paramsURL.get("num"))) {
+                ["1", "2", "3"].forEach(num => {
+                    combo.add(new Option(tituloDeSeccion("1", num), num));
+                });
+                combo.value = sel || "1";
+                return;
+            }
+
+            // Subcaso B3: Tenida ordinaria estándar (1, 2 y 3)
+            ["1", "2", "3"].forEach(num => {
+                combo.add(new Option(tituloDeSeccion("1", num), num));
+            });
+            combo.value = sel || "1";
+        }
+
+        function actualizarSeccionGlobal() {
+            const val = document.getElementById("seccionFilter").value;
+            if (!val.includes(":") && parseInt(val) <= 3) {
+                sessionStorage.setItem('seccionRetornoLogia', val);
+            }
+            gestionarCambioSeccion();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function actualizarActorGlobal() {
+            const actorFilter = document.getElementById("actorFilter");
+            if (!actorFilter) return;
+            actorFilter.blur();
+            sessionStorage.setItem('actorRetornoLogia', actorFilter.value);
+            setTimeout(() => { renderizarLiturgia(true); }, 280); 
+        }
+
+        async function gestionarCambioSeccion() {
+            const idSec = document.getElementById("seccionFilter").value;
+            const comboActor = document.getElementById("actorFilter");
+            const actorPendiente = comboActor.dataset.actorPendiente || comboActor.value;
+            delete comboActor.dataset.actorPendiente;
+
+            const nodoSec = obtenerNodoSeccion(idSec);
+            const actoresEnSec = new Set();
+            if (nodoSec) {
+                Array.from(nodoSec.getElementsByTagName("acto")).forEach(p => {
+                    if (p.getAttribute("actor")) actoresEnSec.add(p.getAttribute("actor").trim());
+                });
+            }
+            comboActor.innerHTML = '<option value="">---</option>';
+            Array.from(Glosario.getElementsByTagName("item")).forEach(i => {
+                const s = i.getAttribute("sigla");
+                if (actoresEnSec.has(s)) comboActor.add(new Option(s + "∴", s));
+            });
+            comboActor.value = actoresEnSec.has(actorPendiente) ? actorPendiente : "";
+            renderizarLiturgia(false);
+        }
+
+        // RENDERIZAR LITURGIA ORIGINAL FIEL A TU ESTRUCTURA
+        function renderizarLiturgia(hacerScroll = false) {
+            const sel = document.getElementById("seccionFilter");
+            const idSec = sel ? sel.value : "";
+            const actorSel = document.getElementById("actorFilter").value;            
+
+            const paramsURL = new URLSearchParams(window.location.search);
+            const ev = typeof Bitacora !== "undefined" ? Bitacora.querySelector(`evento[fecha="${fecha}"]`) : null;
+            const ascenso = ev ? ev.querySelector('item[tipo="ascensos"]') : null;
+            const paramsEv = new URLSearchParams((ascenso?.getAttribute("url") || "").split('?')[1] || "");
+            
+            const numTarget = paramsURL.get("num") || paramsEv.get("num") || "1";
+            const hayAscensoSuperior = (numTarget !== "1");
+
+            const nodoSec = obtenerNodoSeccion(idSec);
+            if (!nodoSec) return;
+
+            let html = "";
+            let suspenderRestoDeSeccion = false;
+            
+            const partes = Array.from(nodoSec.getElementsByTagName("parte"));
+
+            for (let i = 0; i < partes.length; i++) {
+                if (suspenderRestoDeSeccion) break;
+
+                const parte = partes[i];
+                const tituloParte = (parte.getAttribute("titulo") || "").trim();
+                let htmlParte = `<div class="parte-header">${tituloParte}</div>`;                
+                let contieneInstanciaAscenso = false;
+
+                Array.from(parte.getElementsByTagName("acto")).forEach((acto, j) => {
+                    const versoNum = j + 1;
+                    const actor = (acto.getAttribute("actor") || "Actor").trim();                    
+                    let texto = (acto.getAttribute("tema") || acto.textContent).trim();
+                    let btns = "";                    
+
+                    if (extURL && idSec === secURL_ext && actor === "OF") {
+                        btns += `<br><button class="btn-ritual" style="margin-top:10px;" onclick="mostrarVisor('${decodeURIComponent(extURL)}')">📄 Ver Documento</button>`;
+                    }
+
+                    if (texto.includes("[[INSTANCIA]]")) {
+                        if (hayAscensoSuperior) {
+                            const inst = inyectarInstancia(actor, idSec, `${versoNum}`);
+                            if (inst) btns += inst;
+                            if (actor === "VM") {
+                                contieneInstanciaAscenso = true;
+                            }
+                        }
+                        texto = texto.repl                     window.location.reload();
                         }
                     } else {
                         let necesitaRecarga = false;
