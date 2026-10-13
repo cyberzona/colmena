@@ -32,11 +32,9 @@
         .nav-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding: 15px; border-top: 1px solid #d7ccc8; }
         .btn-flechas { background: transparent !important; color: #A87C00 !important; width: 45px; height: 32px; font-size: 1.4rem; display: flex; align-items: center; justify-content: center; border: none; outline: none; cursor: pointer; }
         .btn-flechas-cierre { font-weight: bold; font-size: 1.3rem; }
-        .flip-h { transform: scaleX(-1); display: inline-block; }
         .visor-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; align-items: center; justify-content: center; }
         .visor-content { width: 95%; height: 90%; background: #fff; border-radius: 8px; position: relative; }
         .visor-close { position: absolute; top: -10px; right: -10px; background: #ff0000; color: #fff; border: 2px solid #fff; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; z-index: 2001; }
-        .dialogo-vm { margin-bottom: 10px; font-style: normal; }
         .actor-hint { cursor: help; border-bottom: 1px dotted #0277bd; position: relative; }
         .actor-hint:hover::after { content: attr(data-memo); position: absolute; bottom: 125%; left: 50%; transform: translateX(-50%); background-color: #333; color: #fff; padding: 5px 10px; border-radius: 6px; white-space: nowrap; font-size: 14px; z-index: 100; }
         
@@ -108,7 +106,7 @@
                     document.getElementById("contenedor-principal").style.display = "block";
                     
                     actualizarEncabezadoLibro("1");
-                    actualizarSelectorSecciones("1");                   
+                    actualizarSelectorSecciones();                   
                     
                     if (sessionStorage.getItem('actorRetornoLogia')) {
                         document.getElementById("actorFilter").dataset.actorPendiente = sessionStorage.getItem('actorRetornoLogia');
@@ -185,81 +183,78 @@
             return s ? (s.getAttribute("titulo") || "").trim() : `Sección ${sec}`;
         }
 
-        // Parser compacto para desglosar "1:4", "1-3", "[2,5,3]", "[1,4,3]", etc.
-function desglosarSec(str) {
-    if (!str) return [];
-    return str.toString().replace(/[\[\]\s]/g, '').split(',').flatMap(tok => {
-        const m = tok.match(/^(\d+)[-:](\d+)$/);
-        if (!m) return tok ? [tok] : [];
-        const [ini, fin] = [+m[1], +m[2]];
-        return Array.from({ length: Math.abs(fin - ini) + 1 }, (_, i) => String(ini + (ini <= fin ? i : -i)));
-    });
-}
+        function obtenerNodoSeccion(idSec) {
+            if (!liturgiaDoc || !idSec) return null;
+            if (idSec.includes(":")) {
+                const [lib, sec] = idSec.split(":");
+                return liturgiaDoc.querySelector(`ritual[libro="${lib}"] seccion[id="${sec}"]`);
+            }
+            return liturgiaDoc.querySelector(`ritual[libro="1"] seccion[id="${idSec}"]`);
+        }
 
-function actualizarSelectorSecciones(sel) {
-    const combo = document.getElementById("seccionFilter");
-    combo.innerHTML = "";
+        function desglosarSec(str) {
+            if (!str) return [];
+            return str.toString().replace(/[\[\]\s]/g, '').split(',').flatMap(tok => {
+                const m = tok.match(/^(\d+)[-:](\d+)$/);
+                if (!m) return tok ? [tok] : [];
+                const [ini, fin] = [+m[1], +m[2]];
+                return Array.from({ length: Math.abs(fin - ini) + 1 }, (_, i) => String(ini + (ini <= fin ? i : -i)));
+            });
+        }
 
-    // Lee los parámetros tanto de la URL directa como de bitacora
-    const paramsURL = new URLSearchParams(window.location.search);
-    const ev = typeof Bitacora !== "undefined" 
-        ? Bitacora.querySelector(`evento[fecha="${fecha}"]`) 
-        : null;
-    const ascenso = ev 
-        ? ev.querySelector('item[tipo="ascensos"]') 
-        : null;
-    const paramsEv = new URLSearchParams((ascenso?.getAttribute("url") || "").split('?')[1] || "");
+        function obtenerParametrosRitual() {
+            const paramsURL = new URLSearchParams(window.location.search);
+            const ev = typeof Bitacora !== "undefined" ? Bitacora.querySelector(`evento[fecha="${fecha}"] item[tipo="ascensos"]`) : null;
+            const paramsEv = new URLSearchParams((ev?.getAttribute("url") || "").split('?')[1] || "");
 
-    const libTarget = paramsURL.get("num") || paramsEv.get("num") || "1";
-    const secParam = paramsURL.get("sec") || paramsEv.get("sec") || "";
-    const listaSecciones = desglosarSec(secParam);
+            const num = paramsURL.get("num") || paramsEv.get("num") || "1";
+            const secRaw = paramsURL.get("sec") || paramsEv.get("sec") || "";
+            const secs = desglosarSec(secRaw);
 
-    // CASO A: Cámara Superior activa (cuando sel viene prefijado con su grado, ej: "2:4")
-    if (sel && sel.startsWith(`${libTarget}:`) && libTarget !== "1") {
-        actualizarEncabezadoLibro(libTarget);
-        // Si viene sec=[1,4,3] usa esa lista; si no, 1, 2 y 3
-        const seccionesCarga = listaSecciones.length ? listaSecciones : ["1", "2", "3"];
-        seccionesCarga.forEach(idStr => {
-            combo.add(new Option(tituloDeSeccion(libTarget, idStr), `${libTarget}:${idStr}`));
-        });
-        combo.value = sel;
-        return;
-    }
+            return { num, secs, hayEvento: Boolean(ev || paramsURL.get("sec") || paramsURL.get("num")) };
+        }
 
-    // CASO B: Estado en Grado 1 (Aprendiz)
-    actualizarEncabezadoLibro("1");
+        function actualizarSelectorSecciones(sel) {
+            const combo = document.getElementById("seccionFilter");
+            combo.textContent = "";
 
-    // Subcaso B1: Secciones personalizadas para Grado 1 (Iniciación con sec=[1,5,3])
-    if (libTarget === "1" && listaSecciones.length > 0) {
-        listaSecciones.forEach(idStr => {
-            combo.add(new Option(tituloDeSeccion("1", idStr), idStr));
-        });
-        combo.value = (sel && listaSecciones.includes(sel)) ? sel : listaSecciones[0];
-        return;
-    }
+            const { num, secs } = obtenerParametrosRitual();
+            let items = [];
+            let valorSel = sel;
 
-    // Subcaso B2: Ascenso a Grado Superior (libTarget = 2 o 3)
-    // En Grado 1 sustituye la sección 2 por la sección de ceremonia (4, o la primera definida)
-    if (libTarget !== "1" && (ascenso || paramsURL.get("num"))) {
-        const secCeremonia = listaSecciones.length ? (listaSecciones.includes("4") ? "4" : listaSecciones[0]) : "4";
-        const valorDestino = `${libTarget}:${secCeremonia}`;
-        const etiquetaDestino = tituloDeSeccion(libTarget, secCeremonia);
+            // 1. Navegación activa en Cámara Superior
+            if (sel && sel.startsWith(`${num}:`) && num !== "1") {
+                actualizarEncabezadoLibro(num);
+                const lista = secs.length ? secs : ["1", "4", "3"];
+                items = lista.map(s => ({ val: `${num}:${s}`, txt: tituloDeSeccion(num, s) }));
+                valorSel = sel;
+            }
+            // 2. Grado Superior activo en espera de ascenso (desde Grado 1)
+            else if (num !== "1") {
+                actualizarEncabezadoLibro("1");
+                const secDestino = secs.length ? (secs.includes("4") ? "4" : secs[0]) : "4";
+                const destino = `${num}:${secDestino}`;
 
-        combo.add(new Option(tituloDeSeccion("1", "1"), "1"));
-        combo.add(new Option(etiquetaDestino, valorDestino));
-        combo.add(new Option(tituloDeSeccion("1", "3"), "3"));
+                items = [
+                    { val: "1", txt: tituloDeSeccion("1", "1") },
+                    { val: destino, txt: tituloDeSeccion(num, secDestino) },
+                    { val: "3", txt: tituloDeSeccion("1", "3") }
+                ];
+                valorSel = (sel === "2" || sel === destino) ? destino : (sel || "1");
+            }
+            // 3. Grado 1 (Iniciación o Tenida Ordinaria)
+            else {
+                actualizarEncabezadoLibro("1");
+                const lista = (secs.length > 0) ? secs : ["1", "2", "3"];
+                items = lista.map(s => ({ val: s, txt: tituloDeSeccion("1", s) }));
+                valorSel = (sel && lista.includes(sel)) ? sel : lista[0];
+            }
 
-        combo.value = (sel === "2" || sel === valorDestino) ? valorDestino : (sel || "1");
-        return;
-    }
-
-    // Subcaso B3: Tenida ordinaria estándar de Aprendiz (1, 2 y 3)
-    ["1", "2", "3"].forEach(num => {
-        combo.add(new Option(tituloDeSeccion("1", num), num));
-    });
-    combo.value = sel || "1";
-}
-
+            const fragment = document.createDocumentFragment();
+            items.forEach(({ val, txt }) => fragment.appendChild(new Option(txt, val)));
+            combo.appendChild(fragment);
+            combo.value = valorSel;
+        }
 
         function actualizarSeccionGlobal() {
             const val = document.getElementById("seccionFilter").value;
@@ -303,28 +298,16 @@ function actualizarSelectorSecciones(sel) {
         function renderizarLiturgia(hacerScroll = false) {
             const sel = document.getElementById("seccionFilter");
             const idSec = sel ? sel.value : "";
-            const actorSel = document.getElementById("actorFilter").value;            
+            const actorSel = document.getElementById("actorFilter") ? document.getElementById("actorFilter").value : "";
 
-            const ev = typeof Bitacora !== "undefined" ? Bitacora.querySelector(`evento[fecha="${fecha}"]`) : null;
-            const ascenso = ev ? ev.querySelector('item[tipo="ascensos"]') : null;
-            let hayAscensoSuperior = false;
-
-            if (ascenso) {
-                const uParams = new URLSearchParams((ascenso.getAttribute("url") || "").split('?')[1] || "");
-                const paramSec = uParams.get("sec") || "";
-                const paramNum = uParams.get("num") || "1";
-
-                if (paramSec.includes(":")) {
-                    hayAscensoSuperior = (paramNum !== "1");
-                }
-            }
+            const { num } = obtenerParametrosRitual();
+            const hayAscensoSuperior = (num !== "1");
 
             const nodoSec = obtenerNodoSeccion(idSec);
             if (!nodoSec) return;
 
             let html = "";
             let suspenderRestoDeSeccion = false;
-            
             const partes = Array.from(nodoSec.getElementsByTagName("parte"));
 
             for (let i = 0; i < partes.length; i++) {
@@ -356,183 +339,108 @@ function actualizarSelectorSecciones(sel) {
                         texto = texto.replace("[[INSTANCIA]]", "");
                     }
 
-                    texto = texto.replace(/(\b\S+∴)/gi, (match) => {
-                        const gsigla = match.replace('∴', '').trim();
-                        const ginfo = Glosario.querySelector(`item[sigla="${gsigla}"]`);
-                        const names = ginfo ? ginfo.getAttribute("expansion") : gsigla;
-                        return `<span class="actor-hint" data-memo="${names}" style="color:#0277bd; font-weight:bold;">${match}</span>`;
-                    });
+                    if (typeof Glosario !== "undefined" && Glosario) {
+                        texto = texto.replace(/(\b\S+∴)/gi, (match) => {
+                            const gsigla = match.replace('∴', '').trim();
+                            const ginfo = Glosario.querySelector(`item[sigla="${gsigla}"]`);
+                            const names = ginfo ? ginfo.getAttribute("expansion") : gsigla;
+                            return `<span class="actor-hint" data-memo="${names}" style="color:#0277bd; font-weight:bold;">${match}</span>`;
+                        });
+                    }
 
-                    texto = texto.replace(/\[(.*?)\]/g, '<span class="acotacion">($1)</span>');
-                    const esFoco = actorSel && actor === actorSel;
-                    const claseDt = esFoco ? 'class="actor-activo"' : '';
-                    htmlParte += `<dt ${claseDt}>${actor}∴</dt><dd id="verso-${i + 1}-${versoNum}" data-verso="${versoNum}" class="${esFoco ? 'resaltado' : ''}">${texto}${btns}</dd>`;
+                    texto = texto.replace(/\[(.*?)\]/g, '<span class="acotacion">[$1]</span>');
+
+                    const esActorActivo = (actorSel && actor === actorSel);
+                    const claseResaltado = esActorActivo ? 'resaltado' : '';
+                    const claseActor = esActorActivo ? 'actor-activo' : '';
+
+                    htmlParte += `
+                        <dl id="verso-${idSec}-${versoNum}">
+                            <dt class="${claseActor}">${actor}∴</dt>
+                            <dd class="${claseResaltado}">
+                                ${texto}
+                                ${btns}
+                            </dd>
+                        </dl>`;
                 });
 
                 html += htmlParte;
 
-                if (contieneInstanciaAscenso && (idSec === "2" || idSec === "1:2")) {
+                if (contieneInstanciaAscenso) {
                     suspenderRestoDeSeccion = true;
                 }
             }
 
-            const idx = sel ? sel.selectedIndex : 0;
-            const totalOpciones = sel ? sel.options.length : 0;
-            let nav = `<div class="nav-footer">`;
-            nav += idx > 0 ? `<button class="btn-flechas" onclick="navRelativa(-1)"><span class="flip-h">➤</span></button>` : `<span></span>`;            
-            
-            // Botón de salida '✕' tanto para Libro 2 como para Libro 3
-            const esCamaraSuperior = idSec.startsWith("2:") || idSec.startsWith("3:");
-            if (esCamaraSuperior && idx === totalOpciones - 1) {
-                nav += `<button class="btn-flechas btn-flechas-cierre" title="Retornar a Clausura de Grado 1" onclick="navRelativa(1)">✕</button>`;
-            } else if (idx < totalOpciones - 1) {
-                nav += `<button class="btn-flechas" onclick="navRelativa(1)">➤</button>`;
-            } else {
-                nav += `<span></span>`;
-            }
-            nav += `</div>`;
+            html += generarNavFooter(idSec);
 
-            const contenedorRitual = document.getElementById('rituales-content');
-            if (contenedorRitual) {
-                contenedorRitual.innerHTML = ""; 
-                setTimeout(() => {
-                    const claseContenedor = actorSel ? 'class="filtro-activo"' : '';
-                    contenedorRitual.innerHTML = `<dl ${claseContenedor}>${html}</dl>${nav}`;
-                    if (hacerScroll && actorSel) {
-                        const el = contenedorRitual.querySelector('.resaltado');
-                        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }
-                }, 10);
-            }
-        }
-        
-        function navRelativa(d) {
-            const s = document.getElementById("seccionFilter");
-            const actual = s.value;
-            const esCamaraSuperior = actual.startsWith("2:") || actual.startsWith("3:");
+            const contenedor = document.getElementById("rituales-content");
+            if (contenedor) {
+                contenedor.innerHTML = html;
+                contenedor.className = actorSel ? "filtro-activo" : "";
 
-            // Retorno directo a Clausura de Aprendiz (3) desde la última sección de Cámara 2 o 3
-            if (esCamaraSuperior && d > 0 && s.selectedIndex === s.options.length - 1) {
-                actualizarSelectorSecciones("3");
-                actualizarSeccionGlobal();
-                return;
-            }
-
-            // Retroceso desde Clausura de Aprendiz hacia el final de la cámara superior respectiva
-            if (actual === "3" && d < 0 && s.selectedIndex === 2) {
-                const ev = typeof Bitacora !== "undefined" ? Bitacora.querySelector(`evento[fecha="${fecha}"]`) : null;
-                const ascenso = ev ? ev.querySelector('item[tipo="ascensos"]') : null;
-                if (ascenso) {
-                    const uParams = new URLSearchParams((ascenso.getAttribute("url") || "").split('?')[1] || "");
-                    const num = uParams.get("num");
-                    if (num === "2" || num === "3") {
-                        const sec = (uParams.get("sec") || "").split(":").pop() || "3";
-                        actualizarSelectorSecciones(`${num}:${sec}`);
-                        actualizarSeccionGlobal();
-                        return;
+                if (hacerScroll && actorSel) {
+                    const primerResaltado = contenedor.querySelector('.resaltado');
+                    if (primerResaltado) {
+                        primerResaltado.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     }
                 }
             }
-
-            s.selectedIndex += d;
-            actualizarSeccionGlobal();
-        }
-
-        window.irA = function(dest) {
-            if (dest === 'VOLVER') {
-                const secDest = sessionStorage.getItem('seccionRetornoLogia') || "1";
-                const vDest = sessionStorage.getItem('versoRetornoLogia') || "";
-                sessionStorage.removeItem('versoRetornoLogia');
-                location.href = `rituales.html?num=1&fec=${fecha}&sec=${secDest}&act=${vDest}`;
-            }
-        };
-
-        function capturarOrigenYSalir(url, actor, sec, verso) {
-            sessionStorage.setItem('versoRetornoLogia', verso);
-            sessionStorage.setItem('seccionRetornoLogia', sec); 
-            sessionStorage.setItem('actorRetornoLogia', actor);
-            window.location.href = url;
-        }
-
-        function dispararCamaraSuperior(destino) {
-            actualizarSelectorSecciones(destino);
-            actualizarSeccionGlobal();
         }
 
         function inyectarInstancia(actor, sec, verso) {
-            const t = Array.from(Bitacora.getElementsByTagName("evento")).find(x => x.getAttribute("fecha") === fecha);        
-            if (!t) { 
-                return (actor === "VM") ? `<p class="dialogo-vm">Continúa el orden del día.</p>` : ""; 
-            }           
-            const actorActual = document.getElementById("actorFilter").value;            
-            const items = Array.from(t.getElementsByTagName("item"));  
-            let h = ""; 
-            const itemsValidos = items.filter(i => {
-                const tipo = i.getAttribute("tipo");
-                const reglas = {
-                    "cronicas": (actor === "Sec" && actorActual === "Sec"),
-                    "sintesis": ((actor === "MC" && actorActual === "MC") || (actor === "OF" && actorActual === "OF")),
-                    "trazados": (actor === "VM"),
-                    "ascensos": (actor === "VM")
-                };
-                return reglas[tipo] || false;
-            });
-
-            if (itemsValidos.length > 0) {
-                if (actor === "VM") {
-                    h += `<p class="dialogo-vm">En el orden del día, daremos curso a los siguientes puntos:</p>`;
-                }
-                const debeEnumerar = itemsValidos.length > 1;                                
-                itemsValidos.forEach((i, index) => {
-                    const url = i.getAttribute("url");
-                    const pre = debeEnumerar ? `${index + 1}. ` : "";
-                    const tit = pre + (i.getAttribute("asunto") || "Acta");                                                                                    
-                    
-                    if (i.getAttribute("tipo") === "ascensos") {
-                        const uParams = new URLSearchParams((url || "").split('?')[1] || "");
-                        const targetLib = uParams.get("num") || "1";
-                        const targetSecParam = uParams.get("sec") || "2";
-
-                        if (targetLib !== "1") {
-                            const primerPaso = targetSecParam.includes(":") ? targetSecParam.split(":")[0] : targetSecParam;
-                            const destino = `${targetLib}:${primerPaso}`;
-                            h += `<button class="btn-instancia-exec" onclick="dispararCamaraSuperior('${destino}')">${tit}</button>`;
-                        } else {
-                            h += `<button class="btn-instancia-exec" onclick="document.getElementById('seccionFilter').value='${targetSecParam}'; actualizarSeccionGlobal();">${tit}</button>`;
-                        }
-                    } else if (url.includes('rituales.html')) {
-                        const urlParams = new URLSearchParams(url.split('?')[1]);
-                        const linkExterno = urlParams.get('ext') || "";
-                        let urlDestino = url;
-                        if (linkExterno && !url.includes('&ext=')) {
-                            urlDestino += `&ext=${encodeURIComponent(linkExterno)}`;
-                        }                        
-                        h += `<button class="btn-instancia-exec" onclick="capturarOrigenYSalir('${urlDestino}', '${actorActual}', '${sec}', '${verso}')">${tit}</button>`;
-                    } else { 
-                        const tip = i.getAttribute("tipo");
-                        const icon = tip === "cronicas" ? "📜 " : (tip === "trazados" ? "📍 " : "");
-                        h += `<button class="btn-ritual" onclick="mostrarVisor('${url}')">${icon}${tit}</button>`; 
-                    }
-                });
-            } else if (actor === "VM") {
-                h = `<p class="dialogo-vm">Continúa el orden del día.</p>`;
-            }
-            return h;
+            const { num } = obtenerParametrosRitual();
+            const textoBoton = num === "3" ? "⚡ Proceder a Cámara de Maestro" : "⚡ Proceder a Cámara de Compañero";
+            return `<br><button class="btn-instancia-exec" onclick="ejecutarPasoCamara('${sec}', '${verso}')">${textoBoton}</button>`;
         }
-        
-        function mostrarVisor(url) {
-            if (url.includes('blank')) { 
-                const urlLimpia = url.replace('blank', ''); 
-                window.open(urlLimpia, '_blank'); 
-                return; 
+
+        function ejecutarPasoCamara(secActual, versoActual) {
+            const { num, secs } = obtenerParametrosRitual();
+            if (num === "1") return;
+
+            const primeraSec = secs.length ? secs[0] : "1";
+            const secParamStr = secs.length ? `[${secs.join(',')}]` : "[1,4,3]";
+
+            const nuevaURL = `${window.location.pathname}?num=${num}&sec=${secParamStr}`;
+            window.history.pushState({}, document.title, nuevaURL);
+
+            actualizarSelectorSecciones(`${num}:${primeraSec}`);
+            gestionarCambioSeccion();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function generarNavFooter(idSec) {
+            const combo = document.getElementById("seccionFilter");
+            const idxActual = combo.selectedIndex;
+            const tienePrev = idxActual > 0;
+            const tieneNext = idxActual < combo.options.length - 1;
+
+            return `
+                <div class="nav-footer">
+                    ${tienePrev ? `<button class="btn-flechas" onclick="cambiarIndiceSeccion(${idxActual - 1})">◀</button>` : '<div></div>'}
+                    <span class="btn-flechas-cierre">∴</span>
+                    ${tieneNext ? `<button class="btn-flechas" onclick="cambiarIndiceSeccion(${idxActual + 1})">▶</button>` : '<div></div>'}
+                </div>`;
+        }
+
+        function cambiarIndiceSeccion(nuevoIdx) {
+            const combo = document.getElementById("seccionFilter");
+            if (nuevoIdx >= 0 && nuevoIdx < combo.options.length) {
+                combo.selectedIndex = nuevoIdx;
+                actualizarSeccionGlobal();
             }
-            const v = document.createElement('div');
-            v.className = 'visor-overlay';
-            v.innerHTML = `<div class="visor-content">
-                           <button class="visor-close" onclick="this.parentElement.parentElement.remove()">✕</button>
-                           <iframe src="${url}" style="width:100%; height:100%; border:none;"></iframe></div>`;
-            document.body.appendChild(v);
-        }       
+        }
+
+        function mostrarVisor(url) {
+            const overlay = document.createElement("div");
+            overlay.className = "visor-overlay";
+            overlay.id = "visor-activo";
+            overlay.innerHTML = `
+                <div class="visor-content">
+                    <button class="visor-close" onclick="document.getElementById('visor-activo').remove()">✕</button>
+                    <iframe src="${url}" style="width:100%; height:100%; border:none; border-radius:8px;"></iframe>
+                </div>`;
+            document.body.appendChild(overlay);
+        }
     </script>
 </body>
 </html>
