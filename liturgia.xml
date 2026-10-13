@@ -500,6 +500,13 @@
   <!-- ================================================================= -->
   <ritual libro="3" logia="Colmena No. 8">
     <seccion id="1" titulo="Apertura de Trabajos">
+      <parte titulo="Suspención de Trabajos">
+        <acto actor="VM" tema="HH∴ 1V∴ y 2V∴, servíos anunciar a los HH∴ de vuestras respectivas CCol∴, como yo lo hago en Oriente, que voy a suspender los trabajos con un solo golpe de Mallete para abrir la Cámara de Compañero." />
+        <acto actor="1V" tema="H∴ 2V∴ y HH∴ de mi Col∴, nuestro VM∴ va a suspender los trabajos por un solo golpe de Mallete." />
+        <acto actor="2V" tema="HH∴ de la Col∴ del Sur, os anuncio que el VM∴ va a suspender los trabajos con un solo golpe de Mallete." />
+        <acto actor="1V" tema="Anunciado, VM∴." />
+        <acto actor="VM" tema="[Da un golpe de Mallete]... y clausura los trabajos invitando a los HH∴ Aprendices a que cubran el Templo." />
+      </parte>
       <parte titulo="Preliminares de la Apertura">
         <acto actor="VM" tema="Muy VH∴ 1V∴ y 2V∴, servíos pedir a todos los presentes la Palabra del Tercer Grado. En pie y al orden, mirando al Oriente, VH∴. [Lo ejecutan los HH∴; los VH∴ hacen el reconocimiento en la debida forma y, vueltos a sus tronos, dan un golpe]" />
         <acto actor="2V" tema="Todos los que decoran mi Col∴ son MM∴, VH∴ 1V∴." />
