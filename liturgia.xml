@@ -486,7 +486,7 @@
       </parte>
     </seccion>
 
-    <seccion id="3" titulo="Clausura de la Cámara de Compañero">
+    <seccion id="3" titulo="Clausura de la Cámara">
       <parte titulo="Cierre de los Trabajos">
         <acto actor="VM" tema="QQHH∴ 1V∴ y 2V∴, anunciad que vamos a cerrar los trabajos de esta Cámara de Compañero." />
         <acto actor="1V" tema="Anunciado en ambas CCol∴, VM∴." />
