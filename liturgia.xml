@@ -466,7 +466,7 @@
   <!-- RITUAL 2: LITURGIA DE COMPAÑERO                                   -->
   <!-- ================================================================= -->
   <ritual libro="2" logia="Colmena No. 8">
-    <seccion id="1" titulo="Apertura de Trabajos">
+    <seccion id="1" titulo="Apertura de Cámara">
       <parte titulo="Preliminares de la Apertura">
         <acto actor="VM" tema="HH∴ 1V∴ y 2V∴, servíos anunciar a los HH∴ de vuestras respectivas CCol∴, como yo lo hago en Oriente, que voy a suspender los trabajos con un solo golpe de Mallete para abrir la Cámara de Compañero." />
         <acto actor="1V" tema="H∴ 2V∴ y HH∴ de mi Col∴, nuestro VM∴ va a suspender los trabajos por un solo golpe de Mallete." />
