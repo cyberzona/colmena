@@ -10,15 +10,50 @@
     <item sigla="MM" expansion="Maestro Masón" />
     <item sigla="QH" expansion="Querido Hermano" />
     <item sigla="VH" expansion="Venerable Hermano" />
-    <item sigla="Sec" expansion="Secretario" />       
+    <item sigla="Sec" expansion="Secretario" />
+    <item sigla="Col" expansion="Columna" />
+    <item sigla="CCol" expansion="Columnas" />    
     <item sigla="Hos" expansion="Maestro Hospitalario" />
+    <item sigla="Tes" expansion="Tesorero" />
     <item sigla="Exp" expansion="Maestro Experto" />
     <item sigla="Pro" expansion="Caballero Profano" />
     <item sigla="Neo" expansion="Neófito" />
-    <item sigla="Col" expansion="Columna" />
-    <item sigla="CCol" expansion="Columnas" />
     <item sigla="MRM" expansion="Muy Respetable Maestro" />   
     <item sigla="QQHH" expansion="Queridos Hermanos" />
     <item sigla="GADU" expansion="Gran Arquitecto Del Universo" />
     <item sigla="ALGDGADU" expansion="A la Gloria del Gran Arquitecto Del Universo" />
+    <!-- Incorporadas desde el documento -->
+    <item sigla="1D" expansion="Primer Diácono" />
+    <item sigla="2D" expansion="Segundo Diácono" />
+    <item sigla="1E" expansion="Primer Experto" />
+    <item sigla="2E" expansion="Segundo Experto" />
+    <item sigla="1MC" expansion="Primer Maestro de Ceremonias" />
+    <item sigla="2MC" expansion="Segundo Maestro de Ceremonias" />
+    <item sigla="GTI" expansion="Guarda Templo Interior" />
+    <item sigla="GTE" expansion="Guarda Templo Exterior" />
+    <item sigla="ExVM" expansion="Ex Venerable Maestro" />    
+    <item sigla="H" expansion="Hermano" />
+    <item sigla="VV" expansion="Vigilantes" />
+    <item sigla="Log" expansion="Logia" />
+    <item sigla="RL" expansion="Respetable Logia" />
+    <item sigla="ARL" expansion="Augusta y Respetable Logia" />
+    <item sigla="GL" expansion="Gran Logia" />
+    <item sigla="SGL" expansion="Serenísima Gran Logia" />
+    <item sigla="Tall" expansion="Taller" />
+    <item sigla="Temp" expansion="Templo" />
+    <item sigla="Ten" expansion="Tenida" />
+    <item sigla="Ort" expansion="Oriente" />
+    <item sigla="Occ" expansion="Occidente" />
+    <item sigla="Mall" expansion="Mallete" />
+    <item sigla="Bat" expansion="Batería" />
+    <item sigla="Pl" expansion="Plancha" />
+    <item sigla="PPl" expansion="Planchas" />
+    <item sigla="Apr" expansion="Aprendiz" />
+    <item sigla="AApr" expansion="Aprendices" />
+    <item sigla="AM" expansion="Aprendiz Masón" />
+    <item sigla="AAMM" expansion="Aprendices Masones" />
+    <item sigla="Gr" expansion="Grado" />
+    <item sigla="REAA" expansion="Rito Escocés Antiguo y Aceptado" />
+    <item sigla="TAF" expansion="Triple Abrazo Fraternal" />
+    <item sigla="STP" expansion="Signos, Toques y Palabras" />
 </glosario>
