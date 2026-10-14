@@ -180,20 +180,28 @@
             if (el) el.textContent = Dic[libro] || "Liturgia";
         }
 
+        function obtenerNodoSeccion(idSec) {
+            if (!liturgiaDoc || !idSec) return null;
+            let lib = "1";
+            let sec = idSec.toString();
+
+            if (idSec.includes(":")) {
+                [lib, sec] = idSec.split(":");
+            }
+
+            const secPad = sec.padStart(2, '0');
+            return liturgiaDoc.querySelector(`ritual[libro="${lib}"] seccion[id="${sec}"]`)
+                || liturgiaDoc.querySelector(`ritual[libro="${lib}"] seccion[id="${secPad}"]`)
+                || liturgiaDoc.querySelector(`ritual[num="${lib}"] seccion[id="${sec}"]`)
+                || liturgiaDoc.querySelector(`ritual[num="${lib}"] seccion[id="${secPad}"]`)
+                || liturgiaDoc.querySelector(`seccion[id="${sec}"]`);
+        }
+
         function tituloDeSeccion(lib, sec) {
-            const s = liturgiaDoc ? liturgiaDoc.querySelector(`ritual[libro="${lib}"] seccion[id="${sec}"]`) : null;
+            const s = obtenerNodoSeccion(sec.includes(":") ? sec : `${lib}:${sec}`);
             return s ? (s.getAttribute("titulo") || "").trim() : `Sección ${sec}`;
         }
 
-        function obtenerNodoSeccion(idSec) {
-            if (idSec && idSec.includes(":")) {
-                const [lib, sec] = idSec.split(":");
-                return liturgiaDoc ? liturgiaDoc.querySelector(`ritual[libro="${lib}"] seccion[id="${sec}"]`) : null;
-            }
-            return liturgiaDoc ? liturgiaDoc.querySelector(`ritual[libro="1"] seccion[id="${idSec}"]`) : null;
-        }
-
-        // Parsea: 4, 1:4, 1-3, [2,5,3], [1:4], [1-3]
         function desglosarSec(str) {
             if (!str) return [];
             return str.toString().replace(/[\[\]\s]/g, '').split(',').flatMap(tok => {
@@ -217,7 +225,6 @@
                 : null;
             const paramsEv = new URLSearchParams((ascenso?.getAttribute("url") || "").split('?')[1] || "");
 
-            // num se presume 1 si no está presente
             const libTarget = paramsURL.get("num") || paramsEv.get("num") || "1";
             const secParam = paramsURL.get("sec") || paramsEv.get("sec") || "";
             const listaSecciones = desglosarSec(secParam);
@@ -245,7 +252,7 @@
                 return;
             }
 
-            // Subcaso B2: Ascenso directo con valor numérico único (ej: sustituye sección 2)
+            // Subcaso B2: Ascenso directo con valor numérico único (sustituye sección 2)
             if (ascenso && listaSecciones.length === 1 && !secParam.includes(":") && !secParam.includes("-") && !secParam.includes("[")) {
                 const valorDestino = (libTarget !== "1") ? `${libTarget}:${secParam}` : secParam;
                 const etiquetaDestino = tituloDeSeccion(libTarget, secParam);
@@ -338,7 +345,7 @@
 
                 const parte = partes[i];
                 const tituloParte = (parte.getAttribute("titulo") || "").trim();
-                let htmlParte = `<div class="parte-header">${i + 1}. ${tituloParte}</div>`;               
+                let htmlParte = `<div class="parte-header">${i + 1}. ${tituloParte}</div>`;                
                 let contieneInstanciaAscenso = false;
 
                 Array.from(parte.getElementsByTagName("acto")).forEach((acto, j) => {
@@ -387,7 +394,6 @@
             let nav = `<div class="nav-footer">`;
             nav += idx > 0 ? `<button class="btn-flechas" onclick="navRelativa(-1)"><span class="flip-h">➤</span></button>` : `<span></span>`;            
             
-            // Botón de salida '✕' tanto para Libro 2 como para Libro 3
             const esCamaraSuperior = idSec.startsWith("2:") || idSec.startsWith("3:");
             if (esCamaraSuperior && idx === totalOpciones - 1) {
                 nav += `<button class="btn-flechas btn-flechas-cierre" title="Retornar a Clausura de Grado 1" onclick="navRelativa(1)">✕</button>`;
@@ -417,14 +423,12 @@
             const actual = s.value;
             const esCamaraSuperior = actual.startsWith("2:") || actual.startsWith("3:");
 
-            // Retorno directo a Clausura de Aprendiz (3) desde la última sección de Cámara 2 o 3
             if (esCamaraSuperior && d > 0 && s.selectedIndex === s.options.length - 1) {
                 actualizarSelectorSecciones("3");
                 actualizarSeccionGlobal();
                 return;
             }
 
-            // Retroceso desde Clausura de Aprendiz hacia el final de la cámara superior respectiva
             if (actual === "3" && d < 0 && s.selectedIndex === 2) {
                 const paramsURL = new URLSearchParams(window.location.search);
                 const ev = typeof Bitacora !== "undefined" ? Bitacora.querySelector(`evento[fecha="${fecha}"]`) : null;
