@@ -107,8 +107,19 @@
                     document.getElementById("capa-bloqueo").style.display = "none";
                     document.getElementById("contenedor-principal").style.display = "block";
                     
-                    actualizarEncabezadoLibro("1");
-                    actualizarSelectorSecciones("1");                   
+                    const libInicial = params.get('num') || "1";
+                    const secInicial = params.get('sec');
+                    actualizarEncabezadoLibro(libInicial);
+                    
+                    if (libInicial !== "1") {
+                        const primSec = secInicial ? desglosarSec(secInicial)[0] : "1";
+                        actualizarSelectorSecciones(`${libInicial}:${primSec}`);
+                    } else if (secInicial) {
+                        const primSec = desglosarSec(secInicial)[0];
+                        actualizarSelectorSecciones(primSec);
+                    } else {
+                        actualizarSelectorSecciones("1");
+                    }
                     
                     if (sessionStorage.getItem('actorRetornoLogia')) {
                         document.getElementById("actorFilter").dataset.actorPendiente = sessionStorage.getItem('actorRetornoLogia');
@@ -181,21 +192,19 @@
         }
 
         function obtenerNodoSeccion(idSec) {
-            if (!liturgiaDoc) return null;
-            const target = idSec ? idSec.toString() : "1";
+            if (!liturgiaDoc || !idSec) return null;
             let lib = "1";
-            let sec = target;
+            let sec = idSec.toString();
 
-            if (target.includes(":")) {
-                [lib, sec] = target.split(":");
+            if (idSec.includes(":")) {
+                [lib, sec] = idSec.split(":");
             }
 
             const secPad = sec.padStart(2, '0');
             return liturgiaDoc.querySelector(`ritual[libro="${lib}"] seccion[id="${sec}"]`)
                 || liturgiaDoc.querySelector(`ritual[libro="${lib}"] seccion[id="${secPad}"]`)
                 || liturgiaDoc.querySelector(`ritual[num="${lib}"] seccion[id="${sec}"]`)
-                || liturgiaDoc.querySelector(`ritual[num="${lib}"] seccion[id="${secPad}"]`)
-                || liturgiaDoc.querySelector(`seccion[id="${sec}"]`);
+                || liturgiaDoc.querySelector(`ritual[num="${lib}"] seccion[id="${secPad}"]`);
         }
 
         function tituloDeSeccion(lib, sec) {
@@ -217,41 +226,40 @@
             const combo = document.getElementById("seccionFilter");
             combo.innerHTML = "";
 
+            const paramsURL = new URLSearchParams(window.location.search);
             const ev = typeof Bitacora !== "undefined" 
                 ? Bitacora.querySelector(`evento[fecha="${fecha}"]`) 
                 : null;
             const ascenso = ev 
                 ? ev.querySelector('item[tipo="ascensos"]') 
                 : null;
+            const paramsEv = new URLSearchParams((ascenso?.getAttribute("url") || "").split('?')[1] || "");
 
-            let libTarget = "1";
-            let secParam = "";
+            let libTarget = paramsURL.get("num") || paramsEv.get("num") || "1";
+            let secParam = paramsURL.get("sec") || paramsEv.get("sec") || "";
 
-            if (ascenso) {
-                const uParams = new URLSearchParams((ascenso.getAttribute("url") || "").split('?')[1] || "");
-                libTarget = uParams.get("num") || "1";
-                secParam = uParams.get("sec") || "";
-            }
-
-            // CASO A: Cámara Superior activa cuando sel viene prefijado (ej: "2:1" o "3:1")
-            if (sel && sel.startsWith(`${libTarget}:`) && libTarget !== "1") {
+            // CASO A: Cámara Superior (Libro 2 o 3)
+            if (libTarget !== "1") {
                 actualizarEncabezadoLibro(libTarget);
                 let lista = desglosarSec(secParam);
-                if (lista.length === 0) lista = ["1", "4", "3"];
+                if (lista.length === 0) lista = ["1", "2", "3"];
+                
                 lista.forEach(idStr => {
                     combo.add(new Option(tituloDeSeccion(libTarget, idStr), `${libTarget}:${idStr}`));
                 });
-                combo.value = sel;
+
+                const valorInicial = (sel && sel.startsWith(`${libTarget}:`)) ? sel : `${libTarget}:${lista[0]}`;
+                combo.value = valorInicial;
                 return;
             }
 
             // CASO B: Estado en Grado 1 (Aprendiz)
             actualizarEncabezadoLibro("1");
 
-            // Si hay un ascenso con sección única asignada
+            // Subcaso B1: Ascenso directo con sección única asignada
             if (ascenso && secParam && !secParam.includes(":") && !secParam.includes("-") && !secParam.includes("[")) {
-                const valorDestino = (libTarget !== "1") ? `${libTarget}:${secParam}` : secParam;
-                const etiquetaDestino = tituloDeSeccion(libTarget, secParam);
+                const valorDestino = secParam;
+                const etiquetaDestino = tituloDeSeccion("1", secParam);
 
                 combo.add(new Option(tituloDeSeccion("1", "1"), "1"));
                 combo.add(new Option(etiquetaDestino, valorDestino));
@@ -261,7 +269,17 @@
                 return;
             }
 
-            // Tenida ordinaria estándar (1, 2 y 3)
+            // Subcaso B2: Secuencia personalizada de Aprendiz (ej: sec=[1,5,3])
+            const listaAprendiz = desglosarSec(secParam);
+            if (listaAprendiz.length > 0) {
+                listaAprendiz.forEach(idStr => {
+                    combo.add(new Option(tituloDeSeccion("1", idStr), idStr));
+                });
+                combo.value = (sel && listaAprendiz.includes(sel)) ? sel : listaAprendiz[0];
+                return;
+            }
+
+            // Tenida ordinaria estándar de Aprendiz (1, 2 y 3)
             ["1", "2", "3"].forEach(num => {
                 combo.add(new Option(tituloDeSeccion("1", num), num));
             });
@@ -428,19 +446,19 @@
             }
 
             if (actual === "3" && d < 0 && s.selectedIndex === 2) {
+                const paramsURL = new URLSearchParams(window.location.search);
                 const ev = typeof Bitacora !== "undefined" ? Bitacora.querySelector(`evento[fecha="${fecha}"]`) : null;
                 const ascenso = ev ? ev.querySelector('item[tipo="ascensos"]') : null;
-                if (ascenso) {
-                    const uParams = new URLSearchParams((ascenso.getAttribute("url") || "").split('?')[1] || "");
-                    const num = uParams.get("num");
-                    if (num === "2" || num === "3") {
-                        const secRaw = uParams.get("sec") || "";
-                        const secs = desglosarSec(secRaw);
-                        const sec = secs.length ? secs[secs.length - 1] : "3";
-                        actualizarSelectorSecciones(`${num}:${sec}`);
-                        actualizarSeccionGlobal();
-                        return;
-                    }
+                const paramsEv = new URLSearchParams((ascenso?.getAttribute("url") || "").split('?')[1] || "");
+                
+                const num = paramsURL.get("num") || paramsEv.get("num");
+                if (num === "2" || num === "3") {
+                    const secRaw = paramsURL.get("sec") || paramsEv.get("sec") || "";
+                    const secs = desglosarSec(secRaw);
+                    const sec = secs.length ? secs[secs.length - 1] : "3";
+                    actualizarSelectorSecciones(`${num}:${sec}`);
+                    actualizarSeccionGlobal();
+                    return;
                 }
             }
 
