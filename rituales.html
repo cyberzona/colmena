@@ -107,19 +107,8 @@
                     document.getElementById("capa-bloqueo").style.display = "none";
                     document.getElementById("contenedor-principal").style.display = "block";
                     
-                    const libInicial = params.get('num') || "1";
-                    const secInicial = params.get('sec');
-                    actualizarEncabezadoLibro(libInicial);
-                    
-                    if (libInicial !== "1") {
-                        const primSec = secInicial ? desglosarSec(secInicial)[0] : "1";
-                        actualizarSelectorSecciones(`${libInicial}:${primSec}`);
-                    } else if (secInicial) {
-                        const primSec = desglosarSec(secInicial)[0];
-                        actualizarSelectorSecciones(primSec);
-                    } else {
-                        actualizarSelectorSecciones("1");
-                    }
+                    // Inicialización delegada que resuelve la precedencia URL vs Bitácora
+                    actualizarSelectorSecciones();
                     
                     if (sessionStorage.getItem('actorRetornoLogia')) {
                         document.getElementById("actorFilter").dataset.actorPendiente = sessionStorage.getItem('actorRetornoLogia');
@@ -135,7 +124,7 @@
                         }, 1200); 
                     }
                 }
-            } catch (e) { console.error(e); }
+            } catch (e) { console.error("Error al inicializar portal:", e); }
         }
         
         async function AccesoRito(pass = null) {
@@ -224,6 +213,7 @@
 
         function actualizarSelectorSecciones(sel) {
             const combo = document.getElementById("seccionFilter");
+            if (!combo) return;
             combo.innerHTML = "";
 
             const paramsURL = new URLSearchParams(window.location.search);
@@ -233,14 +223,36 @@
             const ascenso = ev 
                 ? ev.querySelector('item[tipo="ascensos"]') 
                 : null;
-            const paramsEv = new URLSearchParams((ascenso?.getAttribute("url") || "").split('?')[1] || "");
+            
+            // Extraer parámetros de la URL incrustada en la bitácora
+            const paramsBitacora = new URLSearchParams((ascenso?.getAttribute("url") || "").split('?')[1] || "");
 
-            let libTarget = paramsURL.get("num") || paramsEv.get("num") || "1";
-            let secParam = paramsURL.get("sec") || paramsEv.get("sec") || "";
+            // DETERMINAR LIBRO ACTIVO:
+            // 1. Si sel viene prefijado ("2:1", "3:1"), manda la acción del usuario
+            // 2. Si la URL del navegador especifica ?num=..., manda la URL
+            // 3. Si la bitácora del día tiene url con num=..., manda la bitácora
+            // 4. Si nada aplica, Grado 1 (Aprendiz)
+            let libTarget = "1";
+            if (sel && sel.includes(":")) {
+                libTarget = sel.split(":")[0];
+            } else if (paramsURL.has("num")) {
+                libTarget = paramsURL.get("num");
+            } else if (ascenso && paramsBitacora.has("num")) {
+                libTarget = paramsBitacora.get("num");
+            }
+
+            // DETERMINAR SECUENCIA DE SECCIONES:
+            let secParam = "";
+            if (paramsURL.has("sec")) {
+                secParam = paramsURL.get("sec");
+            } else if (ascenso && paramsBitacora.has("sec")) {
+                secParam = paramsBitacora.get("sec");
+            }
+
+            actualizarEncabezadoLibro(libTarget);
 
             // CASO A: Cámara Superior (Libro 2 o 3)
             if (libTarget !== "1") {
-                actualizarEncabezadoLibro(libTarget);
                 let lista = desglosarSec(secParam);
                 if (lista.length === 0) lista = ["1", "2", "3"];
                 
@@ -254,18 +266,13 @@
             }
 
             // CASO B: Estado en Grado 1 (Aprendiz)
-            actualizarEncabezadoLibro("1");
-
-            // Subcaso B1: Ascenso directo con sección única asignada
+            // Subcaso B1: Ascenso directo con sección única (ej: sec=5 o sec=4 sin corchetes)
             if (ascenso && secParam && !secParam.includes(":") && !secParam.includes("-") && !secParam.includes("[")) {
-                const valorDestino = secParam;
-                const etiquetaDestino = tituloDeSeccion("1", secParam);
-
                 combo.add(new Option(tituloDeSeccion("1", "1"), "1"));
-                combo.add(new Option(etiquetaDestino, valorDestino));
+                combo.add(new Option(tituloDeSeccion("1", secParam), secParam));
                 combo.add(new Option(tituloDeSeccion("1", "3"), "3"));
 
-                combo.value = (sel === "2" || sel === valorDestino) ? valorDestino : (sel || "1");
+                combo.value = (sel === "2" || sel === secParam) ? secParam : (sel || "1");
                 return;
             }
 
@@ -279,7 +286,7 @@
                 return;
             }
 
-            // Tenida ordinaria estándar de Aprendiz (1, 2 y 3)
+            // Subcaso B3: Tenida ordinaria estándar de Aprendiz (1, 2 y 3)
             ["1", "2", "3"].forEach(num => {
                 combo.add(new Option(tituloDeSeccion("1", num), num));
             });
@@ -304,8 +311,11 @@
         }
 
         async function gestionarCambioSeccion() {
-            const idSec = document.getElementById("seccionFilter").value || "1";
+            const sel = document.getElementById("seccionFilter");
+            const idSec = sel ? (sel.value || "1") : "1";
             const comboActor = document.getElementById("actorFilter");
+            if (!comboActor) return;
+
             const actorPendiente = comboActor.dataset.actorPendiente || comboActor.value;
             delete comboActor.dataset.actorPendiente;
 
@@ -436,6 +446,7 @@
         
         function navRelativa(d) {
             const s = document.getElementById("seccionFilter");
+            if (!s) return;
             const actual = s.value;
             const esCamaraSuperior = actual.startsWith("2:") || actual.startsWith("3:");
 
@@ -446,19 +457,19 @@
             }
 
             if (actual === "3" && d < 0 && s.selectedIndex === 2) {
-                const paramsURL = new URLSearchParams(window.location.search);
                 const ev = typeof Bitacora !== "undefined" ? Bitacora.querySelector(`evento[fecha="${fecha}"]`) : null;
                 const ascenso = ev ? ev.querySelector('item[tipo="ascensos"]') : null;
-                const paramsEv = new URLSearchParams((ascenso?.getAttribute("url") || "").split('?')[1] || "");
-                
-                const num = paramsURL.get("num") || paramsEv.get("num");
-                if (num === "2" || num === "3") {
-                    const secRaw = paramsURL.get("sec") || paramsEv.get("sec") || "";
-                    const secs = desglosarSec(secRaw);
-                    const sec = secs.length ? secs[secs.length - 1] : "3";
-                    actualizarSelectorSecciones(`${num}:${sec}`);
-                    actualizarSeccionGlobal();
-                    return;
+                if (ascenso) {
+                    const uParams = new URLSearchParams((ascenso.getAttribute("url") || "").split('?')[1] || "");
+                    const num = uParams.get("num");
+                    if (num === "2" || num === "3") {
+                        const secRaw = uParams.get("sec") || "";
+                        const secs = desglosarSec(secRaw);
+                        const sec = secs.length ? secs[secs.length - 1] : "3";
+                        actualizarSelectorSecciones(`${num}:${sec}`);
+                        actualizarSeccionGlobal();
+                        return;
+                    }
                 }
             }
 
