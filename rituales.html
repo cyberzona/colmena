@@ -107,8 +107,8 @@
                     document.getElementById("capa-bloqueo").style.display = "none";
                     document.getElementById("contenedor-principal").style.display = "block";
                     
-                    // Inicialización delegada que resuelve la precedencia URL vs Bitácora
-                    actualizarSelectorSecciones();
+                    actualizarEncabezadoLibro("1");
+                    actualizarSelectorSecciones("1");                   
                     
                     if (sessionStorage.getItem('actorRetornoLogia')) {
                         document.getElementById("actorFilter").dataset.actorPendiente = sessionStorage.getItem('actorRetornoLogia');
@@ -124,7 +124,7 @@
                         }, 1200); 
                     }
                 }
-            } catch (e) { console.error("Error al inicializar portal:", e); }
+            } catch (e) { console.error(e); }
         }
         
         async function AccesoRito(pass = null) {
@@ -180,27 +180,20 @@
             if (el) el.textContent = Dic[libro] || "Liturgia";
         }
 
-        function obtenerNodoSeccion(idSec) {
-            if (!liturgiaDoc || !idSec) return null;
-            let lib = "1";
-            let sec = idSec.toString();
-
-            if (idSec.includes(":")) {
-                [lib, sec] = idSec.split(":");
-            }
-
-            const secPad = sec.padStart(2, '0');
-            return liturgiaDoc.querySelector(`ritual[libro="${lib}"] seccion[id="${sec}"]`)
-                || liturgiaDoc.querySelector(`ritual[libro="${lib}"] seccion[id="${secPad}"]`)
-                || liturgiaDoc.querySelector(`ritual[num="${lib}"] seccion[id="${sec}"]`)
-                || liturgiaDoc.querySelector(`ritual[num="${lib}"] seccion[id="${secPad}"]`);
-        }
-
         function tituloDeSeccion(lib, sec) {
-            const s = obtenerNodoSeccion(sec.includes(":") ? sec : `${lib}:${sec}`);
+            const s = liturgiaDoc ? liturgiaDoc.querySelector(`ritual[libro="${lib}"] seccion[id="${sec}"]`) : null;
             return s ? (s.getAttribute("titulo") || "").trim() : `Sección ${sec}`;
         }
 
+        function obtenerNodoSeccion(idSec) {
+            if (idSec && idSec.includes(":")) {
+                const [lib, sec] = idSec.split(":");
+                return liturgiaDoc ? liturgiaDoc.querySelector(`ritual[libro="${lib}"] seccion[id="${sec}"]`) : null;
+            }
+            return liturgiaDoc ? liturgiaDoc.querySelector(`ritual[libro="1"] seccion[id="${idSec}"]`) : null;
+        }
+
+        // Parsea: 4, 1:4, 1-3, [2,5,3], [1:4], [1-3]
         function desglosarSec(str) {
             if (!str) return [];
             return str.toString().replace(/[\[\]\s]/g, '').split(',').flatMap(tok => {
@@ -213,7 +206,6 @@
 
         function actualizarSelectorSecciones(sel) {
             const combo = document.getElementById("seccionFilter");
-            if (!combo) return;
             combo.innerHTML = "";
 
             const paramsURL = new URLSearchParams(window.location.search);
@@ -223,72 +215,53 @@
             const ascenso = ev 
                 ? ev.querySelector('item[tipo="ascensos"]') 
                 : null;
-            
-            // Extraer parámetros de la URL incrustada en la bitácora
-            const paramsBitacora = new URLSearchParams((ascenso?.getAttribute("url") || "").split('?')[1] || "");
+            const paramsEv = new URLSearchParams((ascenso?.getAttribute("url") || "").split('?')[1] || "");
 
-            // DETERMINAR LIBRO ACTIVO:
-            // 1. Si sel viene prefijado ("2:1", "3:1"), manda la acción del usuario
-            // 2. Si la URL del navegador especifica ?num=..., manda la URL
-            // 3. Si la bitácora del día tiene url con num=..., manda la bitácora
-            // 4. Si nada aplica, Grado 1 (Aprendiz)
-            let libTarget = "1";
-            if (sel && sel.includes(":")) {
-                libTarget = sel.split(":")[0];
-            } else if (paramsURL.has("num")) {
-                libTarget = paramsURL.get("num");
-            } else if (ascenso && paramsBitacora.has("num")) {
-                libTarget = paramsBitacora.get("num");
-            }
+            // num se presume 1 si no está presente
+            const libTarget = paramsURL.get("num") || paramsEv.get("num") || "1";
+            const secParam = paramsURL.get("sec") || paramsEv.get("sec") || "";
+            const listaSecciones = desglosarSec(secParam);
 
-            // DETERMINAR SECUENCIA DE SECCIONES:
-            let secParam = "";
-            if (paramsURL.has("sec")) {
-                secParam = paramsURL.get("sec");
-            } else if (ascenso && paramsBitacora.has("sec")) {
-                secParam = paramsBitacora.get("sec");
-            }
-
-            actualizarEncabezadoLibro(libTarget);
-
-            // CASO A: Cámara Superior (Libro 2 o 3)
-            if (libTarget !== "1") {
-                let lista = desglosarSec(secParam);
-                if (lista.length === 0) lista = ["1", "2", "3"];
-                
-                lista.forEach(idStr => {
+            // CASO A: Cámara Superior activa cuando sel viene prefijado con su número de grado (ej: "2:1")
+            if (sel && sel.startsWith(`${libTarget}:`) && libTarget !== "1") {
+                actualizarEncabezadoLibro(libTarget);
+                const seccionesCarga = listaSecciones.length ? listaSecciones : ["1", "4", "3"];
+                seccionesCarga.forEach(idStr => {
                     combo.add(new Option(tituloDeSeccion(libTarget, idStr), `${libTarget}:${idStr}`));
                 });
-
-                const valorInicial = (sel && sel.startsWith(`${libTarget}:`)) ? sel : `${libTarget}:${lista[0]}`;
-                combo.value = valorInicial;
+                combo.value = sel;
                 return;
             }
 
             // CASO B: Estado en Grado 1 (Aprendiz)
-            // Subcaso B1: Ascenso directo con sección única (ej: sec=5 o sec=4 sin corchetes)
-            if (ascenso && secParam && !secParam.includes(":") && !secParam.includes("-") && !secParam.includes("[")) {
-                combo.add(new Option(tituloDeSeccion("1", "1"), "1"));
-                combo.add(new Option(tituloDeSeccion("1", secParam), secParam));
-                combo.add(new Option(tituloDeSeccion("1", "3"), "3"));
+            actualizarEncabezadoLibro("1");
 
-                combo.value = (sel === "2" || sel === secParam) ? secParam : (sel || "1");
-                return;
-            }
-
-            // Subcaso B2: Secuencia personalizada de Aprendiz (ej: sec=[1,5,3])
-            const listaAprendiz = desglosarSec(secParam);
-            if (listaAprendiz.length > 0) {
-                listaAprendiz.forEach(idStr => {
+            // Subcaso B1: Secuencias personalizadas en Grado 1 (ej: Iniciación con sec=[1,5,3])
+            if (libTarget === "1" && listaSecciones.length > 0) {
+                listaSecciones.forEach(idStr => {
                     combo.add(new Option(tituloDeSeccion("1", idStr), idStr));
                 });
-                combo.value = (sel && listaAprendiz.includes(sel)) ? sel : listaAprendiz[0];
+                combo.value = (sel && listaSecciones.includes(sel)) ? sel : listaSecciones[0];
                 return;
             }
 
-            // Subcaso B3: Tenida ordinaria estándar de Aprendiz (1, 2 y 3)
-            ["1", "2", "3"].forEach(num => {
-                combo.add(new Option(tituloDeSeccion("1", num), num));
+            // Subcaso B2: Ascenso directo con valor numérico único (ej: sustituye sección 2)
+            if (ascenso && listaSecciones.length === 1 && !secParam.includes(":") && !secParam.includes("-") && !secParam.includes("[")) {
+                const valorDestino = (libTarget !== "1") ? `${libTarget}:${secParam}` : secParam;
+                const etiquetaDestino = tituloDeSeccion(libTarget, secParam);
+
+                combo.add(new Option(tituloDeSeccion("1", "1"), "1"));
+                combo.add(new Option(etiquetaDestino, valorDestino));
+                combo.add(new Option(tituloDeSeccion("1", "3"), "3"));
+
+                combo.value = (sel === "2" || sel === valorDestino) ? valorDestino : (sel || "1");
+                return;
+            }
+
+            // Tenida ordinaria con secciones canónicas 1, 2 y 3
+            [1, 2, 3].forEach(num => {
+                const idStr = num.toString();
+                combo.add(new Option(tituloDeSeccion("1", idStr), idStr));
             });
             combo.value = sel || "1";
         }
@@ -311,11 +284,8 @@
         }
 
         async function gestionarCambioSeccion() {
-            const sel = document.getElementById("seccionFilter");
-            const idSec = sel ? (sel.value || "1") : "1";
+            const idSec = document.getElementById("seccionFilter").value;
             const comboActor = document.getElementById("actorFilter");
-            if (!comboActor) return;
-
             const actorPendiente = comboActor.dataset.actorPendiente || comboActor.value;
             delete comboActor.dataset.actorPendiente;
 
@@ -327,32 +297,31 @@
                 });
             }
             comboActor.innerHTML = '<option value="">---</option>';
-            if (Glosario) {
-                Array.from(Glosario.getElementsByTagName("item")).forEach(i => {
-                    const s = i.getAttribute("sigla");
-                    if (actoresEnSec.has(s)) comboActor.add(new Option(s + "∴", s));
-                });
-            }
+            Array.from(Glosario.getElementsByTagName("item")).forEach(i => {
+                const s = i.getAttribute("sigla");
+                if (actoresEnSec.has(s)) comboActor.add(new Option(s + "∴", s));
+            });
             comboActor.value = actoresEnSec.has(actorPendiente) ? actorPendiente : "";
             renderizarLiturgia(false);
         }
 
         function renderizarLiturgia(hacerScroll = false) {
             const sel = document.getElementById("seccionFilter");
-            const idSec = sel ? (sel.value || "1") : "1";
-            const actorSel = document.getElementById("actorFilter") ? document.getElementById("actorFilter").value : "";            
+            const idSec = sel ? sel.value : "";
+            const actorSel = document.getElementById("actorFilter").value;            
 
+            const paramsURL = new URLSearchParams(window.location.search);
             const ev = typeof Bitacora !== "undefined" ? Bitacora.querySelector(`evento[fecha="${fecha}"]`) : null;
             const ascenso = ev ? ev.querySelector('item[tipo="ascensos"]') : null;
+            const paramsEv = new URLSearchParams((ascenso?.getAttribute("url") || "").split('?')[1] || "");
+            
             let hayAscensoSuperior = false;
+            const targetNum = paramsURL.get("num") || paramsEv.get("num") || "1";
+            const targetSec = paramsURL.get("sec") || paramsEv.get("sec") || "";
 
-            if (ascenso) {
-                const uParams = new URLSearchParams((ascenso.getAttribute("url") || "").split('?')[1] || "");
-                const paramSec = uParams.get("sec") || "";
-                const paramNum = uParams.get("num") || "1";
-
-                if (paramSec.includes(":") || paramSec.includes("-") || paramSec.includes("[")) {
-                    hayAscensoSuperior = (paramNum !== "1");
+            if (ascenso || paramsURL.get("num")) {
+                if (targetNum !== "1" && (targetSec.includes(":") || targetSec.includes("-") || targetSec.includes("["))) {
+                    hayAscensoSuperior = true;
                 }
             }
 
@@ -369,7 +338,7 @@
 
                 const parte = partes[i];
                 const tituloParte = (parte.getAttribute("titulo") || "").trim();
-                let htmlParte = `<div class="parte-header">${i + 1}. ${tituloParte}</div>`;                
+                let htmlParte = `<div class="parte-header">${i + 1}. ${tituloParte}</div>`;               
                 let contieneInstanciaAscenso = false;
 
                 Array.from(parte.getElementsByTagName("acto")).forEach((acto, j) => {
@@ -393,14 +362,12 @@
                         texto = texto.replace("[[INSTANCIA]]", "");
                     }
 
-                    if (Glosario) {
-                        texto = texto.replace(/(\b\S+∴)/gi, (match) => {
-                            const gsigla = match.replace('∴', '').trim();
-                            const ginfo = Glosario.querySelector(`item[sigla="${gsigla}"]`);
-                            const names = ginfo ? ginfo.getAttribute("expansion") : gsigla;
-                            return `<span class="actor-hint" data-memo="${names}" style="color:#0277bd; font-weight:bold;">${match}</span>`;
-                        });
-                    }
+                    texto = texto.replace(/(\b\S+∴)/gi, (match) => {
+                        const gsigla = match.replace('∴', '').trim();
+                        const ginfo = Glosario.querySelector(`item[sigla="${gsigla}"]`);
+                        const names = ginfo ? ginfo.getAttribute("expansion") : gsigla;
+                        return `<span class="actor-hint" data-memo="${names}" style="color:#0277bd; font-weight:bold;">${match}</span>`;
+                    });
 
                     texto = texto.replace(/\[(.*?)\]/g, '<span class="acotacion">($1)</span>');
                     const esFoco = actorSel && actor === actorSel;
@@ -420,6 +387,7 @@
             let nav = `<div class="nav-footer">`;
             nav += idx > 0 ? `<button class="btn-flechas" onclick="navRelativa(-1)"><span class="flip-h">➤</span></button>` : `<span></span>`;            
             
+            // Botón de salida '✕' tanto para Libro 2 como para Libro 3
             const esCamaraSuperior = idSec.startsWith("2:") || idSec.startsWith("3:");
             if (esCamaraSuperior && idx === totalOpciones - 1) {
                 nav += `<button class="btn-flechas btn-flechas-cierre" title="Retornar a Clausura de Grado 1" onclick="navRelativa(1)">✕</button>`;
@@ -446,30 +414,31 @@
         
         function navRelativa(d) {
             const s = document.getElementById("seccionFilter");
-            if (!s) return;
             const actual = s.value;
             const esCamaraSuperior = actual.startsWith("2:") || actual.startsWith("3:");
 
+            // Retorno directo a Clausura de Aprendiz (3) desde la última sección de Cámara 2 o 3
             if (esCamaraSuperior && d > 0 && s.selectedIndex === s.options.length - 1) {
                 actualizarSelectorSecciones("3");
                 actualizarSeccionGlobal();
                 return;
             }
 
+            // Retroceso desde Clausura de Aprendiz hacia el final de la cámara superior respectiva
             if (actual === "3" && d < 0 && s.selectedIndex === 2) {
+                const paramsURL = new URLSearchParams(window.location.search);
                 const ev = typeof Bitacora !== "undefined" ? Bitacora.querySelector(`evento[fecha="${fecha}"]`) : null;
                 const ascenso = ev ? ev.querySelector('item[tipo="ascensos"]') : null;
-                if (ascenso) {
-                    const uParams = new URLSearchParams((ascenso.getAttribute("url") || "").split('?')[1] || "");
-                    const num = uParams.get("num");
-                    if (num === "2" || num === "3") {
-                        const secRaw = uParams.get("sec") || "";
-                        const secs = desglosarSec(secRaw);
-                        const sec = secs.length ? secs[secs.length - 1] : "3";
-                        actualizarSelectorSecciones(`${num}:${sec}`);
-                        actualizarSeccionGlobal();
-                        return;
-                    }
+                const paramsEv = new URLSearchParams((ascenso?.getAttribute("url") || "").split('?')[1] || "");
+                
+                const num = paramsURL.get("num") || paramsEv.get("num");
+                if (num === "2" || num === "3") {
+                    const secRaw = paramsURL.get("sec") || paramsEv.get("sec") || "";
+                    const secs = desglosarSec(secRaw);
+                    const sec = secs.length ? secs[secs.length - 1] : "3";
+                    actualizarSelectorSecciones(`${num}:${sec}`);
+                    actualizarSeccionGlobal();
+                    return;
                 }
             }
 
@@ -499,12 +468,11 @@
         }
 
         function inyectarInstancia(actor, sec, verso) {
-            if (!Bitacora) return "";
             const t = Array.from(Bitacora.getElementsByTagName("evento")).find(x => x.getAttribute("fecha") === fecha);        
             if (!t) { 
                 return (actor === "VM") ? `<p class="dialogo-vm">Continúa el orden del día.</p>` : ""; 
             }           
-            const actorActual = document.getElementById("actorFilter") ? document.getElementById("actorFilter").value : "";            
+            const actorActual = document.getElementById("actorFilter").value;            
             const items = Array.from(t.getElementsByTagName("item"));  
             let h = ""; 
             const itemsValidos = items.filter(i => {
@@ -542,7 +510,7 @@
                             const secDestino = secs.length ? secs[0] : targetSecParam;
                             h += `<button class="btn-instancia-exec" onclick="document.getElementById('seccionFilter').value='${secDestino}'; actualizarSeccionGlobal();">${tit}</button>`;
                         }
-                    } else if (url && url.includes('rituales.html')) {
+                    } else if (url.includes('rituales.html')) {
                         const urlParams = new URLSearchParams(url.split('?')[1]);
                         const linkExterno = urlParams.get('ext') || "";
                         let urlDestino = url;
@@ -550,7 +518,7 @@
                             urlDestino += `&ext=${encodeURIComponent(linkExterno)}`;
                         }                        
                         h += `<button class="btn-instancia-exec" onclick="capturarOrigenYSalir('${urlDestino}', '${actorActual}', '${sec}', '${verso}')">${tit}</button>`;
-                    } else if (url) { 
+                    } else { 
                         const tip = i.getAttribute("tipo");
                         const icon = tip === "cronicas" ? "📜 " : (tip === "trazados" ? "📍 " : "");
                         h += `<button class="btn-ritual" onclick="mostrarVisor('${url}')">${icon}${tit}</button>`; 
