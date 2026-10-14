@@ -493,6 +493,11 @@
         <acto actor="VM" tema="[Da golpes de Mallete] Quedan cerrados los trabajos de Compañero. A mí, HH∴, por el signo y Batería de Grado." />
       </parte>
     </seccion>
+    <seccion id="4" titulo="Aumento de Salario">
+    <parte titulo="Ceremonia de Ascensión">
+      <!-- Diálogos propios de Compañero (viajes, Estrella Flamígera, etc.) -->
+    </parte>
+  </seccion>
   </ritual>
 
   <!-- ================================================================= -->
