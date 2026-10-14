@@ -108,7 +108,7 @@
                     document.getElementById("contenedor-principal").style.display = "block";
                     
                     actualizarEncabezadoLibro("1");
-                    actualizarSelectorSecciones("1");                   
+                    actualizarSelectorSecciones();                   
                     
                     if (sessionStorage.getItem('actorRetornoLogia')) {
                         document.getElementById("actorFilter").dataset.actorPendiente = sessionStorage.getItem('actorRetornoLogia');
@@ -181,12 +181,13 @@
         }
 
         function obtenerNodoSeccion(idSec) {
-            if (!liturgiaDoc || !idSec) return null;
+            if (!liturgiaDoc) return null;
+            let actualSec = idSec ? idSec.toString() : "1";
             let lib = "1";
-            let sec = idSec.toString();
+            let sec = actualSec;
 
-            if (idSec.includes(":")) {
-                [lib, sec] = idSec.split(":");
+            if (actualSec.includes(":")) {
+                [lib, sec] = actualSec.split(":");
             }
 
             const secPad = sec.padStart(2, '0');
@@ -214,6 +215,7 @@
 
         function actualizarSelectorSecciones(sel) {
             const combo = document.getElementById("seccionFilter");
+            if (!combo) return;
             combo.innerHTML = "";
 
             const paramsURL = new URLSearchParams(window.location.search);
@@ -229,7 +231,7 @@
             const secParam = paramsURL.get("sec") || paramsEv.get("sec") || "";
             const listaSecciones = desglosarSec(secParam);
 
-            // CASO A: Cámara Superior activa cuando sel viene prefijado con su número de grado (ej: "2:1")
+            // CASO A: Cámara Superior activa cuando sel viene prefijado con su número de grado (ej: "2:1" o "3:1")
             if (sel && sel.startsWith(`${libTarget}:`) && libTarget !== "1") {
                 actualizarEncabezadoLibro(libTarget);
                 const seccionesCarga = listaSecciones.length ? listaSecciones : ["1", "4", "3"];
@@ -265,12 +267,15 @@
                 return;
             }
 
-            // Tenida ordinaria con secciones canónicas 1, 2 y 3
+            // Tenida ordinaria con secciones canónicas 1, 2 y 3 por defecto
             [1, 2, 3].forEach(num => {
                 const idStr = num.toString();
                 combo.add(new Option(tituloDeSeccion("1", idStr), idStr));
             });
             combo.value = sel || "1";
+            if (!combo.value && combo.options.length > 0) {
+                combo.selectedIndex = 0;
+            }
         }
 
         function actualizarSeccionGlobal() {
@@ -291,8 +296,11 @@
         }
 
         async function gestionarCambioSeccion() {
-            const idSec = document.getElementById("seccionFilter").value;
+            const sel = document.getElementById("seccionFilter");
+            const idSec = sel ? sel.value : "1";
             const comboActor = document.getElementById("actorFilter");
+            if (!comboActor) return;
+            
             const actorPendiente = comboActor.dataset.actorPendiente || comboActor.value;
             delete comboActor.dataset.actorPendiente;
 
@@ -304,18 +312,20 @@
                 });
             }
             comboActor.innerHTML = '<option value="">---</option>';
-            Array.from(Glosario.getElementsByTagName("item")).forEach(i => {
-                const s = i.getAttribute("sigla");
-                if (actoresEnSec.has(s)) comboActor.add(new Option(s + "∴", s));
-            });
+            if (Glosario) {
+                Array.from(Glosario.getElementsByTagName("item")).forEach(i => {
+                    const s = i.getAttribute("sigla");
+                    if (actoresEnSec.has(s)) comboActor.add(new Option(s + "∴", s));
+                });
+            }
             comboActor.value = actoresEnSec.has(actorPendiente) ? actorPendiente : "";
             renderizarLiturgia(false);
         }
 
         function renderizarLiturgia(hacerScroll = false) {
             const sel = document.getElementById("seccionFilter");
-            const idSec = sel ? sel.value : "";
-            const actorSel = document.getElementById("actorFilter").value;            
+            const idSec = sel ? sel.value : "1";
+            const actorSel = document.getElementById("actorFilter") ? document.getElementById("actorFilter").value : "";            
 
             const paramsURL = new URLSearchParams(window.location.search);
             const ev = typeof Bitacora !== "undefined" ? Bitacora.querySelector(`evento[fecha="${fecha}"]`) : null;
@@ -369,12 +379,14 @@
                         texto = texto.replace("[[INSTANCIA]]", "");
                     }
 
-                    texto = texto.replace(/(\b\S+∴)/gi, (match) => {
-                        const gsigla = match.replace('∴', '').trim();
-                        const ginfo = Glosario.querySelector(`item[sigla="${gsigla}"]`);
-                        const names = ginfo ? ginfo.getAttribute("expansion") : gsigla;
-                        return `<span class="actor-hint" data-memo="${names}" style="color:#0277bd; font-weight:bold;">${match}</span>`;
-                    });
+                    if (Glosario) {
+                        texto = texto.replace(/(\b\S+∴)/gi, (match) => {
+                            const gsigla = match.replace('∴', '').trim();
+                            const ginfo = Glosario.querySelector(`item[sigla="${gsigla}"]`);
+                            const names = ginfo ? ginfo.getAttribute("expansion") : gsigla;
+                            return `<span class="actor-hint" data-memo="${names}" style="color:#0277bd; font-weight:bold;">${match}</span>`;
+                        });
+                    }
 
                     texto = texto.replace(/\[(.*?)\]/g, '<span class="acotacion">($1)</span>');
                     const esFoco = actorSel && actor === actorSel;
@@ -420,6 +432,7 @@
         
         function navRelativa(d) {
             const s = document.getElementById("seccionFilter");
+            if (!s) return;
             const actual = s.value;
             const esCamaraSuperior = actual.startsWith("2:") || actual.startsWith("3:");
 
@@ -472,11 +485,12 @@
         }
 
         function inyectarInstancia(actor, sec, verso) {
+            if (!Bitacora) return "";
             const t = Array.from(Bitacora.getElementsByTagName("evento")).find(x => x.getAttribute("fecha") === fecha);        
             if (!t) { 
                 return (actor === "VM") ? `<p class="dialogo-vm">Continúa el orden del día.</p>` : ""; 
             }           
-            const actorActual = document.getElementById("actorFilter").value;            
+            const actorActual = document.getElementById("actorFilter") ? document.getElementById("actorFilter").value : "";            
             const items = Array.from(t.getElementsByTagName("item"));  
             let h = ""; 
             const itemsValidos = items.filter(i => {
@@ -514,7 +528,7 @@
                             const secDestino = secs.length ? secs[0] : targetSecParam;
                             h += `<button class="btn-instancia-exec" onclick="document.getElementById('seccionFilter').value='${secDestino}'; actualizarSeccionGlobal();">${tit}</button>`;
                         }
-                    } else if (url.includes('rituales.html')) {
+                    } else if (url && url.includes('rituales.html')) {
                         const urlParams = new URLSearchParams(url.split('?')[1]);
                         const linkExterno = urlParams.get('ext') || "";
                         let urlDestino = url;
@@ -522,7 +536,7 @@
                             urlDestino += `&ext=${encodeURIComponent(linkExterno)}`;
                         }                        
                         h += `<button class="btn-instancia-exec" onclick="capturarOrigenYSalir('${urlDestino}', '${actorActual}', '${sec}', '${verso}')">${tit}</button>`;
-                    } else { 
+                    } else if (url) { 
                         const tip = i.getAttribute("tipo");
                         const icon = tip === "cronicas" ? "📜 " : (tip === "trazados" ? "📍 " : "");
                         h += `<button class="btn-ritual" onclick="mostrarVisor('${url}')">${icon}${tit}</button>`; 
