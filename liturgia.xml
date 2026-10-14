@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+n<?xml version="1.0" encoding="UTF-8"?>
 <liturgia>
   <ritual libro="1" logia="Colmena No. 8">
     
@@ -467,7 +467,7 @@
   <!-- ================================================================= -->
   <ritual libro="2" logia="Colmena No. 8">
     <seccion id="1" titulo="Apertura de Trabajos">
-      <parte titulo="Apertura de Trabajos">
+      <parte titulo="Preliminares de la Apertura">
         <acto actor="VM" tema="HH∴ 1V∴ y 2V∴, servíos anunciar a los HH∴ de vuestras respectivas CCol∴, como yo lo hago en Oriente, que voy a suspender los trabajos con un solo golpe de Mallete para abrir la Cámara de Compañero." />
         <acto actor="1V" tema="H∴ 2V∴ y HH∴ de mi Col∴, nuestro VM∴ va a suspender los trabajos por un solo golpe de Mallete." />
         <acto actor="2V" tema="HH∴ de la Col∴ del Sur, os anuncio que el VM∴ va a suspender los trabajos con un solo golpe de Mallete." />
