@@ -236,7 +236,7 @@
             if (sel && sel.startsWith(`${libTarget}:`) && libTarget !== "1") {
                 actualizarEncabezadoLibro(libTarget);
                 let lista = desglosarSec(secParam);
-                if (lista.length === 0) lista = ["1", "4", "3"];
+                if (lista.length === 0) lista = ["1", "2", "3"];
                 
                 lista.forEach(idStr => {
                     combo.add(new Option(tituloDeSeccion(libTarget, idStr), `${libTarget}:${idStr}`));
