@@ -107,8 +107,11 @@
                     document.getElementById("capa-bloqueo").style.display = "none";
                     document.getElementById("contenedor-principal").style.display = "block";
                     
+                    // La Tenida abre siempre en Aprendiz
                     actualizarEncabezadoLibro("1");
-                    actualizarSelectorSecciones("1");                   
+                    
+                    // Inicializa el selector respetando si hay secuencia de Iniciación [1,5,3]
+                    actualizarSelectorSecciones();
                     
                     if (sessionStorage.getItem('actorRetornoLogia')) {
                         document.getElementById("actorFilter").dataset.actorPendiente = sessionStorage.getItem('actorRetornoLogia');
@@ -124,7 +127,7 @@
                         }, 1200); 
                     }
                 }
-            } catch (e) { console.error(e); }
+            } catch (e) { console.error("Error al inicializar portal:", e); }
         }
         
         async function AccesoRito(pass = null) {
@@ -180,20 +183,27 @@
             if (el) el.textContent = Dic[libro] || "Liturgia";
         }
 
+        function obtenerNodoSeccion(idSec) {
+            if (!liturgiaDoc || !idSec) return null;
+            let lib = "1";
+            let sec = idSec.toString();
+
+            if (idSec.includes(":")) {
+                [lib, sec] = idSec.split(":");
+            }
+
+            const secPad = sec.padStart(2, '0');
+            return liturgiaDoc.querySelector(`ritual[libro="${lib}"] seccion[id="${sec}"]`)
+                || liturgiaDoc.querySelector(`ritual[libro="${lib}"] seccion[id="${secPad}"]`)
+                || liturgiaDoc.querySelector(`ritual[num="${lib}"] seccion[id="${sec}"]`)
+                || liturgiaDoc.querySelector(`ritual[num="${lib}"] seccion[id="${secPad}"]`);
+        }
+
         function tituloDeSeccion(lib, sec) {
-            const s = liturgiaDoc ? liturgiaDoc.querySelector(`ritual[libro="${lib}"] seccion[id="${sec}"]`) : null;
+            const s = obtenerNodoSeccion(sec.includes(":") ? sec : `${lib}:${sec}`);
             return s ? (s.getAttribute("titulo") || "").trim() : `Sección ${sec}`;
         }
 
-        function obtenerNodoSeccion(idSec) {
-            if (idSec && idSec.includes(":")) {
-                const [lib, sec] = idSec.split(":");
-                return liturgiaDoc ? liturgiaDoc.querySelector(`ritual[libro="${lib}"] seccion[id="${sec}"]`) : null;
-            }
-            return liturgiaDoc ? liturgiaDoc.querySelector(`ritual[libro="1"] seccion[id="${idSec}"]`) : null;
-        }
-
-        // Parsea: 4, 1:4, 1-3, [2,5,3], [1:4], [1-3]
         function desglosarSec(str) {
             if (!str) return [];
             return str.toString().replace(/[\[\]\s]/g, '').split(',').flatMap(tok => {
@@ -206,6 +216,7 @@
 
         function actualizarSelectorSecciones(sel) {
             const combo = document.getElementById("seccionFilter");
+            if (!combo) return;
             combo.innerHTML = "";
 
             const paramsURL = new URLSearchParams(window.location.search);
@@ -217,18 +228,20 @@
                 : null;
             const paramsEv = new URLSearchParams((ascenso?.getAttribute("url") || "").split('?')[1] || "");
 
-            // num se presume 1 si no está presente
-            const libTarget = paramsURL.get("num") || paramsEv.get("num") || "1";
-            const secParam = paramsURL.get("sec") || paramsEv.get("sec") || "";
-            const listaSecciones = desglosarSec(secParam);
+            // Datos de la bitácora
+            const libTarget = paramsEv.get("num") || paramsURL.get("num") || "1";
+            const secParam = paramsEv.get("sec") || paramsURL.get("sec") || "";
 
-            // CASO A: Cámara Superior activa cuando sel viene prefijado con su número de grado (ej: "2:1")
+            // CASO A: Cámara Superior activa (Libro 2 o 3 disparada desde Asuntos Ordinarios)
             if (sel && sel.startsWith(`${libTarget}:`) && libTarget !== "1") {
                 actualizarEncabezadoLibro(libTarget);
-                const seccionesCarga = listaSecciones.length ? listaSecciones : ["1", "4", "3"];
-                seccionesCarga.forEach(idStr => {
+                let lista = desglosarSec(secParam);
+                if (lista.length === 0) lista = ["1", "4", "3"];
+                
+                lista.forEach(idStr => {
                     combo.add(new Option(tituloDeSeccion(libTarget, idStr), `${libTarget}:${idStr}`));
                 });
+
                 combo.value = sel;
                 return;
             }
@@ -236,32 +249,21 @@
             // CASO B: Estado en Grado 1 (Aprendiz)
             actualizarEncabezadoLibro("1");
 
-            // Subcaso B1: Secuencias personalizadas en Grado 1 (ej: Iniciación con sec=[1,5,3])
-            if (libTarget === "1" && listaSecciones.length > 0) {
-                listaSecciones.forEach(idStr => {
-                    combo.add(new Option(tituloDeSeccion("1", idStr), idStr));
-                });
-                combo.value = (sel && listaSecciones.includes(sel)) ? sel : listaSecciones[0];
-                return;
+            // Subcaso B1: Tenida extraordinaria de Iniciación con secuencia directa (ej: [1, 5, 3])
+            if (libTarget === "1" && secParam) {
+                const listaIniciacion = desglosarSec(secParam);
+                if (listaIniciacion.length > 0) {
+                    listaIniciacion.forEach(idStr => {
+                        combo.add(new Option(tituloDeSeccion("1", idStr), idStr));
+                    });
+                    combo.value = (sel && listaIniciacion.includes(sel)) ? sel : listaIniciacion[0];
+                    return;
+                }
             }
 
-            // Subcaso B2: Ascenso directo con valor numérico único (ej: sustituye sección 2)
-            if (ascenso && listaSecciones.length === 1 && !secParam.includes(":") && !secParam.includes("-") && !secParam.includes("[")) {
-                const valorDestino = (libTarget !== "1") ? `${libTarget}:${secParam}` : secParam;
-                const etiquetaDestino = tituloDeSeccion(libTarget, secParam);
-
-                combo.add(new Option(tituloDeSeccion("1", "1"), "1"));
-                combo.add(new Option(etiquetaDestino, valorDestino));
-                combo.add(new Option(tituloDeSeccion("1", "3"), "3"));
-
-                combo.value = (sel === "2" || sel === valorDestino) ? valorDestino : (sel || "1");
-                return;
-            }
-
-            // Tenida ordinaria con secciones canónicas 1, 2 y 3
-            [1, 2, 3].forEach(num => {
-                const idStr = num.toString();
-                combo.add(new Option(tituloDeSeccion("1", idStr), idStr));
+            // Subcaso B2: Tenida Ordinaria canónica de Aprendiz (1, 2 y 3)
+            ["1", "2", "3"].forEach(num => {
+                combo.add(new Option(tituloDeSeccion("1", num), num));
             });
             combo.value = sel || "1";
         }
@@ -284,8 +286,11 @@
         }
 
         async function gestionarCambioSeccion() {
-            const idSec = document.getElementById("seccionFilter").value;
+            const sel = document.getElementById("seccionFilter");
+            const idSec = sel ? (sel.value || "1") : "1";
             const comboActor = document.getElementById("actorFilter");
+            if (!comboActor) return;
+
             const actorPendiente = comboActor.dataset.actorPendiente || comboActor.value;
             delete comboActor.dataset.actorPendiente;
 
@@ -297,32 +302,30 @@
                 });
             }
             comboActor.innerHTML = '<option value="">---</option>';
-            Array.from(Glosario.getElementsByTagName("item")).forEach(i => {
-                const s = i.getAttribute("sigla");
-                if (actoresEnSec.has(s)) comboActor.add(new Option(s + "∴", s));
-            });
+            if (Glosario) {
+                Array.from(Glosario.getElementsByTagName("item")).forEach(i => {
+                    const s = i.getAttribute("sigla");
+                    if (actoresEnSec.has(s)) comboActor.add(new Option(s + "∴", s));
+                });
+            }
             comboActor.value = actoresEnSec.has(actorPendiente) ? actorPendiente : "";
             renderizarLiturgia(false);
         }
 
         function renderizarLiturgia(hacerScroll = false) {
             const sel = document.getElementById("seccionFilter");
-            const idSec = sel ? sel.value : "";
-            const actorSel = document.getElementById("actorFilter").value;            
+            const idSec = sel ? (sel.value || "1") : "1";
+            const actorSel = document.getElementById("actorFilter") ? document.getElementById("actorFilter").value : "";            
 
-            const paramsURL = new URLSearchParams(window.location.search);
             const ev = typeof Bitacora !== "undefined" ? Bitacora.querySelector(`evento[fecha="${fecha}"]`) : null;
             const ascenso = ev ? ev.querySelector('item[tipo="ascensos"]') : null;
-            const paramsEv = new URLSearchParams((ascenso?.getAttribute("url") || "").split('?')[1] || "");
             
+            // [[INSTANCIA]] solo se activa si hay ascenso a Cámara Superior (Libro 2 o 3)
             let hayAscensoSuperior = false;
-            const targetNum = paramsURL.get("num") || paramsEv.get("num") || "1";
-            const targetSec = paramsURL.get("sec") || paramsEv.get("sec") || "";
-
-            if (ascenso || paramsURL.get("num")) {
-                if (targetNum !== "1" && (targetSec.includes(":") || targetSec.includes("-") || targetSec.includes("["))) {
-                    hayAscensoSuperior = true;
-                }
+            if (ascenso) {
+                const uParams = new URLSearchParams((ascenso.getAttribute("url") || "").split('?')[1] || "");
+                const paramNum = uParams.get("num") || "1";
+                hayAscensoSuperior = (paramNum !== "1");
             }
 
             const nodoSec = obtenerNodoSeccion(idSec);
@@ -338,7 +341,7 @@
 
                 const parte = partes[i];
                 const tituloParte = (parte.getAttribute("titulo") || "").trim();
-                let htmlParte = `<div class="parte-header">${i + 1}. ${tituloParte}</div>`;               
+                let htmlParte = `<div class="parte-header">${i + 1}. ${tituloParte}</div>`;                
                 let contieneInstanciaAscenso = false;
 
                 Array.from(parte.getElementsByTagName("acto")).forEach((acto, j) => {
@@ -352,6 +355,7 @@
                     }
 
                     if (texto.includes("[[INSTANCIA]]")) {
+                        // Si hay Cámara Superior (Libro 2 o 3), inyecta el botón del orden del día
                         if (hayAscensoSuperior) {
                             const inst = inyectarInstancia(actor, idSec, `${versoNum}`);
                             if (inst) btns += inst;
@@ -362,12 +366,14 @@
                         texto = texto.replace("[[INSTANCIA]]", "");
                     }
 
-                    texto = texto.replace(/(\b\S+∴)/gi, (match) => {
-                        const gsigla = match.replace('∴', '').trim();
-                        const ginfo = Glosario.querySelector(`item[sigla="${gsigla}"]`);
-                        const names = ginfo ? ginfo.getAttribute("expansion") : gsigla;
-                        return `<span class="actor-hint" data-memo="${names}" style="color:#0277bd; font-weight:bold;">${match}</span>`;
-                    });
+                    if (Glosario) {
+                        texto = texto.replace(/(\b\S+∴)/gi, (match) => {
+                            const gsigla = match.replace('∴', '').trim();
+                            const ginfo = Glosario.querySelector(`item[sigla="${gsigla}"]`);
+                            const names = ginfo ? ginfo.getAttribute("expansion") : gsigla;
+                            return `<span class="actor-hint" data-memo="${names}" style="color:#0277bd; font-weight:bold;">${match}</span>`;
+                        });
+                    }
 
                     texto = texto.replace(/\[(.*?)\]/g, '<span class="acotacion">($1)</span>');
                     const esFoco = actorSel && actor === actorSel;
@@ -377,6 +383,7 @@
 
                 html += htmlParte;
 
+                // Suspende Asuntos Ordinarios si el VM abrió la Cámara Superior
                 if (contieneInstanciaAscenso && (idSec === "2" || idSec === "1:2")) {
                     suspenderRestoDeSeccion = true;
                 }
@@ -387,7 +394,7 @@
             let nav = `<div class="nav-footer">`;
             nav += idx > 0 ? `<button class="btn-flechas" onclick="navRelativa(-1)"><span class="flip-h">➤</span></button>` : `<span></span>`;            
             
-            // Botón de salida '✕' tanto para Libro 2 como para Libro 3
+            // Botón de salida '✕' en la última sección de Cámara de Compañero o Maestro
             const esCamaraSuperior = idSec.startsWith("2:") || idSec.startsWith("3:");
             if (esCamaraSuperior && idx === totalOpciones - 1) {
                 nav += `<button class="btn-flechas btn-flechas-cierre" title="Retornar a Clausura de Grado 1" onclick="navRelativa(1)">✕</button>`;
@@ -414,31 +421,32 @@
         
         function navRelativa(d) {
             const s = document.getElementById("seccionFilter");
+            if (!s) return;
             const actual = s.value;
             const esCamaraSuperior = actual.startsWith("2:") || actual.startsWith("3:");
 
-            // Retorno directo a Clausura de Aprendiz (3) desde la última sección de Cámara 2 o 3
+            // Al cerrar la Cámara Superior, se retorna a la Clausura de Aprendiz (Sección 3)
             if (esCamaraSuperior && d > 0 && s.selectedIndex === s.options.length - 1) {
                 actualizarSelectorSecciones("3");
                 actualizarSeccionGlobal();
                 return;
             }
 
-            // Retroceso desde Clausura de Aprendiz hacia el final de la cámara superior respectiva
+            // Retroceso desde la Clausura de Aprendiz hacia el final de la cámara superior respectiva
             if (actual === "3" && d < 0 && s.selectedIndex === 2) {
-                const paramsURL = new URLSearchParams(window.location.search);
                 const ev = typeof Bitacora !== "undefined" ? Bitacora.querySelector(`evento[fecha="${fecha}"]`) : null;
                 const ascenso = ev ? ev.querySelector('item[tipo="ascensos"]') : null;
-                const paramsEv = new URLSearchParams((ascenso?.getAttribute("url") || "").split('?')[1] || "");
-                
-                const num = paramsURL.get("num") || paramsEv.get("num");
-                if (num === "2" || num === "3") {
-                    const secRaw = paramsURL.get("sec") || paramsEv.get("sec") || "";
-                    const secs = desglosarSec(secRaw);
-                    const sec = secs.length ? secs[secs.length - 1] : "3";
-                    actualizarSelectorSecciones(`${num}:${sec}`);
-                    actualizarSeccionGlobal();
-                    return;
+                if (ascenso) {
+                    const uParams = new URLSearchParams((ascenso.getAttribute("url") || "").split('?')[1] || "");
+                    const num = uParams.get("num");
+                    if (num === "2" || num === "3") {
+                        const secRaw = uParams.get("sec") || "";
+                        const secs = desglosarSec(secRaw);
+                        const sec = secs.length ? secs[secs.length - 1] : "3";
+                        actualizarSelectorSecciones(`${num}:${sec}`);
+                        actualizarSeccionGlobal();
+                        return;
+                    }
                 }
             }
 
@@ -468,11 +476,12 @@
         }
 
         function inyectarInstancia(actor, sec, verso) {
+            if (!Bitacora) return "";
             const t = Array.from(Bitacora.getElementsByTagName("evento")).find(x => x.getAttribute("fecha") === fecha);        
             if (!t) { 
                 return (actor === "VM") ? `<p class="dialogo-vm">Continúa el orden del día.</p>` : ""; 
             }           
-            const actorActual = document.getElementById("actorFilter").value;            
+            const actorActual = document.getElementById("actorFilter") ? document.getElementById("actorFilter").value : "";            
             const items = Array.from(t.getElementsByTagName("item"));  
             let h = ""; 
             const itemsValidos = items.filter(i => {
@@ -506,11 +515,8 @@
                             const primerPaso = secs.length ? secs[0] : "1";
                             const destino = `${targetLib}:${primerPaso}`;
                             h += `<button class="btn-instancia-exec" onclick="dispararCamaraSuperior('${destino}')">${tit}</button>`;
-                        } else {
-                            const secDestino = secs.length ? secs[0] : targetSecParam;
-                            h += `<button class="btn-instancia-exec" onclick="document.getElementById('seccionFilter').value='${secDestino}'; actualizarSeccionGlobal();">${tit}</button>`;
                         }
-                    } else if (url.includes('rituales.html')) {
+                    } else if (url && url.includes('rituales.html')) {
                         const urlParams = new URLSearchParams(url.split('?')[1]);
                         const linkExterno = urlParams.get('ext') || "";
                         let urlDestino = url;
@@ -518,7 +524,7 @@
                             urlDestino += `&ext=${encodeURIComponent(linkExterno)}`;
                         }                        
                         h += `<button class="btn-instancia-exec" onclick="capturarOrigenYSalir('${urlDestino}', '${actorActual}', '${sec}', '${verso}')">${tit}</button>`;
-                    } else { 
+                    } else if (url) { 
                         const tip = i.getAttribute("tipo");
                         const icon = tip === "cronicas" ? "📜 " : (tip === "trazados" ? "📍 " : "");
                         h += `<button class="btn-ritual" onclick="mostrarVisor('${url}')">${icon}${tit}</button>`; 
