@@ -250,7 +250,7 @@
         <acto actor="MC" tema="VM∴: El candidato, después de haber efectuado su primer viaje consagrado a la Libertad, se encuentra entre CCol∴." />
         <acto actor="VM" tema="Dadle asiento, que repose un momento. Señor, ese bullicio y esos ruidos que habéis oído, son la imagen de las pasiones diversas que hacen del mundo una mansión de escándalo y de corrupción, simboliza la soberbia de los poderosos que no atendiendo a la posición elevada a que fueron encumbrados por la fortuna, se olvidan de los deberes que su misma posición les impone para con los menesterosos. Simboliza la pasión desordenada del lujurioso, cuya vida coloca al hombre al nivel del bruto y para quien nada hay digno de respeto, y ante cuya torpeza nada son los afectos de amor y solidaridad para nuestros semejantes. Simbolizan, en fin, las guerras, las traiciones y las desgracias que alteran la Paz y de los hombres, quienes se ven precisados a sostener la Virtud contra el Vicio; la Caridad contra el Egoísmo; y la Libertad de los Pueblos contra la tiranía de los déspotas. Y vos, señor, en medio de ese tumulto del cual habéis salido airoso, nos representáis las generaciones del pasado sufriendo cruentas persecuciones a través del tiempo y del espacio. Tal vez es la enseñanza simbólica del viaje que habéis realizado, y que sintetiza el primer enunciado de nuestro lema, la Libertad. ¿Tenéis algo que observar a lo que acabo de decir?" />
         <acto actor="Pro" tema="[Contesta el profano]." />
-      </parte>  
+      </parte>
       <parte titulo="Segundo viaje: Igualdad">
         <acto actor="VM" tema="¿Estáis dispuesto a continuar vuestro viaje y tenéis confianza en las fuerzas de vuestras virtudes morales para realizarlos?" />
         <acto actor="Pro" tema="[Contesta el profano]." />
@@ -265,8 +265,8 @@
         <acto actor="Pro" tema="[Contesta el profano]." />
         <acto actor="VM" tema="Señor, si algún temor os martiriza, si algo sentís en vuestra conciencia que no se avenga con nuestras tendencias, podéis manifestarlo. Hasta el presente estáis completamente desligado de todo compromiso con nosotros y nada afectará la estimación de vuestros amigos la actitud que adoptéis. Lo que aquí manifestéis, enterrado queda en el fondo de una tumba, porque no hay poder en la tierra que sea capaz de sacar el secreto depositado en el pecho de los Masones. ¿Persistís aún en los propósitos de ser Iniciado en nuestra Augusta Institución?" />
         <acto actor="Pro" tema="[Contesta el profano]." />
-      </parte>  
-      <parte titulo="Tercer viaje: Fraternidad">  
+      </parte>
+      <parte titulo="Tercer viaje: Fraternidad">
         <acto actor="VM" tema="Váis a realizar vuestro tercer viaje. QH∴ MC∴: Guiad al candidato en su último viaje y quitad de su camino todas las asperezas conduciéndole al Oriente. Avanzad, QH∴ MC∴. [En este viaje pasará por el fuego y reinará completo silencio]" />
         <acto actor="VM" tema="¿Quién va?" />
         <acto actor="MC" tema="Un profano que desea Iniciarse en nuestros Augustos Misterios." />
@@ -275,11 +275,13 @@
         <acto actor="VM" tema="Pasad, pasad, ya que las virtudes que os adornan y vuestra perseverancia os hacen digno de tal honra. [Se le lleva entre CCol∴]" />
         <acto actor="MC" tema="El candidato ha terminado sus pruebas." />
         <acto actor="VM" tema="Sentadle y que repose un momento. Señor, habéis terminado las pruebas morales que la Masonería exige de los que quieren penetrar en su augusto santuario. En este viaje no habéis encontrado obstáculo alguno a vuestro camino; una tranquilidad absoluta ha reinado a vuestro alrededor; representa la tranquilidad del hombre justo y virtuoso que ha sabido hacer de su vida un pródigo y santo semillero de ideas nobles y generosas. De ahí que el camino de la Virtud, es al principio áspero y está erizado de espinas; pero una vez que hemos penetrado en él y empezamos a saborear las delicias que proporciona la conciencia tranquila, no hay dicha comparable a esa dicha, no hay regocijo que pueda compararse con ese regocijo. Señor, habéis realizado tres simbólicos viajes, acción representativa de los tres postulados en que basa su estabilidad nuestra Institución: Libertad, Igualdad, Fraternidad. Concibiendo la Libertad dentro de la moral y de la ley, limitada tan sólo a aquello que pueda perjudicar la libertad ajena. La Igualdad, por derecho natural, corresponde a todo hombre ante la Ley, sin prerrogativas de raza o de nacimiento; Igualdad que no reconoce más distinciones que las de la Virtud y el Talento. La Fraternidad que nos enseña a reconocer a todos los hombres como hermanos nuestros a quienes debemos amparo y protección, disimulando los defectos que pudieran tener por causas ajenas a ellos mismos, tratando de corregirles, enseñarles y perfeccionarles a fin de que sean útiles a sí mismos y a los demás hombres. ¿Estáis, señor, conforme en un todo con las doctrinas que os he explicado, doctrinas que son el cimiento sobre el cual reposa nuestra Universal Institución?" />
-        <acto actor="Pro" tema="[Contesta el profano]." />     
+        <acto actor="Pro" tema="[Contesta el profano]." />
+      </parte>
+      <parte titulo="Pruebas de Sangre, Agua y Cáliz">
         <acto actor="VM" tema="Hermano Terrible, presentad las palanganas para recibir la sangre. Esta idea de sangre no debe de sorprenderos, la sangre ha figurado mucho en las antiguas religiones: casi todas establecieron la purificación, la expiación y la redención por la sangre, casi todos los dioses la han exigido. Calchas inmola a Efigenia; los sacerdotes hebreos se consagraban con sangre y el mismo Dios de los cristianos, exige y recibe la sangre de su hijo en expiación de los crímenes del género humano. Nosotros no exigimos la vuestra por estas cosas, es sólo para que firméis la obligación que debéis prestar antes de ser Iniciado en nuestros misterios; la sangre derramada por esta noble causa, es la más sagrada, es el sacrificio más espontáneo, más grato y más perfecto; creer, además, que lejos de animaros a verter la sangre de nuestros semejantes, procuramos lo contrario, es decir, acostumbramos a derramar la nuestra en favor de ellos, si fuera necesario, y a terminar los fatales errores que han manchado la tierra por espacio de tantos siglos. ¿De qué parte de vuestro cuerpo queréis que se os extraiga?" />
         <acto actor="Pro" tema="[Responde]." />
         <acto actor="VM" tema="Vuestra resignación es bastante, porque más que los actos materiales, necesitamos una constante decisión del alma por todo lo bueno, por todo lo que sea útil a la humanidad. Hermano Terrible, presentad el agua y las toallas. El agua en las prácticas simbólicas y religiosas, se usa siempre para lavar las manchas del alma como se lavan las del cuerpo. Vos conoceréis las aguas lustrales de los antiguos, la piscina de Siloé, que está a la puerta de Jerusalén, y el bautismo de los cristianos, de manera que encontraréis en nuestras ceremonias gran similitud con las antiguas. Oíd la depreciación más notable de los primeros cristianos, en el tiempo de las persecuciones de Nerón, cuando falsos hermanos los denunciaban para perecer. Vos que asistís a nuestros misterios y que váis a recibir con nosotros las abluciones sagradas, nosotros os rogamos y os conjuramos en nombre del ciego, en nombre de aquéllos que os han dado la luz, por las entrañas de vuestra madre y de vuestros hijos, que no traicionéis a aquéllos que venís a visitar como hermanos. Nosotros bien lo véis, no enseñamos la violación de ninguna ley, no olvidamos el respeto al César ni resistimos pagar el tributo. Nosotros enseñamos la caridad y la fraternidad, y no pedimos más que la libertad de adorar al Dios que nos ha hecho a todos hermanos. En nombre de ese Dios universal, sed nuestro hermano y no traicionéis nuestra confianza. Estas palabras salían de la boca de un ministro de paz; ahora, desgraciadamente, ni se escuchan estas verdades, ni se enseñan estas doctrinas. Después de estas palabras, la aspersión del agua descendía sobre los asistentes y frecuentemente los corazones más duros se tocaban y convertían por esta ocasión. Váis a ser purificado por el agua. H∴ MC∴, cumplid con vuestro deber. Pueda esta agua borrar de vuestro espíritu todas las preocupaciones y falsas doctrinas con que el mundo profano pueda haberos extraviado." />
-      </parte>  
+      </parte>
       <parte titulo="Pruebas de Sangre: El Sello">  
         <acto actor="VM" tema="Preciso es que llevéis en vuestro pecho un sello marcado con un hierro candente, a fin de que seáis reconocido por todos los miembros de la gran familia. Esta costumbre no es nueva, se practicaba en casi todos los países. Los indios se pintan, los Derviches se cubren los miembros de incisiones. Ciertos Masones del interior del África, llevaban los sellos de la Masonería grabados en el pecho. ¿En qué parte de vuestro cuerpo queréis que el sello Masónico os sea aplicado?" />
         <acto actor="Pro" tema="Una marca sería vana y estéril si no estuviera en el mismo corazón. Allí imprimió la mano del mismo Dios el sello de la Caridad, conservadlo sin permitir que las pasiones mundanas puedan borrarlo." />
@@ -506,7 +508,7 @@
   <!-- ================================================================= -->
   <ritual libro="3" logia="Colmena No. 8">
     <seccion id="1" titulo="Apertura de Trabajos">
-      <parte titulo="Suspención de Trabajos">
+      <parte titulo="Suspensión de Trabajos">
         <acto actor="VM" tema="HH∴ 1V∴ y 2V∴, servíos anunciar a los HH∴ de vuestras respectivas CCol∴, como yo lo hago en Oriente, que voy a suspender los trabajos con un solo golpe de Mallete para abrir la Cámara de Compañero." />
         <acto actor="1V" tema="H∴ 2V∴ y HH∴ de mi Col∴, nuestro VM∴ va a suspender los trabajos por un solo golpe de Mallete." />
         <acto actor="2V" tema="HH∴ de la Col∴ del Sur, os anuncio que el VM∴ va a suspender los trabajos con un solo golpe de Mallete." />
@@ -519,7 +521,7 @@
         <acto actor="1V" tema="Todos somos del Grado, MRM∴. [El MRM∴ da un golpe de Mallete con el mango de la cuchara y hace las siete preguntas que dan principio a los trabajos del Maestro]" />
       </parte>
     </seccion>  
-    <seccion id="2" titulo="Cámara del Maestros">
+    <seccion id="2" titulo="Cámara de Maestros">
       <parte titulo="Apertura de la Cámara del Medio">
         <acto actor="VM" tema="VH∴ 1V∴, ¿sois MM∴?" />
         <acto actor="1V" tema="La acacia me es conocida." />
